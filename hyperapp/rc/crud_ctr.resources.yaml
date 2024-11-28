@@ -9,7 +9,6 @@ import:
 - legacy_type.crud:open_command_fn
 - legacy_type.crud_ctr:commit_ctr
 - legacy_type.crud_ctr:init_ctr
-- legacy_type.crud_ctr:open_command_ctr
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - rc.rc_constructor:rc_constructor.module
@@ -29,7 +28,6 @@ definitions:
         htypes.crud.open_command_fn: legacy_type.crud:open_command_fn
         htypes.crud_ctr.init_ctr: legacy_type.crud_ctr:init_ctr
         htypes.crud_ctr.commit_ctr: legacy_type.crud_ctr:commit_ctr
-        htypes.crud_ctr.open_command_ctr: legacy_type.crud_ctr:open_command_ctr
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -72,25 +70,5 @@ definitions:
     value:
       t: legacy_type.crud_ctr:commit_ctr
       function: CrudCommitTemplateCtr.from_piece
-      service_params:
-      - data_to_res
-
-  CrudOpenCommandCtr:
-    type: legacy_type.builtin:attribute
-    value:
-      object: crud_ctr.module
-      attr_name: CrudOpenCommandCtr
-
-  CrudOpenCommandCtr.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: CrudOpenCommandCtr
-      attr_name: from_piece
-
-  crud_ctr_open_command_ctr.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.crud_ctr:open_command_ctr
-      function: CrudOpenCommandCtr.from_piece
       service_params:
       - data_to_res

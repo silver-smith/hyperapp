@@ -11,13 +11,3 @@ init_ctr = record(ctr):
   record_t: ref
 
 commit_ctr = record(ctr)
-
-open_command_ctr = record:
-  module_name: string
-  model_t: ref
-  name: string
-  record_t: ref
-  key_field: string
-  init_action_fn: ref
-  commit_command_name: string
-  commit_action: string

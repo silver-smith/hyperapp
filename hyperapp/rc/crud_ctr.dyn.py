@@ -142,19 +142,6 @@ class CrudCommitTemplateCtr(CrudTemplateCtr):
 
 class CrudOpenCommandCtr(ModuleCtr):
 
-    @classmethod
-    def from_piece(cls, piece, data_to_res):
-        return cls(
-            data_to_res=data_to_res,
-            module_name=piece.module_name,
-            model_t=pyobj_creg.invite(piece.model_t),
-            name=piece.name,
-            record_t=piece.record_t,
-            key_field=piece.key_field,
-            commit_command_name=piece.commit_command_name,
-            commit_action=piece.commit_action,
-            )
-
     def __init__(self, data_to_res, module_name, model_t, name, record_t, key_field, commit_command_name, commit_action):
         super().__init__(module_name)
         self._data_to_res = data_to_res
@@ -165,18 +152,6 @@ class CrudOpenCommandCtr(ModuleCtr):
         self._commit_command_name = commit_command_name
         self._commit_action = commit_action
         self._init_resolved_tgt = None
-
-    @property
-    def piece(self):
-        return htypes.crud_ctr.open_command_ctr(
-            module_name=self._module_name,
-            model_t=pyobj_creg.actor_to_ref(self._model_t),
-            name=self._name,
-            record_t=self._record_t,
-            key_field=self._key_field,
-            commit_command_name=self._commit_command_name,
-            commit_action=self._commit_action,
-            )
 
     def update_open_command_targets(self, resource_tgt, target_set, init_resolved_tgt):
         _, resolved_tgt, _ = target_set.factory.config_items(

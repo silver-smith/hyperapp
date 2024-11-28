@@ -18,7 +18,6 @@ import:
 - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
 - rc.crud_ctr:crud_ctr_commit_ctr.actor-template
 - rc.crud_ctr:crud_ctr_init_ctr.actor-template
-- rc.crud_ctr:crud_ctr_open_command_ctr.actor-template
 - rc.crud_marker:crud.marker-template
 - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
@@ -282,7 +281,6 @@ definitions:
       - rc.command_ctr:command_resource_universal_ui_command_template_ctr.actor-template
       - rc.crud_ctr:crud_ctr_commit_ctr.actor-template
       - rc.crud_ctr:crud_ctr_init_ctr.actor-template
-      - rc.crud_ctr:crud_ctr_open_command_ctr.actor-template
       - rc.feed_ctr:feed_list_feed_ctr.actor-template
       - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
