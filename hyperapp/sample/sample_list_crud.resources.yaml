@@ -23,6 +23,15 @@ definitions:
       - piece
       - id
       service_params: []
+  sample_list-sample_list.crud.update.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: sample_list_update
+      ctx_params:
+      - piece
+      - id
+      - value
+      service_params: []
   sample_list-sample_list.edit.command:
     type: legacy_type.command:model_command
     value:
@@ -31,13 +40,13 @@ definitions:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: sample_list-sample_list.edit.command.fn
+      system_fn: sample_list-sample_list.edit.command-fn
   sample_list-sample_list.edit.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.sample_list:sample_list
       command: sample_list-sample_list.edit.command
-  sample_list-sample_list.edit.command.fn:
+  sample_list-sample_list.edit.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
       name: edit
@@ -45,7 +54,7 @@ definitions:
       key_field: id
       init_action_fn: sample_list-sample_list.crud.get.system-fn
       commit_command_d: sample_list-sample_list.edit.commit-command.d
-      commit_action: update
+      commit_action_fn: sample_list-sample_list.crud.update.system-fn
   sample_list-sample_list.edit.commit-command.d:
     type: legacy_type.builtin:call
     value:
@@ -68,3 +77,8 @@ definitions:
     value:
       object: sample_list_crud.module
       attr_name: sample_list_get
+  sample_list_update:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_list_crud.module
+      attr_name: sample_list_update

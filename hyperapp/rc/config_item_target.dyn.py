@@ -80,6 +80,11 @@ class ConfigItemResolvedTarget(Target):
     def deps(self):
         return {self._ready_tgt, *self._custom_deps}
 
+    def update_status(self):
+        if not self._ctr:
+            return
+        self._completed = all(target.completed for target in self.deps)
+
     def add_dep(self, target):
         self._custom_deps.add(target)
 
@@ -95,7 +100,7 @@ class ConfigItemResolvedTarget(Target):
     def resolve(self, ctr):
         self._ctr = ctr
         self._provider_resource_tgt = self._ready_tgt.provider_resource_tgt
-        self._completed = True
+        self.update_status()
 
 
 # Configuration item is ready to use.

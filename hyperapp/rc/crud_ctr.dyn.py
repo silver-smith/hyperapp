@@ -8,6 +8,8 @@ from .code.rc_constructor import ModuleCtr
 
 class CrudTemplateCtr(ModuleCtr):
 
+    _service_name = 'crud_action'
+
     def __init__(self, data_to_res, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params):
         super().__init__(module_name)
         self._data_to_res = data_to_res
@@ -17,6 +19,44 @@ class CrudTemplateCtr(ModuleCtr):
         self._key_field = key_field
         self._ctx_params = ctx_params
         self._service_params = service_params
+
+    def update_resource_targets(self, resource_tgt, target_set):
+        ready_tgt = target_set.factory.config_item_ready(self._service_name, self._resource_name)
+        resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._resource_name)
+        ready_tgt.set_provider(resource_tgt)
+        resolved_tgt.resolve(self)
+
+    def get_component(self, name_to_res):
+        return name_to_res[f'{self._resource_name}.system-fn']
+
+    def make_component(self, types, python_module, name_to_res):
+        object = python_module
+        prefix = []
+        for name in self._attr_qual_name:
+            object = htypes.builtin.attribute(
+                object=mosaic.put(object),
+                attr_name=name,
+                )
+            name_to_res['.'.join([*prefix, name])] = object
+            prefix.append(name)
+        system_fn = htypes.system_fn.ctx_fn(
+            function=mosaic.put(object),
+            ctx_params=tuple(self._ctx_params),
+            service_params=tuple(self._service_params),
+            )
+        name_to_res[f'{self._resource_name}.system-fn'] = system_fn
+        return system_fn
+
+    def _make_resource_name(self, action):
+        return f'{self._type_name}.crud.{action}'
+
+    @property
+    def _type_name(self):
+        return f'{self._model_t.module_name}-{self._model_t.name}'
+
+    @property
+    def _resource_name(self):
+        return self._make_resource_name(self._action)
 
 
 class CrudInitTemplateCtr(CrudTemplateCtr):
@@ -53,14 +93,10 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        service_name = 'crud_action'
-        ready_tgt = target_set.factory.config_item_ready(service_name, self._resource_name)
-        resolved_tgt = target_set.factory.config_item_resolved(service_name, self._resource_name)
-        ready_tgt.set_provider(resource_tgt)
-        resolved_tgt.resolve(self)
-        self._add_open_command_targets(resource_tgt, target_set, resolved_tgt)
+        super().update_resource_targets(resource_tgt, target_set)
+        self._add_open_command_targets(resource_tgt, target_set)
 
-    def _add_open_command_targets(self, resource_tgt, target_set, resolved_tgt):
+    def _add_open_command_targets(self, resource_tgt, target_set):
         if self._action == 'get':
             open_command_name = 'edit'
             commit_action = 'update'
@@ -77,36 +113,11 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             commit_command_name=commit_command_name,
             commit_action=commit_action,
             )
-        open_command_ctr.update_open_command_targets(resource_tgt, target_set, resolved_tgt)
-
-    def get_component(self, name_to_res):
-        return name_to_res[self._resource_name]
-
-    def make_component(self, types, python_module, name_to_res):
-        object = python_module
-        prefix = []
-        for name in self._attr_qual_name:
-            object = htypes.builtin.attribute(
-                object=mosaic.put(object),
-                attr_name=name,
-                )
-            name_to_res['.'.join([*prefix, name])] = object
-            prefix.append(name)
-        system_fn = htypes.system_fn.ctx_fn(
-            function=mosaic.put(object),
-            ctx_params=tuple(self._ctx_params),
-            service_params=tuple(self._service_params),
-            )
-        name_to_res[f'{self._resource_name}'] = system_fn
-        return system_fn
-
-    @property
-    def _type_name(self):
-        return f'{self._model_t.module_name}-{self._model_t.name}'
-
-    @property
-    def _resource_name(self):
-        return f'{self._type_name}.crud.{self._action}.system-fn'
+        init_resolved_tgt = target_set.factory.config_item_resolved(
+            self._service_name, self._make_resource_name(self._action))
+        commit_resolved_tgt = target_set.factory.config_item_resolved(
+            self._service_name, self._make_resource_name(commit_action))
+        open_command_ctr.update_open_command_targets(resource_tgt, target_set, init_resolved_tgt, commit_resolved_tgt)
 
 
 class CrudCommitTemplateCtr(CrudTemplateCtr):
@@ -136,9 +147,6 @@ class CrudCommitTemplateCtr(CrudTemplateCtr):
             service_params=tuple(self._service_params),
             )
 
-    def update_resource_targets(self, resource_tgt, target_set):
-        pass
-
 
 class CrudOpenCommandCtr(ModuleCtr):
 
@@ -152,16 +160,19 @@ class CrudOpenCommandCtr(ModuleCtr):
         self._commit_command_name = commit_command_name
         self._commit_action = commit_action
         self._init_resolved_tgt = None
+        self._commit_resolved_tgt = None
 
-    def update_open_command_targets(self, resource_tgt, target_set, init_resolved_tgt):
+    def update_open_command_targets(self, resource_tgt, target_set, init_resolved_tgt, commit_resolved_tgt):
         _, resolved_tgt, _ = target_set.factory.config_items(
             'model_command_reg', self._resource_name, provider=resource_tgt, ctr=self)
         resolved_tgt.add_dep(init_resolved_tgt)
+        resolved_tgt.add_dep(commit_resolved_tgt)
         resource_tgt.add_cfg_item_target(resolved_tgt)
         self._init_resolved_tgt = init_resolved_tgt
+        self._commit_resolved_tgt = commit_resolved_tgt
 
     def get_component(self, name_to_res):
-        return name_to_res[self._resource_name]
+        return name_to_res[f'{self._resource_name}.command-cfg-item']
 
     def _command_d_piece(self, types, name):
         d_name = f'{name}_d'
@@ -173,6 +184,8 @@ class CrudOpenCommandCtr(ModuleCtr):
     def make_component(self, types, python_module, name_to_res):
         init_action_fn = self._init_resolved_tgt.constructor.make_component(
             types, python_module, name_to_res)
+        commit_action_fn = self._commit_resolved_tgt.constructor.make_component(
+            types, python_module, name_to_res)
         commit_command_d_piece = self._command_d_piece(types, self._commit_command_name)
         system_fn = htypes.crud.open_command_fn(
             name=self._name,
@@ -180,7 +193,7 @@ class CrudOpenCommandCtr(ModuleCtr):
             key_field=self._key_field,
             init_action_fn=mosaic.put(init_action_fn),
             commit_command_d=mosaic.put(commit_command_d_piece),
-            commit_action=self._commit_action,
+            commit_action_fn=mosaic.put(commit_action_fn),
             )
         open_command_d_piece = self._command_d_piece(types, self._name)
         properties = htypes.command.properties(
@@ -197,11 +210,11 @@ class CrudOpenCommandCtr(ModuleCtr):
             t=pyobj_creg.actor_to_ref(self._model_t),
             command=mosaic.put(command),
             )
-        name_to_res[f'{self._type_name}.{self._name}.open-command.d'] = open_command_d_piece
-        name_to_res[f'{self._type_name}.{self._name}.commit-command.d'] = commit_command_d_piece
-        name_to_res[f'{self._type_name}.{self._name}.command.fn'] = system_fn
-        name_to_res[f'{self._type_name}.{self._name}.command'] = command
-        name_to_res[self._resource_name] = cfg_item
+        name_to_res[f'{self._resource_name}.open-command.d'] = open_command_d_piece
+        name_to_res[f'{self._resource_name}.commit-command.d'] = commit_command_d_piece
+        name_to_res[f'{self._resource_name}.command-fn'] = system_fn
+        name_to_res[f'{self._resource_name}.command'] = command
+        name_to_res[f'{self._resource_name}.command-cfg-item'] = cfg_item
 
     @property
     def _type_name(self):
@@ -209,4 +222,4 @@ class CrudOpenCommandCtr(ModuleCtr):
 
     @property
     def _resource_name(self):
-        return f'{self._type_name}.edit.command-cfg-item'
+        return f'{self._type_name}.{self._name}'

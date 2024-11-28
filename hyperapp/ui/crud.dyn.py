@@ -28,16 +28,16 @@ class CrudOpenFn:
             key_field=piece.key_field,
             init_action_fn_ref=piece.init_action_fn,
             commit_command_d_ref=piece.commit_command_d,
-            commit_action=piece.commit_action,
+            commit_action_fn_ref=piece.commit_action_fn,
             )
 
-    def __init__(self, name, record_t_ref, key_field, init_action_fn_ref, commit_command_d_ref, commit_action):
+    def __init__(self, name, record_t_ref, key_field, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
         self._name = name
         self._record_t_ref = record_t_ref
         self._key_field = key_field
         self._init_action_fn_ref = init_action_fn_ref
         self._commit_command_d_ref = commit_command_d_ref
-        self._commit_action = commit_action
+        self._commit_action_fn_ref = commit_action_fn_ref
 
     def __repr__(self):
         return f"<CrudOpenFn {self._name} key={self._key_field})>"
@@ -59,7 +59,7 @@ class CrudOpenFn:
             key_field=self._key_field,
             init_action_fn=self._init_action_fn_ref,
             commit_command_d=self._commit_command_d_ref,
-            commit_action=self._commit_action,
+            commit_action_fn=self._commit_action_fn_ref,
             )
 
 

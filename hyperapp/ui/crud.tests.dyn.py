@@ -1,3 +1,5 @@
+import logging
+
 from . import htypes
 from .services import (
     mosaic,
@@ -8,9 +10,15 @@ from .code.context import Context
 from .code.system_fn import ContextFn
 from .tested.code import crud
 
+log = logging.getLogger(__name__)
+
 
 def _sample_get(piece, id):
     return htypes.crud_tests.sample_record(id, f'item#{id}')
+
+
+def _sample_update(piece, id, value):
+    log.info("Update %s: #%d -> %s", piece, id, value)
 
 
 @mark.fixture
@@ -22,7 +30,16 @@ def _sample_get_fn():
         )
 
 
-def test_open_command_fn(data_to_ref, _sample_get_fn):
+@mark.fixture
+def _sample_update_fn():
+    return htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(_sample_update),
+        ctx_params=('piece', 'id', 'value'),
+        service_params=(),
+        )
+
+
+def test_open_command_fn(data_to_ref, _sample_get_fn, _sample_update_fn):
     record_t = htypes.crud_tests.sample_record
     piece = htypes.crud.open_command_fn(
         name='edit',
@@ -30,7 +47,7 @@ def test_open_command_fn(data_to_ref, _sample_get_fn):
         key_field='id',
         init_action_fn=mosaic.put(_sample_get_fn),
         commit_command_d=data_to_ref(htypes.crud.save_d()),
-        commit_action='update',
+        commit_action_fn=mosaic.put(_sample_update_fn),
         )
     fn = crud.CrudOpenFn.from_piece(piece)
 
@@ -45,7 +62,7 @@ def test_open_command_fn(data_to_ref, _sample_get_fn):
 
 
 @mark.fixture
-def crud_model(data_to_ref, _sample_get_fn):
+def crud_model(data_to_ref, _sample_get_fn, _sample_update_fn):
     record_t = htypes.crud_tests.sample_record
     model = htypes.crud_tests.sample_model()
     return htypes.crud.model(
@@ -55,7 +72,7 @@ def crud_model(data_to_ref, _sample_get_fn):
         key_field='id',
         init_action_fn=mosaic.put(_sample_get_fn),
         commit_command_d=data_to_ref(htypes.crud.save_d()),
-        commit_action='update',
+        commit_action_fn=mosaic.put(_sample_update_fn),
         )
 
 
