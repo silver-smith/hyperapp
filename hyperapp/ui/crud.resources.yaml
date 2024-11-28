@@ -86,7 +86,8 @@ definitions:
       function: crud_model_commands
       ctx_params:
       - piece
-      service_params: []
+      service_params:
+      - system_fn_creg
   crud_model_crud_model_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

@@ -110,6 +110,12 @@ def crud_model_layout(piece, system_fn_creg):
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
+    def __init__(self, d, key_field, key, commit_fn):
+        super().__init__(d)
+        self._key_field = key_field
+        self._key = key
+        self._commit_fn = commit_fn
+
     @property
     def properties(self):
         return htypes.command.properties(
@@ -119,13 +125,16 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
             )
 
     def bind(self, ctx):
-        return BoundCrudCommitCommand(self._d, ctx)
+        return BoundCrudCommitCommand(self._d, self._key_field, self._key, self._commit_fn, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    def __init__(self, d, ctx):
+    def __init__(self, d, key_field, key, commit_fn, ctx):
         super().__init__(d)
+        self._key_field = key_field
+        self._key = key
+        self._commit_fn = commit_fn
         self._ctx = ctx
 
     @property
@@ -145,11 +154,16 @@ class BoundCrudCommitCommand(BoundCommandBase):
         model_state = self._ctx.model_state
         log.info("Run CRUD commit command %r: model_state=%s", self.name, model_state)
         assert isinstance(model_state, htypes.form.state)
-        for name, value_ref in model_state.fields:
-            log.info("Model state: %s=%r", name, web.summon(value_ref))
+        value = {
+            name: web.summon(ref)
+            for name, ref in model_state.fields
+            }
+        log.info("Key: %s=%r; value=%r", self._key_field, self._key, value)
 
 
 @mark.command_enum
-def crud_model_commands(piece):
+def crud_model_commands(piece, system_fn_creg):
     command_d = pyobj_creg.invite(piece.commit_command_d)
-    return [UnboundCrudCommitCommand(command_d)]
+    key = web.summon(piece.key)
+    commit_fn = system_fn_creg.invite(piece.commit_action_fn)
+    return [UnboundCrudCommitCommand(command_d, piece.key_field, key, commit_fn)]
