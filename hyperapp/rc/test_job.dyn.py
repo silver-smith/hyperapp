@@ -283,7 +283,7 @@ class TestJob(SystemJob):
         key_to_req = {}
         try:
             system = self.convert_errors(self._prepare_system, system_resources)
-            key_to_req = self._key_to_req(system['cfg_item_creg'])
+            key_to_req = self._make_key_to_req_map(system['cfg_item_creg'])
             ctr_collector = system['ctr_collector']
             ctr_collector.ignore_module(module_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)

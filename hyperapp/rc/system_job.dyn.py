@@ -120,7 +120,7 @@ class SystemJob:
             for resource in resource_set
             )
 
-    def _key_to_req(self, cfg_item_creg):
+    def _make_key_to_req_map(self, cfg_item_creg):
         result = {}
         for req, resource_set in self._req_to_resources.items():
             for resource in resource_set:
