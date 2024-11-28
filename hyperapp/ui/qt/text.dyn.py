@@ -41,7 +41,7 @@ class ViewTextView(View):
             )
 
     def _model_state(self, widget):
-        return htypes.text.state(text=self.get_plain_text(widget))
+        return self.get_plain_text(widget)
 
     def get_plain_text(self, widget):
         return widget.toPlainText()
@@ -83,7 +83,7 @@ class EditTextView(View):
             )
 
     def _model_state(self, widget):
-        return htypes.text.state(text=self.get_text(widget))
+        return self.get_text(widget)
 
     def get_text(self, widget):
         return widget.toPlainText()
