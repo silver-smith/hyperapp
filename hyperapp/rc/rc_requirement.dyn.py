@@ -6,6 +6,10 @@ class Requirement:
         return None
 
     @property
+    def is_builtin(self):
+        return False
+
+    @property
     def is_test_requirement(self):
         return False
 

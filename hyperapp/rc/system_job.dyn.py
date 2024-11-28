@@ -86,7 +86,7 @@ class Result:
     def _used_requirements(self, recorder, key_to_req, system):
         import_reqs = self._imports_to_requirements(recorder.used_imports)
         system_reqs = self._used_system_reqs(key_to_req, system)
-        return system_reqs | import_reqs
+        return set(req for req in system_reqs | import_reqs if not req.is_builtin)
 
     def _constructors(self, system):
         ctr_collector = system['ctr_collector']

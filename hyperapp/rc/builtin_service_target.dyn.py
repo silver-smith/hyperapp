@@ -19,6 +19,10 @@ class BuiltinServiceReq(Requirement):
     def piece(self):
         return htypes.builtin_service.builtin_service_req(self.service_name)
 
+    @property
+    def is_builtin(self):
+        return True
+
     def get_target(self, target_factory):
         return target_factory.builtin_service(self.service_name)
 

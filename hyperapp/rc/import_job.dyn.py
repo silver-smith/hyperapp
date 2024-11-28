@@ -221,7 +221,7 @@ class _Succeeded(_ImportJobResult):
         missing_import_reqs = self._imports_to_requirements(recorder.missing_imports)
         used_import_reqs = self._imports_to_requirements(recorder.used_imports)
         return SucceededImportResult(
-            used_reqs=system_reqs | used_import_reqs,
+            used_reqs=set(req for req in system_reqs | used_import_reqs if not req.is_builtin),
             all_reqs=system_reqs | missing_import_reqs | used_import_reqs,
             functions=list(self._enum_functions(module)),
             constructors=self._constructors(system),
