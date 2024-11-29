@@ -15,9 +15,9 @@ async def open_sample_static_text_2():
 @mark.global_command
 async def open_sample_static_list():
     items = [
-        htypes.sample_list.item(1, "First"),
-        htypes.sample_list.item(2, "Second"),
-        htypes.sample_list.item(3, "Third"),
+        htypes.sample_list.item(1, "First", "First item"),
+        htypes.sample_list.item(2, "Second", "Second item"),
+        htypes.sample_list.item(3, "Third", "Third item"),
         ]
     return items
 

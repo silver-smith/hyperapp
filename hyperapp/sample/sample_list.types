@@ -5,6 +5,7 @@ sample_list_d = record
 item = record:
   id: int
   title: string
+  desc: string
 
 sample_list = record
 feed_sample_list = record

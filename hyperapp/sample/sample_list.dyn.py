@@ -8,9 +8,9 @@ from .code.list_diff import ListDiff
 @mark.model
 def sample_list(piece):
     return [
-        htypes.sample_list.item(1, "First sample"),
-        htypes.sample_list.item(2, "Second sample"),
-        htypes.sample_list.item(3, "Third sample"),
+        htypes.sample_list.item(1, "first", "First sample"),
+        htypes.sample_list.item(2, "second", "Second sample"),
+        htypes.sample_list.item(3, "third", "Third sample"),
         ]
 
 
@@ -21,7 +21,7 @@ async def open_sample_fn_list():
 
 async def _send_diff(feed):
     await asyncio.sleep(1)
-    item = htypes.sample_list.item(4, "Sample item #4")
+    item = htypes.sample_list.item(4, "fourth","Sample item #4")
     await feed.send(ListDiff.Append(item))
 
 
@@ -29,9 +29,9 @@ async def _send_diff(feed):
 def feed_sample_list(piece, feed):
     asyncio.create_task(_send_diff(feed))
     return [
-        htypes.sample_list.item(1, "First sample"),
-        htypes.sample_list.item(2, "Second sample"),
-        htypes.sample_list.item(3, "Third sample"),
+        htypes.sample_list.item(1, "first", "First sample"),
+        htypes.sample_list.item(2, "second", "Second sample"),
+        htypes.sample_list.item(3, "third", "Third sample"),
         ]
 
 
