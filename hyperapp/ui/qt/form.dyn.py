@@ -1,4 +1,5 @@
 import logging
+import weakref
 
 from PySide6 import QtWidgets
 
@@ -13,6 +14,19 @@ from .code.mark import mark
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)
+
+
+class FormInput:
+
+    def __init__(self, view, widget):
+        self._view = view
+        self._widget_wr = weakref.ref(widget)
+
+    def get_value(self):
+        widget = self._widget_wr()
+        if not widget:
+            raise RuntimeError(f"Form input: widget for {self._view} is gone")
+        return self._view.get_value(widget)
 
 
 class FormView(View):
@@ -66,9 +80,6 @@ class FormView(View):
         return 0
 
     def widget_state(self, widget):
-        return self._make_state(widget)
-
-    def _make_state(self, widget):
         field_list = []
         for idx, (name, view) in enumerate(self._fields.items()):
             w = self.item_widget(widget, idx)
@@ -81,11 +92,19 @@ class FormView(View):
         return rctx.clone_with(
             model=self._adapter.model,
             model_state=self._model_state(widget),
+            input=FormInput(self, widget),
             )
 
     def _model_state(self, widget):
-        return self._make_state(widget)
+        return self.get_value(widget)
 
+    def get_value(self, widget):
+        name_to_value = {}
+        for idx, (name, view) in enumerate(self._fields.items()):
+            w = self.item_widget(widget, idx)
+            name_to_value[name] = view.get_value(w)
+        return self._adapter.record_t(**name_to_value)
+        
     def items(self):
         return [
             Item(name, view, focusable=True)

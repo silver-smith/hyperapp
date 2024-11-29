@@ -1,4 +1,5 @@
 import logging
+import weakref
 
 from PySide6 import QtWidgets
 
@@ -7,6 +8,19 @@ from .code.mark import mark
 from .code.view import View
 
 log = logging.getLogger(__name__)
+
+
+class TextInput:
+
+    def __init__(self, view, widget):
+        self._view = view
+        self._widget_wr = weakref.ref(widget)
+
+    def get_value(self):
+        widget = self._widget_wr()
+        if not widget:
+            raise RuntimeError(f"Text input: widget for {self._view} is gone")
+        return self._view.get_value(widget)
 
 
 class ViewTextView(View):
@@ -38,6 +52,7 @@ class ViewTextView(View):
         return rctx.clone_with(
             model=self._adapter.model,
             model_state=self._model_state(widget),
+            input=TextInput(self, widget),
             )
 
     def _model_state(self, widget):
@@ -45,6 +60,9 @@ class ViewTextView(View):
 
     def get_plain_text(self, widget):
         return widget.toPlainText()
+
+    def get_value(self, widget):
+        return self.get_plain_text(widget)
 
 
 class EditTextView(View):
@@ -80,6 +98,7 @@ class EditTextView(View):
         return rctx.clone_with(
             model=self._adapter.model,
             model_state=self._model_state(widget),
+            input=self,
             )
 
     def _model_state(self, widget):
@@ -87,3 +106,6 @@ class EditTextView(View):
 
     def get_text(self, widget):
         return widget.toPlainText()
+
+    def get_value(self, widget):
+        return self.get_text(widget)
