@@ -1,9 +1,11 @@
 import logging
+from unittest.mock import Mock
 
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.mark import mark
 from .code.context import Context
@@ -62,9 +64,13 @@ def test_open_command_fn(data_to_ref, _sample_get_fn, _sample_update_fn):
 
 
 @mark.fixture
-def crud_model(data_to_ref, _sample_get_fn, _sample_update_fn):
+def model():
+    return htypes.crud_tests.sample_model()
+
+
+@mark.fixture
+def crud_model(data_to_ref, model, _sample_get_fn, _sample_update_fn):
     record_t = htypes.crud_tests.sample_record
-    model = htypes.crud_tests.sample_model()
     return htypes.crud.model(
         record_t=pyobj_creg.actor_to_ref(record_t),
         model=mosaic.put(model),
@@ -94,15 +100,18 @@ def test_model_layout(crud_model):
     assert isinstance(result, htypes.form.view)
 
 
-async def test_model_commands(crud_model):
+async def test_model_commands(model, crud_model):
     commands = crud.crud_model_commands(crud_model)
     assert commands
     [unbound_cmd] = commands
     assert unbound_cmd.properties
+    value = {'text': "Some text"}
+    input = Mock()
+    input.get_value.return_value = value
     ctx = Context(
-        model_state=htypes.form.state((
-            htypes.form.field('text', mosaic.put("Some text")),
-            )),
+        model=model,
+        piece=model,
+        input=input,
         )
     bound_cmd = unbound_cmd.bind(ctx)
     await bound_cmd.run()

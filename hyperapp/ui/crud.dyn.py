@@ -130,6 +130,8 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
+    _required_kw = {'model', 'input'}
+
     def __init__(self, d, key_field, key, commit_fn, ctx):
         super().__init__(d)
         self._key_field = key_field
@@ -148,17 +150,19 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
     @cached_property
     def _missing_params(self):
-        return set()
+        return self._required_kw - self._ctx.as_dict().keys()
 
     async def run(self):
-        model_state = self._ctx.model_state
-        log.info("Run CRUD commit command %r: model_state=%s", self.name, model_state)
-        assert isinstance(model_state, htypes.form.state)
-        value = {
-            name: web.summon(ref)
-            for name, ref in model_state.fields
-            }
-        log.info("Key: %s=%r; value=%r", self._key_field, self._key, value)
+        input = self._ctx.input
+        value = input.get_value()
+        log.info("Run CRUD commit command %r: %s=%r; value=%r", self.name, self._key_field, self._key, value)
+        ctx = self._ctx.clone_with(
+            piece=self._ctx.model,
+            model=self._ctx.model,
+            value=value,
+            **{self._key_field: self._key},
+            )
+        return self._commit_fn.call(ctx)
 
 
 @mark.command_enum
