@@ -15,8 +15,8 @@ def sample_list_get(piece, id):
         }
     item = item_to_id[id]
     return htypes.sample_list_crud.form_item(
-        id=item.id,
         title=item.title,
+        desc=item.desc,
         )
 
 

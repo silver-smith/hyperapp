@@ -13,5 +13,5 @@ def test_get(piece):
 
 
 def test_update(piece):
-    value = htypes.sample_list_crud.form_item(2, "Second sample - new")
+    value = htypes.sample_list_crud.form_item("second new", "Second sample - new")
     sample_list_crud.sample_list_update(piece, 2, value)

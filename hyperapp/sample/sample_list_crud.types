@@ -1,5 +1,5 @@
 form_item = record:
-  id: int
   title: string
+  desc: string
 
 open_crud_sample_d = record
