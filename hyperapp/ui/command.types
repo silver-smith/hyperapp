@@ -22,7 +22,7 @@ model_command_enumerator = record:
   system_fn: ref
 
 
-# LCS selector for model to ui_model_command set mappint.
+# LCS selector for model to ui_model_command set mapping.
 ui_model_command_d = record
 
 ui_model_command = record:
