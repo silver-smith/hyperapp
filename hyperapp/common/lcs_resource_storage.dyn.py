@@ -80,7 +80,7 @@ class LcsResourceStorage:
                 self._store(elt)
             self._store(value)
             element = htypes.lcs_resource_storage.element(
-                key=tuple(mosaic.put(d) for d in key),
+                key=tuple(sorted(mosaic.put(d) for d in key)),
                 value=mosaic.put(value),
                 )
             element_list.append(element)
