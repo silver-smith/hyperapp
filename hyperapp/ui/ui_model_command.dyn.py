@@ -2,6 +2,8 @@
 # or UI commands returning model wrapped to UI commands.
 
 import logging
+from functools import cached_property
+from operator import attrgetter
 
 from . import htypes
 from .services import (
@@ -121,14 +123,56 @@ class BoundUiModelCommand(BoundCommandBase):
 #     return _get_ui_model_command_layout
 
 
+class CustomModelCommands:
+
+    def __init__(self, lcs, model_t):
+        self._lcs = lcs
+        self._model_t_res = pyobj_creg.actor_to_piece(model_t)
+        self._ui_d_to_command = {}
+
+    @cached_property
+    def _d(self):
+        return {
+            htypes.command.ui_model_command_d(),
+            self._model_t_res,
+            }
+
+    @cached_property
+    def _command_map(self):
+        command_list = self._lcs.get(self._d)
+        if not command_list:
+            return {}
+        command_pieces = [
+            web.summon(cmd) for cmd in command_list.commands
+            ]
+        return {
+            cmd.ui_command_d: cmd
+            for cmd in command_pieces
+            }
+
+    def _save(self):
+        sorted_commands = sorted(self._command_map.values(), key=attrgetter('ui_command_d'))
+        command_list = htypes.command.custom_model_command_list(
+            commands=tuple(mosaic.put(cmd) for cmd in sorted_commands))
+        self._lcs.set(self._d, command_list)
+
+    def set(self, command):
+        self._command_map[command.ui_command_d] = command
+        self._save()
+        
+
 @mark.service
-def set_ui_model_command(lcs, model_t, command):
-    model_t_res = pyobj_creg.actor_to_piece(model_t)
-    d = {
-        htypes.command.ui_model_command_d(),
-        model_t_res,
-        }
-    lcs.set(d, command)
+def custom_ui_model_commands(lcs, model_t):
+    return CustomModelCommands(lcs, model_t)
+
+
+# @mark.service
+# def get_ui_model_command(lcs, model_t, model_command_d):
+#     model_t_res = pyobj_creg.actor_to_piece(model_t)
+#     d = {
+#         htypes.command.ui_model_command_d(),
+#         model_t_res,
+#         }
 
 
 # @mark.service

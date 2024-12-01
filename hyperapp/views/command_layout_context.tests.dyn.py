@@ -69,9 +69,16 @@ def piece(data_to_ref, base_piece):
 
 
 @mark.fixture
-def ctx():
+def lcs():
+    lcs_mock = Mock()
+    lcs_mock.get.return_value = None  # Custom model commands retrieve command list
+    return lcs_mock
+
+
+@mark.fixture
+def ctx(lcs):
     return Context(
-        lcs=Mock(),
+        lcs=lcs,
         )
 
 

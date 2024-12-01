@@ -56,7 +56,7 @@ definitions:
       service_params:
       - data_to_ref
       - view_creg
-      - set_ui_model_command
+      - custom_ui_model_commands
   global_commands_view_open_command_layout_context.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

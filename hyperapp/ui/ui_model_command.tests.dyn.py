@@ -55,15 +55,31 @@ def model_command_reg_config(partial_ref):
     return {model_t: [command]}
 
 
-def test_set_ui_model_command(data_to_ref, set_ui_model_command):
+@mark.fixture
+def lcs(data_to_ref):
+    command_3 = htypes.command.ui_model_command(
+        ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_3_d()),
+        model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_3_d()),
+        layout=None,
+        )
+    command_list = htypes.command.custom_model_command_list(
+        commands=(mosaic.put(command_3),)
+        )
     lcs = Mock()
+    lcs.get.return_value = command_list
+    return lcs
+
+
+def test_set_custom_ui_model_command(data_to_ref, custom_ui_model_commands, lcs):
     model_t = htypes.ui_model_command_tests.sample_model
     command = htypes.command.ui_model_command(
         ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_2_d()),
         model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_2_d()),
         layout=None,
         )
-    set_ui_model_command(lcs, model_t, command)
+    custom_commands = custom_ui_model_commands(lcs, model_t)
+    custom_commands.set(command)
+    lcs.get.assert_called_once()
     lcs.set.assert_called_once()
 
 

@@ -15,7 +15,7 @@ class CommandLayoutContextView(ContextView):
 
     @classmethod
     @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, data_to_ref, view_creg, set_ui_model_command):
+    def from_piece(cls, piece, ctx, data_to_ref, view_creg, custom_ui_model_commands):
         base_view = view_creg.invite(piece.base, ctx)
         if piece.model_t is not None:
             model_t = pyobj_creg.invite(piece.model_t)
@@ -23,13 +23,12 @@ class CommandLayoutContextView(ContextView):
             model_t = None
         ui_command_d = pyobj_creg.invite(piece.ui_command_d)
         model_command_d = pyobj_creg.invite(piece.model_command_d)
-        return cls(data_to_ref, set_ui_model_command, base_view, ctx.lcs, model_t, ui_command_d, model_command_d)
+        return cls(data_to_ref, custom_ui_model_commands, base_view, ctx.lcs, model_t, ui_command_d, model_command_d)
 
-    def __init__(self, data_to_ref, set_ui_model_command, base_view, lcs, model_t, ui_command_d, model_command_d):
+    def __init__(self, data_to_ref, custom_ui_model_commands, base_view, lcs, model_t, ui_command_d, model_command_d):
         super().__init__(base_view, label="Command layout")
         self._data_to_ref = data_to_ref
-        self._set_ui_model_command = set_ui_model_command
-        self._lcs = lcs
+        self._custom_commands = custom_ui_model_commands(lcs, model_t)
         self._model_t = model_t
         self._ui_command_d = ui_command_d
         self._model_command_d = model_command_d
@@ -49,7 +48,7 @@ class CommandLayoutContextView(ContextView):
             model_command_d=self._data_to_ref(self._model_command_d),
             layout=mosaic.put(layout),
             )
-        self._set_ui_model_command(self._lcs, self._model_t, command)
+        self._custom_commands.set(command)
 
     def children_context(self, ctx):
         return ctx.clone_with(

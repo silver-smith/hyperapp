@@ -8,6 +8,7 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.command:custom_model_command_list
 - legacy_type.command:ui_model_command_d
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
@@ -15,6 +16,22 @@ import:
 - ui.command_groups:command_groups.module
 - ui.model_command:model_command.module
 definitions:
+  custom_ui_model_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: custom_ui_model_commands
+  custom_ui_model_commands.service:
+    type: legacy_type.system:service_template
+    value:
+      name: custom_ui_model_commands
+      ctl: system-dict_config_ctl.ctl
+      function: custom_ui_model_commands
+      service_params: []
+      want_config: false
+      free_params:
+      - lcs
+      - model_t
   get_ui_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -36,23 +53,6 @@ definitions:
       - lcs
       - model
       - ctx
-  set_ui_model_command:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: set_ui_model_command
-  set_ui_model_command.service:
-    type: legacy_type.system:service_template
-    value:
-      name: set_ui_model_command
-      ctl: system-dict_config_ctl.ctl
-      function: set_ui_model_command
-      service_params: []
-      want_config: false
-      free_params:
-      - lcs
-      - model_t
-      - command
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
@@ -66,6 +66,7 @@ definitions:
         code.command_groups: ui.command_groups:command_groups.module
         code.mark: common.mark:mark.module
         code.model_command: ui.model_command:model_command.module
+        htypes.command.custom_model_command_list: legacy_type.command:custom_model_command_list
         htypes.command.ui_model_command_d: legacy_type.command:ui_model_command_d
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
