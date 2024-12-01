@@ -28,6 +28,7 @@ import:
 - models.model_commands:model_commands_view.model-cfg-item
 - models.model_commands:model_commands_view_run_command.command-cfg-item
 - models.model_commands:open_model_commands.global-model-command
+- models.rename_command:model_commands-view.edit.command-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 - models.show_current_context:show_current_context_view.model-cfg-item
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
@@ -430,6 +431,7 @@ definitions:
       - models.file_bundles:file_bundles_view_open.command-cfg-item
       - models.global_commands:global_commands_view_run_command.command-cfg-item
       - models.model_commands:model_commands_view_run_command.command-cfg-item
+      - models.rename_command:model_commands-view.edit.command-cfg-item
       - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
       - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
