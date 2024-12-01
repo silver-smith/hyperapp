@@ -91,6 +91,11 @@ class LcsResourceStorage:
         text = yaml.dump(self._res_module.as_dict, sort_keys=False)
         self._path.write_text(text)
 
+    def _require_index(self, t):
+        if not isinstance(t, TRecord):
+            return True
+        return t.fields
+
     def _make_stem(self, piece, t=None):
         if t is None:
             t = deduce_t(piece)
@@ -110,8 +115,11 @@ class LcsResourceStorage:
             return t.name
 
     def _iter_names(self, piece, t):
+        stem = self._make_stem(piece, t)
+        if not self._require_index(t):
+            yield stem
+            return
         for idx in itertools.count(1):
-            stem = self._make_stem(piece, t)
             yield f'{stem}_{idx}'
 
     def _make_name(self, piece, t):
