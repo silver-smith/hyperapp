@@ -48,6 +48,7 @@ definitions:
       - visualizer
       - global_model_command_reg
       - get_model_commands
+      - custom_ui_model_commands
       want_config: false
       free_params:
       - lcs

@@ -30,7 +30,7 @@ def global_model_command_reg_config(partial_ref):
         bound_fn=partial(_sample_fn_1, sample_service='a-service'),
         )
     command = UnboundModelCommand(
-        d=htypes.ui_model_command_tests.sample_command_1_d(),
+        d=htypes.ui_model_command_tests.sample_model_command_1_d(),
         ctx_fn=system_fn,
         properties=htypes.command.properties(False, False, False),
         )
@@ -47,7 +47,7 @@ def model_command_reg_config(partial_ref):
         bound_fn=partial(_sample_fn_2, sample_service='a-service'),
         )
     command = UnboundModelCommand(
-        d=htypes.ui_model_command_tests.sample_command_2_d(),
+        d=htypes.ui_model_command_tests.sample_model_command_2_d(),
         ctx_fn=system_fn,
         properties=htypes.command.properties(False, False, False),
         )
@@ -59,7 +59,7 @@ def model_command_reg_config(partial_ref):
 def lcs(data_to_ref):
     command_3 = htypes.command.ui_model_command(
         ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_3_d()),
-        model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_3_d()),
+        model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_2_d()),
         layout=None,
         )
     command_list = htypes.command.custom_model_command_list(
@@ -83,13 +83,18 @@ def test_set_custom_ui_model_command(data_to_ref, custom_ui_model_commands, lcs)
     lcs.set.assert_called_once()
 
 
-def test_get_ui_model_commands(get_ui_model_commands):
-    lcs = Mock()
-    lcs.get.return_value = None
+def test_get_ui_model_commands(get_ui_model_commands, lcs):
     ctx = Context()
     model = htypes.ui_model_command_tests.sample_model()
     command_list = get_ui_model_commands(lcs, model, ctx)
-    len(command_list) == 2
+    command_d_set = {
+        command.d for command in command_list
+        }
+    assert command_d_set == {
+        htypes.ui_model_command_tests.sample_model_command_1_d(),
+        htypes.ui_model_command_tests.sample_model_command_2_d(),
+        htypes.ui_model_command_tests.sample_command_3_d(),
+        }, command_d_set
     for cmd in command_list:
         assert isinstance(cmd, ui_model_command.UnboundUiModelCommand)
 

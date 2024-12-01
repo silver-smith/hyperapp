@@ -22,8 +22,8 @@ log = logging.getLogger(__name__)
 
 class UnboundUiModelCommand(UnboundCommandBase):
 
-    def __init__(self, model_view_creg, visualizer, lcs, model_command, layout):
-        super().__init__(model_command.d)
+    def __init__(self, model_view_creg, visualizer, lcs, d, model_command, layout):
+        super().__init__(d)
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer
         self._model_command = model_command  # Model command or UI command returning a model.
@@ -47,13 +47,13 @@ class UnboundUiModelCommand(UnboundCommandBase):
 
     def bind(self, ctx):
         return BoundUiModelCommand(
-            self._model_view_creg, self._visualizer, self._lcs, self._model_command.bind(ctx), self.groups, self._layout, ctx)
+            self._model_view_creg, self._visualizer, self._lcs, self._d, self._model_command.bind(ctx), self.groups, self._layout, ctx)
 
 
 class BoundUiModelCommand(BoundCommandBase):
 
-    def __init__(self, model_view_creg, visualizer, lcs, model_command, groups, layout, ctx):
-        super().__init__(model_command.d)
+    def __init__(self, model_view_creg, visualizer, lcs, d, model_command, groups, layout, ctx):
+        super().__init__(d)
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer
         self._lcs = lcs
@@ -156,6 +156,9 @@ class CustomModelCommands:
             commands=tuple(mosaic.put(cmd) for cmd in sorted_commands))
         self._lcs.set(self._d, command_list)
 
+    def get_list(self):
+        return self._command_map.values()
+
     def set(self, command):
         self._command_map[command.ui_command_d] = command
         self._save()
@@ -234,20 +237,37 @@ def custom_ui_model_commands(lcs, model_t):
 
 def wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
     # Layout command enumerator returns UI commands. Wrapping it (hopefully) won't cause any problems
-    # layout = _get_ui_model_command_layout(lcs, command_d)
-    return UnboundUiModelCommand(model_view_creg, visualizer, lcs, command, layout=None)
+    return UnboundUiModelCommand(model_view_creg, visualizer, lcs, command.d, command, layout=None)
 
 
 @mark.service
-def get_ui_model_commands(model_view_creg, visualizer, global_model_command_reg, get_model_commands, lcs, model, ctx):
-    model_command_list = [
+def get_ui_model_commands(
+        model_view_creg, visualizer, global_model_command_reg, get_model_commands, custom_ui_model_commands,
+        lcs, model, ctx):
+    model_t = deduce_t(model)
+    model_commands = get_model_commands(model, ctx)
+    model_d_to_command = {
+        command.d: command
+        for command in model_commands
+        }
+    all_model_commands = [
         *global_model_command_reg,
-        *get_model_commands(model, ctx),
+        *model_commands,
         ]
-    ui_command_list = [
-        wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, cmd)
-        for cmd in model_command_list
-        ]
-    # lcs_command_list = _get_ui_model_commands(lcs, piece)
-    # return _merge_command_lists(ui_command_list, lcs_command_list)
-    return ui_command_list
+    ui_d_to_command = {}
+    for model_command in all_model_commands:
+        ui_command = wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, model_command)
+        ui_d_to_command[ui_command.d] = ui_command
+    for rec in custom_ui_model_commands(lcs, model_t).get_list():
+        ui_d = pyobj_creg.invite(rec.ui_command_d)
+        model_d = pyobj_creg.invite(rec.model_command_d)
+        try:
+            model_command = model_d_to_command[model_d]
+        except KeyError:
+            log.warning("%s: Custom model command is missing: %s", model_t, model_d)
+            continue
+        layout = web.summon_opt(rec.layout)
+        ui_command = UnboundUiModelCommand(model_view_creg, visualizer, lcs, ui_d, model_command, layout)
+        # Override default wrapped model_command if custom layout is configured.
+        ui_d_to_command[ui_d] = ui_command
+    return ui_d_to_command.values()
