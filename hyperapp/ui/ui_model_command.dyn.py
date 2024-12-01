@@ -2,6 +2,7 @@
 # or UI commands returning model wrapped to UI commands.
 
 import logging
+from collections import namedtuple
 from functools import cached_property
 from operator import attrgetter
 
@@ -125,6 +126,8 @@ class BoundUiModelCommand(BoundCommandBase):
 
 class CustomModelCommands:
 
+    _Rec = namedtuple('_Rec', 'ui_command_d model_command_d layout')
+
     def __init__(self, lcs, model_t):
         self._lcs = lcs
         self._model_t_res = pyobj_creg.actor_to_piece(model_t)
@@ -142,13 +145,12 @@ class CustomModelCommands:
         command_list = self._lcs.get(self._d)
         if not command_list:
             return {}
-        command_pieces = [
-            web.summon(cmd) for cmd in command_list.commands
-            ]
-        return {
-            cmd.ui_command_d: cmd
-            for cmd in command_pieces
-            }
+        result = {}
+        for command_ref in command_list.commands:
+            command = web.summon(command_ref)
+            ui_command_d = pyobj_creg.invite(command.ui_command_d)
+            result[ui_command_d] = command
+        return result
 
     def _save(self):
         sorted_commands = sorted(self._command_map.values(), key=attrgetter('ui_command_d'))
@@ -156,11 +158,28 @@ class CustomModelCommands:
             commands=tuple(mosaic.put(cmd) for cmd in sorted_commands))
         self._lcs.set(self._d, command_list)
 
-    def get_list(self):
-        return self._command_map.values()
+    def get_rec_list(self):
+        return [
+            self._Rec(
+                ui_command_d=ui_command_d,
+                model_command_d=pyobj_creg.invite(cmd.model_command_d),
+                layout=cmd.layout,
+                )
+            for ui_command_d, cmd in self._command_map.items()
+            ]
 
     def set(self, command):
-        self._command_map[command.ui_command_d] = command
+        ui_command_d = pyobj_creg.invite(command.ui_command_d)
+        self._command_map[ui_command_d] = command
+        self._save()
+
+    def replace(self, ui_command_d, command):
+        try:
+            del self._command_map[ui_command_d]
+        except KeyError:
+            pass
+        new_ui_command_d = pyobj_creg.invite(command.ui_command_d)
+        self._command_map[new_ui_command_d] = command
         self._save()
         
 
@@ -258,16 +277,14 @@ def get_ui_model_commands(
     for model_command in all_model_commands:
         ui_command = wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, model_command)
         ui_d_to_command[ui_command.d] = ui_command
-    for rec in custom_ui_model_commands(lcs, model_t).get_list():
-        ui_d = pyobj_creg.invite(rec.ui_command_d)
-        model_d = pyobj_creg.invite(rec.model_command_d)
+    for rec in custom_ui_model_commands(lcs, model_t).get_rec_list():
         try:
-            model_command = model_d_to_command[model_d]
+            model_command = model_d_to_command[rec.model_command_d]
         except KeyError:
             log.warning("%s: Custom model command is missing: %s", model_t, model_d)
             continue
         layout = web.summon_opt(rec.layout)
-        ui_command = UnboundUiModelCommand(model_view_creg, visualizer, lcs, ui_d, model_command, layout)
+        ui_command = UnboundUiModelCommand(model_view_creg, visualizer, lcs, rec.ui_command_d, model_command, layout)
         # Override default wrapped model_command if custom layout is configured.
-        ui_d_to_command[ui_d] = ui_command
+        ui_d_to_command[rec.ui_command_d] = ui_command
     return ui_d_to_command.values()
