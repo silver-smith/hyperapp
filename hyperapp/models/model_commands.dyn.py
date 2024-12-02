@@ -15,12 +15,20 @@ from .code.model_command import model_command_ctx
 log = logging.getLogger(__name__)
 
 
-@mark.model
-def list_model_commands(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
+def get_model_command_list(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
     model = web.summon(piece.model)
     model_state = web.summon(piece.model_state)
     command_ctx = model_command_ctx(ctx, model, model_state)
     command_list = get_ui_model_commands(lcs, model, command_ctx)
+    return [
+        command for command in command_list
+        if not command.properties.is_global or command.properties.uses_state
+        ]
+
+
+@mark.model
+def list_model_commands(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
+    command_list = get_model_command_list(piece, ctx, lcs, data_to_ref, get_ui_model_commands)
     return [
         htypes.model_commands.item(
             ui_command_d=data_to_ref(command.d),
@@ -30,7 +38,6 @@ def list_model_commands(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
             repr=repr(command),
             )
         for command in command_list
-        if not command.properties.is_global or command.properties.uses_state
         ]
 
 

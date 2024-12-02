@@ -46,6 +46,10 @@ class UnboundUiModelCommand(UnboundCommandBase):
     def model_command_d(self):
         return self._model_command.d
 
+    @property
+    def layout(self):
+        return self._layout
+
     def bind(self, ctx):
         return BoundUiModelCommand(
             self._model_view_creg, self._visualizer, self._lcs, self._d, self._model_command.bind(ctx), self.groups, self._layout, ctx)

@@ -13,7 +13,7 @@ from .tested.code import ui_model_command
 
 
 def _sample_fn_1(model, state, sample_service):
-    return f'sample-fn-2: {state}, {sample_service}'
+    return f'sample-fn-1: {state}, {sample_service}'
 
 
 def _sample_fn_2(model, state, sample_service):

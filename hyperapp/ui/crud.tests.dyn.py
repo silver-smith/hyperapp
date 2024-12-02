@@ -100,7 +100,7 @@ def test_model_layout(crud_model):
     assert isinstance(result, htypes.form.view)
 
 
-async def test_model_commands(model, crud_model):
+async def test_model_commands(crud_model):
     commands = crud.crud_model_commands(crud_model)
     assert commands
     [unbound_cmd] = commands
@@ -109,8 +109,8 @@ async def test_model_commands(model, crud_model):
     input = Mock()
     input.get_value.return_value = value
     ctx = Context(
-        model=model,
-        piece=model,
+        model=crud_model,
+        piece=crud_model,
         input=input,
         )
     bound_cmd = unbound_cmd.bind(ctx)

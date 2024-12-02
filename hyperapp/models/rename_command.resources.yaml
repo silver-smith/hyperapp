@@ -1,18 +1,23 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
+- builtins:pyobj_creg.service
+- builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:ui_model_command
 - legacy_type.crud:edit_d
 - legacy_type.crud:open_command_fn
 - legacy_type.crud:save_d
 - legacy_type.model_commands:view
 - legacy_type.rename_command:form
 - legacy_type.system_fn:ctx_fn
+- models.model_commands:model_commands.module
 - ui.command:command.module
 definitions:
   model_command_get:
@@ -41,7 +46,12 @@ definitions:
       - piece
       - ui_command_d
       - value
-      service_params: []
+      - ctx
+      - lcs
+      service_params:
+      - data_to_ref
+      - custom_ui_model_commands
+      - get_ui_model_commands
   model_commands-view.edit.command:
     type: legacy_type.command:model_command
     value:
@@ -81,4 +91,9 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.mark: common.mark:mark.module
+        code.model_commands: models.model_commands:model_commands.module
+        htypes.command.ui_model_command: legacy_type.command:ui_model_command
         htypes.rename_command.form: legacy_type.rename_command:form
+        services.deduce_t: builtins:deduce_t.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service

@@ -153,12 +153,14 @@ class BoundCrudCommitCommand(BoundCommandBase):
         return self._required_kw - self._ctx.as_dict().keys()
 
     async def run(self):
+        crud_model = self._ctx.model
+        model = web.summon(crud_model.model)
         input = self._ctx.input
         value = input.get_value()
         log.info("Run CRUD commit command %r: %s=%r; value=%r", self.name, self._key_field, self._key, value)
         ctx = self._ctx.clone_with(
-            piece=self._ctx.model,
-            model=self._ctx.model,
+            piece=model,
+            model=model,
             value=value,
             **{self._key_field: self._key},
             )
