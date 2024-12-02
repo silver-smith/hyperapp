@@ -69,15 +69,14 @@ class CrudProbe:
 
     def _pick_key_field(self, item_t, params):
         fields = []
-        expected_fields = ", ".join(item_t.fields)
         for name in params.other_names:
             if name in {'piece', 'model', 'value'}:
                 continue
-            if name not in item_t.fields:
-                raise RuntimeError(f"Unexpected parameter: {name!r}. Expected key field, one of {expected_fields}")
-            fields.append(name)
+            if name in item_t.fields:
+                fields.append(name)
         if not fields:
-            raise RuntimeError(f"Expected one key parameter. One of {expected_fields}")
+            expected_fields = ", ".join(item_t.fields)
+            raise RuntimeError(f"Expected one key parameter, one of: {expected_fields}")
         if len(fields) > 1:
             fields_str = ", ".join(fields)
             raise RuntimeError(f"Only one key parameter is expected, but got: {fields_str}")
