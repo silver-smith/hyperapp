@@ -96,38 +96,6 @@ class BoundUiModelCommand(BoundCommandBase):
         self._navigator_rec.view.open(self._ctx, piece, view, navigator_w)
 
 
-# @ui_command_impl_creg.actor(htypes.ui.ui_model_command_impl)
-# @ui_command_impl_creg.actor(htypes.ui.external_ui_model_command_impl)
-# def ui_model_command_impl_from_piece(piece, ctx):
-#     model_impl = model_command_impl_creg.invite(piece.model_command_impl, ctx)
-#     layout = web.summon_opt(piece.layout)
-#     return UiModelCommandImpl(ctx, model_impl, layout, model_impl.properties)
-
-
-# @mark.service
-# def set_ui_model_command_layout():
-#     def _set_ui_model_command_layout(lcs, command_d, layout):
-#         d = {
-#             htypes.ui.ui_model_command_layout_d(),
-#             command_d,
-#             }
-#         lcs.set(d, layout)
-#     return _set_ui_model_command_layout
-
-
-# def _get_ui_model_command_layout(lcs, command_d):
-#     d = {
-#         htypes.ui.ui_model_command_layout_d(),
-#         command_d,
-#         }
-#     return lcs.get(d)
-
-
-# @mark.service
-# def get_ui_model_command_layout():
-#     return _get_ui_model_command_layout
-
-
 class CustomModelCommands:
 
     _Rec = namedtuple('_Rec', 'ui_command_d model_command_d layout')
@@ -190,72 +158,6 @@ class CustomModelCommands:
 @mark.service
 def custom_ui_model_commands(lcs, model_t):
     return CustomModelCommands(lcs, model_t)
-
-
-# @mark.service
-# def get_ui_model_command(lcs, model_t, model_command_d):
-#     model_t_res = pyobj_creg.actor_to_piece(model_t)
-#     d = {
-#         htypes.command.ui_model_command_d(),
-#         model_t_res,
-#         }
-
-
-# @mark.service
-# def set_ui_model_commands():
-#     return _set_ui_model_commands
-
-
-# def _get_ui_model_commands(lcs, model):
-#     t = deduce_t(model)
-#     t_res = pyobj_creg.actor_to_piece(t)
-#     d = {
-#         htypes.ui.ui_model_command_d(),
-#         t_res,
-#         }
-#     value = lcs.get(d)
-#     if value is None:
-#         return []
-#     return [
-#         web.summon(ref)
-#         for ref in value.commands
-#         ]
-
-
-# @mark.service
-# def get_ui_model_commands():
-#     return _get_ui_model_commands
-
-
-# def change_command(lcs, model, command_d_ref, change_fn):
-#     assert False, "TODO"
-
-#     def find_command(command_list):
-#         for idx, command in enumerate(command_list):
-#             if command.d == command_d_ref:
-#                 return (idx, command)
-#         d = pyobj_creg.invite(command_d_ref)
-#         raise RuntimeError(f"Command {d} is missing from configured in LCS for model {model}")
-
-#     command_list = _get_ui_model_commands(lcs, model)
-#     idx, command = find_command(command_list)
-#     new_command = change_fn(command)
-#     command_list = command_list.copy()
-#     command_list[idx] = new_command
-#     _set_ui_model_commands(lcs, model, command_list)
-
-
-# def _merge_command_lists(command_list_1, command_list_2):
-#     d_to_command = {
-#         cmd.d: cmd
-#         for cmd in command_list_1 + command_list_2
-#         }
-#     return list(d_to_command.values())
-
-
-# @mark.service
-# def merge_command_lists():
-#     return _merge_command_lists
 
 
 def wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
