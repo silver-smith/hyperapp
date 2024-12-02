@@ -18,7 +18,7 @@ definitions:
       elements:
       - key:
         - legacy_type.data_browser:record_view
-        - model_view_layout_d_1
+        - model_view_layout_d
         value: tree_view_1
   list_as_tree_adapter_adapter_1:
     type: legacy_type.list_as_tree_adapter:adapter
@@ -29,7 +29,7 @@ definitions:
       layers:
         legacy_type.data_browser:ref_list_view: models.data_browser:data_browser_ref_list_view_ref_list_open.d
         legacy_type.data_browser:list_view: models.data_browser:data_browser_list_view_list_open.d
-  model_view_layout_d_1:
+  model_view_layout_d:
     type: legacy_type.ui:model_view_layout_d
     value: {}
   tree_view_1:
