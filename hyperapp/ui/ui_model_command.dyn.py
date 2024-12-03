@@ -108,7 +108,7 @@ class CustomModelCommands:
     @cached_property
     def _d(self):
         return {
-            htypes.command.ui_model_command_d(),
+            htypes.command.custom_commands_lcs_d(),
             self._model_t_res,
             }
 

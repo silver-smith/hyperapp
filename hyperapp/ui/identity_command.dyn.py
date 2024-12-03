@@ -58,7 +58,7 @@ async def add_identity_command(piece, lcs, data_to_ref, feed_factory, model_view
     model_command = htypes.identity_command.identity_command(
         d=data_to_ref(command_d),
         )
-    rec = htypes.command.ui_model_command(
+    rec = htypes.command.custom_ui_model_command(
         ui_command_d=data_to_ref(command_d),
         model_command_d=data_to_ref(command_d),
         layout=None,

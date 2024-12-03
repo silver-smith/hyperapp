@@ -43,7 +43,7 @@ class CommandLayoutContextView(ContextView):
             )
 
     def _set_layout(self, layout):
-        command = htypes.command.ui_model_command(
+        command = htypes.command.custom_ui_model_command(
             ui_command_d=self._data_to_ref(self._ui_command_d),
             model_command_d=self._data_to_ref(self._model_command_d),
             layout=mosaic.put(layout),

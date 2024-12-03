@@ -10,8 +10,8 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
+- legacy_type.command:custom_ui_model_command
 - legacy_type.command:model_command
-- legacy_type.command:ui_model_command
 - legacy_type.command_layout_context:open_command_layout_context_d
 - legacy_type.command_layout_context:state
 - legacy_type.command_layout_context:view
@@ -39,7 +39,7 @@ definitions:
       import_list:
         code.context_view: views.context_view:context_view.module
         code.mark: common.mark:mark.module
-        htypes.command.ui_model_command: legacy_type.command:ui_model_command
+        htypes.command.custom_ui_model_command: legacy_type.command:custom_ui_model_command
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view
         htypes.global_commands.view: legacy_type.global_commands:view

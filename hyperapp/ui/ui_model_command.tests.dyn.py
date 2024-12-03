@@ -57,7 +57,7 @@ def model_command_reg_config(partial_ref):
 
 @mark.fixture
 def lcs(data_to_ref):
-    command_3 = htypes.command.ui_model_command(
+    command_3 = htypes.command.custom_ui_model_command(
         ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_3_d()),
         model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_2_d()),
         layout=None,
@@ -72,7 +72,7 @@ def lcs(data_to_ref):
 
 def test_set_custom_ui_model_command(data_to_ref, custom_ui_model_commands, lcs):
     model_t = htypes.ui_model_command_tests.sample_model
-    command = htypes.command.ui_model_command(
+    command = htypes.command.custom_ui_model_command(
         ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_2_d()),
         model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_2_d()),
         layout=None,

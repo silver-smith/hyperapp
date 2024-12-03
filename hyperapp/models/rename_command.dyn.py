@@ -37,7 +37,7 @@ def model_command_update(piece, ui_command_d, value, ctx, lcs, data_to_ref, cust
     command = d_to_command[prev_d]
     new_d_t = TRecord('custom_command', new_d_name)
     new_d = new_d_t()
-    new_command = htypes.command.ui_model_command(
+    new_command = htypes.command.custom_ui_model_command(
         ui_command_d=data_to_ref(new_d),
         model_command_d=data_to_ref(command.model_command_d),
         layout=command.layout,
