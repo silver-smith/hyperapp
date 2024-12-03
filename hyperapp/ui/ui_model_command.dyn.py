@@ -98,7 +98,8 @@ class BoundUiModelCommand(BoundCommandBase):
 
 class CustomModelCommands:
 
-    _Rec = namedtuple('_Rec', 'ui_command_d model_command_d layout')
+    Rec = namedtuple('Rec', 'ui_command_d model_command layout')
+    ModelRec = namedtuple('ModelRec', 'ui_command_d model_command_d layout')
 
     def __init__(self, lcs, model_t):
         self._lcs = lcs
@@ -131,14 +132,24 @@ class CustomModelCommands:
         self._lcs.set(self._d, command_list)
 
     def get_rec_list(self):
-        return [
-            self._Rec(
-                ui_command_d=ui_command_d,
-                model_command_d=pyobj_creg.invite(cmd.model_command_d),
-                layout=cmd.layout,
-                )
-            for ui_command_d, cmd in self._command_map.items()
-            ]
+        rec_list = []
+        for ui_command_d, cmd in self._command_map.items():
+            if isinstance(cmd, htypes.command.custom_ui_model_command):
+                rec = self.ModelRec(
+                    ui_command_d=ui_command_d,
+                    model_command_d=pyobj_creg.invite(cmd.model_command_d),
+                    layout=cmd.layout,
+                    )
+            elif isinstance(cmd, htypes.command.custom_ui_command):
+                rec = self.Rec(
+                    ui_command_d=ui_command_d,
+                    model_command=cmd.model_command,
+                    layout=cmd.layout,
+                    )
+            else:
+                raise RuntimeError(f"Unexpected custom command type: {cmd!r}")
+            rec_list.append(rec)
+        return rec_list
 
     def set(self, command):
         ui_command_d = pyobj_creg.invite(command.ui_command_d)
@@ -167,7 +178,7 @@ def wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
 
 @mark.service
 def get_ui_model_commands(
-        model_view_creg, visualizer, global_model_command_reg, get_model_commands, custom_ui_model_commands,
+        model_view_creg, visualizer, command_creg, global_model_command_reg, get_model_commands, custom_ui_model_commands,
         lcs, model, ctx):
     model_t = deduce_t(model)
     model_commands = get_model_commands(model, ctx)
@@ -184,11 +195,14 @@ def get_ui_model_commands(
         ui_command = wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, model_command)
         ui_d_to_command[ui_command.d] = ui_command
     for rec in custom_ui_model_commands(lcs, model_t).get_rec_list():
-        try:
-            model_command = model_d_to_command[rec.model_command_d]
-        except KeyError:
-            log.warning("%s: Custom model command is missing: %s", model_t, model_d)
-            continue
+        if isinstance(rec, CustomModelCommands.ModelRec):
+            try:
+                model_command = model_d_to_command[rec.model_command_d]
+            except KeyError:
+                log.warning("%s: Custom model command is missing: %s", model_t, model_d)
+                continue
+        if isinstance(rec, CustomModelCommands.Rec):
+            model_command = command_creg.invite(rec.model_command)
         layout = web.summon_opt(rec.layout)
         ui_command = UnboundUiModelCommand(model_view_creg, visualizer, lcs, rec.ui_command_d, model_command, layout)
         # Override default wrapped model_command if custom layout is configured.

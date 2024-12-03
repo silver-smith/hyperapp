@@ -10,6 +10,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:custom_commands_lcs_d
 - legacy_type.command:custom_model_command_list
+- legacy_type.command:custom_ui_command
+- legacy_type.command:custom_ui_model_command
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.command:command.module
@@ -46,6 +48,7 @@ definitions:
       service_params:
       - model_view_creg
       - visualizer
+      - command_creg
       - global_model_command_reg
       - get_model_commands
       - custom_ui_model_commands
@@ -69,6 +72,8 @@ definitions:
         code.model_command: ui.model_command:model_command.module
         htypes.command.custom_commands_lcs_d: legacy_type.command:custom_commands_lcs_d
         htypes.command.custom_model_command_list: legacy_type.command:custom_model_command_list
+        htypes.command.custom_ui_command: legacy_type.command:custom_ui_command
+        htypes.command.custom_ui_model_command: legacy_type.command:custom_ui_model_command
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

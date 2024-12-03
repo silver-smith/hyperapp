@@ -33,3 +33,8 @@ custom_ui_model_command = record:
   ui_command_d: ref
   model_command_d: ref
   layout: ref opt
+
+custom_ui_command = record:
+  ui_command_d: ref
+  model_command: ref
+  layout: ref opt

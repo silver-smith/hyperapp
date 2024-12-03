@@ -1,6 +1,8 @@
 sample_command_2_d = record
 sample_command_3_d = record
+sample_command_4_d = record
 sample_model_command_1_d = record
 sample_model_command_2_d = record
 sample_model_command_3_d = record
+sample_model_command_4_d = record
 sample_model = record
