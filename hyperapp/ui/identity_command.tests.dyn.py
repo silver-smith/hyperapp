@@ -39,6 +39,7 @@ async def test_command_instance(data_to_ref):
         piece=model,
         )
     bound_command = unbound_command.bind(ctx)
+    assert bound_command.enabled
     result = await bound_command.run()
     assert result == model
 
