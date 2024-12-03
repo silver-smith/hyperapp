@@ -1,17 +1,50 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:web.service
 - common.list_diff:list_diff.module
+- common.mark:mark.module
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.command:properties
+- legacy_type.identity_command:identity_command
+- legacy_type.system:actor_template
+- models.model_commands:model_commands.module
+- ui.command:command.module
+- ui.ui_model_command:ui_model_command.module
 definitions:
+  UnboundIdentityModelCommand:
+    type: legacy_type.builtin:attribute
+    value:
+      object: identity_command.module
+      attr_name: UnboundIdentityModelCommand
+  UnboundIdentityModelCommand.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UnboundIdentityModelCommand
+      attr_name: from_piece
   identity_command.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: identity_command
       file_name: identity_command.dyn.py
       import_list:
+        code.command: ui.command:command.module
         code.list_diff: common.list_diff:list_diff.module
+        code.mark: common.mark:mark.module
+        code.model_commands: models.model_commands:model_commands.module
+        code.ui_model_command: ui.ui_model_command:ui_model_command.module
+        htypes.command.properties: legacy_type.command:properties
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+  identity_command_identity_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.identity_command:identity_command
+      function: UnboundIdentityModelCommand.from_piece
+      service_params: []

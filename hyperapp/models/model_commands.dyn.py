@@ -26,17 +26,21 @@ def get_model_command_list(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
         ]
 
 
+def ui_command_to_item(data_to_ref, command):
+    return htypes.model_commands.item(
+        ui_command_d=data_to_ref(command.d),
+        model_command_d=data_to_ref(command.model_command_d),
+        name=command.name,
+        groups=", ".join(d_to_name(g) for g in command.groups),
+        repr=repr(command),
+        )
+
+
 @mark.model
 def list_model_commands(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
     command_list = get_model_command_list(piece, ctx, lcs, data_to_ref, get_ui_model_commands)
     return [
-        htypes.model_commands.item(
-            ui_command_d=data_to_ref(command.d),
-            model_command_d=data_to_ref(command.model_command_d),
-            name=command.name,
-            groups=", ".join(d_to_name(g) for g in command.groups),
-            repr=repr(command),
-            )
+        ui_command_to_item(data_to_ref, command)
         for command in command_list
         ]
 

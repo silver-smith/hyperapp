@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 
 class UnboundUiModelCommand(UnboundCommandBase):
 
-    def __init__(self, model_view_creg, visualizer, lcs, d, model_command, layout):
+    def __init__(self, model_view_creg, visualizer, lcs, d, model_command, layout=None):
         super().__init__(d)
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer

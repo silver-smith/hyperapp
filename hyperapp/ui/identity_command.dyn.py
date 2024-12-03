@@ -2,76 +2,69 @@ from hyperapp.common.htypes import TRecord
 
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
+    pyobj_creg,
     web,
     )
+from .code.mark import mark
 from .code.list_diff import ListDiff
-# from .code.command import CommandImpl
+from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase
+from .code.ui_model_command import UnboundUiModelCommand
+from .code.model_commands import ui_command_to_item
 
 
-# class IdentityModelCommandImpl(CommandImpl):
-class IdentityModelCommandImpl:
+class UnboundIdentityModelCommand(UnboundCommandBase):
 
-    def __init__(self, piece):
-        super().__init__()
-        self._piece = piece
+    @classmethod
+    @mark.actor.command_creg
+    def from_piece(cls, piece):
+        d = pyobj_creg.invite(piece.d)
+        return cls(d)
 
     def __repr__(self):
-        return 'identity'
-
-    @property
-    def name(self):
-        return 'identity'
-
-    @property
-    def enabled(self):
-        return True
-
-    @property
-    def disabled_reason(self):
-        return None
-
-    @property
-    def params(self):
-        return {'piece': self._piece}
+        return f"<UnboundIdentityModelCommand>"
 
     @property
     def properties(self):
-        return htypes.ui.command_properties(
+        return htypes.command.properties(
             is_global=False,
             uses_state=False,
             remotable=False,
             )
 
-    async def _run(self):
-        return self._piece
+    def bind(self, ctx):
+        return BoundIdentityModelCommand(self._d, ctx)
 
 
-# @model_command_impl_creg.actor(htypes.identity_command.identity_model_command_impl)
-def identity_model_command_impl_from_piece(piece, ctx):
-    return IdentityModelCommandImpl(ctx.piece)
+class BoundIdentityModelCommand(BoundCommandBase):
+
+    def __init__(self, d, ctx):
+        super().__init__(d)
+        self._ctx = ctx
+
+    async def run(self):
+        return self._ctx.model
 
 
-async def add_identity_command(piece, lcs):
+@mark.command
+async def add_identity_command(piece, lcs, data_to_ref, feed_factory, model_view_creg, visualizer, custom_ui_model_commands):
     feed = feed_factory(piece)
     model = web.summon(piece.model)
-    command_list = get_ui_model_commands(lcs, model)
-    model_impl = htypes.identity_command.identity_model_command_impl()
-    ui_impl = htypes.ui.ui_model_command_impl(
-        model_command_impl=mosaic.put(model_impl),
+    model_t = deduce_t(model)
+    new_d_name = 'identity_d'
+    new_d_t = TRecord('custom_command', new_d_name)
+    command_d = new_d_t()
+    model_command = htypes.identity_command.identity_command(
+        d=data_to_ref(command_d),
+        )
+    rec = htypes.command.ui_model_command(
+        ui_command_d=data_to_ref(command_d),
+        model_command_d=data_to_ref(command_d),
         layout=None,
         )
-    name = 'identity'
-    d_t = TRecord('identity_command', f'{name}_d')
-    command = htypes.ui.ui_command(
-        d=data_to_ref(d_t()),
-        impl=mosaic.put(ui_impl),
-        )
-    command_list.append(command)
-    set_ui_model_commands(lcs, model, command_list)
-    new_item = htypes.model_commands.item(
-        command=mosaic.put(command),
-        name=name,
-        impl=str(ui_impl),
-        )
+    custom_commands = custom_ui_model_commands(lcs, model_t)
+    custom_commands.set(rec)
+    ui_command = UnboundUiModelCommand(model_view_creg, visualizer, lcs, command_d, model_command)
+    new_item = ui_command_to_item(data_to_ref, ui_command)
     await feed.send(ListDiff.Append(new_item))
