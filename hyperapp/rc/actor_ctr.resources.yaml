@@ -7,7 +7,7 @@ import:
 - legacy_type.actor_resource:actor_probe_template
 - legacy_type.actor_resource:actor_template_ctr
 - legacy_type.system:actor_template
-- rc.actor_req:actor_req.module
+- rc.cfg_item_req:cfg_item_req.module
 - rc.config_item_resource:config_item_resource.module
 - rc.rc_constructor:rc_constructor.module
 
@@ -26,7 +26,7 @@ definitions:
         htypes.system.actor_template: legacy_type.system:actor_template
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        code.actor_req: rc.actor_req:actor_req.module
+        code.cfg_item_req: rc.cfg_item_req:cfg_item_req.module
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
         code.config_item_resource: rc.config_item_resource:config_item_resource.module
 

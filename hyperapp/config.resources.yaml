@@ -36,8 +36,8 @@ import:
 - rc.actor_ctr:system_actor_template.actor-template
 - rc.actor_marker:actor.marker-template
 - rc.actor_probe:actor_resource_actor_probe_template.actor-template
-- rc.actor_req:actor_resource_actor_req.actor-template
 - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
+- rc.cfg_item_req:actor_resource_cfg_item_req.actor-template
 - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource_model_command_enumerator_template_ctr.actor-template
 - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
@@ -515,8 +515,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.actor_req:actor_resource_actor_req.actor-template
       - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
+      - rc.cfg_item_req:actor_resource_cfg_item_req.actor-template
       - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
       - rc.service_req:service_resource_service_req.actor-template
       - rc.test_module_resources_req:test_module_resources_req_test_module_resources_req.actor-template

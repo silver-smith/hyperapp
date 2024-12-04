@@ -4,7 +4,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.rc_constructor import ModuleCtr
-from .code.actor_req import ActorReq
+from .code.cfg_item_req import CfgItemReq
 
 
 class FeedCtr(ModuleCtr):
@@ -42,7 +42,7 @@ class FeedCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        req = ActorReq('feed_factory', self._t)
+        req = CfgItemReq('feed_factory', self._t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             'feed_factory', self._type_name, req, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)

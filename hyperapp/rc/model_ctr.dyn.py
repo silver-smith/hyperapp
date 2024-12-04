@@ -5,7 +5,7 @@ from .services import (
     web,
     )
 from .code.rc_constructor import ModuleCtr
-from .code.actor_req import ActorReq
+from .code.cfg_item_req import CfgItemReq
 
 
 class ModelCtr(ModuleCtr):
@@ -41,7 +41,7 @@ class ModelCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        req = ActorReq('visualizer_reg', self._model_t)
+        req = CfgItemReq('visualizer_reg', self._model_t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             'visualizer_reg', self._resource_name, req, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)

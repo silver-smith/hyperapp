@@ -13,7 +13,7 @@ from .code.import_target import (
     ImportTarget,
     )
 from .code.config_resource_target import ConfigResourceTarget
-from .code.actor_req import ActorReq
+from .code.cfg_item_req import CfgItemReq
 from .code.service_req import ServiceReq
 
 
@@ -28,7 +28,7 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
             if service_name == 'system':
                 req = ServiceReq(key)
             elif isinstance(key, Type):
-                req = ActorReq(service_name, key)
+                req = CfgItemReq(service_name, key)
             else:
                 req = None
             if type(key) is not str:

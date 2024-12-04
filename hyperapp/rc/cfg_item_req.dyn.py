@@ -9,7 +9,7 @@ from .code.rc_requirement import Requirement
 from .code.config_item_resource import ConfigItemResource
 
 
-class ActorReq(Requirement):
+class CfgItemReq(Requirement):
 
     @classmethod
     def from_piece(cls, piece):
@@ -25,10 +25,10 @@ class ActorReq(Requirement):
         self._tested_modules = tuple(tested_modules or [])
 
     def __str__(self):
-        return f"ActorReq(service_name={self._service_name}, t={self._t} / {self._tested_modules})"
+        return f"CfgItemReq(service_name={self._service_name}, t={self._t} / {self._tested_modules})"
 
     def __eq__(self, rhs):
-        return (type(rhs) == ActorReq
+        return (type(rhs) == CfgItemReq
                 and rhs._service_name == self._service_name
                 and rhs._t == self._t
                 and rhs._tested_modules == self._tested_modules)
@@ -38,7 +38,7 @@ class ActorReq(Requirement):
 
     @property
     def piece(self):
-        return htypes.actor_resource.actor_req(
+        return htypes.actor_resource.cfg_item_req(
             service_name=self._service_name,
             t=pyobj_creg.actor_to_ref(self._t),
             tested_modules=self._tested_modules,

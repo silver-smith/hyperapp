@@ -1,4 +1,4 @@
-actor_req = record:
+cfg_item_req = record:
   service_name: string
   t: ref
   tested_modules: string list

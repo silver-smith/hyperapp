@@ -20,7 +20,7 @@ from .code.config_ctl import (
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.system import UnknownServiceError
 from .code.config_item_resource import ConfigItemResource
-from .code.actor_req import ActorReq
+from .code.cfg_item_req import CfgItemReq
 from .code.service_req import ServiceReq
 from .code.service_ctr import ServiceTemplateCtr
 from .code.system_probe import SystemProbe
@@ -237,7 +237,7 @@ class SystemJob:
                 self.incomplete_error(error_msg, missing_reqs={req})
             if isinstance(x, htypes.rc_job.config_item_missing_error):
                 key = pyobj_creg.invite(x.t)
-                req = ActorReq(x.service_name, key, self._tested_modules)
+                req = CfgItemReq(x.service_name, key, self._tested_modules)
                 self.incomplete_error(error_msg, missing_reqs={req})
             raise
         except PythonModuleResourceImportError as x:
@@ -247,7 +247,7 @@ class SystemJob:
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(error_msg, missing_reqs={req})
         except ConfigItemMissingError as x:
-            req = ActorReq(x.service_name, x.key, self._tested_modules)
+            req = CfgItemReq(x.service_name, x.key, self._tested_modules)
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(error_msg, missing_reqs={req})
         except IncompleteImportedObjectError as x:

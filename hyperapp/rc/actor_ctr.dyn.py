@@ -5,7 +5,7 @@ from .services import (
     )
 from .code.rc_constructor import Constructor
 from .code.config_item_resource import ConfigItemResource
-from .code.actor_req import ActorReq
+from .code.cfg_item_req import CfgItemReq
 
 
 class ActorProbeCtr(Constructor):
@@ -120,7 +120,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
         resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
         # ready target may already have provider set, but in case of
         # non-typed marker it have not.
-        req = ActorReq(self._service_name, self._t)
+        req = CfgItemReq(self._service_name, self._t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             self._service_name, self._resource_name, req,
             provider=resource_tgt,
