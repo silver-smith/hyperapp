@@ -42,7 +42,10 @@ import:
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
+- rc.import_recorder:import_recorder_config_ctl.actor-template
 - rc.import_recorder:import_recorder_import_recorder.actor-template
+- rc.import_recorder:import_recorder_reg.service
+- rc.import_record_cfg_item:import_resource_import_resource.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
@@ -145,6 +148,7 @@ definitions:
       - system.system_stop:stop_signal.service
       - system.system_stop:system_failed.service
       - rc.ctr_collector:ctr_collector.service
+      - rc.import_recorder:import_recorder_reg.service
       - rc.init_targets:ctr_from_template_creg.service
       - rc.job_cache:job_cache.service
       - rc.marker_registry:marker_registry.service
@@ -200,7 +204,14 @@ definitions:
       - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
       - rc.fixture_probe:fixture_resource_fixture_obj_template.actor-template
       - rc.fixture_probe:fixture_resource_fixture_probe_template.actor-template
+      - rc.import_record_cfg_item:import_resource_import_resource.actor-template
       - rc.service_probe_resource:service_resource_service_probe_template.actor-template
+
+  config_ctl_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.import_recorder:import_recorder_config_ctl.actor-template
 
   ctr_from_template_creg:
     type: legacy_type.system:item_list_config
@@ -345,6 +356,7 @@ definitions:
       services:
         system: system
         cfg_item_creg: cfg_item_creg
+        config_ctl_creg: config_ctl_creg
         ctr_from_template_creg: ctr_from_template_creg
         identity_registry: identity_registry
         marker_registry: marker_registry

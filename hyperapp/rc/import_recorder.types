@@ -1,7 +1,4 @@
-resource = record:
-  name: string list
-  resource: ref
-
 import_recorder = record:
-  id: string
-  resources: resource list
+  module_name: string
+
+config_ctl = record

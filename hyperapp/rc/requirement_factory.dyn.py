@@ -5,16 +5,19 @@ from .code.test_requirement import TestedCodeReq, FixturesModuleReq
 
 class RequirementFactory:
 
+    def __init__(self, required_by_module_name):
+        self._required_by_module_name = required_by_module_name
+
     def import_to_htype(self, import_path):
         pass
 
     def import_to_service(self, import_path):
         service_name = import_path[1]
-        return BuiltinServiceReq(service_name)
+        return BuiltinServiceReq(self._required_by_module_name, service_name)
 
     def import_to_code(self, import_path):
         code_name = import_path[1]
-        return PythonModuleReq(code_name)
+        return PythonModuleReq(self._required_by_module_name, code_name)
 
     def import_to_tested_code(self, import_path):
         code_name = import_path[2]

@@ -4,10 +4,11 @@ from hyperapp.common.python_importer import Finder
 
 log = logging.getLogger(__name__)
 
+from . import htypes
 from .services import (
     pyobj_creg,
-    web,
     )
+from .code.config_ctl import DictConfigCtl
 
 
 class IncompleteImportedObjectError(Exception):
@@ -73,10 +74,13 @@ class ImportRecorder(Finder, _ImportsCollector):
     _is_package = True
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, import_recorder_reg):
+        assert import_recorder_reg, import_recorder_reg
         resources = {
-            rec.name: web.summon(rec.resource)
-            for rec in piece.resources
+            rec.import_name: rec.resource
+            for module_name, rec_list in import_recorder_reg.items()
+            for rec in rec_list
+            if module_name == piece.module_name
             }
         return cls(resources)
 
@@ -119,3 +123,31 @@ class ImportRecorder(Finder, _ImportsCollector):
         rel_name = spec.name[len(self._base_module_name) + 1 :]
         resource_path = tuple(rel_name.split('.'))
         return self._get_resource(resource_path)
+
+
+class ImportRecorderConfigCtl(DictConfigCtl):
+
+    @classmethod
+    def from_piece(cls, piece, cfg_item_creg):
+        return cls(cfg_item_creg)
+
+    @property
+    def piece(self):
+        return htypes.import_recorder.config_ctl()
+
+    def merge(self, dest, src):
+        for key, value_list in src.items():
+            dest.setdefault(key, []).extend(value_list)
+
+    def update_config(self, config_template, item):
+        config_template.setdefault(item.key, []).append(item)
+
+    def resolve_item(self, system, service_name, item):
+        return [
+            item_template.resolve(system, service_name)
+            for item_template in item
+            ]
+
+
+def import_recorder_reg(config):
+    return config

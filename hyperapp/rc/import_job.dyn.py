@@ -230,8 +230,8 @@ class _Succeeded(_ImportJobResult):
 
 class _ImportJobError(Exception, _ImportJobResult):
 
-    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
-        Exception.__init__(self, error_msg)
+    def __init__(self, module_name, error_msg=None, traceback=None, missing_reqs=None):
+        Exception.__init__(self, module_name, error_msg)
         _ImportJobResult.__init__(self, error_msg, traceback, missing_reqs)
 
 
@@ -271,8 +271,7 @@ class ImportJob(SystemJob):
             )
 
     def __init__(self, python_module_src, idx, req_to_resources, system_config_piece=None):
-        super().__init__(system_config_piece, req_to_resources)
-        self._src = python_module_src
+        super().__init__(python_module_src, system_config_piece, req_to_resources)
         self._idx = idx
 
     def __repr__(self):
@@ -287,24 +286,23 @@ class ImportJob(SystemJob):
             )
 
     def run(self):
-        resources = [*enum_builtin_resources(), *flatten(self._req_to_resources.values())]
-        import_list = flatten(d.import_records for d in resources)
-        recorder_piece, module_piece = self._src.recorded_python_module(import_list)
-        recorder = pyobj_creg.animate(recorder_piece)
+        resources = [*enum_builtin_resources(self._src.name), *flatten(self._req_to_resources.values())]
+        recorder_piece, module_piece = self._src.recorded_python_module()
         system_resources = [*resources, *self._job_resources(module_piece)]
         system = None
         key_to_req = {}
+        recorder = None
+        module = None
         try:
             system = self.convert_errors(self._prepare_system, system_resources)
             key_to_req = self._make_key_to_req_map(system['cfg_item_creg'])
-            ctr_collector = system.resolve_service('ctr_collector')
+            _ = system['ctr_collector']
+            recorder = pyobj_creg.animate(recorder_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
         except _ImportJobError as x:
             result = x
-            module = None
-            constructors = None
         else:
-            result = _Succeeded()
+            result = _Succeeded(self._src.name)
         return result.make_result(recorder, module, key_to_req, system)
 
     def _job_resources(self, module_piece):
@@ -319,7 +317,7 @@ class ImportJob(SystemJob):
             )
 
     def incomplete_error(self, error_msg, traceback=None, missing_reqs=None):
-        raise _IncompleteError(error_msg, traceback[:-1] if traceback else None, missing_reqs)
+        raise _IncompleteError(self._src.name, error_msg, traceback[:-1] if traceback else None, missing_reqs)
 
     def failed_error(self, error_msg, traceback):
-        raise _FailedError(error_msg, traceback)
+        raise _FailedError(self._src.name, error_msg, traceback)

@@ -1,4 +1,3 @@
-from . import htypes
 from .services import (
     builtin_service_resource_loader,
     builtin_types_as_dict,

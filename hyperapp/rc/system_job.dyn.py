@@ -54,16 +54,16 @@ class SystemJobResult(JobResult):
 
 class Result:
 
-    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
+    def __init__(self, module_name, error_msg=None, traceback=None, missing_reqs=None):
+        self._module_name = module_name
         self._error_msg = error_msg
         self._traceback = traceback or []
         self._missing_reqs = missing_reqs or set()
 
-    @staticmethod
-    def _imports_to_requirements(import_set):
+    def _imports_to_requirements(self, import_set):
         req_set = set()
         for import_path in import_set:
-            req = RequirementFactory().requirement_from_import(import_path)
+            req = RequirementFactory(self._module_name).requirement_from_import(import_path)
             if req:
                 req_set.add(req)
         return req_set
@@ -104,7 +104,8 @@ class SystemJob:
             req_to_resources[req].add(resource)
         return dict(req_to_resources)
 
-    def __init__(self, system_config_piece, req_to_resources):
+    def __init__(self, python_module_src, system_config_piece, req_to_resources):
+        self._src = python_module_src
         self._system_config_piece = system_config_piece  # Used only from 'run' method, inside job process.
         self._req_to_resources = req_to_resources
         self._tested_modules = []
@@ -219,7 +220,7 @@ class SystemJob:
             message = str(x)
         error_msg = f"{type(x).__name__}: {message}"
         if isinstance(x, IncompleteImportedObjectError):
-            req = RequirementFactory().requirement_from_import(x.path)
+            req = RequirementFactory(self._src.name).requirement_from_import(x.path)
             self.incomplete_error(error_msg, traceback_lines[:-1], missing_reqs={req})
         else:
             self.failed_error(error_msg, traceback_lines)

@@ -1,2 +1,3 @@
 python_module_req = record:
+  required_by_module_name: string
   code_name: string

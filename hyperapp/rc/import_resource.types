@@ -1,3 +1,4 @@
 import_resource = record:
+  module_name: string
   import_name: string list
   resource: ref

@@ -11,7 +11,6 @@ import:
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.import_recorder:import_recorder
-- legacy_type.import_recorder:resource
 
 definitions:
 
@@ -27,7 +26,6 @@ definitions:
         htypes.builtin.import_rec: legacy_type.builtin:import_rec
         htypes.builtin.python_module: legacy_type.builtin:python_module
         htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
-        htypes.import_recorder.resource: legacy_type.import_recorder:resource
         services.builtin_types: builtins:builtin_types.service
         services.local_types: builtins:local_types.service
         services.hyperapp_dir: builtins:hyperapp_dir.service

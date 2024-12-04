@@ -1,0 +1,40 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.import_resource:import_resource
+- legacy_type.system:actor_template
+
+definitions:
+
+  import_record_cfg_item.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: import_record_cfg_item
+      file_name: import_record_cfg_item.dyn.py
+      import_list:
+        htypes.import_resource.import_resource: legacy_type.import_resource:import_resource
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
+
+  ImportRecordCfgItem:
+    type: legacy_type.builtin:attribute
+    value:
+      object: import_record_cfg_item.module
+      attr_name: ImportRecordCfgItem
+
+  ImportRecordCfgItem.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ImportRecordCfgItem
+      attr_name: from_piece
+
+  import_resource_import_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.import_resource:import_resource
+      function: ImportRecordCfgItem.from_piece
+      service_params: []

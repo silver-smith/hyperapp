@@ -9,15 +9,22 @@ from .code.import_resource import ImportResource
 @dataclass(frozen=True, unsafe_hash=True)
 class BuiltinServiceReq(Requirement):
 
+    required_by_module_name: str
     service_name: str
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.service_name)
+        return cls(
+            required_by_module_name=piece.required_by_module_name,
+            service_name=piece.service_name,
+            )
 
     @property
     def piece(self):
-        return htypes.builtin_service.builtin_service_req(self.service_name)
+        return htypes.builtin_service.builtin_service_req(
+            required_by_module_name=self.required_by_module_name,
+            service_name=self.service_name,
+            )
 
     @property
     def is_builtin(self):
@@ -27,7 +34,7 @@ class BuiltinServiceReq(Requirement):
         return target_factory.builtin_service(self.service_name)
 
     def make_resource(self, target):
-        return ImportResource(['services', self.service_name], target.service_piece)
+        return ImportResource(self.required_by_module_name, ['services', self.service_name], target.service_piece)
 
 
 class BuiltinServiceTarget(Target):

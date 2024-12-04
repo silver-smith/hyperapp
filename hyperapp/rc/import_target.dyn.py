@@ -142,15 +142,15 @@ class ImportJobTarget(Target):
         result = defaultdict(set)
         for src in self._types.as_list:
             req = TypeReq.from_type_src(src)
-            result[req] = {ImportResource.from_type_src(src)}
+            result[req] = {ImportResource.from_type_src(self._src.name, src)}
         for req, target in self._req_to_target.items():
             result[req] |= set(req.make_resource_list(target))
         for req, resource_set in self._config_tgt.ready_req_to_resources().items():
             result[req] |= resource_set
         # Some modules, like common.mark, are used before all imports are stated.
         for target in self._target_set.completed_python_module_resources:
-            req = PythonModuleReq(target.code_name)
-            result[req] = {ImportResource(['code', target.code_name], target.python_module_piece)}
+            req = PythonModuleReq(self._src.name, target.code_name)
+            result[req] = {ImportResource(self._src.name, ['code', target.code_name], target.python_module_piece)}
         return dict(result)
 
     def handle_job_result(self, target_set, result):
@@ -286,21 +286,19 @@ class ImportTarget(Target):
     @cached_property
     def recorded_python_module(self):
         assert self._completed
-        import_list = flatten(d.import_records for d in self._enum_resources())
-        recorder_piece, module_piece = self._src.recorded_python_module(import_list)
+        recorder_piece, module_piece = self._src.recorded_python_module()
         return (self._src.name, recorder_piece, module_piece)
 
     @property
     def test_resources(self):
-        module_name, recorder_piece, python_module = self.recorded_python_module
-        return set(
-            ctr.make_resource(self._types, self._src.name, python_module)
-            for ctr in self._test_constructors
-            )
+        return set(self._enum_test_resources())
 
-    def _enum_resources(self):
-        yield from enum_builtin_resources()
+    def _enum_test_resources(self):
+        yield from enum_builtin_resources(self._src.name)
         for src in self._types.as_list:
-            yield ImportResource.from_type_src(src)
+            yield ImportResource.from_type_src(self._src.name, src)
         for req, target in self._req_to_target.items():
             yield from req.make_resource_list(target)
+        module_name, recorder_piece, python_module = self.recorded_python_module
+        for ctr in self._test_constructors:
+            yield ctr.make_resource(self._types, self._src.name, python_module)

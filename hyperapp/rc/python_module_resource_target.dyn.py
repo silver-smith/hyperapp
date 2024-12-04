@@ -18,15 +18,22 @@ rc_log = logging.getLogger('rc')
 @dataclass(frozen=True, unsafe_hash=True)
 class PythonModuleReq(Requirement):
 
+    required_by_module_name: str
     code_name: str
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.code_name)
+        return cls(
+            required_by_module_name=piece.required_by_module_name,
+            code_name=piece.code_name,
+            )
 
     @property
     def piece(self):
-        return htypes.python_module_resource_target.python_module_req(self.code_name)
+        return htypes.python_module_resource_target.python_module_req(
+            required_by_module_name=self.required_by_module_name,
+            code_name=self.code_name,
+            )
 
     @property
     def desc(self):
@@ -36,7 +43,7 @@ class PythonModuleReq(Requirement):
         return target_factory.python_module_resource_by_code_name(self.code_name)
 
     def make_resource(self, target):
-        return ImportResource(['code', self.code_name], target.python_module_piece)
+        return ImportResource(self.required_by_module_name, ['code', self.code_name], target.python_module_piece)
 
 
 class PythonModuleResourceTarget(Target):

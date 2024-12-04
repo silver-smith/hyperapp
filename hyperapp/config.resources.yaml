@@ -76,6 +76,7 @@ import:
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
+- rc.import_recorder:import_recorder_reg.service
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.job_cache:job_cache.service
@@ -575,6 +576,7 @@ definitions:
       - rc.htest.sample_service_1:sample_value_service_1.service
       - rc.htest.sample_service_2:sample_fn_service_2.service
       - rc.htest.sample_service_2:sample_value_service_2.service
+      - rc.import_recorder:import_recorder_reg.service
       - rc.init_targets:ctr_from_template_creg.service
       - rc.job_cache:job_cache.service
       - rc.marker_registry:marker_registry.service
