@@ -21,7 +21,7 @@ class RequirementFactory:
 
     def import_to_tested_code(self, import_path):
         code_name = import_path[2]
-        return TestedCodeReq(import_path, code_name)
+        return TestedCodeReq(self._required_by_module_name, import_path, code_name)
 
     def import_to_fixtures_module(self, import_path):
         code_name = import_path[1]

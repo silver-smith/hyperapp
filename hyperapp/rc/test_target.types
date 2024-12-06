@@ -1,4 +1,5 @@
 tested_code_req = record:
+  test_module_name: string
   import_path: string list
   code_name: string
 
@@ -7,7 +8,8 @@ fixtures_module_req = record:
   code_name: string
 
 tested_code_resource = record:
-  module_name: string
+  test_module_name: string
+  tested_module_name: string
   import_name: string list
   module: ref
 

@@ -15,16 +15,25 @@ from .code.python_module_resource_target import PythonModuleResourceTarget
 @dataclass(frozen=True, unsafe_hash=True)
 class TestedCodeReq(Requirement):
 
+    test_module_name: str
     import_path: tuple[str]
     code_name: str
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.import_path, piece.code_name)
+        return cls(
+            test_module_name=piece.test_module_name,
+            import_path=piece.import_path,
+            code_name=piece.code_name,
+            )
 
     @property
     def piece(self):
-        return htypes.test_target.tested_code_req(self.import_path, self.code_name)
+        return htypes.test_target.tested_code_req(
+            test_module_name=self.test_module_name,
+            import_path=self.import_path,
+            code_name=self.code_name,
+            )
 
     def get_target(self, target_factory):
         try:
@@ -69,7 +78,8 @@ class TestedCodeReq(Requirement):
                 )
             resources = [*target.test_resources, recorder_res, module_marker]
         tested_code_res = TestedCodeResource(
-            module_name=module_name,
+            test_module_name=self.test_module_name,
+            tested_module_name=module_name,
             import_name=self.import_path,
             module_piece=module_piece,
             )
@@ -109,45 +119,57 @@ class TestedCodeResource(Resource):
     @classmethod
     def from_piece(cls, piece):
         return cls(
-            module_name=piece.module_name,
+            test_module_name=piece.test_module_name,
+            tested_module_name=piece.tested_module_name,
             import_name=piece.import_name,
             module_piece=web.summon(piece.module),
             )
 
-    def __init__(self, module_name, import_name, module_piece):
-        self._module_name = module_name
+    def __init__(self, test_module_name, tested_module_name, import_name, module_piece):
+        self._test_module_name = test_module_name
+        self._tested_module_name = tested_module_name
         self._import_name = import_name
         self._module_piece = module_piece
 
     def __eq__(self, rhs):
         return (
             self.__class__ is rhs.__class__
-            and self._module_name == rhs._module_name
+            and self._test_module_name == rhs._test_module_name
+            and self._tested_module_name == rhs._tested_module_name
             and self._import_name == rhs._import_name
             and self._module_piece == rhs._module_piece
             )
 
     def __hash__(self):
-        return hash(('tested-code-resource', self._module_name, self._import_name, self._module_piece))
+        return hash((
+            'tested-code-resource',
+            self._test_module_name,
+            self._tested_module_name,
+            self._import_name,
+            self._module_piece,
+            ))
 
     @property
     def piece(self):
         return htypes.test_target.tested_code_resource(
-            module_name=self._module_name,
+            test_module_name=self._test_module_name,
+            tested_module_name=self._tested_module_name,
             import_name=tuple(self._import_name),
             module=mosaic.put(self._module_piece),
             )
 
     @property
-    def import_records(self):
-        return [htypes.builtin.import_rec(
-            full_name='.'.join(self._import_name),
+    def system_config_items(self):
+        cfg_item = htypes.import_resource.import_resource(
+            module_name=self._test_module_name,
+            import_name=self._import_name,
             resource=mosaic.put(self._module_piece),
-            )]
+            )
+        return {'import_recorder_reg': [cfg_item]}
 
     @property
     def tested_modules(self):
-        return [self._module_name]
+        return [self._tested_module_name]
 
 
 class RecorderResource(Resource):

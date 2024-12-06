@@ -6,6 +6,7 @@ import:
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.ctr_collector:mark_module_cfg_item
+- legacy_type.import_resource:import_resource
 - legacy_type.system:actor_template
 - legacy_type.test_target:constructors_picker_resource
 - legacy_type.test_target:recorder_resource
@@ -27,6 +28,7 @@ definitions:
       import_list:
         htypes.builtin.import_rec: legacy_type.builtin:import_rec
         htypes.ctr_collector.mark_module_cfg_item: legacy_type.ctr_collector:mark_module_cfg_item
+        htypes.import_resource.import_resource: legacy_type.import_resource:import_resource
         htypes.test_target.constructors_picker_resource: legacy_type.test_target:constructors_picker_resource
         htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
         htypes.test_target.fixtures_module_req: legacy_type.test_target:fixtures_module_req

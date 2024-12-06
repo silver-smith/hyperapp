@@ -215,9 +215,9 @@ class _Succeeded(_TestJobResult):
 
 class _TestJobError(Exception, _TestJobResult):
 
-    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
+    def __init__(self, module_name, error_msg=None, traceback=None, missing_reqs=None):
         Exception.__init__(self, error_msg)
-        _TestJobResult.__init__(self, error_msg, traceback, missing_reqs)
+        _TestJobResult.__init__(self, module_name, error_msg, traceback, missing_reqs)
 
 
 class _IncompleteError(_TestJobError):
@@ -273,17 +273,17 @@ class TestJob(SystemJob):
             )
 
     def run(self):
-        resources = [*enum_builtin_resources(), *flatten(self._req_to_resources.values())]
-        import_list = flatten(d.import_records for d in resources)
-        recorder_piece, module_piece = self._src.recorded_python_module(import_list)
-        recorder = pyobj_creg.animate(recorder_piece)
+        resources = [*enum_builtin_resources(self._src.name), *flatten(self._req_to_resources.values())]
+        recorder_piece, module_piece = self._src.recorded_python_module()
         system_resources = [*resources, *self._job_resources(module_piece)]
         system = None
         key_to_req = {}
+        recorder = None
         try:
             system = self.convert_errors(self._prepare_system, system_resources)
             key_to_req = self._make_key_to_req_map(system['cfg_item_creg'])
             ctr_collector = system['ctr_collector']
+            recorder = pyobj_creg.animate(recorder_piece)
             ctr_collector.ignore_module(module_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
             root_probe = self._make_root_fixture(system, module_piece, module)
@@ -292,7 +292,7 @@ class TestJob(SystemJob):
         except _TestJobError as x:
             result = x
         else:
-            result = _Succeeded()
+            result = _Succeeded(self._src.name)
         return result.make_result(system_resources, recorder, key_to_req, system)
 
     @property
@@ -325,10 +325,10 @@ class TestJob(SystemJob):
             rpc_servant_wrapper.reset()
 
     def incomplete_error(self, error_msg, traceback=None, missing_reqs=None):
-        raise _IncompleteError(error_msg, traceback[:-1] if traceback else None, missing_reqs)
+        raise _IncompleteError(self._src.name, error_msg, traceback[:-1] if traceback else None, missing_reqs)
 
     def failed_error(self, error_msg, traceback):
-        raise _FailedError(error_msg, traceback)
+        raise _FailedError(self._src.name, error_msg, traceback)
 
     def _wrap_rpc_servant(self, servant_ref, kw):
         wrapped_servant_ref = pyobj_creg.actor_to_ref(rpc_servant_wrapper)

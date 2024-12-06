@@ -69,7 +69,10 @@ class Result:
         return req_set
 
     def _missing_requirements(self, recorder):
-        import_reqs = self._imports_to_requirements(recorder.missing_imports)
+        if recorder:
+            import_reqs = self._imports_to_requirements(recorder.missing_imports)
+        else:
+            import_reqs = set()
         return self._missing_reqs | import_reqs
 
     def _used_system_reqs(self, key_to_req, system):
@@ -84,7 +87,10 @@ class Result:
         return result
 
     def _used_requirements(self, recorder, key_to_req, system):
-        import_reqs = self._imports_to_requirements(recorder.used_imports)
+        if recorder:
+            import_reqs = self._imports_to_requirements(recorder.used_imports)
+        else:
+            import_reqs = set()
         system_reqs = self._used_system_reqs(key_to_req, system)
         return set(req for req in system_reqs | import_reqs if not req.is_builtin)
 

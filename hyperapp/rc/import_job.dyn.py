@@ -231,8 +231,8 @@ class _Succeeded(_ImportJobResult):
 class _ImportJobError(Exception, _ImportJobResult):
 
     def __init__(self, module_name, error_msg=None, traceback=None, missing_reqs=None):
-        Exception.__init__(self, module_name, error_msg)
-        _ImportJobResult.__init__(self, error_msg, traceback, missing_reqs)
+        Exception.__init__(self, error_msg)
+        _ImportJobResult.__init__(self, module_name, error_msg, traceback, missing_reqs)
 
 
 class _IncompleteError(_ImportJobError):
