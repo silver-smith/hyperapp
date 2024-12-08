@@ -283,10 +283,9 @@ class ImportTarget(Target):
         self._target_set.add(test_target)
         test_target.check_cache()
 
-    @cached_property
-    def recorded_python_module(self):
+    def recorded_python_module(self, tag=''):
         assert self._completed
-        recorder_piece, module_piece = self._src.recorded_python_module(tag='import')
+        recorder_piece, module_piece = self._src.recorded_python_module(tag)
         return (self._src.name, recorder_piece, module_piece)
 
     @property
@@ -299,6 +298,6 @@ class ImportTarget(Target):
             yield ImportResource.from_type_src(self._src.name, src)
         for req, target in self._req_to_target.items():
             yield from req.make_resource_list(target)
-        module_name, recorder_piece, python_module = self.recorded_python_module
+        module_name, recorder_piece, python_module = self.recorded_python_module(tag='test')
         for ctr in self._test_constructors:
             yield ctr.make_resource(self._types, self._src.name, python_module)

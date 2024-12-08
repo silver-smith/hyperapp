@@ -63,7 +63,7 @@ class TestedCodeReq(Requirement):
             module_piece = target.python_module_piece
             resources = []
         else:
-            module_name, recorder_piece, module_piece = target.recorded_python_module
+            module_name, recorder_piece, module_piece = target.recorded_python_module(tag='test')
             recorder_res = RecorderResource(
                 recorder_module_name=module_name,
                 recorder_piece=recorder_piece,
