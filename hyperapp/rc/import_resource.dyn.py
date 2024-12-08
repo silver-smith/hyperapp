@@ -46,5 +46,12 @@ class ImportResource(Resource):
             )
 
     @property
+    def import_records(self):
+        return [htypes.builtin.import_rec(
+            full_name='.'.join(self._import_name),
+            resource=mosaic.put(self._resource),
+            )]
+
+    @property
     def system_config_items(self):
         return {'import_recorder_reg': [self.piece]}
