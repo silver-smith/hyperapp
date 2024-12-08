@@ -287,7 +287,7 @@ class ImportJob(SystemJob):
 
     def run(self):
         resources = [*enum_builtin_resources(self._src.name), *flatten(self._req_to_resources.values())]
-        recorder_piece, module_piece = self._src.recorded_python_module()
+        recorder_piece, module_piece = self._src.recorded_python_module(tag='import')
         system_resources = [*resources, *self._job_resources(module_piece)]
         system = None
         key_to_req = {}

@@ -286,7 +286,7 @@ class ImportTarget(Target):
     @cached_property
     def recorded_python_module(self):
         assert self._completed
-        recorder_piece, module_piece = self._src.recorded_python_module()
+        recorder_piece, module_piece = self._src.recorded_python_module(tag='import')
         return (self._src.name, recorder_piece, module_piece)
 
     @property

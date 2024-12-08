@@ -1,4 +1,5 @@
 import_recorder = record:
   module_name: string
+  tag: string
 
 config_ctl = record

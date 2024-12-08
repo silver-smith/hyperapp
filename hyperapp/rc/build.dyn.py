@@ -48,8 +48,8 @@ class PythonModuleSrc:
             import_list=tuple(import_list),
             )
 
-    def recorded_python_module(self):
-        recorder = htypes.import_recorder.import_recorder(self.name)
+    def recorded_python_module(self, tag):
+        recorder = htypes.import_recorder.import_recorder(self.name, tag)
         recorder_import_list = [
             htypes.builtin.import_rec('*', mosaic.put(recorder)),
             ]
