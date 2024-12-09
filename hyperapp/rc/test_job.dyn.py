@@ -195,7 +195,10 @@ def test_subprocess_rpc_main(connection, received_refs, system_config_piece, roo
 class _TestJobResult(Result):
 
     @staticmethod
-    def _used_imports(resources):
+    def _used_imports(resources, system):
+        if not system:
+            # Without system recorders will be created without resources and cached by pyobj_creg.
+            return {}
         recorder_dict = merge_dicts(d.recorders for d in resources)
         return {
             module_name: recorder.used_imports
@@ -208,7 +211,7 @@ class _Succeeded(_TestJobResult):
     def make_result(self, resources, recorder, key_to_req, system):
         return SucceededTestResult(
             used_reqs=self._used_requirements(recorder, key_to_req, system),
-            used_imports=self._used_imports(resources),
+            used_imports=self._used_imports(resources, system),
             constructors=self._constructors(system),
             )
 
@@ -226,7 +229,7 @@ class _IncompleteError(_TestJobError):
         return IncompleteTestResult(
             missing_reqs=self._missing_requirements(recorder),
             used_reqs=self._used_requirements(recorder, key_to_req, system),
-            used_imports=self._used_imports(resources),
+            used_imports=self._used_imports(resources, system),
             error=self._error_msg,
             traceback=self._traceback,
             )
