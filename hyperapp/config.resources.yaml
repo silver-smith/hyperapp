@@ -76,6 +76,8 @@ import:
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
+- rc.import_record_cfg_item:import_resource_import_resource.actor-template
+- rc.import_recorder:import_recorder_config_ctl.actor-template
 - rc.import_recorder:import_recorder_reg.service
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
@@ -298,6 +300,7 @@ definitions:
       - rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
       - rc.fixture_probe:fixture_resource_fixture_obj_template.actor-template
       - rc.fixture_probe:fixture_resource_fixture_probe_template.actor-template
+      - rc.import_record_cfg_item:import_resource_import_resource.actor-template
       - rc.marker_registry:marker_marker_template.actor-template
       - rc.service_probe_resource:service_resource_service_probe_template.actor-template
       - ui.command_cfg_item:command_cfg_item.actor-template
@@ -354,6 +357,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - rc.import_recorder:import_recorder_config_ctl.actor-template
       - ui.command_config_ctl:command_typed_config_ctl.actor-template
       - ui.command_config_ctl:command_untyped_config_ctl.actor-template
   ctr_from_template_creg:
