@@ -275,7 +275,7 @@ class ImportJob(SystemJob):
         self._idx = idx
 
     def __repr__(self):
-        return f"<ImportJob {self._src}/{self._idx}>"
+        return f"<ImportJob {self._src.name}/{self._idx}>"
 
     @cached_property
     def piece(self):

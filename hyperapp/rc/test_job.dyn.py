@@ -264,7 +264,7 @@ class TestJob(SystemJob):
         self._test_fn_name = test_fn_name
 
     def __repr__(self):
-        return f"<TestJob {self._src}/{self._test_fn_name}/{self._idx}>"
+        return f"<TestJob {self._src.name}/{self._test_fn_name}/{self._idx}>"
 
     @cached_property
     def piece(self):
