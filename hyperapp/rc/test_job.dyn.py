@@ -170,7 +170,7 @@ def _catch_errors(fn, **kw):
         t_ref = pyobj_creg.actor_to_ref(x.key)
         raise htypes.rc_job.config_item_missing_error(x.service_name, t_ref) from x
     except Exception as x:
-        raise RuntimeError(f"In test servant {servant}: {x}") from x
+        raise RuntimeError(f"In test servant {fn}: {x}") from x
 
 
 def rpc_servant_wrapper(_real_servant_ref, **kw):
