@@ -104,7 +104,6 @@ def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, 
     job_id_to_target = {}
     failures = {}
     incomplete = {}
-    should_run = True
 
     def _handle_result(job, result_piece):
         target = job_id_to_target[id(job)]
@@ -112,8 +111,6 @@ def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, 
         rc_log.info("%s: %s", target.name, result.desc)
         if result.status == JobStatus.failed:
             failures[target] = result
-            if options.fail_fast:
-                should_run = False
         else:
             target.handle_job_result(target_set, result)
         if result.status == JobStatus.incomplete:
@@ -126,7 +123,9 @@ def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, 
                 for req in result.used_reqs
                 }
             job_cache.put(cache_target_name, target.src, deps, result)
+        return result
 
+    should_run = True
     while should_run:
         _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter)
         if target_set.all_completed:
@@ -136,9 +135,9 @@ def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, 
             rc_log.info("Not all targets are completed, but there are no jobs\n")
             break
         for job, result_piece in pool.iter_completed(options.timeout):
-            _handle_result(job, result_piece)
-            if not should_run:
-                break
+            result = _handle_result(job, result_piece)
+            if result.status == JobStatus.failed and options.fail_fast:
+                should_run = False
         target_set.update_statuses()
         if options.check:
             target_set.check_statuses()
