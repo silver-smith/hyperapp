@@ -218,7 +218,9 @@ class SystemJob:
                 line_list += [line + '\n' for line in entry.splitlines()]
         return line_list
 
-    def _raise_error(self, x):
+    def _raise_error(self, x, module_name=None):
+        if not module_name:
+            module_name = self._src.name
         traceback_lines = self._prepare_traceback(x)
         if isinstance(x, htypes.rpc.server_error):
             message = x.message
@@ -226,43 +228,44 @@ class SystemJob:
             message = str(x)
         error_msg = f"{type(x).__name__}: {message}"
         if isinstance(x, IncompleteImportedObjectError):
-            req = RequirementFactory(self._src.name).requirement_from_import(x.path)
-            self.incomplete_error(error_msg, traceback_lines[:-1], missing_reqs={req})
+            req = RequirementFactory(module_name).requirement_from_import(x.path)
+            self.incomplete_error(module_name, error_msg, traceback_lines[:-1], missing_reqs={req})
         else:
-            self.failed_error(error_msg, traceback_lines)
+            self.failed_error(module_name, error_msg, traceback_lines)
 
     def _raise_import_error(self, x):
         self._raise_error(x.original_error)
 
     def convert_errors(self, fn, *args, **kw):
+        module_name = self._src.name
         try:
             return fn(*args, **kw)
         except HException as x:
             error_msg = f"{type(x).__name__}: {x}"
             if isinstance(x, htypes.rc_job.unknown_service_error):
                 req = ServiceReq(x.service_name)
-                self.incomplete_error(error_msg, missing_reqs={req})
+                self.incomplete_error(module_name, error_msg, missing_reqs={req})
             if isinstance(x, htypes.rc_job.config_item_missing_error):
                 key = pyobj_creg.invite(x.t)
                 req = CfgItemReq(x.service_name, key, self._tested_modules)
-                self.incomplete_error(error_msg, missing_reqs={req})
+                self.incomplete_error(module_name, error_msg, missing_reqs={req})
             raise
         except PythonModuleResourceImportError as x:
             self._raise_import_error(x)
         except UnknownServiceError as x:
             req = ServiceReq(x.service_name)
             error_msg = f"{type(x).__name__}: {x}"
-            self.incomplete_error(error_msg, missing_reqs={req})
+            self.incomplete_error(module_name, error_msg, missing_reqs={req})
         except ConfigItemMissingError as x:
             req = CfgItemReq(x.service_name, x.key, self._tested_modules)
             error_msg = f"{type(x).__name__}: {x}"
-            self.incomplete_error(error_msg, missing_reqs={req})
+            self.incomplete_error(module_name, error_msg, missing_reqs={req})
         except IncompleteImportedObjectError as x:
             if list(x.path[:1]) == ['htypes']:
                 path = '.'.join(x.path)
                 error_msg = f"Unknown type: {path}" 
                 traceback = self._prepare_traceback(x)[:-1]
-                self.failed_error(error_msg, traceback)
+                self.failed_error(module_name, error_msg, traceback)
             else:
                 self._raise_error(x)
         except BaseException as x:

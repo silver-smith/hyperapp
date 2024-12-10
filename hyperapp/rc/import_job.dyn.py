@@ -316,8 +316,8 @@ class ImportJob(SystemJob):
             template_ref=mosaic.put(mark_module_item),
             )
 
-    def incomplete_error(self, error_msg, traceback=None, missing_reqs=None):
-        raise _IncompleteError(self._src.name, error_msg, traceback[:-1] if traceback else None, missing_reqs)
+    def incomplete_error(self, module_name, error_msg, traceback=None, missing_reqs=None):
+        raise _IncompleteError(module_name, error_msg, traceback[:-1] if traceback else None, missing_reqs)
 
-    def failed_error(self, error_msg, traceback):
-        raise _FailedError(self._src.name, error_msg, traceback)
+    def failed_error(self, module_name, error_msg, traceback):
+        raise _FailedError(module_name, error_msg, traceback)
