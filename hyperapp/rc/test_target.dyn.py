@@ -4,6 +4,7 @@ from collections import defaultdict
 from .code.rc_target import Target
 from .code.type_req import TypeReq
 from .code.import_resource import ImportResource
+from .code.python_module_resource_target import PythonModuleReq
 from .code.test_job import TestJob
 
 rc_log = logging.getLogger('rc')
@@ -132,6 +133,11 @@ class TestJobTarget(Target):
             result[req] = {ImportResource.from_type_src(src)}
         for req, target in self._req_to_target.items():
             result[req] |= set(req.make_resource_list(target))
+            for aux_req, aux_target in req.aux_requirements(target, self._target_set).items():
+                result[aux_req] |= set(aux_req.make_resource_list(aux_target))
+        for target in self._target_set.completed_python_module_resources:
+            req = PythonModuleReq(self._src.name, target.code_name)
+            result[req] = {ImportResource(self._src.name, ['code', target.code_name], target.python_module_piece)}
         for req, resource_set in self._config_tgt.ready_req_to_resources().items():
             result[req] |= resource_set
         return dict(result)

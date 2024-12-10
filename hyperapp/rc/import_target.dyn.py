@@ -288,23 +288,10 @@ class ImportTarget(Target):
         return (self._src.name, recorder_piece, module_piece)
 
     @property
-    def own_resources(self):
-        return set(self._enum_own_resources())
-
-    @property
     def test_resources(self):
-        return set((
-            *self._enum_completed_modules_resources(),
-            *self._enum_own_resources(),
-            ))
+        return set(self._enum_test_resources())
 
-    def _enum_completed_modules_resources(self):
-        # Some modules, like common.mark, are used before all imports are stated.
-        for target in self._target_set.completed_python_module_resources:
-            req = PythonModuleReq(self._src.name, target.code_name)
-            yield ImportResource(self._src.name, ['code', target.code_name], target.python_module_piece)
-
-    def _enum_own_resources(self):
+    def _enum_test_resources(self):
         module_name, recorder_piece, python_module = self.recorded_python_module(tag='test')
         for ctr in self._test_constructors:
             yield ctr.make_resource(self._types, self._src.name, python_module)

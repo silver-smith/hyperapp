@@ -22,3 +22,6 @@ class Requirement:
     def make_resource_list(self, target):
         resource = self.make_resource(target)
         return [resource]
+
+    def aux_requirements(self, target, target_set):
+        return {}

@@ -9,7 +9,7 @@ from .services import (
 from .code.rc_requirement import Requirement
 from .code.rc_resource import Resource
 from .code.config_item_resource import ConfigItemResource
-from .code.python_module_resource_target import PythonModuleResourceTarget
+from .code.python_module_resource_target import PythonModuleReq, PythonModuleResourceTarget
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -85,6 +85,12 @@ class TestedCodeReq(Requirement):
             )
         return [*resources, tested_code_res]
 
+    def aux_requirements(self, target, target_set):
+        return {
+            PythonModuleReq(target.module_name, tgt.code_name): tgt
+            for tgt in target_set.completed_python_module_resources
+            }
+
 
 @dataclass(frozen=True, unsafe_hash=True)
 class FixturesModuleReq(Requirement):
@@ -112,6 +118,12 @@ class FixturesModuleReq(Requirement):
 
     def make_resource_list(self, target):
         return target.test_resources
+
+    def aux_requirements(self, target, target_set):
+        return {
+            PythonModuleReq(target.module_name, tgt.code_name): tgt
+            for tgt in target_set.completed_python_module_resources
+            }
 
 
 class TestedCodeResource(Resource):
