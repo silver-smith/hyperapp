@@ -37,4 +37,4 @@ class TestModuleResourcesReq(Requirement):
         return target_factory.python_module_imported_by_module_name(self._module_name)
 
     def make_resource_list(self, target):
-        return target.test_resources
+        return target.own_resources

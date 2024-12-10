@@ -6,7 +6,6 @@ from hyperapp.common.util import flatten
 
 from .code.rc_target import Target
 from .code.type_req import TypeReq
-from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 from .code.test_target import TestTarget
@@ -289,15 +288,23 @@ class ImportTarget(Target):
         return (self._src.name, recorder_piece, module_piece)
 
     @property
-    def test_resources(self):
-        return set(self._enum_test_resources())
+    def own_resources(self):
+        return set(self._enum_own_resources())
 
-    def _enum_test_resources(self):
-        yield from enum_builtin_resources(self._src.name)
-        for src in self._types.as_list:
-            yield ImportResource.from_type_src(self._src.name, src)
-        for req, target in self._req_to_target.items():
-            yield from req.make_resource_list(target)
+    @property
+    def test_resources(self):
+        return set((
+            *self._enum_completed_modules_resources(),
+            *self._enum_own_resources(),
+            ))
+
+    def _enum_completed_modules_resources(self):
+        # Some modules, like common.mark, are used before all imports are stated.
+        for target in self._target_set.completed_python_module_resources:
+            req = PythonModuleReq(self._src.name, target.code_name)
+            yield ImportResource(self._src.name, ['code', target.code_name], target.python_module_piece)
+
+    def _enum_own_resources(self):
         module_name, recorder_piece, python_module = self.recorded_python_module(tag='test')
         for ctr in self._test_constructors:
             yield ctr.make_resource(self._types, self._src.name, python_module)
