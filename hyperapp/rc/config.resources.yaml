@@ -42,7 +42,6 @@ import:
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
-- rc.import_recorder:import_recorder_config_ctl.actor-template
 - rc.import_recorder:import_recorder_import_recorder.actor-template
 - rc.import_recorder:import_recorder_reg.service
 - rc.import_record_cfg_item:import_resource_import_resource.actor-template
@@ -207,12 +206,6 @@ definitions:
       - rc.import_record_cfg_item:import_resource_import_resource.actor-template
       - rc.service_probe_resource:service_resource_service_probe_template.actor-template
 
-  config_ctl_creg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - rc.import_recorder:import_recorder_config_ctl.actor-template
-
   ctr_from_template_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -356,7 +349,6 @@ definitions:
       services:
         system: system
         cfg_item_creg: cfg_item_creg
-        config_ctl_creg: config_ctl_creg
         ctr_from_template_creg: ctr_from_template_creg
         identity_registry: identity_registry
         marker_registry: marker_registry

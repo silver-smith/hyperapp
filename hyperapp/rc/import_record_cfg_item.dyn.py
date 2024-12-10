@@ -1,14 +1,9 @@
-from collections import namedtuple
-
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
     web,
     )
-
-
-ImportRecord = namedtuple('ImportRecord', 'import_name resource')
 
 
 class ImportRecordCfgItem:
@@ -36,7 +31,7 @@ class ImportRecordCfgItem:
 
     @property
     def key(self):
-        return self._module_name
+        return (self._module_name, self._import_name)
 
     def resolve(self, system, service_name):
-        return ImportRecord(self._import_name, self._resource)
+        return self._resource

@@ -6,7 +6,7 @@ import:
 - legacy_type.import_recorder:config_ctl
 - legacy_type.system:actor_template
 - legacy_type.system:service_template
-- system.config_ctl:config_ctl.module
+- system.system:dict_config_ctl
 
 definitions:
 
@@ -18,7 +18,6 @@ definitions:
       import_list:
         htypes.import_recorder.config_ctl: legacy_type.import_recorder:config_ctl
         services.pyobj_creg: builtins:pyobj_creg.service
-        code.config_ctl: system.config_ctl:config_ctl.module
 
   ImportRecorder:
     type: legacy_type.builtin:attribute
@@ -46,35 +45,11 @@ definitions:
       object: import_recorder.module
       attr_name: import_recorder_reg
 
-  ImportRecorderConfigCtl:
-    type: legacy_type.builtin:attribute
-    value:
-      object: import_recorder.module
-      attr_name: ImportRecorderConfigCtl
-
-  ImportRecorderConfigCtl.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ImportRecorderConfigCtl
-      attr_name: from_piece
-
-  import_recorder_config_ctl.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.import_recorder:config_ctl
-      function: ImportRecorderConfigCtl.from_piece
-      service_params:
-      - cfg_item_creg
-
-  import_recorder.config_ctl:
-    type: legacy_type.import_recorder:config_ctl
-    value: {}
-
   import_recorder_reg.service:
     type: legacy_type.system:service_template
     value:
       name: import_recorder_reg
-      ctl: import_recorder.config_ctl
+      ctl: system.system:dict_config_ctl
       function: import_recorder_reg
       free_params: []
       service_params: []

@@ -77,7 +77,6 @@ import:
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
 - rc.import_record_cfg_item:import_resource_import_resource.actor-template
-- rc.import_recorder:import_recorder_config_ctl.actor-template
 - rc.import_recorder:import_recorder_reg.service
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
@@ -357,7 +356,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.import_recorder:import_recorder_config_ctl.actor-template
       - ui.command_config_ctl:command_typed_config_ctl.actor-template
       - ui.command_config_ctl:command_untyped_config_ctl.actor-template
   ctr_from_template_creg:

@@ -129,7 +129,7 @@ class TestJobTarget(Target):
         result = defaultdict(set)
         for src in self._types.as_list:
             req = TypeReq.from_type_src(src)
-            result[req] = {ImportResource.from_type_src(self._src.name, src)}
+            result[req] = {ImportResource.from_type_src(src)}
         for req, target in self._req_to_target.items():
             result[req] |= set(req.make_resource_list(target))
         for req, resource_set in self._config_tgt.ready_req_to_resources().items():

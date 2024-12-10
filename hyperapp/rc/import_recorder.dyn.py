@@ -8,7 +8,6 @@ from . import htypes
 from .services import (
     pyobj_creg,
     )
-from .code.config_ctl import DictConfigCtl
 
 
 class IncompleteImportedObjectError(Exception):
@@ -20,8 +19,9 @@ class IncompleteImportedObjectError(Exception):
 
 class _ImportsCollector:
 
-    def __init__(self, resources, packages, missing_imports, used_imports):
-        self._resources = resources  # name tuple -> resource piece.
+    def __init__(self, module_name, config, packages, missing_imports, used_imports):
+        self._module_name = module_name
+        self._config = config  # (module name, import name (tuple)) -> resource piece.
         self._packages = packages  # name tuple set.
         self._missing_imports = missing_imports  # name tuple set.
         self._used_imports = used_imports  # name tuple set.
@@ -35,19 +35,21 @@ class _ImportsCollector:
 
     def _get_resource(self, resource_path):
         try:
-            resource = self._resources[resource_path]
+            resource = self._config[self._module_name, resource_path]
         except KeyError:
-            self._missing_imports.add(resource_path)
-            return RecorderObject(resource_path, self._resources, self._packages, self._missing_imports, self._used_imports)
-        else:
-            self._used_imports.add(resource_path)
-            return self._load_resource(resource_path, resource)
+            try:
+                resource = self._config['', resource_path]
+            except KeyError:
+                self._missing_imports.add(resource_path)
+                return RecorderObject(self._module_name, resource_path, self._config, self._packages, self._missing_imports, self._used_imports)
+        self._used_imports.add(resource_path)
+        return self._load_resource(resource_path, resource)
 
 
 class RecorderObject(_ImportsCollector):
 
-    def __init__(self, prefix, resources, packages, missing_imports, used_imports):
-        super().__init__(resources, packages, missing_imports, used_imports)
+    def __init__(self, module_name, prefix, config, packages, missing_imports, used_imports):
+        super().__init__(module_name, config, packages, missing_imports, used_imports)
         self._prefix = prefix
 
     def __getattr__(self, name):
@@ -76,31 +78,32 @@ class ImportRecorder(Finder, _ImportsCollector):
     @classmethod
     def from_piece(cls, piece, import_recorder_reg):
         assert import_recorder_reg, import_recorder_reg
-        resources = {
-            rec.import_name: rec.resource
-            for module_name, rec_list in import_recorder_reg.items()
-            for rec in rec_list
-            if module_name == piece.module_name
+        import_names = {
+            import_name
+            for (module_name, import_name) in import_recorder_reg
+            if not module_name or module_name == piece.module_name
             }
-        return cls(resources)
+        packages = cls._collect_packages(import_names)
+        return cls(piece.module_name, import_recorder_reg, packages)
 
-    def __init__(self, resources):
+    def __init__(self, module_name, config, packages):
         _ImportsCollector.__init__(
             self,
-            resources=resources,
-            packages=self._collect_packages(resources),
+            module_name=module_name,
+            config=config,
+            packages=packages,
             missing_imports=set(),
             used_imports=set(),
             )
         self._base_module_name = None
 
     @staticmethod
-    def _collect_packages(resources):
+    def _collect_packages(import_names):
         packages = set()
-        for name in resources.keys():
+        for name in import_names:
             for i in range(1, len(name)):
                 prefix = name[:i]
-                if prefix not in resources:
+                if prefix not in import_names:
                     packages.add(prefix)
         return packages
 
@@ -123,30 +126,6 @@ class ImportRecorder(Finder, _ImportsCollector):
         rel_name = spec.name[len(self._base_module_name) + 1 :]
         resource_path = tuple(rel_name.split('.'))
         return self._get_resource(resource_path)
-
-
-class ImportRecorderConfigCtl(DictConfigCtl):
-
-    @classmethod
-    def from_piece(cls, piece, cfg_item_creg):
-        return cls(cfg_item_creg)
-
-    @property
-    def piece(self):
-        return htypes.import_recorder.config_ctl()
-
-    def merge(self, dest, src):
-        for key, value_list in src.items():
-            dest.setdefault(key, []).extend(value_list)
-
-    def update_config(self, config_template, item):
-        config_template.setdefault(item.key, []).append(item)
-
-    def resolve_item(self, system, service_name, item):
-        return [
-            item_template.resolve(system, service_name)
-            for item_template in item
-            ]
 
 
 def import_recorder_reg(config):

@@ -9,9 +9,9 @@ from .code.rc_resource import Resource
 class ImportResource(Resource):
 
     @classmethod
-    def from_type_src(cls, module_name, type_src):
+    def from_type_src(cls, type_src):
         import_name = ['htypes', type_src.module_name, type_src.name]
-        return cls(module_name, import_name, type_src.type_piece)
+        return cls('', import_name, type_src.type_piece)
 
     @classmethod
     def from_piece(cls, piece):
