@@ -221,7 +221,7 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
     log.info("Loaded build:")
     build.report()
 
-    target_set = TargetSet(hyperapp_dir, build.python_modules)
+    target_set = TargetSet(hyperapp_dir, build.types, build.python_modules)
     init_targets(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, job_cache, cached_count, target_set, build)
     target_set.update_statuses()
     if options.check:

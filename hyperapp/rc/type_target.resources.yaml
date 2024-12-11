@@ -1,0 +1,15 @@
+import:
+- legacy_type.builtin:python_module
+- rc.import_resource:import_resource.module
+- rc.rc_target:rc_target.module
+
+definitions:
+
+  type_target.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: type_target
+      file_name: type_target.dyn.py
+      import_list:
+        code.import_resource: rc.import_resource:import_resource.module
+        code.rc_target: rc.rc_target:rc_target.module

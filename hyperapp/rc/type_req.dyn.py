@@ -40,3 +40,9 @@ class TypeReq(Requirement):
     @property
     def desc(self):
         return f"{self._module_name}.{self._name} type"
+
+    def get_target(self, target_factory):
+        return target_factory.type(self._module_name, self._name)
+
+    def make_resource(self, target):
+        return target.resource

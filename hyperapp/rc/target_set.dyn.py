@@ -7,6 +7,7 @@ from .code.builtin_service_target import BuiltinServiceTarget
 from .code.config_item_target import ConfigItemReadyTarget, ConfigItemResolvedTarget, ConfigItemCompleteTarget
 from .code.config_resource_target import ConfigResourceTarget
 from .code.service_req import ServiceReq
+from .code.type_target import TypeTarget
 
 
 def _sorted_targets(targets):
@@ -15,8 +16,9 @@ def _sorted_targets(targets):
 
 class TargetSet:
 
-    def __init__(self, resource_dir, python_module_src_list):
+    def __init__(self, resource_dir, types, python_module_src_list):
         self._resource_dir = resource_dir
+        self._types = types
         self._stem_to_python_module_src = {
             src.stem: src
             for src in python_module_src_list
@@ -168,6 +170,16 @@ class TargetFactory:
     def __init__(self, target_set):
         self._target_set = target_set
 
+    def type(self, module_name, name):
+        target_name = TypeTarget.target_name(module_name, name)
+        try:
+            return self._target_set[target_name]
+        except KeyError:
+            pass
+        target = TypeTarget(self._target_set._types, module_name, name)
+        self._target_set.add(target)
+        return target
+        
     def builtin_service(self, service_name):
         target_name = BuiltinServiceTarget.target_name_for_service_name(service_name)
         try:
