@@ -87,16 +87,21 @@ class TargetSet:
 
     @staticmethod
     def _update_target(target):
+        if target.completed:
+            return
         try:
             target.update_status()
         except Exception as x:
             raise RuntimeError(f"For {target.name}: {x}") from x
 
-    def _update_dependent(self, target_set):
+    def _update_dependent(self, completed_target_set):
         dep_to_targets = self._reverse_deps_map
-        for completed_target in _sorted_targets(target_set):
-            for dep_target in _sorted_targets(dep_to_targets.get(completed_target, [])):
-                self._update_target(dep_target)
+        dep_targets = set()
+        for completed_target in completed_target_set:
+            for target in dep_to_targets.get(completed_target, []):
+                dep_targets.add(target)
+        for target in _sorted_targets(dep_targets):
+            self._update_target(target)
 
     def _enum_new_and_with_changed_deps(self, prev_dep_map, new_dep_map):
         for target, deps in new_dep_map.items():
