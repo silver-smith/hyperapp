@@ -101,8 +101,8 @@ class ImportRecorder(Finder, _ImportsCollector):
 
     def migrate_to(self, system_probe):
         self._config = system_probe['import_recorder_reg']
-        # self._missing_imports = set()
-        # self._used_imports = set()
+        self._missing_imports.clear()
+        self._used_imports.clear()
 
     @property
     def missing_imports(self):
