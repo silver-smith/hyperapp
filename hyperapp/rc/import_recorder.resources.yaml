@@ -37,6 +37,7 @@ definitions:
       t: legacy_type.import_recorder:import_recorder
       function: ImportRecorder.from_piece
       service_params:
+      - system
       - import_recorder_reg
 
   import_recorder_reg:

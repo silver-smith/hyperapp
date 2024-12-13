@@ -79,16 +79,16 @@ class ImportRecorder(Finder, _ImportsCollector):
     _is_package = True
 
     @classmethod
-    def from_piece(cls, piece, import_recorder_reg):
+    def from_piece(cls, piece, system, import_recorder_reg):
         assert import_recorder_reg, import_recorder_reg
         import_names = {
             import_name
             for (module_name, import_name) in import_recorder_reg
             if not module_name or module_name == piece.module_name
             }
-        return cls(piece.module_name, import_recorder_reg)
+        return cls(piece.module_name, system, import_recorder_reg)
 
-    def __init__(self, module_name, config):
+    def __init__(self, module_name, system_probe, config):
         _ImportsCollector.__init__(
             self,
             module_name=module_name,
@@ -97,6 +97,12 @@ class ImportRecorder(Finder, _ImportsCollector):
             used_imports=set(),
             )
         self._base_module_name = None
+        system_probe.add_global(self)
+
+    def migrate_to(self, system_probe):
+        self._config = system_probe['import_recorder_reg']
+        # self._missing_imports = set()
+        # self._used_imports = set()
 
     @property
     def missing_imports(self):
