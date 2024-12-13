@@ -112,7 +112,15 @@ class PythonImporter:
         self._module_name_to_loader.update(module_name_to_loader)
         log.debug('Import python module: %s', module_name)
         try:
-            module = importlib.import_module(module_name)
+            try:
+                module = importlib.import_module(module_name)
+            except:
+                for full_name in list(sys.modules):
+                    if full_name.startswith(module_name):
+                        # Do not keep submodules if module import failed.
+                        # Import recorder should be reloaded with new resources.
+                        del sys.modules[full_name]
+                raise
         except HException:
             raise
         except Exception as x:
