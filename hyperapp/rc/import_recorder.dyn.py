@@ -19,10 +19,9 @@ class IncompleteImportedObjectError(Exception):
 
 class _ImportsCollector:
 
-    def __init__(self, module_name, config, packages, missing_imports, used_imports):
+    def __init__(self, module_name, config, missing_imports, used_imports):
         self._module_name = module_name
         self._config = config  # (module name, import name (tuple)) -> resource piece.
-        self._packages = packages  # name tuple set.
         self._missing_imports = missing_imports  # name tuple set.
         self._used_imports = used_imports  # name tuple set.
 
@@ -33,23 +32,27 @@ class _ImportsCollector:
         except Exception as x:
             raise RuntimeError(f"Error importing {'.'.join(resource_path)!r}: {x}") from x
 
+    def _resolve_resource(self, resource_path):
+        try:
+            return self._config[self._module_name, resource_path]
+        except KeyError:
+            pass
+        return self._config['', resource_path]
+
     def _get_resource(self, resource_path):
         try:
-            resource = self._config[self._module_name, resource_path]
+            resource = self._resolve_resource(resource_path)
         except KeyError:
-            try:
-                resource = self._config['', resource_path]
-            except KeyError:
-                self._missing_imports.add(resource_path)
-                return RecorderObject(self._module_name, resource_path, self._config, self._packages, self._missing_imports, self._used_imports)
+            self._missing_imports.add(resource_path)
+            return RecorderObject(self._module_name, resource_path, self._config, self._missing_imports, self._used_imports)
         self._used_imports.add(resource_path)
         return self._load_resource(resource_path, resource)
 
 
 class RecorderObject(_ImportsCollector):
 
-    def __init__(self, module_name, prefix, config, packages, missing_imports, used_imports):
-        super().__init__(module_name, config, packages, missing_imports, used_imports)
+    def __init__(self, module_name, prefix, config, missing_imports, used_imports):
+        super().__init__(module_name, config, missing_imports, used_imports)
         self._prefix = prefix
 
     def __getattr__(self, name):
@@ -83,29 +86,17 @@ class ImportRecorder(Finder, _ImportsCollector):
             for (module_name, import_name) in import_recorder_reg
             if not module_name or module_name == piece.module_name
             }
-        packages = cls._collect_packages(import_names)
-        return cls(piece.module_name, import_recorder_reg, packages)
+        return cls(piece.module_name, import_recorder_reg)
 
-    def __init__(self, module_name, config, packages):
+    def __init__(self, module_name, config):
         _ImportsCollector.__init__(
             self,
             module_name=module_name,
             config=config,
-            packages=packages,
             missing_imports=set(),
             used_imports=set(),
             )
         self._base_module_name = None
-
-    @staticmethod
-    def _collect_packages(import_names):
-        packages = set()
-        for name in import_names:
-            for i in range(1, len(name)):
-                prefix = name[:i]
-                if prefix not in import_names:
-                    packages.add(prefix)
-        return packages
 
     @property
     def missing_imports(self):
