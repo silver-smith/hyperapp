@@ -55,7 +55,7 @@ definitions:
       want_config: false
       free_params:
       - lcs
-      - model
+      - model_t
       - ctx
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl

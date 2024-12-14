@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
 - common.context:context.module
@@ -34,6 +35,7 @@ definitions:
         htypes.root.layout: legacy_type.root:layout
         htypes.root.state: legacy_type.root:state
         htypes.root.view: legacy_type.root:view
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
   controller_running:

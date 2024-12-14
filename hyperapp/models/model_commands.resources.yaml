@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -37,6 +38,7 @@ definitions:
         code.model_command: ui.model_command:model_command.module
         htypes.model_commands.item: legacy_type.model_commands:item
         htypes.model_commands.view: legacy_type.model_commands:view
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service

@@ -107,8 +107,8 @@ def test_set_custom_ui_model_command(data_to_ref, custom_ui_model_commands, lcs)
 
 def test_get_ui_model_commands(get_ui_model_commands, lcs):
     ctx = Context()
-    model = htypes.ui_model_command_tests.sample_model()
-    command_list = get_ui_model_commands(lcs, model, ctx)
+    model_t = htypes.ui_model_command_tests.sample_model
+    command_list = get_ui_model_commands(lcs, model_t, ctx)
     command_d_set = {
         command.d for command in command_list
         }

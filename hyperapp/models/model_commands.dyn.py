@@ -4,6 +4,7 @@ import logging
 
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
     pyobj_creg,
     web,
@@ -18,8 +19,9 @@ log = logging.getLogger(__name__)
 def get_model_command_list(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
     model = web.summon(piece.model)
     model_state = web.summon(piece.model_state)
+    model_t = deduce_t(model)
     command_ctx = model_command_ctx(ctx, model, model_state)
-    command_list = get_ui_model_commands(lcs, model, command_ctx)
+    command_list = get_ui_model_commands(lcs, model_t, command_ctx)
     return [
         command for command in command_list
         if not command.properties.is_global or command.properties.uses_state
@@ -51,8 +53,9 @@ async def run_command(piece, current_item, ctx, lcs, get_ui_model_commands):
         return None  # Empty command list - no item is selected.
     model = web.summon(piece.model)
     model_state = web.summon(piece.model_state)
+    model_t = deduce_t(model)
     command_ctx = model_command_ctx(ctx, model, model_state)
-    command_list = get_ui_model_commands(lcs, model, command_ctx)
+    command_list = get_ui_model_commands(lcs, model_t, command_ctx)
     command_d = pyobj_creg.invite(current_item.ui_command_d)
     unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
     bound_command = unbound_command.bind(command_ctx)

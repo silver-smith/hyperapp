@@ -12,6 +12,7 @@ from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
     web,
     )
@@ -173,8 +174,9 @@ class _Item:
         d_to_context = {}
         if 'model' in my_rctx.diffs(rctx):
             # model is added or one from a child is replaced.
+            model_t = deduce_t(command_ctx.piece)
             unbound_model_commands = self._meta.svc.get_ui_model_commands(
-                self.ctx.lcs, command_ctx.piece, command_ctx)
+                self.ctx.lcs, model_t, command_ctx)
             model_commands = [cmd.bind(command_ctx) for cmd in unbound_model_commands]
             commands = commands + model_commands
         commands_rctx = my_rctx.clone_with(
