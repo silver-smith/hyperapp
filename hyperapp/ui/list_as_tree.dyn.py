@@ -117,7 +117,7 @@ def opener_command_list(piece, lcs, ctx, data_to_ref, get_model_commands, get_cu
         if isinstance(adapter, htypes.list_as_tree_adapter.adapter):
             current_command_d = _get_current_command_d(root_piece_t, layer_piece_t, adapter)
     command_ctx = model_command_ctx(ctx, layer_piece, model_state)
-    command_list = get_model_commands(layer_piece, command_ctx)
+    command_list = get_model_commands(layer_piece_t, command_ctx)
     return [
         _make_command_item(data_to_ref, command, is_opener=command.d == current_command_d)
         for command in command_list
@@ -141,7 +141,7 @@ async def toggle_open_command(
         return
     prev_command_d = _get_current_command_d(root_piece_t, layer_piece_t, adapter)
     command_ctx = model_command_ctx(ctx, layer_piece, model_state)
-    command_list = get_model_commands(layer_piece, command_ctx)
+    command_list = get_model_commands(layer_piece_t, command_ctx)
     idx_command_by_d = {
         cmd.d: (idx, cmd) for idx, cmd
         in enumerate(command_list)

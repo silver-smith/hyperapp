@@ -136,8 +136,9 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
         return model_command_ctx(ctx, model, model_state)
 
     async def _run_open_command(self, layer, model, current_item_id):
+        model_t = deduce_t(model)
         command_ctx = self._make_command_ctx(layer, self._ctx, model, current_item_id)
-        command_list = self._get_model_commands(model, command_ctx)
+        command_list = self._get_model_commands(model_t, command_ctx)
         try:
             unbound_command = next(cmd for cmd in command_list if cmd.d == layer.open_command_d)
         except StopIteration:

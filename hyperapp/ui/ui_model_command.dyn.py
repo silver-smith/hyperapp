@@ -180,7 +180,7 @@ def get_ui_model_commands(
         model_view_creg, visualizer, command_creg, global_model_command_reg, get_model_commands, custom_ui_model_commands,
         lcs, model, ctx):
     model_t = deduce_t(model)
-    model_commands = get_model_commands(model, ctx)
+    model_commands = get_model_commands(model_t, ctx)
     model_d_to_command = {
         command.d: command
         for command in model_commands

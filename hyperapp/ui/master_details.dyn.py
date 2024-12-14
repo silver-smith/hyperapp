@@ -2,6 +2,7 @@ import logging
 
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
     pyobj_creg,
     web,
@@ -136,10 +137,10 @@ def unwrap_master_details(model, view, state, hook, ctx, model_view_creg):
     hook.replace_view(master_view, master_state)
 
 
-def _all_model_commands(global_model_command_reg, get_model_commands, model, command_ctx):
+def _all_model_commands(global_model_command_reg, get_model_commands, model_t, command_ctx):
     command_list = [
         *global_model_command_reg,
-        *get_model_commands(model, command_ctx),
+        *get_model_commands(model_t, command_ctx),
         ]
     return [
         cmd for cmd in command_list
@@ -147,8 +148,8 @@ def _all_model_commands(global_model_command_reg, get_model_commands, model, com
         ]
 
     
-def _pick_command(global_model_command_reg, get_model_commands, model, command_ctx):
-    command_list = _all_model_commands(global_model_command_reg, get_model_commands, model, command_ctx)
+def _pick_command(global_model_command_reg, get_model_commands, model_t, command_ctx):
+    command_list = _all_model_commands(global_model_command_reg, get_model_commands, model_t, command_ctx)
     name_to_cmd = {
         d_to_name(cmd.d): cmd for cmd in command_list
         }
@@ -165,7 +166,8 @@ def _pick_command(global_model_command_reg, get_model_commands, model, command_c
 def wrap_master_details(model, model_state, view, hook, ctx, data_to_ref, model_view_creg, global_model_command_reg, get_model_commands):
     log.info("Wrap master-details: %s / %s", model, view)
     command_ctx = model_command_ctx(ctx, model, model_state)
-    command = _pick_command(global_model_command_reg, get_model_commands, model, command_ctx)
+    model_t = deduce_t(model)
+    command = _pick_command(global_model_command_reg, get_model_commands, model_t, command_ctx)
     view_piece = htypes.master_details.view(
         master_view=mosaic.put(view.piece),
         details_command_d=data_to_ref(command.d),

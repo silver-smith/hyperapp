@@ -97,8 +97,7 @@ def model_command_enumerator_reg(config, model_t):
 
 
 @mark.service
-def get_model_commands(model_command_reg, model_command_enumerator_reg, model, ctx):
-    model_t = deduce_t(model)
+def get_model_commands(model_command_reg, model_command_enumerator_reg, model_t, ctx):
     command_list = [*model_command_reg(model_t)]
     for enumerator in model_command_enumerator_reg(model_t):
         command_list += enumerator.enum_commands(ctx)

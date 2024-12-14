@@ -52,7 +52,7 @@ definitions:
       - model_command_enumerator_reg
       want_config: false
       free_params:
-      - model
+      - model_t
       - ctx
   global_model_command_reg:
     type: legacy_type.builtin:attribute
