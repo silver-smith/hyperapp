@@ -1,7 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -38,7 +37,6 @@ definitions:
         code.model_command: ui.model_command:model_command.module
         htypes.model_commands.item: legacy_type.model_commands:item
         htypes.model_commands.view: legacy_type.model_commands:view
-        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
@@ -66,7 +64,7 @@ definitions:
       - lcs
       service_params:
       - data_to_ref
-      - get_ui_model_commands
+      - ui_model_command_items
   model_commands_view_run_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -126,4 +124,4 @@ definitions:
       - ctx
       - lcs
       service_params:
-      - get_ui_model_commands
+      - ui_model_command_items

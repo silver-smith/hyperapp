@@ -1,7 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -11,7 +10,6 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
-- legacy_type.command:custom_ui_command
 - legacy_type.command:model_command
 - legacy_type.command:properties
 - legacy_type.feed:feed_template
@@ -24,6 +22,7 @@ import:
 - legacy_type.system_fn:ctx_fn
 - models.model_commands:model_commands.module
 - ui.command:command.module
+- ui.model_command:model_command.module
 - ui.ui_model_command:ui_model_command.module
 definitions:
   UnboundIdentityModelCommand:
@@ -48,13 +47,11 @@ definitions:
       ctx_params:
       - piece
       - lcs
+      - ctx
       service_params:
       - data_to_ref
       - feed_factory
-      - model_view_creg
-      - visualizer
-      - command_creg
-      - custom_ui_model_commands
+      - ui_model_command_items
   identity_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -64,12 +61,11 @@ definitions:
         code.command: ui.command:command.module
         code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
+        code.model_command: ui.model_command:model_command.module
         code.model_commands: models.model_commands:model_commands.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
-        htypes.command.custom_ui_command: legacy_type.command:custom_ui_command
         htypes.command.properties: legacy_type.command:properties
         htypes.identity_command.identity_command: legacy_type.identity_command:identity_command
-        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service

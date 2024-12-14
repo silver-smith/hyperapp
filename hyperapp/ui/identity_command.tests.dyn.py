@@ -54,6 +54,7 @@ async def test_add_command(feed_factory):
         model_state=mosaic.put(model_state)
         )
     feed = feed_factory(piece)
-    await identity_command.add_identity_command(piece, lcs)
+    ctx = Context()
+    await identity_command.add_identity_command(piece, lcs, ctx)
     lcs.set.assert_called_once()
     await feed.wait_for_diffs(count=1)

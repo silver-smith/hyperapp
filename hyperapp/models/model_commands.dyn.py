@@ -4,7 +4,6 @@ import logging
 
 from . import htypes
 from .services import (
-    deduce_t,
     mosaic,
     pyobj_creg,
     web,
@@ -16,48 +15,43 @@ from .code.model_command import model_command_ctx
 log = logging.getLogger(__name__)
 
 
-def get_model_command_list(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
-    model = web.summon(piece.model)
-    model_state = web.summon(piece.model_state)
-    model_t = deduce_t(model)
-    command_ctx = model_command_ctx(ctx, model, model_state)
-    command_list = get_ui_model_commands(lcs, model_t, command_ctx)
-    return [
-        command for command in command_list
-        if not command.properties.is_global or command.properties.uses_state
-        ]
-
-
-def ui_command_to_item(data_to_ref, command):
+def command_item_to_item(data_to_ref, item):
     return htypes.model_commands.item(
-        ui_command_d=data_to_ref(command.d),
-        model_command_d=data_to_ref(command.model_command_d),
-        name=command.name,
-        groups=", ".join(d_to_name(g) for g in command.groups),
-        repr=repr(command),
+        ui_command_d=data_to_ref(item.d),
+        model_command_d=data_to_ref(item.model_command_d),
+        name=item.name,
+        groups=", ".join(d_to_name(g) for g in item.command.groups) if item.enabled else "",
+        repr=repr(item.command),
         )
 
 
 @mark.model
-def list_model_commands(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
-    command_list = get_model_command_list(piece, ctx, lcs, data_to_ref, get_ui_model_commands)
+def list_model_commands(piece, ctx, lcs, data_to_ref, ui_model_command_items):
+    model, model_t = web.summon_with_t(piece.model)
+    model_state = web.summon(piece.model_state)
+    command_ctx = model_command_ctx(ctx, model, model_state)
+    command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
     return [
-        ui_command_to_item(data_to_ref, command)
-        for command in command_list
+        command_item_to_item(data_to_ref, item)
+        for item in command_item_list.items()
+        if not item.is_pure_global
         ]
 
 
 @mark.command
-async def run_command(piece, current_item, ctx, lcs, get_ui_model_commands):
+async def run_command(piece, current_item, ctx, lcs, ui_model_command_items):
     if current_item is None:
         return None  # Empty command list - no item is selected.
-    model = web.summon(piece.model)
+    model, model_t = web.summon_with_t(piece.model)
     model_state = web.summon(piece.model_state)
-    model_t = deduce_t(model)
     command_ctx = model_command_ctx(ctx, model, model_state)
-    command_list = get_ui_model_commands(lcs, model_t, command_ctx)
+    command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
     command_d = pyobj_creg.invite(current_item.ui_command_d)
-    unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
+    command_item = command_item_list[command_d]
+    if not command_item.enabled:
+        log.warning("Command %s is disabled; not running", command_item.name)
+        return None
+    unbound_command = command_item.command
     bound_command = unbound_command.bind(command_ctx)
     piece = await bound_command.run()
     log.info("Run command: command result: %s", piece)

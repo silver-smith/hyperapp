@@ -1,7 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -46,12 +45,7 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: get_ui_model_commands
       service_params:
-      - model_view_creg
-      - visualizer
-      - command_creg
-      - global_model_command_reg
-      - get_model_commands
-      - custom_ui_model_commands
+      - ui_model_command_items
       want_config: false
       free_params:
       - lcs
@@ -74,7 +68,30 @@ definitions:
         htypes.command.custom_model_command_list: legacy_type.command:custom_model_command_list
         htypes.command.custom_ui_command: legacy_type.command:custom_ui_command
         htypes.command.custom_ui_model_command: legacy_type.command:custom_ui_model_command
-        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+  ui_model_command_items:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: ui_model_command_items
+  ui_model_command_items.service:
+    type: legacy_type.system:service_template
+    value:
+      name: ui_model_command_items
+      ctl: system-dict_config_ctl.ctl
+      function: ui_model_command_items
+      service_params:
+      - data_to_ref
+      - model_view_creg
+      - visualizer
+      - command_creg
+      - global_model_command_reg
+      - get_model_commands
+      - custom_ui_model_commands
+      want_config: false
+      free_params:
+      - lcs
+      - model_t
+      - ctx

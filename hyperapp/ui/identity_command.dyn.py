@@ -4,7 +4,6 @@ from hyperapp.common.htypes import TRecord
 
 from . import htypes
 from .services import (
-    deduce_t,
     mosaic,
     pyobj_creg,
     web,
@@ -13,7 +12,8 @@ from .code.mark import mark
 from .code.list_diff import ListDiff
 from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase
 from .code.ui_model_command import UnboundUiModelCommand
-from .code.model_commands import ui_command_to_item
+from .code.model_command import model_command_ctx
+from .code.model_commands import command_item_to_item
 
 
 class UnboundIdentityModelCommand(UnboundCommandBase):
@@ -63,24 +63,18 @@ class BoundIdentityModelCommand(BoundCommandBase):
 
 
 @mark.command
-async def add_identity_command(piece, lcs, data_to_ref, feed_factory, model_view_creg, visualizer, command_creg, custom_ui_model_commands):
+async def add_identity_command(piece, lcs, ctx, data_to_ref, feed_factory, ui_model_command_items):
     feed = feed_factory(piece)
-    model = web.summon(piece.model)
-    model_t = deduce_t(model)
+    model, model_t = web.summon_with_t(piece.model)
+    model_state = web.summon(piece.model_state)
+    command_ctx = model_command_ctx(ctx, model, model_state)
+    commands_item_list = ui_model_command_items(lcs, model_t, command_ctx)
     new_d_name = 'identity_d'
     new_d_t = TRecord('custom_command', new_d_name)
     command_d = new_d_t()
     model_command_piece = htypes.identity_command.identity_command(
         d=data_to_ref(command_d),
         )
-    rec = htypes.command.custom_ui_command(
-        ui_command_d=data_to_ref(command_d),
-        model_command=mosaic.put(model_command_piece),
-        layout=None,
-        )
-    custom_commands = custom_ui_model_commands(lcs, model_t)
-    custom_commands.set(rec)
-    model_command = command_creg.animate(model_command_piece)
-    ui_command = UnboundUiModelCommand(model_view_creg, visualizer, lcs, command_d, model_command)
-    new_item = ui_command_to_item(data_to_ref, ui_command)
+    command_item = commands_item_list.add_custom_model_command(command_d, model_command_piece)
+    new_item = command_item_to_item(data_to_ref, command_item)
     await feed.send(ListDiff.Append(new_item))

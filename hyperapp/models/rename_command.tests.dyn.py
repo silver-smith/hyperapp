@@ -66,5 +66,5 @@ def test_update(lcs, piece, d_ref):
     form = htypes.rename_command.form(
         name='new_name',
         )
-    rename_command.model_command_update(piece, d_ref, form, ctx, lcs)
+    rename_command.model_command_update(piece, d_ref, form, lcs, ctx)
     lcs.set.assert_called_once()
