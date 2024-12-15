@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 
-from .code.rc_target import Target
+from .code.rc_target import TargetMissingError, Target
 from .code.type_req import TypeReq
 from .code.import_resource import ImportResource
 from .code.python_module_resource_target import PythonModuleReq
@@ -57,15 +57,23 @@ class TestCachedTarget(Target):
     def set_completed(self):
         pass  # Set in update_status.
 
-    # TODO: We may compare deps resources before all targets are completed. Thus, when they differ, job will be fired sooner.
-    def _check_deps(self):
+    def _deps_match(self):
         for req, target in self._req_to_target.items():
             dep_resources = self._deps[req]
             actual_resources = set(req.make_resource_list(target))
             if actual_resources != dep_resources:
-                self._create_job_target()
+                return False
+        return True
+
+    # TODO: We may compare deps resources before all targets are completed. Thus, when they differ, job will be fired sooner.
+    def _check_deps(self):
+        try:
+            if self._deps_match():
+                self._use_job_result()
                 return
-        self._use_job_result()
+        except TargetMissingError:
+            pass
+        self._create_job_target()
 
     def _create_job_target(self):
         self._test_target.create_first_job_target()

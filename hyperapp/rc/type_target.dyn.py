@@ -1,4 +1,4 @@
-from .code.rc_target import Target
+from .code.rc_target import TargetMissingError, Target
 from .code.import_resource import ImportResource
 
 
@@ -23,5 +23,8 @@ class TypeTarget(Target):
 
     @property
     def resource(self):
-        src = self._types.as_src_dict[self._module_name][self._name]
+        try:
+            src = self._types.as_src_dict[self._module_name][self._name]
+        except KeyError:
+            raise TargetMissingError(f"Type is missing: {self._module_name}.{self._name}")
         return ImportResource.from_type_src(src)
