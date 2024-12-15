@@ -15,14 +15,15 @@ class CommandLayoutContextView(ContextView):
 
     @classmethod
     @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, data_to_ref, view_creg, ui_model_command_items):
+    def from_piece(cls, piece, ctx, data_to_ref, view_creg, ui_model_command_items, ui_global_command_items):
         base_view = view_creg.invite(piece.base, ctx)
+        ui_command_d = pyobj_creg.invite(piece.ui_command_d)
         if piece.model_t is not None:
             model_t = pyobj_creg.invite(piece.model_t)
+            command_items = ui_model_command_items(ctx.lcs, model_t, ctx)
         else:
             model_t = None
-        ui_command_d = pyobj_creg.invite(piece.ui_command_d)
-        command_items = ui_model_command_items(ctx.lcs, model_t, ctx)
+            command_items = ui_global_command_items(ctx.lcs)
         return cls(data_to_ref, command_items, base_view, model_t, ui_command_d)
 
     def __init__(self, data_to_ref, command_items, base_view, model_t, ui_command_d):

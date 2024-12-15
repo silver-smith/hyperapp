@@ -55,6 +55,7 @@ definitions:
       - data_to_ref
       - view_creg
       - ui_model_command_items
+      - ui_global_command_items
   global_commands_view_open_command_layout_context.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

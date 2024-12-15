@@ -22,6 +22,21 @@ def view_creg():
 
 
 @mark.fixture
+def base_piece():
+    return htypes.label.view("Sample label")
+
+
+@mark.fixture
+def piece(data_to_ref, base_piece):
+    model_t = htypes.command_layout_context_tests.sample_model
+    return htypes.command_layout_context.view(
+        base=mosaic.put(base_piece),
+        model_t=pyobj_creg.actor_to_ref(model_t),
+        ui_command_d=data_to_ref(htypes.command_layout_context_tests.sample_command_d()),
+        )
+
+
+@mark.fixture
 def open_command_layout_context(data_to_ref, view_creg, piece):
     ctx = Context()
     current_item = htypes.command_list_view.item(
@@ -74,21 +89,6 @@ def model_command_reg_config(partial_ref):
         )
     model_t = htypes.command_layout_context_tests.sample_model
     return {model_t: [command]}
-
-
-@mark.fixture
-def base_piece():
-    return htypes.label.view("Sample label")
-
-
-@mark.fixture
-def piece(data_to_ref, base_piece):
-    model_t = htypes.command_layout_context_tests.sample_model
-    return htypes.command_layout_context.view(
-        base=mosaic.put(base_piece),
-        model_t=pyobj_creg.actor_to_ref(model_t),
-        ui_command_d=data_to_ref(htypes.command_layout_context_tests.sample_command_d()),
-        )
 
 
 @mark.fixture
