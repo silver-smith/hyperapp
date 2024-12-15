@@ -97,9 +97,6 @@ class BoundUiModelCommand(BoundCommandBase):
 
 class CustomModelCommands:
 
-    Rec = namedtuple('Rec', 'ui_command_d model_command layout')
-    ModelRec = namedtuple('ModelRec', 'ui_command_d model_command_d layout')
-
     def __init__(self, lcs, model_t):
         self._lcs = lcs
         self._model_t_res = pyobj_creg.actor_to_piece(model_t)
