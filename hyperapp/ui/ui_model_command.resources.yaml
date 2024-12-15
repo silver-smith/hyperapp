@@ -7,8 +7,9 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.command:custom_commands_lcs_d
+- legacy_type.command:custom_global_commands_lcs_d
 - legacy_type.command:custom_model_command_list
+- legacy_type.command:custom_model_commands_lcs_d
 - legacy_type.command:custom_ui_command
 - legacy_type.command:custom_ui_model_command
 - legacy_type.system:dict_config_ctl
@@ -17,6 +18,21 @@ import:
 - ui.command_groups:command_groups.module
 - ui.model_command:model_command.module
 definitions:
+  custom_ui_global_model_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: custom_ui_global_model_commands
+  custom_ui_global_model_commands.service:
+    type: legacy_type.system:service_template
+    value:
+      name: custom_ui_global_model_commands
+      ctl: system-dict_config_ctl.ctl
+      function: custom_ui_global_model_commands
+      service_params: []
+      want_config: false
+      free_params:
+      - lcs
   custom_ui_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -54,6 +70,27 @@ definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
+  ui_global_command_items:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: ui_global_command_items
+  ui_global_command_items.service:
+    type: legacy_type.system:service_template
+    value:
+      name: ui_global_command_items
+      ctl: system-dict_config_ctl.ctl
+      function: ui_global_command_items
+      service_params:
+      - data_to_ref
+      - model_view_creg
+      - visualizer
+      - command_creg
+      - global_model_command_reg
+      - custom_ui_global_model_commands
+      want_config: false
+      free_params:
+      - lcs
   ui_model_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -64,8 +101,9 @@ definitions:
         code.command_groups: ui.command_groups:command_groups.module
         code.mark: common.mark:mark.module
         code.model_command: ui.model_command:model_command.module
-        htypes.command.custom_commands_lcs_d: legacy_type.command:custom_commands_lcs_d
+        htypes.command.custom_global_commands_lcs_d: legacy_type.command:custom_global_commands_lcs_d
         htypes.command.custom_model_command_list: legacy_type.command:custom_model_command_list
+        htypes.command.custom_model_commands_lcs_d: legacy_type.command:custom_model_commands_lcs_d
         htypes.command.custom_ui_command: legacy_type.command:custom_ui_command
         htypes.command.custom_ui_model_command: legacy_type.command:custom_ui_model_command
         services.mosaic: builtins:mosaic.service

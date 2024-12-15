@@ -23,7 +23,10 @@ model_command_enumerator = record:
 
 
 # LCS selector for model to ui_model_command set mapping.
-custom_commands_lcs_d = record
+custom_model_commands_lcs_d = record
+
+# LCS selector for global ui_model_command set mapping.
+custom_global_commands_lcs_d = record
 
 # LCS wrapper for storing custom command list.
 custom_model_command_list = record:

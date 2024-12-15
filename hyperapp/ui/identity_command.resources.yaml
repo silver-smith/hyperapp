@@ -12,15 +12,15 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:properties
+- legacy_type.command_list_view:item
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.identity_command:add_identity_command_d
 - legacy_type.identity_command:identity_command
-- legacy_type.model_commands:item
 - legacy_type.model_commands:view
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
-- models.model_commands:model_commands.module
+- models.command_list_view:command_list_view.module
 - ui.command:command.module
 - ui.model_command:model_command.module
 - ui.ui_model_command:ui_model_command.module
@@ -59,10 +59,10 @@ definitions:
       file_name: identity_command.dyn.py
       import_list:
         code.command: ui.command:command.module
+        code.command_list_view: models.command_list_view:command_list_view.module
         code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
         code.model_command: ui.model_command:model_command.module
-        code.model_commands: models.model_commands:model_commands.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.command.properties: legacy_type.command:properties
         htypes.identity_command.identity_command: legacy_type.identity_command:identity_command
@@ -83,7 +83,7 @@ definitions:
   model_commands_view.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
-      item_t: legacy_type.model_commands:item
+      item_t: legacy_type.command_list_view:item
   model_commands_view_add_identity_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

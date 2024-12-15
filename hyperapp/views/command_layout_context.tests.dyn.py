@@ -24,7 +24,7 @@ def view_creg():
 @mark.fixture
 def open_command_layout_context(data_to_ref, view_creg, piece):
     ctx = Context()
-    current_item = htypes.model_commands.item(
+    current_item = htypes.command_list_view.item(
         ui_command_d=data_to_ref(htypes.command_layout_context_tests.sample_command_d()),
         model_command_d=data_to_ref(htypes.command_layout_context_tests.sample_model_command_d()),
         name="<unused>",

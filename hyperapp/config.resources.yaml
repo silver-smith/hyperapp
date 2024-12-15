@@ -272,8 +272,10 @@ import:
 - ui.ui_command:universal_ui_command_reg.service
 - ui.ui_command:view_ui_command_reg.service
 - ui.ui_command:view_ui_model_command_reg.service
+- ui.ui_model_command:custom_ui_global_model_commands.service
 - ui.ui_model_command:custom_ui_model_commands.service
 - ui.ui_model_command:get_ui_model_commands.service
+- ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
@@ -648,8 +650,10 @@ definitions:
       - ui.ui_command:universal_ui_command_reg.service
       - ui.ui_command:view_ui_command_reg.service
       - ui.ui_command:view_ui_model_command_reg.service
+      - ui.ui_model_command:custom_ui_global_model_commands.service
       - ui.ui_model_command:custom_ui_model_commands.service
       - ui.ui_model_command:get_ui_model_commands.service
+      - ui.ui_model_command:ui_global_command_items.service
       - ui.ui_model_command:ui_model_command_items.service
       - ui.view_registry:model_view_creg.service
       - ui.view_registry:view_creg.service

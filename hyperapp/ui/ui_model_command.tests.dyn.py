@@ -120,3 +120,15 @@ def test_get_ui_model_commands(get_ui_model_commands, lcs):
         }, command_d_set
     for cmd in command_list:
         assert isinstance(cmd, ui_model_command.UnboundUiModelCommand)
+
+
+def test_ui_global_command_items_get_items(ui_global_command_items, lcs):
+    command_items = ui_global_command_items(lcs)
+    d_set = {
+        item.d for item in command_items.items()
+        }
+    assert d_set == {
+        htypes.ui_model_command_tests.sample_model_command_1_d(),  # from global commands.
+        # sample_command_3_d from lcs has no matching global command.
+        htypes.ui_model_command_tests.sample_command_4_d(),  # configured by lcs.
+        }, d_set

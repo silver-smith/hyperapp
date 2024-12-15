@@ -31,10 +31,15 @@ def global_model_command_reg_config(partial_ref):
         raw_fn=_sample_fn,
         bound_fn=partial(_sample_fn, sample_service='a-service'),
         )
+    properties = htypes.command.properties(
+        is_global=True,
+        uses_state=False,
+        remotable=False,
+        )
     command = UnboundModelCommand(
         d=htypes.global_commands_tests.sample_command_d(),
         ctx_fn=system_fn,
-        properties=htypes.command.properties(False, False, False),
+        properties=properties,
         )
     return [command]
 
@@ -59,7 +64,7 @@ def test_list_global_commands(lcs, piece):
 
 async def test_run_command(data_to_ref, lcs, piece):
     navigator = Mock()
-    current_item = htypes.global_commands.item(
+    current_item = htypes.command_list_view.item(
         ui_command_d=data_to_ref(htypes.global_commands_tests.sample_command_d()),
         model_command_d=data_to_ref(htypes.global_commands_tests.sample_model_command_d()),
         name="<unused>",

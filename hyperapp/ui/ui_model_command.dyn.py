@@ -95,18 +95,10 @@ class BoundUiModelCommand(BoundCommandBase):
         self._navigator_rec.view.open(self._ctx, piece, view, navigator_w)
 
 
-class CustomModelCommands:
+class CustomCommands:
 
-    def __init__(self, lcs, model_t):
+    def __init__(self, lcs):
         self._lcs = lcs
-        self._model_t_res = pyobj_creg.actor_to_piece(model_t)
-
-    @cached_property
-    def _d(self):
-        return {
-            htypes.command.custom_commands_lcs_d(),
-            self._model_t_res,
-            }
 
     @cached_property
     def command_map(self):
@@ -139,11 +131,39 @@ class CustomModelCommands:
         new_ui_command_d = pyobj_creg.invite(command.ui_command_d)
         self.command_map[new_ui_command_d] = command
         self._save()
+
+
+class CustomModelCommands(CustomCommands):
+
+    def __init__(self, lcs, model_t):
+        super().__init__(lcs)
+        self._model_t_res = pyobj_creg.actor_to_piece(model_t)
+
+    @cached_property
+    def _d(self):
+        return {
+            htypes.command.custom_model_commands_lcs_d(),
+            self._model_t_res,
+            }
+
+
+class CustomGlobalCommands(CustomCommands):
+
+    @cached_property
+    def _d(self):
+        return {
+            htypes.command.custom_global_commands_lcs_d(),
+            }
         
 
 @mark.service
 def custom_ui_model_commands(lcs, model_t):
     return CustomModelCommands(lcs, model_t)
+        
+
+@mark.service
+def custom_ui_global_model_commands(lcs):
+    return CustomGlobalCommands(lcs)
 
 
 class CommandItem:
@@ -155,6 +175,10 @@ class CommandItem:
         self.command = command
         self.enabled = enabled
         self.layout = command.layout
+
+    @property
+    def is_global(self):
+        return self.command.properties.is_global
 
     @property
     def is_pure_global(self):
@@ -174,7 +198,6 @@ class CommandItemList:
             visualizer,
             command_creg,
             global_model_command_reg,
-            model_commands,
             custom_commands,
             lcs,
             ):
@@ -183,21 +206,23 @@ class CommandItemList:
         self._visualizer = visualizer
         self._command_creg = command_creg
         self._global_model_command_reg = global_model_command_reg
-        self._model_commands = model_commands
         self._custom_commands = custom_commands
         self._lcs = lcs
-        self._model_d_to_command = {
-            command.d: command
-            for command in model_commands
-            }
         self._d_to_item_cache = None
+
+    @cached_property
+    def _model_d_to_command(self):
+        return {
+            command.d: command
+            for command in self._all_model_commands
+            }
 
     @property
     def _d_to_item(self):
         if self._d_to_item_cache is not None:
             return self._d_to_item_cache
         ui_d_to_command = {}
-        for model_command in [*self._global_model_command_reg, *self._model_commands]:
+        for model_command in self._all_model_commands:
             ui_command = wrap_model_command_to_ui_command(self._model_view_creg, self._visualizer, self._lcs, model_command)
             ui_d_to_command[ui_command.d] = ui_command
         for ui_command_d, rec in self._custom_commands.command_map.items():
@@ -206,7 +231,7 @@ class CommandItemList:
                 try:
                     model_command = self._model_d_to_command[model_command_d]
                 except KeyError:
-                    log.warning("%s: Custom model command is missing: %s", model_t, model_d)
+                    log.warning("Custom model command is missing: %s", model_command_d)
                     continue
             elif isinstance(rec, htypes.command.custom_ui_command):
                 model_command = self._command_creg.invite(rec.model_command)
@@ -263,6 +288,42 @@ class CommandItemList:
         self._d_to_item_cache = None
         return self._d_to_item[new_d]
 
+
+class ModelCommandItemList(CommandItemList):
+
+    def __init__(
+            self,
+            data_to_ref,
+            model_view_creg,
+            visualizer,
+            command_creg,
+            global_model_command_reg,
+            model_commands,
+            custom_commands,
+            lcs,
+            ):
+        super().__init__(
+            data_to_ref,
+            model_view_creg,
+            visualizer,
+            command_creg,
+            global_model_command_reg,
+            custom_commands,
+            lcs,
+            )
+        self._model_commands = model_commands
+
+    @property
+    def _all_model_commands(self):
+        return [*self._global_model_command_reg, *self._model_commands]
+
+
+class GlobalCommandItemList(CommandItemList):
+
+    @property
+    def _all_model_commands(self):
+        return self._global_model_command_reg
+
         
 @mark.service
 def ui_model_command_items(
@@ -279,13 +340,35 @@ def ui_model_command_items(
         ):
     model_commands = get_model_commands(model_t, ctx)
     custom_commands = custom_ui_model_commands(lcs, model_t)
-    return CommandItemList(
+    return ModelCommandItemList(
         data_to_ref,
         model_view_creg,
         visualizer,
         command_creg,
         global_model_command_reg,
         model_commands,
+        custom_commands,
+        lcs,
+        )
+
+
+@mark.service
+def ui_global_command_items(
+        data_to_ref,
+        model_view_creg,
+        visualizer,
+        command_creg,
+        global_model_command_reg,
+        custom_ui_global_model_commands,
+        lcs,
+        ):
+    custom_commands = custom_ui_global_model_commands(lcs)
+    return GlobalCommandItemList(
+        data_to_ref,
+        model_view_creg,
+        visualizer,
+        command_creg,
+        global_model_command_reg,
         custom_commands,
         lcs,
         )

@@ -9,20 +9,10 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.command import d_to_name
 from .code.model_command import model_command_ctx
+from .code.command_list_view import command_item_to_view_item
 
 log = logging.getLogger(__name__)
-
-
-def command_item_to_item(data_to_ref, item):
-    return htypes.model_commands.item(
-        ui_command_d=data_to_ref(item.d),
-        model_command_d=data_to_ref(item.model_command_d),
-        name=item.name,
-        groups=", ".join(d_to_name(g) for g in item.command.groups) if item.enabled else "",
-        repr=repr(item.command),
-        )
 
 
 @mark.model
@@ -32,7 +22,7 @@ def list_model_commands(piece, ctx, lcs, data_to_ref, ui_model_command_items):
     command_ctx = model_command_ctx(ctx, model, model_state)
     command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
     return [
-        command_item_to_item(data_to_ref, item)
+        command_item_to_view_item(data_to_ref, item)
         for item in command_item_list.items()
         if not item.is_pure_global
         ]

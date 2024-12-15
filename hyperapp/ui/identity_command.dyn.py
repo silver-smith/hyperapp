@@ -13,7 +13,7 @@ from .code.list_diff import ListDiff
 from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase
 from .code.ui_model_command import UnboundUiModelCommand
 from .code.model_command import model_command_ctx
-from .code.model_commands import command_item_to_item
+from .code.command_list_view import command_item_to_view_item
 
 
 class UnboundIdentityModelCommand(UnboundCommandBase):
@@ -76,5 +76,5 @@ async def add_identity_command(piece, lcs, ctx, data_to_ref, feed_factory, ui_mo
         d=data_to_ref(command_d),
         )
     command_item = commands_item_list.add_custom_model_command(command_d, model_command_piece)
-    new_item = command_item_to_item(data_to_ref, command_item)
+    new_item = command_item_to_view_item(data_to_ref, command_item)
     await feed.send(ListDiff.Append(new_item))

@@ -8,7 +8,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
-- legacy_type.global_commands:item
+- legacy_type.command_list_view:item
 - legacy_type.global_commands:open_global_commands_d
 - legacy_type.global_commands:run_command_d
 - legacy_type.global_commands:view
@@ -16,8 +16,7 @@ import:
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
-- ui.command:command.module
-- ui.ui_model_command:ui_model_command.module
+- models.command_list_view:command_list_view.module
 definitions:
   global_commands.module:
     type: legacy_type.builtin:python_module
@@ -25,16 +24,14 @@ definitions:
       module_name: global_commands
       file_name: global_commands.dyn.py
       import_list:
-        code.command: ui.command:command.module
+        code.command_list_view: models.command_list_view:command_list_view.module
         code.mark: common.mark:mark.module
-        code.ui_model_command: ui.ui_model_command:ui_model_command.module
-        htypes.global_commands.item: legacy_type.global_commands:item
         htypes.global_commands.view: legacy_type.global_commands:view
         services.pyobj_creg: builtins:pyobj_creg.service
   global_commands_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      item_t: legacy_type.global_commands:item
+      item_t: legacy_type.command_list_view:item
   global_commands_view.model:
     type: legacy_type.model:model
     value:
@@ -54,9 +51,7 @@ definitions:
       - lcs
       service_params:
       - data_to_ref
-      - global_model_command_reg
-      - model_view_creg
-      - visualizer
+      - ui_global_command_items
   global_commands_view_run_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -119,6 +114,4 @@ definitions:
       - lcs
       - ctx
       service_params:
-      - global_model_command_reg
-      - model_view_creg
-      - visualizer
+      - ui_global_command_items

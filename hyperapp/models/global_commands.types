@@ -1,11 +1,4 @@
 view = record
 
-item = record:
-  ui_command_d: ref
-  model_command_d: ref
-  name: string
-  groups: string
-  repr: string
-
 open_global_commands_d = record
 run_command_d = record
