@@ -244,6 +244,17 @@ class CommandItemList:
         self._d_to_item_cache = None
         return self._d_to_item[d]
 
+    def rename_command(self, prev_d, new_d):
+        item = self._d_to_item[prev_d]
+        rec = htypes.command.custom_ui_model_command(
+            ui_command_d=self._data_to_ref(new_d),
+            model_command_d=self._data_to_ref(item.model_command_d),
+            layout=item.layout,
+            )
+        self._custom_commands.replace(prev_d, rec)
+        self._d_to_item_cache = None
+        return self._d_to_item[new_d]
+
         
 @mark.service
 def ui_model_command_items(

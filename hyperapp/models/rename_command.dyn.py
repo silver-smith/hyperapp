@@ -22,7 +22,7 @@ def model_command_get(piece, ui_command_d):
 
 
 @mark.crud.update
-def model_command_update(piece, ui_command_d, value, lcs, ctx, data_to_ref, custom_ui_model_commands, ui_model_command_items):
+def model_command_update(piece, ui_command_d, value, lcs, ctx, ui_model_command_items):
     model, model_t = web.summon_with_t(piece.model)
     model_state = web.summon(piece.model_state)
     prev_d = pyobj_creg.invite(ui_command_d)
@@ -32,11 +32,4 @@ def model_command_update(piece, ui_command_d, value, lcs, ctx, data_to_ref, cust
     log.info("Rename command: %s -> %s", prev_d, new_d)
     command_ctx = model_command_ctx(ctx, model, model_state)
     command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
-    command_item = command_item_list[prev_d]
-    new_command = htypes.command.custom_ui_model_command(
-        ui_command_d=data_to_ref(new_d),
-        model_command_d=data_to_ref(command_item.model_command_d),
-        layout=command_item.layout,
-        )
-    custom_commands = custom_ui_model_commands(lcs, model_t)
-    custom_commands.replace(prev_d, new_command)
+    command_item_list.rename_command(prev_d, new_d)
