@@ -231,6 +231,17 @@ class CommandItemList:
     def __getitem__(self, d):
         return self._d_to_item[d]
 
+    def set_layout(self, d, layout):
+        item = self._d_to_item[d]
+        rec = htypes.command.custom_ui_model_command(
+            ui_command_d=self._data_to_ref(d),
+            model_command_d=self._data_to_ref(item.model_command_d),
+            layout=mosaic.put(layout),
+            )
+        self._custom_commands.set(rec)
+        self._d_to_item_cache = None
+        return self._d_to_item[d]
+
     def add_custom_model_command(self, d, model_command_piece):
         rec = htypes.command.custom_ui_command(
             ui_command_d=self._data_to_ref(d),

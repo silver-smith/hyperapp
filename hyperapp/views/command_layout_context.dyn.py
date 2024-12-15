@@ -15,23 +15,22 @@ class CommandLayoutContextView(ContextView):
 
     @classmethod
     @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, data_to_ref, view_creg, custom_ui_model_commands):
+    def from_piece(cls, piece, ctx, data_to_ref, view_creg, ui_model_command_items):
         base_view = view_creg.invite(piece.base, ctx)
         if piece.model_t is not None:
             model_t = pyobj_creg.invite(piece.model_t)
         else:
             model_t = None
         ui_command_d = pyobj_creg.invite(piece.ui_command_d)
-        model_command_d = pyobj_creg.invite(piece.model_command_d)
-        return cls(data_to_ref, custom_ui_model_commands, base_view, ctx.lcs, model_t, ui_command_d, model_command_d)
+        command_items = ui_model_command_items(ctx.lcs, model_t, ctx)
+        return cls(data_to_ref, command_items, base_view, model_t, ui_command_d)
 
-    def __init__(self, data_to_ref, custom_ui_model_commands, base_view, lcs, model_t, ui_command_d, model_command_d):
+    def __init__(self, data_to_ref, command_items, base_view, model_t, ui_command_d):
         super().__init__(base_view, label="Command layout")
         self._data_to_ref = data_to_ref
-        self._custom_commands = custom_ui_model_commands(lcs, model_t)
+        self._command_items = command_items
         self._model_t = model_t
         self._ui_command_d = ui_command_d
-        self._model_command_d = model_command_d
 
     @property
     def piece(self):
@@ -39,16 +38,10 @@ class CommandLayoutContextView(ContextView):
             base=mosaic.put(self._base_view.piece),
             model_t=pyobj_creg.actor_to_ref(self._model_t) if self._model_t is not None else None,
             ui_command_d=self._data_to_ref(self._ui_command_d),
-            model_command_d=self._data_to_ref(self._model_command_d),
             )
 
     def _set_layout(self, layout):
-        command = htypes.command.custom_ui_model_command(
-            ui_command_d=self._data_to_ref(self._ui_command_d),
-            model_command_d=self._data_to_ref(self._model_command_d),
-            layout=mosaic.put(layout),
-            )
-        self._custom_commands.set(command)
+        self._command_items.set_layout(self._ui_command_d, layout)
 
     def children_context(self, ctx):
         return ctx.clone_with(
@@ -75,7 +68,6 @@ def open_command_layout_context(piece, current_item, navigator, ctx, view_creg):
         base=mosaic.put(navigator.view.piece),
         model_t=model_t_ref,
         ui_command_d=current_item.ui_command_d,
-        model_command_d=current_item.model_command_d,
         )
     new_state = htypes.command_layout_context.state(
         base=mosaic.put(navigator.state),

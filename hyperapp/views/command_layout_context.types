@@ -4,7 +4,6 @@ view = record:
   base: ref
   model_t: ref opt
   ui_command_d: ref
-  model_command_d: ref
 
 state = record:
   base: ref
