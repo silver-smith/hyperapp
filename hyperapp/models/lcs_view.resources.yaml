@@ -19,6 +19,7 @@ import:
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 - models.data_browser:data_browser.module
+- ui.directory:directory.module
 definitions:
   lcs_open_piece:
     type: legacy_type.builtin:attribute
@@ -45,6 +46,7 @@ definitions:
       file_name: lcs_view.dyn.py
       import_list:
         code.data_browser: models.data_browser:data_browser.module
+        code.directory: ui.directory:directory.module
         code.mark: common.mark:mark.module
         htypes.builtin.record_mt: legacy_type.builtin:record_mt
         htypes.lcs_view.item: legacy_type.lcs_view:item

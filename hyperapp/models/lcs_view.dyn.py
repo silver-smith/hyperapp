@@ -4,6 +4,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.directory import d_to_name
 from .code.data_browser import data_browser
 
 def _dir_to_str(d):
@@ -17,12 +18,13 @@ def _dir_to_str(d):
 def lcs_view(piece, lcs, data_to_ref):
     return [
         htypes.lcs_view.item(
+            layer=d_to_name(layer_d),
             dir=tuple(data_to_ref(d) for d in dir_set),
             piece=mosaic.put(piece),
             dir_str=", ".join(_dir_to_str(d) for d in dir_set),
             piece_str=str(piece),
             )
-        for dir_set, piece in lcs
+        for layer_d, dir_set, piece in lcs
         ]
         
 

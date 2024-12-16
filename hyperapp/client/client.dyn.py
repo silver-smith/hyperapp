@@ -17,7 +17,7 @@ from .code.controller import Controller
 from .code.reconstructors import register_reconstructors
 
 
-default_lcs_storage_path = 'client/lcs-storage.resources.yaml'
+default_lcs_layers_path = Path.home() / '.local/share/hyperapp/client/lcs-layers.yaml'
 default_layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
 
 
@@ -106,7 +106,7 @@ def make_default_layout(visualizer, lcs):
 def _parse_args(sys_argv):
     parser = argparse.ArgumentParser(description='Hyperapp client')
     parser.add_argument('--clean', '-c', action='store_true', help="Do not load stored layout state")
-    parser.add_argument('--lcs-storage-path', type=Path, default=hyperapp_dir / default_lcs_storage_path, help="Path to lcs storage")
+    parser.add_argument('--lcs-layers-path', type=Path, default=default_lcs_layers_path, help="Path to lcs layers list")
     parser.add_argument('--layout-path', type=Path, default=default_layout_path, help="Path to layout")
     parser.add_argument('--test-mode', action='store_true', help="Do not enter main loop, exit right after initing. Do not show windows. Used for testing")
     return parser.parse_args(sys_argv)
@@ -125,8 +125,7 @@ async def client_async_main(
         app,
         stop_event,
         ):
-    lcs_storage = lcs_resource_storage_factory('client.lcs-storage', args.lcs_storage_path)
-    lcs = LCSheet(lcs_storage)
+    lcs = LCSheet.from_layer_list_path(args.lcs_layers_path, lcs_resource_storage_factory)
 
     identity = generate_rsa_identity()
     endpoint_registry.register(identity, rpc_endpoint)

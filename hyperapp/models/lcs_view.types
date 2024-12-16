@@ -1,6 +1,7 @@
 view = record
 
 item = record:
+  layer: string
   dir: ref list
   piece: ref
   dir_str: string

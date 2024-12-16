@@ -11,6 +11,7 @@ from .tested.code import lcs_view
 
 @mark.fixture
 def lcs():
+    layer_d = htypes.lcs_view_tests.layer_d()
     dir_1 = {
         htypes.lcs_view_tests.sample_1_d(),
         }
@@ -20,8 +21,8 @@ def lcs():
         }
     
     items = [
-        (dir_1, htypes.lcs_view_tests.sample_model_1()),
-        (dir_2, htypes.lcs_view_tests.sample_model_2()),
+        (layer_d, dir_1, htypes.lcs_view_tests.sample_model_1()),
+        (layer_d, dir_2, htypes.lcs_view_tests.sample_model_2()),
         ]
     mock = MagicMock()
     mock.__iter__.return_value = items
@@ -41,6 +42,7 @@ def test_view(lcs, piece):
 
 def test_open_piece(data_to_ref, piece):
     current_item = htypes.lcs_view.item(
+        layer="<unused>",
         dir=(data_to_ref(htypes.lcs_view_tests.sample_1_d()),),
         piece=mosaic.put(htypes.lcs_view_tests.sample_model_1()),
         dir_str="<unused>",
