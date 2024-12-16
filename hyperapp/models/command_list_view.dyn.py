@@ -1,5 +1,5 @@
 from . import htypes
-from .code.command import d_to_name
+from .code.directory import d_to_name
 
 
 def command_item_to_view_item(data_to_ref, item):

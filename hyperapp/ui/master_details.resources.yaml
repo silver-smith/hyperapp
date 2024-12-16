@@ -19,7 +19,7 @@ import:
 - legacy_type.master_details:wrap_master_details_d
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
-- ui.command:command.module
+- ui.directory:directory.module
 - ui.model_command:model_command.module
 - ui.qt.box_layout:box_layout.module
 definitions:
@@ -40,7 +40,7 @@ definitions:
       file_name: master_details.dyn.py
       import_list:
         code.box_layout: ui.qt.box_layout:box_layout.module
-        code.command: ui.command:command.module
+        code.directory: ui.directory:directory.module
         code.mark: common.mark:mark.module
         code.model_command: ui.model_command:model_command.module
         htypes.box_layout.state: legacy_type.box_layout:state

@@ -22,6 +22,7 @@ import:
 - legacy_type.model:tree_ui_t
 - legacy_type.system_fn:ctx_fn
 - ui.command:command.module
+- ui.directory:directory.module
 definitions:
   add_view_command:
     type: legacy_type.builtin:attribute
@@ -57,6 +58,7 @@ definitions:
       file_name: layout.dyn.py
       import_list:
         code.command: ui.command:command.module
+        code.directory: ui.directory:directory.module
         code.mark: common.mark:mark.module
         htypes.command_groups.pane_2_d: legacy_type.command_groups:pane_2_d
         htypes.layout.command_item: legacy_type.layout:command_item

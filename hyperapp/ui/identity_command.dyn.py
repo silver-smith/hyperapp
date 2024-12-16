@@ -1,7 +1,5 @@
 from functools import cached_property
 
-from hyperapp.common.htypes import TRecord
-
 from . import htypes
 from .services import (
     mosaic,
@@ -10,6 +8,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.list_diff import ListDiff
+from .code.directory import name_to_d
 from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase
 from .code.ui_model_command import UnboundUiModelCommand
 from .code.model_command import model_command_ctx
@@ -69,9 +68,7 @@ async def add_identity_command(piece, lcs, ctx, data_to_ref, feed_factory, ui_mo
     model_state = web.summon(piece.model_state)
     command_ctx = model_command_ctx(ctx, model, model_state)
     commands_item_list = ui_model_command_items(lcs, model_t, command_ctx)
-    new_d_name = 'identity_d'
-    new_d_t = TRecord('custom_command', new_d_name)
-    command_d = new_d_t()
+    command_d = name_to_d('custom_command', 'identity')
     model_command_piece = htypes.identity_command.identity_command(
         d=data_to_ref(command_d),
         )

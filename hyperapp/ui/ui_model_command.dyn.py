@@ -13,7 +13,8 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase, d_to_name
+from .code.directory import d_to_name
+from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase
 from .code.command_groups import default_command_groups
 from .code.model_command import UnboundModelCommand
 

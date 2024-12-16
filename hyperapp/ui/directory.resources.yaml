@@ -3,13 +3,11 @@
 import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
-- ui.directory:directory.module
 definitions:
-  command.module:
+  directory.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: command
-      file_name: command.dyn.py
+      module_name: directory
+      file_name: directory.dyn.py
       import_list:
-        code.directory: ui.directory:directory.module
         services.pyobj_creg: builtins:pyobj_creg.service

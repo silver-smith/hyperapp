@@ -8,7 +8,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.command import d_to_name
+from .code.directory import d_to_name
 from .code.box_layout import BoxLayoutView
 from .code.model_command import model_command_ctx
 

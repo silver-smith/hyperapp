@@ -3,7 +3,8 @@ from types import SimpleNamespace
 
 from . import htypes
 from .code.mark import mark
-from .code.command import d_to_name, BoundCommandBase, UnboundCommandBase
+from .code.directory import d_to_name
+from .code.command import BoundCommandBase, UnboundCommandBase
 
 log = logging.getLogger(__name__)
 

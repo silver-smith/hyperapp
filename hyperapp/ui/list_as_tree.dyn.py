@@ -8,7 +8,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.command import d_to_name
+from .code.directory import d_to_name
 from .code.list_diff import ListDiff
 from .code.fn_list_adapter import FnListAdapter
 from .code.list_as_tree_adapter import ListAsTreeAdapter

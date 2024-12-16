@@ -15,7 +15,7 @@ import:
 - legacy_type.model_commands:view
 - legacy_type.rename_command:form
 - legacy_type.system_fn:ctx_fn
-- ui.command:command.module
+- ui.directory:directory.module
 - ui.model_command:model_command.module
 definitions:
   model_command_get:
@@ -85,7 +85,7 @@ definitions:
       module_name: rename_command
       file_name: rename_command.dyn.py
       import_list:
-        code.command: ui.command:command.module
+        code.directory: ui.directory:directory.module
         code.mark: common.mark:mark.module
         code.model_command: ui.model_command:model_command.module
         htypes.rename_command.form: legacy_type.rename_command:form

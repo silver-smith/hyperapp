@@ -7,6 +7,7 @@ from enum import Enum
 from .services import (
     pyobj_creg,
     )
+from .code.directory import d_to_name
 
 log = logging.getLogger(__name__)
 
@@ -65,17 +66,6 @@ _hardcoded_shortcuts = {
     'open_lcs_view': 'Ctrl+L',
     'lcs_open_piece': 'Return',
     }
-
-
-def d_to_name(d):
-    name = d._t.name
-    assert name.endswith('_d'), repr(name)
-    return name[:-2]
-
-
-def d_res_ref_to_name(d_ref):
-    d = pyobj_creg.invite(d_ref)
-    return d_to_name(d)
 
 
 class UnboundCommandBase:

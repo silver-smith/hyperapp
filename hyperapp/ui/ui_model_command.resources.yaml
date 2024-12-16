@@ -16,6 +16,7 @@ import:
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_groups:command_groups.module
+- ui.directory:directory.module
 - ui.model_command:model_command.module
 definitions:
   custom_ui_global_model_commands:
@@ -99,6 +100,7 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.command_groups: ui.command_groups:command_groups.module
+        code.directory: ui.directory:directory.module
         code.mark: common.mark:mark.module
         code.model_command: ui.model_command:model_command.module
         htypes.command.custom_global_commands_lcs_d: legacy_type.command:custom_global_commands_lcs_d
