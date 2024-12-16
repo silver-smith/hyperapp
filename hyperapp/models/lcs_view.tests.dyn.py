@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -38,6 +39,17 @@ def test_view(lcs, piece):
     assert len(item_list) == 2
 
 
-def test_open_lcs_view():
+def test_open_piece(data_to_ref, piece):
+    current_item = htypes.lcs_view.item(
+        dir=(data_to_ref(htypes.lcs_view_tests.sample_1_d()),),
+        piece=mosaic.put(htypes.lcs_view_tests.sample_model_1()),
+        dir_str="<unused>",
+        piece_str="<unused>",
+        )
+    browser_piece = lcs_view.lcs_open_piece(piece, current_item)
+    assert browser_piece
+
+
+def test_open_view():
     piece = lcs_view.open_lcs_view()
     assert piece

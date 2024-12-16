@@ -7,4 +7,5 @@ item = record:
   piece_str: string
   
 
+lcs_open_piece_d = record
 open_lcs_view_d = record

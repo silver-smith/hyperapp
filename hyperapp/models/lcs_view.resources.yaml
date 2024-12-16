@@ -2,20 +2,37 @@
 
 import:
 - builtins:mosaic.service
+- builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.lcs_view:item
+- legacy_type.lcs_view:lcs_open_piece_d
 - legacy_type.lcs_view:open_lcs_view_d
 - legacy_type.lcs_view:view
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
+- models.data_browser:data_browser.module
 definitions:
+  lcs_open_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_view.module
+      attr_name: lcs_open_piece
+  lcs_open_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_open_piece
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   lcs_view:
     type: legacy_type.builtin:attribute
     value:
@@ -27,11 +44,13 @@ definitions:
       module_name: lcs_view
       file_name: lcs_view.dyn.py
       import_list:
+        code.data_browser: models.data_browser:data_browser.module
         code.mark: common.mark:mark.module
         htypes.builtin.record_mt: legacy_type.builtin:record_mt
         htypes.lcs_view.item: legacy_type.lcs_view:item
         htypes.lcs_view.view: legacy_type.lcs_view:view
         services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   lcs_view_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -55,6 +74,24 @@ definitions:
       - lcs
       service_params:
       - data_to_ref
+  lcs_view_view_lcs_open_piece.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      command: lcs_view_view_lcs_open_piece.model-command
+  lcs_view_view_lcs_open_piece.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_view:lcs_open_piece_d
+  lcs_view_view_lcs_open_piece.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_view_view_lcs_open_piece.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: lcs_open_piece.system-fn
   open_lcs_view:
     type: legacy_type.builtin:attribute
     value:

@@ -63,6 +63,7 @@ _hardcoded_shortcuts = {
     'edit': 'E',
     'save': 'Ctrl+Return',
     'open_lcs_view': 'Ctrl+L',
+    'lcs_open_piece': 'Return',
     }
 
 

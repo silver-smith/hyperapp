@@ -9,7 +9,9 @@ from .services import (
 from .code.mark import mark
 
 
-def _data_browser(data, t):
+def data_browser(data, t=None):
+    if t is None:
+        t = deduce_t(data)
     if isinstance(t, TPrimitive):
         return htypes.data_browser.primitive_view(
             data=mosaic.put(data, t),
@@ -32,7 +34,7 @@ def _data_browser(data, t):
                 data=mosaic.put(None),
                 )
         else:
-            return _data_browser(data, t.base_t)
+            return data_browser(data, t.base_t)
     raise RuntimeError(f"Data browser: Unsupported type: {t}: {data}")
 
 
@@ -57,7 +59,7 @@ def record_open(piece, current_item):
     value = getattr(data, name)
     if field_t is ref_t:
         value, field_t = web.summon_with_t(value)
-    return _data_browser(value, field_t)
+    return data_browser(value, field_t)
 
 
 @mark.model
@@ -77,7 +79,7 @@ def browse_list(piece):
 def list_open(piece, current_item):
     data, data_t = web.summon_with_t(piece.data)
     value = data[current_item.idx]
-    return _data_browser(value, data_t.element_t)
+    return data_browser(value, data_t.element_t)
 
 
 @mark.model
@@ -100,7 +102,7 @@ def ref_list_open(piece, current_item):
     data = web.summon(piece.data)
     value_ref = data[current_item.idx]
     value, t = web.summon_with_t(value_ref)
-    return _data_browser(value, t)
+    return data_browser(value, t)
 
 
 @mark.model
@@ -114,5 +116,4 @@ def browse_primitive(piece):
 
 @mark.global_command
 def browse_current_model(piece):
-    t = deduce_t(piece)
-    return _data_browser(piece, t)
+    return data_browser(piece)

@@ -26,6 +26,7 @@ import:
 - models.global_commands:global_commands_view_run_command.command-cfg-item
 - models.global_commands:open_global_commands.global-model-command
 - models.lcs_view:lcs_view_view.model-cfg-item
+- models.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
 - models.lcs_view:open_lcs_view.global-model-command
 - models.model_commands:model_commands_view.model-cfg-item
 - models.model_commands:model_commands_view_run_command.command-cfg-item
@@ -444,6 +445,7 @@ definitions:
       - models.data_browser:data_browser_ref_list_view_ref_list_open.command-cfg-item
       - models.file_bundles:file_bundles_view_open.command-cfg-item
       - models.global_commands:global_commands_view_run_command.command-cfg-item
+      - models.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
       - models.model_commands:model_commands_view_run_command.command-cfg-item
       - models.rename_command:model_commands-view.edit.command-cfg-item
       - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
