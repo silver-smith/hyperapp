@@ -14,3 +14,7 @@ class LCSheet:
     def set(self, dir, piece):
         log.info("LCS: set %s -> %s", set(dir), piece)
         self._storage.set(dir, piece)
+
+    # element is: (dir set, piece).
+    def __iter__(self):
+        return iter(self._storage.items())

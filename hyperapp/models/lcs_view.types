@@ -1,0 +1,10 @@
+view = record
+
+item = record:
+  dir: ref list
+  piece: ref
+  dir_str: string
+  piece_str: string
+  
+
+open_lcs_view_d = record

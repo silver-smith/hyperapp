@@ -1,0 +1,81 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- common.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.command:model_command
+- legacy_type.lcs_view:item
+- legacy_type.lcs_view:open_lcs_view_d
+- legacy_type.lcs_view:view
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
+definitions:
+  lcs_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_view.module
+      attr_name: lcs_view
+  lcs_view.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: lcs_view
+      file_name: lcs_view.dyn.py
+      import_list:
+        code.mark: common.mark:mark.module
+        htypes.builtin.record_mt: legacy_type.builtin:record_mt
+        htypes.lcs_view.item: legacy_type.lcs_view:item
+        htypes.lcs_view.view: legacy_type.lcs_view:view
+        services.mosaic: builtins:mosaic.service
+  lcs_view_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.lcs_view:item
+  lcs_view_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: lcs_view_view.list-ui-t
+      system_fn: lcs_view_view.system-fn
+  lcs_view_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      model: lcs_view_view.model
+  lcs_view_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_view
+      ctx_params:
+      - piece
+      - lcs
+      service_params:
+      - data_to_ref
+  open_lcs_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_view.module
+      attr_name: open_lcs_view
+  open_lcs_view.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_view:open_lcs_view_d
+  open_lcs_view.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_lcs_view.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_lcs_view.system-fn
+  open_lcs_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_lcs_view
+      ctx_params: []
+      service_params: []

@@ -41,8 +41,8 @@ class LcsResourceStorage:
     def remove(self, dir):
         raise NotImplementedError()
 
-    def iter(self, filter_dir):
-        raise NotImplementedError()
+    def items(self, filter_dir=None):
+        return self._mapping.items()
 
     def _load_mapping(self):
         try:

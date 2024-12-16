@@ -62,6 +62,7 @@ _hardcoded_shortcuts = {
     'open_crud_sample': 'Alt+R',
     'edit': 'E',
     'save': 'Ctrl+Return',
+    'open_lcs_view': 'Ctrl+L',
     }
 
 
