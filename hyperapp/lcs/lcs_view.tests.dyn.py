@@ -10,8 +10,12 @@ from .tested.code import lcs_view
 
 
 @mark.fixture
-def lcs():
-    layer_d = htypes.lcs_view_tests.layer_d()
+def layer_d():
+    return htypes.lcs_view_tests.layer_d()
+
+
+@mark.fixture
+def lcs(layer_d):
     dir_1 = {
         htypes.lcs_view_tests.sample_1_d(),
         }
@@ -26,6 +30,7 @@ def lcs():
         ]
     mock = MagicMock()
     mock.__iter__.return_value = items
+    mock.layers.return_value = [layer_d]
     return mock
 
 
@@ -38,6 +43,19 @@ def test_view(lcs, piece):
     item_list = lcs_view.lcs_view(piece, lcs)
     assert type(item_list) is list
     assert len(item_list) == 2
+
+
+def test_layers_view(data_to_ref, layer_d, lcs):
+    piece = htypes.lcs_view.layers_view()
+    item_list = lcs_view.lcs_layers_view(piece, lcs)
+    assert item_list == [
+        htypes.lcs_view.layer_item('layer', data_to_ref(layer_d)),
+        ], item_list
+
+
+def test_open_layers(piece):
+    view = lcs_view.lcs_open_layers(piece)
+    assert view
 
 
 def test_open_piece(data_to_ref, piece):

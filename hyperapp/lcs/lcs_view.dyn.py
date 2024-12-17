@@ -7,6 +7,7 @@ from .code.mark import mark
 from .code.directory import d_to_name
 from .code.data_browser import data_browser
 
+
 def _dir_to_str(d):
     if isinstance(d, htypes.builtin.record_mt):
         return f'{d.module_name}.{d.name}'
@@ -24,9 +25,25 @@ def lcs_view(piece, lcs, data_to_ref):
             dir_str=", ".join(_dir_to_str(d) for d in dir_set),
             piece_str=str(piece),
             )
-        for layer_d, dir_set, piece in lcs
+        for layer_d, dir_set, piece in sorted(lcs)
+        ]
+
+
+@mark.model
+def lcs_layers_view(piece, lcs, data_to_ref):
+    return [
+        htypes.lcs_view.layer_item(
+            name=d_to_name(layer_d),
+            d=data_to_ref(layer_d),
+            )
+        for layer_d in sorted(lcs.layers())
         ]
         
+
+@mark.command
+def lcs_open_layers(piece):
+    return htypes.lcs_view.layers_view()
+
 
 @mark.command
 def lcs_open_piece(piece, current_item):

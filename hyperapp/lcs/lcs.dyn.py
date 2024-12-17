@@ -44,6 +44,9 @@ class LCSheet:
             for d_set, piece in storage.items():
                 yield (layer_d, d_set, piece)
 
+    def layers(self):
+        return self._d_to_storage.keys()
+
     def _load(self, data, lcs_resource_storage_factory):
         if not data:
             return

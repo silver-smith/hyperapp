@@ -6,7 +6,13 @@ item = record:
   piece: ref
   dir_str: string
   piece_str: string
-  
 
+layers_view = record
+
+layer_item = record:
+  name: string
+  d: ref
+
+lcs_open_layers_d = record
 lcs_open_piece_d = record
 open_lcs_view_d = record

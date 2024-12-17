@@ -11,6 +11,9 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.lcs_view:item
+- legacy_type.lcs_view:layer_item
+- legacy_type.lcs_view:layers_view
+- legacy_type.lcs_view:lcs_open_layers_d
 - legacy_type.lcs_view:lcs_open_piece_d
 - legacy_type.lcs_view:open_lcs_view_d
 - legacy_type.lcs_view:view
@@ -21,6 +24,23 @@ import:
 - models.data_browser:data_browser.module
 - ui.directory:directory.module
 definitions:
+  lcs_layers_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_view.module
+      attr_name: lcs_layers_view
+  lcs_open_layers:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_view.module
+      attr_name: lcs_open_layers
+  lcs_open_layers.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_open_layers
+      ctx_params:
+      - piece
+      service_params: []
   lcs_open_piece:
     type: legacy_type.builtin:attribute
     value:
@@ -50,9 +70,34 @@ definitions:
         code.mark: common.mark:mark.module
         htypes.builtin.record_mt: legacy_type.builtin:record_mt
         htypes.lcs_view.item: legacy_type.lcs_view:item
+        htypes.lcs_view.layer_item: legacy_type.lcs_view:layer_item
+        htypes.lcs_view.layers_view: legacy_type.lcs_view:layers_view
         htypes.lcs_view.view: legacy_type.lcs_view:view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+  lcs_view_layers_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.lcs_view:layer_item
+  lcs_view_layers_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: lcs_view_layers_view.list-ui-t
+      system_fn: lcs_view_layers_view.system-fn
+  lcs_view_layers_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.lcs_view:layers_view
+      model: lcs_view_layers_view.model
+  lcs_view_layers_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_layers_view
+      ctx_params:
+      - piece
+      - lcs
+      service_params:
+      - data_to_ref
   lcs_view_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -76,6 +121,24 @@ definitions:
       - lcs
       service_params:
       - data_to_ref
+  lcs_view_view_lcs_open_layers.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      command: lcs_view_view_lcs_open_layers.model-command
+  lcs_view_view_lcs_open_layers.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_view:lcs_open_layers_d
+  lcs_view_view_lcs_open_layers.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_view_view_lcs_open_layers.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: lcs_open_layers.system-fn
   lcs_view_view_lcs_open_piece.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
