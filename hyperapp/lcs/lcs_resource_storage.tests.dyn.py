@@ -48,6 +48,7 @@ def piece():
 def test_persistence(lcs_resource_storage_factory, path, key, piece):
     storage_1 = lcs_resource_storage_factory('test.lcs_storage', path)
     storage_1.set(key, piece)
+    assert storage_1.get(key) == piece
     storage_2 = lcs_resource_storage_factory('test.lcs_storage', path)
     assert storage_2.get(key) == piece
 
@@ -55,9 +56,18 @@ def test_persistence(lcs_resource_storage_factory, path, key, piece):
 def test_primitive(lcs_resource_storage_factory, path, key):
     storage = lcs_resource_storage_factory('test.lcs_storage', path)
     storage.set(key, "Sample string")
+    assert storage.get(key) == "Sample string"
 
 
 def test_replace(lcs_resource_storage_factory, path, key, piece):
     storage = lcs_resource_storage_factory('test.lcs_storage', path)
     storage.set(key, piece)
     storage.set(key, "Sample string")
+    assert storage.get(key) == "Sample string"
+
+
+def test_remove(lcs_resource_storage_factory, path, key, piece):
+    storage = lcs_resource_storage_factory('test.lcs_storage', path)
+    storage.set(key, piece)
+    storage.remove(key)
+    assert storage.get(key) is None

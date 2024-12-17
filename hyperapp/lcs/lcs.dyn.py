@@ -47,6 +47,17 @@ class LCSheet:
     def layers(self):
         return self._d_to_storage.keys()
 
+    def move(self, dir, source_layer_d, target_layer_d):
+        log.info("Move %s from %s to %s", dir, source_layer_d, target_layer_d)
+        source_storage = self._d_to_storage[source_layer_d]
+        target_storage = self._d_to_storage[target_layer_d]
+        piece = source_storage.get(dir)
+        if piece is None:
+            log.warning("Dir %s is missing from %s", dir, source_layer_d)
+            return
+        target_storage.set(dir, piece)
+        source_storage.remove(dir)
+
     def _load(self, data, lcs_resource_storage_factory):
         if not data:
             return

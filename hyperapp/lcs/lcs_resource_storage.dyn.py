@@ -39,7 +39,9 @@ class LcsResourceStorage:
         raise NotImplementedError()
 
     def remove(self, dir):
-        raise NotImplementedError()
+        fdir = frozenset(dir)
+        del self._mapping[fdir]
+        self._save()
 
     def items(self, filter_dir=None):
         return self._mapping.items()

@@ -12,7 +12,9 @@ import:
 - legacy_type.command:model_command
 - legacy_type.lcs_view:item
 - legacy_type.lcs_view:layer_item
+- legacy_type.lcs_view:layer_selector
 - legacy_type.lcs_view:layers_view
+- legacy_type.lcs_view:lcs_move_to_another_layer_d
 - legacy_type.lcs_view:lcs_open_layers_d
 - legacy_type.lcs_view:lcs_open_piece_d
 - legacy_type.lcs_view:open_lcs_view_d
@@ -29,6 +31,19 @@ definitions:
     value:
       object: lcs_view.module
       attr_name: lcs_layers_view
+  lcs_move_to_another_layer:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_view.module
+      attr_name: lcs_move_to_another_layer
+  lcs_move_to_another_layer.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_move_to_another_layer
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   lcs_open_layers:
     type: legacy_type.builtin:attribute
     value:
@@ -71,6 +86,7 @@ definitions:
         htypes.builtin.record_mt: legacy_type.builtin:record_mt
         htypes.lcs_view.item: legacy_type.lcs_view:item
         htypes.lcs_view.layer_item: legacy_type.lcs_view:layer_item
+        htypes.lcs_view.layer_selector: legacy_type.lcs_view:layer_selector
         htypes.lcs_view.layers_view: legacy_type.lcs_view:layers_view
         htypes.lcs_view.view: legacy_type.lcs_view:view
         services.mosaic: builtins:mosaic.service
@@ -121,6 +137,24 @@ definitions:
       - lcs
       service_params:
       - data_to_ref
+  lcs_view_view_lcs_move_to_another_layer.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      command: lcs_view_view_lcs_move_to_another_layer.model-command
+  lcs_view_view_lcs_move_to_another_layer.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_view:lcs_move_to_another_layer_d
+  lcs_view_view_lcs_move_to_another_layer.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_view_view_lcs_move_to_another_layer.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: lcs_move_to_another_layer.system-fn
   lcs_view_view_lcs_open_layers.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

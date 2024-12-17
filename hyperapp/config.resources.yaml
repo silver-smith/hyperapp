@@ -8,9 +8,12 @@ import:
 - common.mark:marker_ctl.service
 - common.ref_picker:pick_refs.service
 - common.ref_picker:ref_picker_cache.service
+- lcs.lcs_layer_selector:lcs_view_layer_selector.actor-template
+- lcs.lcs_layer_selector:lcs_view_layer_selector_select_layer.command-cfg-item
 - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
 - lcs.lcs_view:lcs_view_layers_view.model-cfg-item
 - lcs.lcs_view:lcs_view_view.model-cfg-item
+- lcs.lcs_view:lcs_view_view_lcs_move_to_another_layer.command-cfg-item
 - lcs.lcs_view:lcs_view_view_lcs_open_layers.command-cfg-item
 - lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
 - lcs.lcs_view:open_lcs_view.global-model-command
@@ -442,6 +445,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - lcs.lcs_layer_selector:lcs_view_layer_selector_select_layer.command-cfg-item
+      - lcs.lcs_view:lcs_view_view_lcs_move_to_another_layer.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_open_layers.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
       - models.data_browser:data_browser_list_view_list_open.command-cfg-item
@@ -464,6 +469,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - lcs.lcs_layer_selector:lcs_view_layer_selector.actor-template
       - ui.crud:crud_model.actor-template
       - ui.visualizer:builtin_int.actor-template
       - ui.visualizer:builtin_string.actor-template

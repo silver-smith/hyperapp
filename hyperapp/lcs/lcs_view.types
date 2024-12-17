@@ -1,6 +1,7 @@
 view = record
 
 item = record:
+  layer_d: ref
   layer: string
   dir: ref list
   piece: ref
@@ -13,6 +14,11 @@ layer_item = record:
   name: string
   d: ref
 
+layer_selector = record:
+  source_layer_d: ref
+  dir: ref list
+
 lcs_open_layers_d = record
+lcs_move_to_another_layer_d = record
 lcs_open_piece_d = record
 open_lcs_view_d = record

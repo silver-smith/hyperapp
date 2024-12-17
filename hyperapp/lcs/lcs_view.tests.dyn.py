@@ -58,8 +58,22 @@ def test_open_layers(piece):
     assert view
 
 
-def test_open_piece(data_to_ref, piece):
+def test_move(data_to_ref, layer_d, piece):
     current_item = htypes.lcs_view.item(
+        layer_d=data_to_ref(layer_d),
+        layer="<unused>",
+        dir=(data_to_ref(htypes.lcs_view_tests.sample_1_d()),),
+        piece=mosaic.put(htypes.lcs_view_tests.sample_model_1()),
+        dir_str="<unused>",
+        piece_str="<unused>",
+        )
+    selector = lcs_view.lcs_move_to_another_layer(piece, current_item)
+    assert selector
+
+
+def test_open_piece(data_to_ref, layer_d, piece):
+    current_item = htypes.lcs_view.item(
+        layer_d=data_to_ref(layer_d),
         layer="<unused>",
         dir=(data_to_ref(htypes.lcs_view_tests.sample_1_d()),),
         piece=mosaic.put(htypes.lcs_view_tests.sample_model_1()),
