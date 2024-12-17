@@ -45,6 +45,9 @@ def open_command_layout_context(data_to_ref, view_creg, piece):
         name="<unused>",
         groups="<unused>",
         repr="<unused>",
+        shortcut="",
+        text="",
+        tooltip="",
         )
     navigator = Mock()
     navigator.view.piece = htypes.label.view("Sample view")

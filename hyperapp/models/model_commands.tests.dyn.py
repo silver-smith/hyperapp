@@ -91,6 +91,9 @@ async def test_run_command(data_to_ref, lcs, piece):
         name="<unused>",
         groups="<unused>",
         repr="<unused>",
+        shortcut="",
+        text="",
+        tooltip="",
         )
     ctx = Context(
         navigator=navigator,

@@ -4,3 +4,8 @@ item = record:
   name: string
   groups: string
   repr: string
+  shortcut: string
+  text: string
+  tooltip: string
+
+set_shortcut_d = record

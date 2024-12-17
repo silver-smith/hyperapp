@@ -1,6 +1,10 @@
 from unittest.mock import Mock
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
+from .code.mark import mark
 from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
 from .code.ui_model_command import UnboundUiModelCommand, CommandItem
@@ -40,3 +44,34 @@ def test_command_item_to_item(data_to_ref, partial_ref, model_view_creg, visuali
         )
     view_item = command_list_view.command_item_to_view_item(data_to_ref, command_item)
     assert view_item
+
+
+@mark.fixture
+def current_item(data_to_ref):
+    command_d = htypes.command_list_view_tests.sample_model_command_d()
+    model_command_d = htypes.command_list_view_tests.sample_model_command_d()
+    return htypes.command_list_view.item(
+        ui_command_d=data_to_ref(command_d),
+        model_command_d=data_to_ref(model_command_d),
+        name="sample-command",
+        groups="<unused>",
+        repr="<unused>",
+        shortcut="",
+        text="",
+        tooltip="",
+        )
+
+
+def test_global_set_shortcut(current_item):
+    piece = htypes.global_commands.view()
+    command_list_view.set_shortcut(piece, current_item)
+
+
+def test_model_set_shortcut(current_item):
+    model = htypes.command_list_view_tests.sample_model()
+    model_state = htypes.command_list_view_tests.sample_model_state()
+    piece = htypes.model_commands.view(
+        model=mosaic.put(model),
+        model_state=mosaic.put(model_state)
+        )
+    command_list_view.set_shortcut(piece, current_item)
