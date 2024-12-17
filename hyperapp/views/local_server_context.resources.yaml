@@ -50,25 +50,16 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.navigator:view
-      command: navigator_view_open_local_server_context.ui-command
-  navigator_view_open_local_server_context.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.local_server_context:open_local_server_context_d
-  navigator_view_open_local_server_context.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: navigator_view_open_local_server_context.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: open_local_server_context.system-fn
+      command: open_local_server_context.ui-command
   open_local_server_context:
     type: legacy_type.builtin:attribute
     value:
       object: local_server_context.module
       attr_name: open_local_server_context
+  open_local_server_context.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.local_server_context:open_local_server_context_d
   open_local_server_context.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -80,3 +71,12 @@ definitions:
       - ctx
       service_params:
       - view_creg
+  open_local_server_context.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: open_local_server_context.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: open_local_server_context.system-fn

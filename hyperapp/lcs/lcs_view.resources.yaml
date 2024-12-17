@@ -36,6 +36,19 @@ definitions:
     value:
       object: lcs_view.module
       attr_name: lcs_move_to_another_layer
+  lcs_move_to_another_layer.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_view:lcs_move_to_another_layer_d
+  lcs_move_to_another_layer.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_move_to_another_layer.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: lcs_move_to_another_layer.system-fn
   lcs_move_to_another_layer.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -49,6 +62,19 @@ definitions:
     value:
       object: lcs_view.module
       attr_name: lcs_open_layers
+  lcs_open_layers.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_view:lcs_open_layers_d
+  lcs_open_layers.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_open_layers.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: lcs_open_layers.system-fn
   lcs_open_layers.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -61,6 +87,19 @@ definitions:
     value:
       object: lcs_view.module
       attr_name: lcs_open_piece
+  lcs_open_piece.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_view:lcs_open_piece_d
+  lcs_open_piece.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_open_piece.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: lcs_open_piece.system-fn
   lcs_open_piece.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -141,56 +180,17 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.lcs_view:view
-      command: lcs_view_view_lcs_move_to_another_layer.model-command
-  lcs_view_view_lcs_move_to_another_layer.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_view:lcs_move_to_another_layer_d
-  lcs_view_view_lcs_move_to_another_layer.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: lcs_view_view_lcs_move_to_another_layer.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: lcs_move_to_another_layer.system-fn
+      command: lcs_move_to_another_layer.model-command
   lcs_view_view_lcs_open_layers.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.lcs_view:view
-      command: lcs_view_view_lcs_open_layers.model-command
-  lcs_view_view_lcs_open_layers.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_view:lcs_open_layers_d
-  lcs_view_view_lcs_open_layers.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: lcs_view_view_lcs_open_layers.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: true
-      system_fn: lcs_open_layers.system-fn
+      command: lcs_open_layers.model-command
   lcs_view_view_lcs_open_piece.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.lcs_view:view
-      command: lcs_view_view_lcs_open_piece.model-command
-  lcs_view_view_lcs_open_piece.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_view:lcs_open_piece_d
-  lcs_view_view_lcs_open_piece.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: lcs_view_view_lcs_open_piece.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: lcs_open_piece.system-fn
+      command: lcs_open_piece.model-command
   open_lcs_view:
     type: legacy_type.builtin:attribute
     value:

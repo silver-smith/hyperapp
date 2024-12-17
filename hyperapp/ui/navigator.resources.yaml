@@ -33,6 +33,10 @@ definitions:
     value:
       object: navigator.module
       attr_name: go_back
+  go_back.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.navigator:go_back_d
   go_back.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -43,11 +47,24 @@ definitions:
       - ctx
       service_params:
       - model_view_creg
+  go_back.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: go_back.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: go_back.system-fn
   go_forward:
     type: legacy_type.builtin:attribute
     value:
       object: navigator.module
       attr_name: go_forward
+  go_forward.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.navigator:go_forward_d
   go_forward.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -58,6 +75,15 @@ definitions:
       - ctx
       service_params:
       - model_view_creg
+  go_forward.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: go_forward.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: go_forward.system-fn
   navigator.module:
     type: legacy_type.builtin:python_module
     value:
@@ -83,35 +109,9 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.navigator:view
-      command: navigator_view_go_back.ui-command
-  navigator_view_go_back.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.navigator:go_back_d
-  navigator_view_go_back.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: navigator_view_go_back.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: go_back.system-fn
+      command: go_back.ui-command
   navigator_view_go_forward.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.navigator:view
-      command: navigator_view_go_forward.ui-command
-  navigator_view_go_forward.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.navigator:go_forward_d
-  navigator_view_go_forward.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: navigator_view_go_forward.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: go_forward.system-fn
+      command: go_forward.ui-command

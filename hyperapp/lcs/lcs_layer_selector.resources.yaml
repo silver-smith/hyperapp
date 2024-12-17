@@ -41,25 +41,25 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.lcs_view:layer_selector
-      command: lcs_view_layer_selector_select_layer.model-command
-  lcs_view_layer_selector_select_layer.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_layer_selector:select_layer_d
-  lcs_view_layer_selector_select_layer.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: lcs_view_layer_selector_select_layer.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: select_layer.system-fn
+      command: select_layer.model-command
   select_layer:
     type: legacy_type.builtin:attribute
     value:
       object: lcs_layer_selector.module
       attr_name: select_layer
+  select_layer.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_layer_selector:select_layer_d
+  select_layer.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: select_layer.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: select_layer.system-fn
   select_layer.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

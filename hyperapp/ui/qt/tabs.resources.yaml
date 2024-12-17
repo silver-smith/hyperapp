@@ -33,6 +33,10 @@ definitions:
     value:
       object: tabs.module
       attr_name: open_tab_list
+  open_tab_list.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.tabs:open_tab_list_d
   open_tab_list.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -40,6 +44,15 @@ definitions:
       ctx_params:
       - view
       service_params: []
+  open_tab_list.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: open_tab_list.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: open_tab_list.system-fn
   tabs.module:
     type: legacy_type.builtin:python_module
     value:
@@ -65,17 +78,4 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.tabs:view
-      command: tabs_view_open_tab_list.ui-command
-  tabs_view_open_tab_list.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.tabs:open_tab_list_d
-  tabs_view_open_tab_list.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: tabs_view_open_tab_list.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: true
-      system_fn: open_tab_list.system-fn
+      command: open_tab_list.ui-command

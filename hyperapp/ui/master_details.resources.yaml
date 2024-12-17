@@ -67,25 +67,16 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.master_details:view
-      command: master_details_view_unwrap_master_details.ui-command
-  master_details_view_unwrap_master_details.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.master_details:unwrap_master_details_d
-  master_details_view_unwrap_master_details.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: master_details_view_unwrap_master_details.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: unwrap_master_details.system-fn
+      command: unwrap_master_details.ui-command
   unwrap_master_details:
     type: legacy_type.builtin:attribute
     value:
       object: master_details.module
       attr_name: unwrap_master_details
+  unwrap_master_details.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.master_details:unwrap_master_details_d
   unwrap_master_details.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -98,6 +89,15 @@ definitions:
       - ctx
       service_params:
       - model_view_creg
+  unwrap_master_details.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: unwrap_master_details.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: unwrap_master_details.system-fn
   wrap_master_details:
     type: legacy_type.builtin:attribute
     value:

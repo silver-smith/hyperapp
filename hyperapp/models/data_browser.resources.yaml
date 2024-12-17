@@ -116,20 +116,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.data_browser:list_view
-      command: data_browser_list_view_list_open.model-command
-  data_browser_list_view_list_open.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.data_browser:list_open_d
-  data_browser_list_view_list_open.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: data_browser_list_view_list_open.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: list_open.system-fn
+      command: list_open.model-command
   data_browser_primitive_view.model:
     type: legacy_type.model:model
     value:
@@ -176,20 +163,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.data_browser:record_view
-      command: data_browser_record_view_record_open.model-command
-  data_browser_record_view_record_open.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.data_browser:record_open_d
-  data_browser_record_view_record_open.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: data_browser_record_view_record_open.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: record_open.system-fn
+      command: record_open.model-command
   data_browser_ref_list_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -215,25 +189,25 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.data_browser:ref_list_view
-      command: data_browser_ref_list_view_ref_list_open.model-command
-  data_browser_ref_list_view_ref_list_open.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.data_browser:ref_list_open_d
-  data_browser_ref_list_view_ref_list_open.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: data_browser_ref_list_view_ref_list_open.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: ref_list_open.system-fn
+      command: ref_list_open.model-command
   list_open:
     type: legacy_type.builtin:attribute
     value:
       object: data_browser.module
       attr_name: list_open
+  list_open.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:list_open_d
+  list_open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: list_open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: list_open.system-fn
   list_open.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -247,6 +221,19 @@ definitions:
     value:
       object: data_browser.module
       attr_name: record_open
+  record_open.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:record_open_d
+  record_open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: record_open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: record_open.system-fn
   record_open.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -260,6 +247,19 @@ definitions:
     value:
       object: data_browser.module
       attr_name: ref_list_open
+  ref_list_open.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:ref_list_open_d
+  ref_list_open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: ref_list_open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: ref_list_open.system-fn
   ref_list_open.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

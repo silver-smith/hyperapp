@@ -16,38 +16,12 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.text:edit_view
-      command: text_edit_view_toggle_editable.ui-command
-  text_edit_view_toggle_editable.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.text_toggle_editable:toggle_editable_d
-  text_edit_view_toggle_editable.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: text_edit_view_toggle_editable.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: toggle_editable.system-fn
+      command: toggle_editable.ui-command
   text_readonly_view_toggle_editable.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.text:readonly_view
-      command: text_readonly_view_toggle_editable.ui-command
-  text_readonly_view_toggle_editable.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.text_toggle_editable:toggle_editable_d
-  text_readonly_view_toggle_editable.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: text_readonly_view_toggle_editable.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: toggle_editable.system-fn
+      command: toggle_editable.ui-command
   text_toggle_editable.module:
     type: legacy_type.builtin:python_module
     value:
@@ -62,6 +36,10 @@ definitions:
     value:
       object: text_toggle_editable.module
       attr_name: toggle_editable
+  toggle_editable.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.text_toggle_editable:toggle_editable_d
   toggle_editable.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -73,3 +51,12 @@ definitions:
       - ctx
       service_params:
       - model_view_creg
+  toggle_editable.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: toggle_editable.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: toggle_editable.system-fn

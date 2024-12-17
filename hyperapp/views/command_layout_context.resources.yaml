@@ -60,43 +60,30 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.global_commands:view
-      command: global_commands_view_open_command_layout_context.model-command
-  global_commands_view_open_command_layout_context.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.command_layout_context:open_command_layout_context_d
-  global_commands_view_open_command_layout_context.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: global_commands_view_open_command_layout_context.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: open_command_layout_context.system-fn
+      command: open_command_layout_context.model-command
   model_commands_view_open_command_layout_context.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.model_commands:view
-      command: model_commands_view_open_command_layout_context.model-command
-  model_commands_view_open_command_layout_context.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.command_layout_context:open_command_layout_context_d
-  model_commands_view_open_command_layout_context.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: model_commands_view_open_command_layout_context.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: open_command_layout_context.system-fn
+      command: open_command_layout_context.model-command
   open_command_layout_context:
     type: legacy_type.builtin:attribute
     value:
       object: command_layout_context.module
       attr_name: open_command_layout_context
+  open_command_layout_context.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.command_layout_context:open_command_layout_context_d
+  open_command_layout_context.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_command_layout_context.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: open_command_layout_context.system-fn
   open_command_layout_context.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

@@ -23,6 +23,19 @@ definitions:
     value:
       object: sample_commands.module
       attr_name: details
+  details.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:details_d
+  details.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: details.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: details.system-fn
   details.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -115,25 +128,25 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.sample_list:sample_list
-      command: sample_list_sample_list_details.model-command
-  sample_list_sample_list_details.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_commands:details_d
-  sample_list_sample_list_details.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: sample_list_sample_list_details.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: details.system-fn
+      command: details.model-command
   sample_tree_info:
     type: legacy_type.builtin:attribute
     value:
       object: sample_commands.module
       attr_name: sample_tree_info
+  sample_tree_info.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:sample_tree_info_d
+  sample_tree_info.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: sample_tree_info.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: sample_tree_info.system-fn
   sample_tree_info.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -145,20 +158,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.sample_tree:sample_tree
-      command: sample_tree_sample_tree_sample_tree_info.model-command
-  sample_tree_sample_tree_sample_tree_info.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_commands:sample_tree_info_d
-  sample_tree_sample_tree_sample_tree_info.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: sample_tree_sample_tree_sample_tree_info.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: true
-      system_fn: sample_tree_info.system-fn
+      command: sample_tree_info.model-command
   show_state:
     type: legacy_type.builtin:attribute
     value:

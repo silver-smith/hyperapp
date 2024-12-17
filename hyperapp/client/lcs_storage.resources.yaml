@@ -13,10 +13,10 @@ import:
 - legacy_type.text:readonly_view
 - legacy_type.tree:view
 - legacy_type.ui:model_view_layout_d
-- models.data_browser:data_browser_list_view_list_open.d
+- models.data_browser:list_open.d
 - models.data_browser:data_browser_record_view.system-fn
-- models.data_browser:data_browser_record_view_record_open.d
-- models.data_browser:data_browser_ref_list_view_ref_list_open.d
+- models.data_browser:record_open.d
+- models.data_browser:ref_list_open.d
 - sample.sample_commands:show_state.d
 definitions:
   custom_model_command_list_1:
@@ -50,10 +50,10 @@ definitions:
     value:
       root_item_t: legacy_type.data_browser:record_item
       root_function: models.data_browser:data_browser_record_view.system-fn
-      root_open_children_command_d: models.data_browser:data_browser_record_view_record_open.d
+      root_open_children_command_d: models.data_browser:record_open.d
       layers:
-        legacy_type.data_browser:ref_list_view: models.data_browser:data_browser_ref_list_view_ref_list_open.d
-        legacy_type.data_browser:list_view: models.data_browser:data_browser_list_view_list_open.d
+        legacy_type.data_browser:ref_list_view: models.data_browser:ref_list_open.d
+        legacy_type.data_browser:list_view: models.data_browser:list_open.d
   list_mt_1:
     type: legacy_type.builtin:list_mt
     value:

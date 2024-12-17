@@ -68,20 +68,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.model_commands:view
-      command: model_commands_view_run_command.model-command
-  model_commands_view_run_command.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.model_commands:run_command_d
-  model_commands_view_run_command.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: model_commands_view_run_command.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: run_command.system-fn
+      command: run_command.model-command
   open_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -113,6 +100,19 @@ definitions:
     value:
       object: model_commands.module
       attr_name: run_command
+  run_command.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.model_commands:run_command_d
+  run_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: run_command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: run_command.system-fn
   run_command.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

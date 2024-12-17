@@ -29,6 +29,19 @@ definitions:
     value:
       object: layout.module
       attr_name: add_view_command
+  add_view_command.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.layout:add_view_command_d
+  add_view_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: add_view_command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: add_view_command.system-fn
   add_view_command.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -42,6 +55,10 @@ definitions:
     value:
       object: layout.module
       attr_name: enum_layout_tree_commands
+  enum_layout_tree_commands.model-command-enumerator:
+    type: legacy_type.command:model_command_enumerator
+    value:
+      system_fn: enum_layout_tree_commands.system-fn
   enum_layout_tree_commands.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -92,20 +109,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.layout:command_list
-      command: layout_command_list_add_view_command.model-command
-  layout_command_list_add_view_command.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.layout:add_view_command_d
-  layout_command_list_add_view_command.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: layout_command_list_add_view_command.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: add_view_command.system-fn
+      command: add_view_command.model-command
   layout_tree:
     type: legacy_type.builtin:attribute
     value:
@@ -138,29 +142,12 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.layout:view
-      command: layout_view_enum_layout_tree_commands.model-command-enumerator
-  layout_view_enum_layout_tree_commands.model-command-enumerator:
-    type: legacy_type.command:model_command_enumerator
-    value:
-      system_fn: enum_layout_tree_commands.system-fn
+      command: enum_layout_tree_commands.model-command-enumerator
   layout_view_open_view_item_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.layout:view
-      command: layout_view_open_view_item_commands.model-command
-  layout_view_open_view_item_commands.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.layout:open_view_item_commands_d
-  layout_view_open_view_item_commands.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: layout_view_open_view_item_commands.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: open_view_item_commands.system-fn
+      command: open_view_item_commands.model-command
   open_layout_tree:
     type: legacy_type.builtin:attribute
     value:
@@ -190,6 +177,19 @@ definitions:
     value:
       object: layout.module
       attr_name: open_view_item_commands
+  open_view_item_commands.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.layout:open_view_item_commands_d
+  open_view_item_commands.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_view_item_commands.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_view_item_commands.system-fn
   open_view_item_commands.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

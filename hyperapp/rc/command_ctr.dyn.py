@@ -50,7 +50,7 @@ class CommandTemplateCtr(Constructor):
             remotable=not set(self._ctx_params) & LOCAL_PARAMS,
             )
         if name_to_res is not None:
-            name_to_res[f'{self._resource_name}.d'] = d_piece
+            name_to_res[f'{self._fn_name}.d'] = d_piece
         return self._command_t(
             d=mosaic.put(d_piece),
             properties=properties,
@@ -76,7 +76,7 @@ class CommandTemplateCtr(Constructor):
         command = self._make_command(types, system_fn, name_to_res)
         if name_to_res is not None:
             name_to_res[f'{self._fn_name}.system-fn'] = system_fn
-            name_to_res[f'{self._resource_name}.{self._command_resource_suffix}'] = command
+            name_to_res[f'{self._fn_name}.{self._command_resource_suffix}'] = command
         return command
 
 

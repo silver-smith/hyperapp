@@ -42,20 +42,15 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.command_list_view:set_shortcut_d
-  global_commands_view_set_shortcut.model-command:
+  set_shortcut.model-command:
     type: legacy_type.command:model_command
     value:
-      d: global_commands_view_set_shortcut.d
+      d: set_shortcut.d
       properties:
         is_global: false
         uses_state: true
         remotable: true
       system_fn: set_shortcut.system-fn
-  set_shortcut:
-    type: legacy_type.builtin:attribute
-    value:
-      object: command_list_view.module
-      attr_name: set_shortcut
   set_shortcut.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

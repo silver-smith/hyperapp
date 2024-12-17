@@ -78,6 +78,10 @@ definitions:
     value:
       object: crud.module
       attr_name: crud_model_commands
+  crud_model_commands.model-command-enumerator:
+    type: legacy_type.command:model_command_enumerator
+    value:
+      system_fn: crud_model_commands.system-fn
   crud_model_commands.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -90,11 +94,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.crud:model
-      command: crud_model_crud_model_commands.model-command-enumerator
-  crud_model_crud_model_commands.model-command-enumerator:
-    type: legacy_type.command:model_command_enumerator
-    value:
-      system_fn: crud_model_commands.system-fn
+      command: crud_model_commands.model-command-enumerator
   crud_model_layout:
     type: legacy_type.builtin:attribute
     value:

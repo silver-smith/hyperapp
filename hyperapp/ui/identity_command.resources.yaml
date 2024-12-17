@@ -41,6 +41,19 @@ definitions:
     value:
       object: identity_command.module
       attr_name: add_identity_command
+  add_identity_command.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.identity_command:add_identity_command_d
+  add_identity_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: add_identity_command.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: add_identity_command.system-fn
   add_identity_command.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -90,17 +103,4 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.model_commands:view
-      command: model_commands_view_add_identity_command.model-command
-  model_commands_view_add_identity_command.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.identity_command:add_identity_command_d
-  model_commands_view_add_identity_command.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: model_commands_view_add_identity_command.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: add_identity_command.system-fn
+      command: add_identity_command.model-command

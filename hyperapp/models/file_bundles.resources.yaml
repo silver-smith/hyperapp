@@ -57,25 +57,25 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.file_bundles:view
-      command: file_bundles_view_open.model-command
-  file_bundles_view_open.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.file_bundles:open_d
-  file_bundles_view_open.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: file_bundles_view_open.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: open.system-fn
+      command: open.model-command
   open:
     type: legacy_type.builtin:attribute
     value:
       object: file_bundles.module
       attr_name: open
+  open.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.file_bundles:open_d
+  open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open.system-fn
   open.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
