@@ -5,10 +5,13 @@ import:
 - client.client:client_main.service
 - common.bundler:bundler.service
 - common.file_bundle:file_bundle.service
-- common.lcs_resource_storage:lcs_resource_storage_factory.service
 - common.mark:marker_ctl.service
 - common.ref_picker:pick_refs.service
 - common.ref_picker:ref_picker_cache.service
+- lcs.lcs_resource_storage:lcs_resource_storage_factory.service
+- lcs.lcs_view:lcs_view_view.model-cfg-item
+- lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
+- lcs.lcs_view:open_lcs_view.global-model-command
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - models.data_browser:browse_current_model.global-model-command
@@ -25,9 +28,6 @@ import:
 - models.global_commands:global_commands_view.model-cfg-item
 - models.global_commands:global_commands_view_run_command.command-cfg-item
 - models.global_commands:open_global_commands.global-model-command
-- models.lcs_view:lcs_view_view.model-cfg-item
-- models.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
-- models.lcs_view:open_lcs_view.global-model-command
 - models.model_commands:model_commands_view.model-cfg-item
 - models.model_commands:model_commands_view_run_command.command-cfg-item
 - models.model_commands:open_model_commands.global-model-command
@@ -393,10 +393,10 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - lcs.lcs_view:open_lcs_view.global-model-command
       - models.data_browser:browse_current_model.global-model-command
       - models.file_bundles:open_file_bundle_list.global-model-command
       - models.global_commands:open_global_commands.global-model-command
-      - models.lcs_view:open_lcs_view.global-model-command
       - models.model_commands:open_model_commands.global-model-command
       - models.show_current_context:show_current_context.global-model-command
       - sample.sample_commands:open_sample_static_list.global-model-command
@@ -440,12 +440,12 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
       - models.data_browser:data_browser_list_view_list_open.command-cfg-item
       - models.data_browser:data_browser_record_view_record_open.command-cfg-item
       - models.data_browser:data_browser_ref_list_view_ref_list_open.command-cfg-item
       - models.file_bundles:file_bundles_view_open.command-cfg-item
       - models.global_commands:global_commands_view_run_command.command-cfg-item
-      - models.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
       - models.model_commands:model_commands_view_run_command.command-cfg-item
       - models.rename_command:model_commands-view.edit.command-cfg-item
       - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
@@ -576,10 +576,10 @@ definitions:
       - client.client:client_main.service
       - common.bundler:bundler.service
       - common.file_bundle:file_bundle.service
-      - common.lcs_resource_storage:lcs_resource_storage_factory.service
       - common.mark:marker_ctl.service
       - common.ref_picker:pick_refs.service
       - common.ref_picker:ref_picker_cache.service
+      - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
       - rc.ctr_collector:ctr_collector.service
       - rc.htest.sample_config:sample_config_service.service
       - rc.htest.sample_service_1:sample_fn_service_1.service
@@ -740,13 +740,13 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - lcs.lcs_view:lcs_view_view.model-cfg-item
       - models.data_browser:data_browser_list_view.model-cfg-item
       - models.data_browser:data_browser_primitive_view.model-cfg-item
       - models.data_browser:data_browser_record_view.model-cfg-item
       - models.data_browser:data_browser_ref_list_view.model-cfg-item
       - models.file_bundles:file_bundles_view.model-cfg-item
       - models.global_commands:global_commands_view.model-cfg-item
-      - models.lcs_view:lcs_view_view.model-cfg-item
       - models.model_commands:model_commands_view.model-cfg-item
       - models.show_current_context:show_current_context_view.model-cfg-item
       - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
