@@ -96,7 +96,8 @@ def test_init_fn(crud_model):
 
 
 def test_model_layout(crud_model):
-    result = crud.crud_model_layout(crud_model)
+    lcs = Mock()
+    result = crud.crud_model_layout(crud_model, lcs)
     assert isinstance(result, htypes.form.view)
 
 

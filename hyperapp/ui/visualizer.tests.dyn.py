@@ -28,18 +28,18 @@ def model_layout_creg_config():
         }
 
 
-def test_model_layout_creg(model_layout_creg):
-    layout = model_layout_creg.animate("Some string")
+def test_model_layout_creg(model_layout_creg, lcs):
+    layout = model_layout_creg.animate("Some string", lcs)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_string_layout():
-    layout = visualizer_module.string_layout("<unused>")
+def test_string_layout(lcs):
+    layout = visualizer_module.string_layout("<unused>", lcs)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_int_layout():
-    layout = visualizer_module.int_layout(12345)
+def test_int_layout(lcs):
+    layout = visualizer_module.int_layout(12345, lcs)
     assert isinstance(layout, htypes.text.edit_view)
 
 
