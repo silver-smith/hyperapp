@@ -1,0 +1,44 @@
+import:
+- client.lcs_storage:custom_model_commands_lcs_d
+- legacy_type.builtin:call
+- legacy_type.builtin:record_mt
+- legacy_type.command:custom_model_command_list
+- legacy_type.command:custom_ui_command
+- legacy_type.identity_command:identity_command
+- legacy_type.lcs_resource_storage:mapping
+- legacy_type.sample_list:sample_list
+definitions:
+  custom_model_command_list_1:
+    type: legacy_type.command:custom_model_command_list
+    value:
+      commands:
+      - custom_ui_command_1
+  custom_ui_command_1:
+    type: legacy_type.command:custom_ui_command
+    value:
+      ui_command_d: identity_d_record_mt_call_1
+      model_command: identity_command_1
+      layout: null
+  identity_command_1:
+    type: legacy_type.identity_command:identity_command
+    value:
+      d: identity_d_record_mt_call_1
+  identity_d_record_mt_1:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: custom_command
+      name: identity_d
+      base: null
+      fields: {}
+  identity_d_record_mt_call_1:
+    type: legacy_type.builtin:call
+    value:
+      function: identity_d_record_mt_1
+  lcs_storage_mapping:
+    type: legacy_type.lcs_resource_storage:mapping
+    value:
+      elements:
+      - key:
+        - client.lcs_storage:custom_model_commands_lcs_d
+        - legacy_type.sample_list:sample_list
+        value: custom_model_command_list_1
