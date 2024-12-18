@@ -104,6 +104,15 @@ class _DictLoader(Finder):
         module.__dict__.update(self._globals)
 
 
+class _SubCodeLoader(Finder):
+
+    def __init__(self, module):
+        self._module = module
+
+    def create_module(self, spec):
+        return self._module
+
+
 class _PackageLoader(Finder):
     _is_package = True
 
@@ -152,7 +161,7 @@ def sub_loader_dict(pyobj_creg, import_list, root_module_name):
             continue
         if inspect.ismodule(resource):
             # This is code module import, resource is python module.
-            module_dict[rec.full_name] = resource.__dict__
+            module_dict[rec.full_name] = _SubCodeLoader(resource)
             continue
         module_name = '.'.join(path[:-1])
         name = path[-1]
