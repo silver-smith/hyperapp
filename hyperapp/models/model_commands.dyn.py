@@ -22,7 +22,7 @@ def list_model_commands(piece, ctx, lcs, data_to_ref, ui_model_command_items):
     command_ctx = model_command_ctx(ctx, model, model_state)
     command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
     return [
-        command_item_to_view_item(data_to_ref, item)
+        command_item_to_view_item(data_to_ref, lcs, item)
         for item in command_item_list.items()
         if not item.is_pure_global
         ]
