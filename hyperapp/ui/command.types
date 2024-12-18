@@ -22,6 +22,8 @@ model_command_enumerator = record:
   system_fn: ref
 
 
+command_shortcut_lcs_d = record
+
 # LCS selector for model to ui_model_command set mapping.
 custom_model_commands_lcs_d = record
 

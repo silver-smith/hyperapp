@@ -68,6 +68,7 @@ _hardcoded_shortcuts = {
     'lcs_move_to_another_layer': 'M',
     'lcs_open_piece': 'Return',
     'select_layer': 'Return',
+    'set_shortcut': 'Space',
     }
 
 

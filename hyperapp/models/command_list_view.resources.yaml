@@ -1,11 +1,13 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:pyobj_creg.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
+- legacy_type.command:command_shortcut_lcs_d
 - legacy_type.command:model_command
 - legacy_type.command_list_view:item
 - legacy_type.command_list_view:set_shortcut_d
@@ -13,6 +15,7 @@ import:
 - legacy_type.model_commands:view
 - legacy_type.system_fn:ctx_fn
 - ui.directory:directory.module
+- ui.qt.key_input_dialog:key_input_dialog.module
 definitions:
   command_list_view.module:
     type: legacy_type.builtin:python_module
@@ -21,8 +24,11 @@ definitions:
       file_name: command_list_view.dyn.py
       import_list:
         code.directory: ui.directory:directory.module
+        code.key_input_dialog: ui.qt.key_input_dialog:key_input_dialog.module
         code.mark: common.mark:mark.module
+        htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
         htypes.command_list_view.item: legacy_type.command_list_view:item
+        services.pyobj_creg: builtins:pyobj_creg.service
   global_commands_view_set_shortcut.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -49,7 +55,7 @@ definitions:
       properties:
         is_global: false
         uses_state: true
-        remotable: true
+        remotable: false
       system_fn: set_shortcut.system-fn
   set_shortcut.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -58,4 +64,5 @@ definitions:
       ctx_params:
       - piece
       - current_item
+      - lcs
       service_params: []

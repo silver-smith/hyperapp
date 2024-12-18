@@ -47,6 +47,11 @@ def test_command_item_to_item(data_to_ref, partial_ref, model_view_creg, visuali
 
 
 @mark.fixture
+def lcs():
+    return Mock()
+
+
+@mark.fixture
 def current_item(data_to_ref):
     command_d = htypes.command_list_view_tests.sample_model_command_d()
     model_command_d = htypes.command_list_view_tests.sample_model_command_d()
@@ -62,16 +67,24 @@ def current_item(data_to_ref):
         )
 
 
-def test_global_set_shortcut(current_item):
+def mock_run_input_key_dialog():
+    return ''
+
+
+def test_global_set_shortcut(lcs, current_item):
     piece = htypes.global_commands.view()
-    command_list_view.set_shortcut(piece, current_item)
+    command_list_view.run_key_input_dialog = mock_run_input_key_dialog
+    command_list_view.set_shortcut(piece, current_item, lcs)
+    lcs.set.assert_called_once()
 
 
-def test_model_set_shortcut(current_item):
+def test_model_set_shortcut(lcs, current_item):
     model = htypes.command_list_view_tests.sample_model()
     model_state = htypes.command_list_view_tests.sample_model_state()
     piece = htypes.model_commands.view(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )
-    command_list_view.set_shortcut(piece, current_item)
+    command_list_view.run_key_input_dialog = mock_run_input_key_dialog
+    command_list_view.set_shortcut(piece, current_item, lcs)
+    lcs.set.assert_called_once()
