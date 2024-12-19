@@ -125,9 +125,12 @@ class LcsResourceStorage:
             yield f'{stem}_{idx}'
 
     def _make_name(self, piece, t):
+        tried_names = []
         for name in self._iter_names(piece, t):
             if name not in self._res_module:
                 return name
+            tried_names.append(name)
+        raise RuntimeError(f"All names ({', '.join(tried_names)}) for piece {piece!r} are already in use")
 
 
 @mark.service
