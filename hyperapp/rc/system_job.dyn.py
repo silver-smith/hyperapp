@@ -195,6 +195,16 @@ class SystemJob:
             template_ref=mosaic.put(template),
             )
 
+    _system_files = {
+        'rc/system_job',
+        'rc/test_job',
+        'system/system',
+        'rc/system_probe',
+        'rc/fixture_probe',
+        'asyncio/runners',
+        'asyncio/base_events',
+        }
+
     def _prepare_traceback(self, x):
         traceback_entries = []
         cause = x
@@ -208,8 +218,8 @@ class SystemJob:
                 break
         for idx, entry in enumerate(traceback_entries):
             fpath = entry.filename.split('/')[-2:]
-            fname = '/'.join(fpath).replace('.dyn.py', '')
-            if fname not in {'rc/system_job', 'rc/test_job', 'system/system', 'rc/system_probe', 'rc/fixture_probe'}:
+            fname = '/'.join(fpath).replace('.py', '').replace('.dyn', '')
+            if fname not in self._system_files:
                 del traceback_entries[:idx]
                 break
         line_list = traceback.format_list(traceback_entries)
