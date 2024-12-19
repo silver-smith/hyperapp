@@ -219,6 +219,7 @@ import:
 - ui.int_adapter:int_adapter_int_adapter.actor-template
 - ui.layout:layout_command_list.model-cfg-item
 - ui.layout:layout_command_list_add_view_command.command-cfg-item
+- ui.layout:layout_command_list_set_shortcut.command-cfg-item
 - ui.layout:layout_view.model-cfg-item
 - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout_view_open_view_item_commands.command-cfg-item
@@ -465,6 +466,7 @@ definitions:
       - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
       - ui.identity_command:model_commands_view_add_identity_command.command-cfg-item
       - ui.layout:layout_command_list_add_view_command.command-cfg-item
+      - ui.layout:layout_command_list_set_shortcut.command-cfg-item
       - ui.layout:layout_view_open_view_item_commands.command-cfg-item
       - ui.list_as_tree:list_as_tree_opener_commands_toggle_open_command.command-cfg-item
       - views.command_layout_context:global_commands_view_open_command_layout_context.command-cfg-item

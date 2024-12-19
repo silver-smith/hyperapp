@@ -2,9 +2,13 @@ import logging
 from types import SimpleNamespace
 
 from . import htypes
+from .services import (
+    pyobj_creg,
+    )
 from .code.mark import mark
 from .code.directory import d_to_name
 from .code.command import BoundCommandBase, UnboundCommandBase
+from .code.key_input_dialog import run_key_input_dialog
 
 log = logging.getLogger(__name__)
 
@@ -92,10 +96,12 @@ async def open_view_item_commands(piece, current_item):
         return htypes.layout.command_list(item_id=current_item.id)
 
 
-def _command_to_item(data_to_ref, controller, ctx, ui_command, item_id):
+def _command_to_item(data_to_ref, controller, lcs, ctx, ui_command, item_id):
     layout_command = UnboundLayoutCommand(ui_command)
+    shortcut = lcs.get({htypes.command.command_shortcut_lcs_d(), layout_command.d}) or ""
     return htypes.layout.command_item(
         name=layout_command.name,
+        shortcut=shortcut,
         groups=', '.join(d_to_name(g) for g in ui_command.groups),
         wrapped_groups=', '.join(d_to_name(g) for g in layout_command.groups),
         command_d=data_to_ref(layout_command.d),
@@ -103,13 +109,22 @@ def _command_to_item(data_to_ref, controller, ctx, ui_command, item_id):
 
 
 @mark.model
-def view_item_commands(piece, controller, ctx, data_to_ref):
+def view_item_commands(piece, controller, lcs, ctx, data_to_ref):
     command_list = [
-        _command_to_item(data_to_ref, controller, ctx, command, piece.item_id)
+        _command_to_item(data_to_ref, controller, lcs, ctx, command, piece.item_id)
         for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)
     return command_list
+
+
+@mark.command
+def set_shortcut(piece, current_item, lcs):
+    command_d = pyobj_creg.invite(current_item.command_d)
+    shortcut = run_key_input_dialog()
+    log.info("Set shortcut for %s: %r", command_d, shortcut)
+    key = {htypes.command.command_shortcut_lcs_d(), command_d}
+    lcs.set(key, shortcut)
 
 
 @mark.command

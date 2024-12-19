@@ -97,9 +97,14 @@ def view_ui_command_reg_config(partial_ref):
 
 
 @mark.fixture
-def ctx():
+def lcs():
     lcs = Mock()
     lcs.get.return_value = None  # command list - mock is not iterable.
+    return lcs
+
+
+@mark.fixture
+def ctx(lcs):
     return Context(lcs=lcs)
 
 
@@ -133,15 +138,33 @@ async def test_open_view_item_commands():
     assert result
 
 
-async def test_view_item_commands(qapp, ctx, ctl):
+async def test_view_item_commands(qapp, lcs, ctx, ctl):
     ctx = ctx.clone_with(controller=ctl)
     layout_piece = htypes.layout.view()
     windows = layout.layout_tree(layout_piece, None, ctl)
     window_items = layout.layout_tree(layout_piece, windows[0], ctl)
     item_id = window_items[1].id
     command_list_piece = htypes.layout.command_list(item_id)
-    commands = layout.view_item_commands(command_list_piece, ctl, ctx)
+    commands = layout.view_item_commands(command_list_piece, ctl, lcs, ctx)
     assert commands
+
+
+def mock_run_input_key_dialog():
+    return ''
+
+
+def test_set_shortcut(data_to_ref, lcs):
+    piece = htypes.layout.command_list(item_id=0)
+    current_item = htypes.layout.command_item(
+        name="<unused>",
+        shortcut="",
+        groups="<unused>",
+        wrapped_groups="<unused>",
+        command_d=data_to_ref(htypes.layout_tests.sample_command_d()),
+        )
+    layout.run_key_input_dialog = mock_run_input_key_dialog
+    layout.set_shortcut(piece, current_item, lcs)
+    lcs.set.assert_called_once()
 
 
 async def test_add_view_command():
