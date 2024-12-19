@@ -17,61 +17,6 @@ class CommandKind(Enum):
     MODEL = 'model'
 
 
-_hardcoded_shortcuts = {
-    'go_back': 'Esc',
-    'go_forward': 'Alt+Right',
-    'quit': 'Alt+Q',
-    'open_model_commands': 'F1',
-    'open_global_commands': 'Alt+F1',
-    'open': 'Return',
-    'run_command': 'Return',
-    'duplicate_tab': 'Shift+f4',
-    'close_tab': 'Ctrl+f4',
-    'duplicate_window': 'Alt+W',
-    'open_layout_tree': 'Alt+L',
-    'open_sample_static_text_1': 'F2',
-    'open_sample_static_text_2': 'Ctrl+F2',
-    'open_sample_static_list': 'f3',
-    'open_sample_fn_list': 'f4',
-    'open_sample_fn_tree': 'f6',
-    'open_feed_sample_fn_list': 'f5',
-    'open_feed_sample_fn_tree': 'Shift+f6',
-    'open_sample_fn_record': 'F7',
-    'show_state': 'Alt+Return',
-    'details': 'Return',
-    'open_view_item_commands': 'C',
-    'add_view_command': 'Insert',
-    'unwrap_master_details': 'Ctrl+U',
-    'wrap_master_details': 'Ctrl+W',
-    'move_tab_to_new_group': 'Shift+Alt+T',
-    'open_tab_list': 'Alt+T',
-    'browse_current_model': 'Ctrl+F1',
-    'record_open': 'Return',
-    'list_open': 'Return',
-    'ref_list_open': 'Return',
-    'open_file_bundle_list': 'Alt+B',
-    'switch_list_to_tree': 'Alt+K',
-    'open_opener_commands': 'Alt+O',
-    'toggle_open_command': 'Space',
-    'open_local_server_context': 'Alt+S',
-    'show_current_context': 'Alt+U',
-    'toggle_editable': 'Ctrl+E',
-    'open_command_layout_context': 'L',
-    'add_identity_command': 'I',
-    'rename_command': 'R',
-    'set_command_name': 'Return',
-    'open_crud_sample': 'Alt+R',
-    'edit': 'E',
-    'save': 'Ctrl+Return',
-    'open_lcs_view': 'Ctrl+L',
-    'lcs_open_layers': 'L',
-    'lcs_move_to_another_layer': 'M',
-    'lcs_open_piece': 'Return',
-    'select_layer': 'Return',
-    'set_shortcut': 'Space',
-    }
-
-
 class UnboundCommandBase:
 
     def __init__(self, d):
@@ -111,10 +56,6 @@ class BoundCommandBase:
     @cached_property
     def name(self):
         return d_to_name(self._d)
-
-    @property
-    def shortcut(self):
-        return _hardcoded_shortcuts.get(self.name)
 
     def start(self):
         log.info("Start command: %r", self.name)

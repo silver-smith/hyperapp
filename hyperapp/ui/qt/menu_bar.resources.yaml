@@ -4,12 +4,14 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.command:command_shortcut_lcs_d
 - legacy_type.command_groups:global_d
 - legacy_type.command_groups:model_d
 - legacy_type.command_groups:view_d
 - legacy_type.menu_bar:state
 - legacy_type.menu_bar:view
 - legacy_type.system:actor_template
+- ui.qt.command_ap:command_ap.module
 - ui.view:view.module
 definitions:
   MenuBarView:
@@ -28,8 +30,10 @@ definitions:
       module_name: menu_bar
       file_name: menu_bar.dyn.py
       import_list:
+        code.command_ap: ui.qt.command_ap:command_ap.module
         code.mark: common.mark:mark.module
         code.view: ui.view:view.module
+        htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
         htypes.command_groups.global_d: legacy_type.command_groups:global_d
         htypes.command_groups.model_d: legacy_type.command_groups:model_d
         htypes.command_groups.view_d: legacy_type.command_groups:view_d

@@ -15,10 +15,15 @@ def make_state():
 
 
 async def test_widget(qapp):
-    ctx = Context()
+    ctx = Context(
+        lcs=Mock(),
+        )
     piece = make_piece()
     state = make_state()
-    command = Mock(groups=set(), enabled=True, shortcut="")
+    command = Mock(
+        groups={htypes.command_groups.global_d()},
+        enabled=True,
+        )
     command.name = "Sample"
 
     view = menu_bar.MenuBarView.from_piece(piece, ctx)

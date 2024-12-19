@@ -7,10 +7,16 @@ from .tested.code import command_pane
 
 
 async def test_widget(qapp):
-    ctx = Context()
+    ctx = Context(
+        lcs=Mock(),
+        )
     piece = htypes.command_pane.view()
     state = htypes.command_pane.state()
-    command = Mock(groups=set())
+    command = Mock(
+        groups={htypes.command_groups.pane_1_d()},
+        enabled=True,
+        )
+    command.name = "Sample"
     view = command_pane.CommandPaneView.from_piece(piece, ctx)
     widget = view.construct_widget(state, ctx)
     assert view.piece

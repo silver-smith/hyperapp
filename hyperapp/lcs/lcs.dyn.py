@@ -1,4 +1,6 @@
 import logging
+import weakref
+from collections import defaultdict
 
 import yaml
 from pathlib import Path
@@ -26,6 +28,7 @@ class LCSheet:
         self._d_to_storage = {}
         self._default_layer_name = None
         self._default_storage = None
+        self._d_to_w_to_ap = defaultdict(weakref.WeakKeyDictionary)
         self._load(layers_data, lcs_resource_storage_factory)
 
     def get(self, dir):
@@ -46,6 +49,17 @@ class LCSheet:
 
     def layers(self):
         return self._d_to_storage.keys()
+
+    def apply(self, dir, widget, ap):
+        fdir = frozenset(dir)
+        w_to_ap = self._d_to_w_to_ap[fdir]
+        ap_set = w_to_ap.setdefault(widget, set())
+        ap_set.add(ap)
+        value = self.get(dir)
+        if value is not None:
+            return ap.apply(widget, value)
+        ap.clear(widget)
+        return False
 
     def move(self, dir, source_layer_d, target_layer_d):
         log.info("Move %s from %s to %s", dir, source_layer_d, target_layer_d)

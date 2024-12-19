@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -36,7 +38,9 @@ def state():
 
 
 def test_construct_widget(qapp, piece, state):
-    ctx = Context()
+    ctx = Context(
+        lcs=Mock(),
+        )
     view = window.WindowView.from_piece(piece, ctx)
     assert view.piece
     widget = view.construct_widget(state, ctx)
