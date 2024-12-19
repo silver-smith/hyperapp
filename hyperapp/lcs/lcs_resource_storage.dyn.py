@@ -120,6 +120,8 @@ class LcsResourceStorage:
         stem = self._make_stem(piece, t)
         if not self._require_index(t):
             yield stem
+            if isinstance(t, TRecord):
+                yield f'{t.module_name}.{stem}'
             return
         for idx in itertools.count(1):
             yield f'{stem}_{idx}'
