@@ -17,7 +17,7 @@ from .code.controller import Controller
 from .code.reconstructors import register_reconstructors
 
 
-default_lcs_layers_path = Path.home() / '.local/share/hyperapp/client/lcs-layers.yaml'
+default_lcs_layers_path = hyperapp_dir / 'client/lcs-layers.yaml'
 default_layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
 
 

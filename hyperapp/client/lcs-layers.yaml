@@ -1,0 +1,6 @@
+default_layer: client.lcs_storage_custom
+layers:
+- name: client.lcs_storage_custom
+  path: client/lcs_storage_custom.resources.yaml
+- name: client.lcs_storage
+  path: client/lcs_storage.resources.yaml
