@@ -128,5 +128,14 @@ def set_shortcut(piece, current_item, lcs):
 
 
 @mark.command
+def set_escape_shortcut(piece, current_item, lcs):
+    command_d = pyobj_creg.invite(current_item.command_d)
+    shortcut = 'Esc'
+    log.info("Set shortcut for %s: %r", command_d, shortcut)
+    key = {htypes.command.command_shortcut_lcs_d(), command_d}
+    lcs.set(key, shortcut)
+
+
+@mark.command
 async def add_view_command(piece, current_item):
     log.info("Add view command for %s: %s", piece, current_item)

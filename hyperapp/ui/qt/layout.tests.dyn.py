@@ -153,17 +153,27 @@ def mock_run_input_key_dialog():
     return ''
 
 
-def test_set_shortcut(data_to_ref, lcs):
-    piece = htypes.layout.command_list(item_id=0)
-    current_item = htypes.layout.command_item(
+@mark.fixture
+def current_item(data_to_ref):
+    return htypes.layout.command_item(
         name="<unused>",
         shortcut="",
         groups="<unused>",
         wrapped_groups="<unused>",
         command_d=data_to_ref(htypes.layout_tests.sample_command_d()),
         )
+
+
+def test_set_shortcut(lcs, current_item):
+    piece = htypes.layout.command_list(item_id=0)
     layout.run_key_input_dialog = mock_run_input_key_dialog
     layout.set_shortcut(piece, current_item, lcs)
+    lcs.set.assert_called_once()
+
+
+def test_set_escape_shortcut(data_to_ref, lcs, current_item):
+    piece = htypes.layout.command_list(item_id=0)
+    layout.set_escape_shortcut(piece, current_item, lcs)
     lcs.set.assert_called_once()
 
 

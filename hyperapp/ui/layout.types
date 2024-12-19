@@ -26,6 +26,7 @@ layout_command_impl = record:
 
 open_layout_tree_d = record
 set_shortcut_d = record
+set_escape_shortcut_d = record
 add_view_command_d = record
 open_view_item_commands_d = record
 view_item_commands_d = record

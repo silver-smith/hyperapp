@@ -17,6 +17,7 @@ import:
 - legacy_type.layout:item
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
+- legacy_type.layout:set_escape_shortcut_d
 - legacy_type.layout:set_shortcut_d
 - legacy_type.layout:view
 - legacy_type.model:cfg_item
@@ -118,6 +119,11 @@ definitions:
     value:
       t: legacy_type.layout:command_list
       command: add_view_command.model-command
+  layout_command_list_set_escape_shortcut.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      command: set_escape_shortcut.model-command
   layout_command_list_set_shortcut.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -210,6 +216,33 @@ definitions:
       ctx_params:
       - piece
       - current_item
+      service_params: []
+  set_escape_shortcut:
+    type: legacy_type.builtin:attribute
+    value:
+      object: layout.module
+      attr_name: set_escape_shortcut
+  set_escape_shortcut.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.layout:set_escape_shortcut_d
+  set_escape_shortcut.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: set_escape_shortcut.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: set_escape_shortcut.system-fn
+  set_escape_shortcut.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: set_escape_shortcut
+      ctx_params:
+      - piece
+      - current_item
+      - lcs
       service_params: []
   set_shortcut:
     type: legacy_type.builtin:attribute
