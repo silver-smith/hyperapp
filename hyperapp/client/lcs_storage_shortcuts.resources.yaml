@@ -1,0 +1,229 @@
+import:
+- legacy_type.auto_tabs:close_tab_d
+- legacy_type.builtin:string
+- legacy_type.command:command_shortcut_lcs_d
+- legacy_type.command_list_view:set_shortcut_d
+- legacy_type.data_browser:browse_current_model_d
+- legacy_type.global_commands:open_global_commands_d
+- legacy_type.layout:open_layout_tree_d
+- legacy_type.layout:open_view_item_commands_d
+- legacy_type.layout:set_shortcut_d
+- legacy_type.lcs_resource_storage:mapping
+- legacy_type.lcs_view:lcs_move_to_another_layer_d
+- legacy_type.lcs_view:lcs_open_layers_d
+- legacy_type.lcs_view:open_lcs_view_d
+- legacy_type.model_commands:open_model_commands_d
+- legacy_type.navigator:go_back_d
+- legacy_type.navigator:go_forward_d
+- legacy_type.sample_commands:show_state_d
+- legacy_type.sample_list:open_feed_sample_fn_list_d
+- legacy_type.sample_list:open_sample_fn_list_d
+- legacy_type.sample_record:open_sample_fn_record_d
+- legacy_type.sample_tree:open_feed_sample_fn_tree_d
+- legacy_type.sample_tree:open_sample_fn_tree_d
+- legacy_type.show_current_context:show_current_context_d
+definitions:
+  browse_current_model_d:
+    type: legacy_type.data_browser:browse_current_model_d
+    value: {}
+  close_tab_d:
+    type: legacy_type.auto_tabs:close_tab_d
+    value: {}
+  command_shortcut_lcs_d:
+    type: legacy_type.command:command_shortcut_lcs_d
+    value: {}
+  go_back_d:
+    type: legacy_type.navigator:go_back_d
+    value: {}
+  go_forward_d:
+    type: legacy_type.navigator:go_forward_d
+    value: {}
+  layout.set_shortcut_d:
+    type: legacy_type.layout:set_shortcut_d
+    value: {}
+  lcs_move_to_another_layer_d:
+    type: legacy_type.lcs_view:lcs_move_to_another_layer_d
+    value: {}
+  lcs_open_layers_d:
+    type: legacy_type.lcs_view:lcs_open_layers_d
+    value: {}
+  lcs_storage_mapping:
+    type: legacy_type.lcs_resource_storage:mapping
+    value:
+      elements:
+      - key:
+        - browse_current_model_d
+        - command_shortcut_lcs_d
+        value: string_1
+      - key:
+        - open_global_commands_d
+        - command_shortcut_lcs_d
+        value: string_2
+      - key:
+        - show_state_d
+        - command_shortcut_lcs_d
+        value: string_3
+      - key:
+        - set_shortcut_d
+        - command_shortcut_lcs_d
+        value: string_4
+      - key:
+        - open_layout_tree_d
+        - command_shortcut_lcs_d
+        value: string_5
+      - key:
+        - open_model_commands_d
+        - command_shortcut_lcs_d
+        value: string_6
+      - key:
+        - command_shortcut_lcs_d
+        - open_view_item_commands_d
+        value: string_7
+      - key:
+        - layout.set_shortcut_d
+        - command_shortcut_lcs_d
+        value: string_4
+      - key:
+        - go_forward_d
+        - command_shortcut_lcs_d
+        value: string_8
+      - key:
+        - go_back_d
+        - command_shortcut_lcs_d
+        value: string_9
+      - key:
+        - open_sample_fn_list_d
+        - command_shortcut_lcs_d
+        value: string_10
+      - key:
+        - open_sample_fn_record_d
+        - command_shortcut_lcs_d
+        value: string_11
+      - key:
+        - open_sample_fn_tree_d
+        - command_shortcut_lcs_d
+        value: string_12
+      - key:
+        - open_feed_sample_fn_tree_d
+        - command_shortcut_lcs_d
+        value: string_13
+      - key:
+        - open_feed_sample_fn_list_d
+        - command_shortcut_lcs_d
+        value: string_14
+      - key:
+        - show_current_context_d
+        - command_shortcut_lcs_d
+        value: string_15
+      - key:
+        - open_lcs_view_d
+        - command_shortcut_lcs_d
+        value: string_16
+      - key:
+        - lcs_open_layers_d
+        - command_shortcut_lcs_d
+        value: string_17
+      - key:
+        - lcs_move_to_another_layer_d
+        - command_shortcut_lcs_d
+        value: string_18
+      - key:
+        - close_tab_d
+        - command_shortcut_lcs_d
+        value: string_19
+  open_feed_sample_fn_list_d:
+    type: legacy_type.sample_list:open_feed_sample_fn_list_d
+    value: {}
+  open_feed_sample_fn_tree_d:
+    type: legacy_type.sample_tree:open_feed_sample_fn_tree_d
+    value: {}
+  open_global_commands_d:
+    type: legacy_type.global_commands:open_global_commands_d
+    value: {}
+  open_layout_tree_d:
+    type: legacy_type.layout:open_layout_tree_d
+    value: {}
+  open_lcs_view_d:
+    type: legacy_type.lcs_view:open_lcs_view_d
+    value: {}
+  open_model_commands_d:
+    type: legacy_type.model_commands:open_model_commands_d
+    value: {}
+  open_sample_fn_list_d:
+    type: legacy_type.sample_list:open_sample_fn_list_d
+    value: {}
+  open_sample_fn_record_d:
+    type: legacy_type.sample_record:open_sample_fn_record_d
+    value: {}
+  open_sample_fn_tree_d:
+    type: legacy_type.sample_tree:open_sample_fn_tree_d
+    value: {}
+  open_view_item_commands_d:
+    type: legacy_type.layout:open_view_item_commands_d
+    value: {}
+  set_shortcut_d:
+    type: legacy_type.command_list_view:set_shortcut_d
+    value: {}
+  show_current_context_d:
+    type: legacy_type.show_current_context:show_current_context_d
+    value: {}
+  show_state_d:
+    type: legacy_type.sample_commands:show_state_d
+    value: {}
+  string_1:
+    type: legacy_type.builtin:string
+    value: Ctrl+F1
+  string_10:
+    type: legacy_type.builtin:string
+    value: F4
+  string_11:
+    type: legacy_type.builtin:string
+    value: F7
+  string_12:
+    type: legacy_type.builtin:string
+    value: F6
+  string_13:
+    type: legacy_type.builtin:string
+    value: Shift+F6
+  string_14:
+    type: legacy_type.builtin:string
+    value: F5
+  string_15:
+    type: legacy_type.builtin:string
+    value: Ctrl+Shift+C
+  string_16:
+    type: legacy_type.builtin:string
+    value: Alt+L
+  string_17:
+    type: legacy_type.builtin:string
+    value: L
+  string_18:
+    type: legacy_type.builtin:string
+    value: M
+  string_19:
+    type: legacy_type.builtin:string
+    value: Ctrl+F4
+  string_2:
+    type: legacy_type.builtin:string
+    value: Alt+F1
+  string_3:
+    type: legacy_type.builtin:string
+    value: Alt+Return
+  string_4:
+    type: legacy_type.builtin:string
+    value: Space
+  string_5:
+    type: legacy_type.builtin:string
+    value: Alt+Shift+L
+  string_6:
+    type: legacy_type.builtin:string
+    value: F1
+  string_7:
+    type: legacy_type.builtin:string
+    value: C
+  string_8:
+    type: legacy_type.builtin:string
+    value: Alt+Right
+  string_9:
+    type: legacy_type.builtin:string
+    value: Esc
