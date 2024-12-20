@@ -8,14 +8,25 @@ from .services import (
 from .code.mark import mark
 
 
+def _column_d(model_t, name):
+    return {
+        htypes.column.list_d(),
+        pyobj_creg.actor_to_piece(model_t),
+        htypes.column.column_d(name),
+        }
+
+
 @mark.model
 def column_list(piece, lcs):
+    model_t = pyobj_creg.invite(piece.model_t)
     item_t = pyobj_creg.invite(piece.item_t)
     item_list = []
     for name in item_t.fields:
+        d = _column_d(model_t, name)
+        show_d = d | {htypes.column.show_d()}
         item = htypes.column_list.item(
             name=name,
-            show=True,
+            show=lcs.get(show_d, True),
             )
         item_list.append(item)
     return item_list
@@ -24,12 +35,7 @@ def column_list(piece, lcs):
 @mark.command
 def toggle_visibility(piece, current_item, lcs):
     model_t = pyobj_creg.invite(piece.model_t)
-    key = {
-        htypes.column.list_d(),
-        pyobj_creg.actor_to_piece(model_t),
-        htypes.column.column_d(current_item.name),
-        htypes.column.show_d(),
-        }
+    key = _column_d(model_t, current_item.name) | {htypes.column.show_d()}
     prev_value = lcs.get(key, True)
     lcs.set(key, not prev_value)
 

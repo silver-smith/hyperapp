@@ -10,8 +10,10 @@ from .tested.code import column_list
 
 @mark.fixture
 def lcs():
+    def mock_get(key, default=None):
+        return default
     lcs = Mock()
-    lcs.get.return_value = None
+    lcs.get = mock_get
     return lcs
 
 
@@ -29,7 +31,6 @@ def test_column_list(lcs, piece):
 
 
 def test_toggle_visibility(lcs, piece):
-    lcs.get = lambda key, default: default
     current_item = htypes.column_list.item(
         name='id',
         show=False,  # Should not be used.
