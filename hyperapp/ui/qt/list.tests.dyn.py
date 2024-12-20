@@ -4,7 +4,7 @@ from . import htypes
 from .services import mosaic
 from .code.mark import mark
 from .code.context import Context
-from .fixtures import qapp_fixtures
+from .fixtures import qapp_fixtures, lcs_fixtures
 from .tested.code import list
 
 
@@ -18,7 +18,7 @@ def piece(adapter_piece):
     return htypes.list.view(mosaic.put(adapter_piece))
 
 
-def test_list(qapp, model_view_creg, piece):
+def test_list(qapp, model_view_creg, lcs, piece):
     ctx = Context()
     model = (
         htypes.list_tests.item(1, "First"),

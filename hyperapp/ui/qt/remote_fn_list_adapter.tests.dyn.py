@@ -6,7 +6,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.context import Context
-from .fixtures import feed_fixtures
+from .fixtures import feed_fixtures, lcs_fixtures
 from .tested.code import remote_fn_list_adapter
 
 log = logging.getLogger(__name__)
@@ -22,6 +22,7 @@ def sample_list_fn(piece):
         ]
 
 
+
 def test_remote_fn_adapter(
         generate_rsa_identity,
         endpoint_registry,
@@ -29,6 +30,7 @@ def test_remote_fn_adapter(
         rpc_call_factory,
         subprocess_rpc_server_running,
         ui_adapter_creg,
+        lcs,
         ):
 
     identity = generate_rsa_identity(fast=True)
@@ -40,6 +42,7 @@ def test_remote_fn_adapter(
 
         model = htypes.list_adapter_tests.sample_list()
         ctx = Context(
+            lcs=lcs,
             piece=model,
             identity=identity,
             rpc_endpoint=rpc_endpoint,

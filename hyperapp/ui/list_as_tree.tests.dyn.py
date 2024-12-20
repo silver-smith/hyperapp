@@ -14,7 +14,7 @@ from .code.model_command import UnboundModelCommand
 from .code.list_adapter import list_model_state_t
 from .code.list_as_tree_adapter import ListAsTreeAdapter
 from .code.tree import TreeView
-from .fixtures import feed_fixtures
+from .fixtures import feed_fixtures, lcs_fixtures
 from .tested.code import list_as_tree
 
 log = logging.getLogger(__name__)
@@ -30,8 +30,10 @@ def sample_fn_1(piece):
         ]
 
 
-def test_switch_list_as_tree(ui_adapter_creg):
-    ctx = Context()
+def test_switch_list_as_tree(ui_adapter_creg, lcs):
+    ctx = Context(
+        lcs=lcs,
+        )
     model = htypes.list_as_tree_tests.sample_list_1()
     fn_1 = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_fn_1),

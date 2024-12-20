@@ -1,15 +1,17 @@
 import asyncio
 import logging
 import threading
+from unittest.mock import Mock
 
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
     )
+from .code.mark import mark
 from .code.context import Context
 from .code.list_diff import ListDiff
-from .fixtures import feed_fixtures
+from .fixtures import feed_fixtures, lcs_fixtures
 from .tested.code import fn_list_adapter
 
 log = logging.getLogger(__name__)
@@ -25,9 +27,20 @@ def sample_list_fn(piece):
         ]
 
 
-def test_fn_adapter(ui_adapter_creg):
-    model = htypes.list_adapter_tests.sample_list()
-    ctx = Context(piece=model)
+@mark.fixture
+def model():
+    return htypes.list_adapter_tests.sample_list()
+
+
+@mark.fixture
+def ctx(lcs, model):
+    return Context(
+        lcs=lcs,
+        piece=model,
+        )
+
+
+def test_fn_adapter(ui_adapter_creg, model, ctx):
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_list_fn),
         ctx_params=('piece',),
@@ -71,9 +84,7 @@ def sample_feed_list_fn(piece, feed):
         ]
 
 
-async def test_feed_fn_adapter(ui_adapter_creg):
-    model = htypes.list_adapter_tests.sample_list()
-    ctx = Context(piece=model)
+async def test_feed_fn_adapter(ui_adapter_creg, model, ctx):
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_feed_list_fn),
         ctx_params=('piece', 'feed'),
@@ -123,6 +134,7 @@ def test_fn_adapter_with_remote_context(
         rpc_call_factory,
         subprocess_rpc_server_running,
         ui_adapter_creg,
+        lcs,
         ):
 
     identity = generate_rsa_identity(fast=True)
@@ -134,6 +146,7 @@ def test_fn_adapter_with_remote_context(
 
         model = htypes.list_adapter_tests.sample_list()
         ctx = Context(
+            lcs=lcs,
             piece=model,
             identity=identity,
             remote_peer=process.peer,

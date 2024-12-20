@@ -26,7 +26,8 @@ class ListAdapterBase:
 
 class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
 
-    def __init__(self, feed_factory, model, item_t):
+    def __init__(self, feed_factory, lcs, model, item_t):
+        self._lcs = lcs
         self._model = model
         self._item_t = item_t
         self._column_names = sorted(self._item_t.fields)

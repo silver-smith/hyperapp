@@ -21,7 +21,7 @@ class RemoteFnListAdapter(FnListAdapterBase):
         return cls(rpc_call_factory, feed_factory, model, item_t, ctx, fn, ctx.identity, remote_peer)
 
     def __init__(self, rpc_call_factory, feed_factory, model, item_t, ctx, fn, identity, remote_peer):
-        super().__init__(feed_factory, model, item_t)
+        super().__init__(feed_factory, ctx.lcs, model, item_t)
         self._rpc_call_factory = rpc_call_factory
         self._ctx = ctx
         self._fn = fn
