@@ -186,7 +186,7 @@ def test_list_ui_type_layout():
         )
     system_fn_ref = mosaic.put(system_fn)
     piece = htypes.model.list_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.fn_list_adapter_tests.sample_item),
+        item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
         )
     layout = fn_list_adapter.list_ui_type_layout(piece, system_fn_ref)
     assert isinstance(layout, htypes.list.view)
