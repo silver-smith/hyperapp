@@ -5,6 +5,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .fixtures import feed_fixtures
 from .tested.code import column_list
 
 
@@ -30,14 +31,17 @@ def test_column_list(lcs, piece):
     assert len(items) == 3
 
 
-def test_toggle_visibility(lcs, piece):
+async def test_toggle_visibility(feed_factory, lcs, piece):
+    feed = feed_factory(piece)
+    current_idx = 0
     current_item = htypes.column_list.item(
         name='id',
         show=False,  # Should not be used.
         )
-    column_list.toggle_visibility(piece, current_item, lcs)
+    await column_list.toggle_visibility(piece, current_idx, current_item, lcs)
     lcs.set.assert_called_once()
     assert lcs.set.call_args.args[1] == False
+    await feed.wait_for_diffs(count=1)
 
 
 def test_open():

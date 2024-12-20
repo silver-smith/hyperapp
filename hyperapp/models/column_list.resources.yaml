@@ -3,6 +3,7 @@
 import:
 - builtins:deduce_t.service
 - builtins:pyobj_creg.service
+- common.list_diff:list_diff.module
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -17,6 +18,8 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:ui_command
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.list:view
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
@@ -34,6 +37,7 @@ definitions:
       module_name: column_list
       file_name: column_list.dyn.py
       import_list:
+        code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
         htypes.column.column_d: legacy_type.column:column_d
         htypes.column.list_d: legacy_type.column:list_d
@@ -43,6 +47,15 @@ definitions:
         htypes.list.view: legacy_type.list:view
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
+  column_list_view.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.column_list:view
+      feed_type: column_list_view.feed-type
+  column_list_view.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.column_list:item
   column_list_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -124,6 +137,8 @@ definitions:
       function: toggle_visibility
       ctx_params:
       - piece
+      - current_idx
       - current_item
       - lcs
-      service_params: []
+      service_params:
+      - feed_factory
