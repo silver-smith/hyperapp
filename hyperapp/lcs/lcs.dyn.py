@@ -69,8 +69,10 @@ class LCSheet:
         if piece is None:
             log.warning("Dir %s is missing from %s", dir, source_layer_d)
             return
-        target_storage.set(dir, piece)
+        # Should remove first. Overwise, resources from new storage would reference
+        # resources from old one. And those are removed.
         source_storage.remove(dir)
+        target_storage.set(dir, piece)
 
     def _load(self, data, lcs_resource_storage_factory):
         if not data:
