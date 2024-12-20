@@ -1,0 +1,9 @@
+view = record:
+  model_t: ref
+  item_t: ref
+
+item = record:
+  name: string
+  show: bool
+
+open_column_list_d = record

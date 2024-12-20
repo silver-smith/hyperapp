@@ -19,6 +19,8 @@ import:
 - lcs.lcs_view:open_lcs_view.global-model-command
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- models.column_list:column_list_view.model-cfg-item
+- models.column_list:list_view_open_column_list.command-cfg-item
 - models.command_list_view:global_commands_view_set_shortcut.command-cfg-item
 - models.command_list_view:model_commands_view_set_shortcut.command-cfg-item
 - models.data_browser:browse_current_model.global-model-command
@@ -751,6 +753,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - models.column_list:list_view_open_column_list.command-cfg-item
       - ui.list_as_tree:tree_view_open_opener_commands.command-cfg-item
       - ui.qt.tabs:tabs_view_open_tab_list.command-cfg-item
   visualizer_reg:
@@ -759,6 +762,7 @@ definitions:
       items:
       - lcs.lcs_view:lcs_view_layers_view.model-cfg-item
       - lcs.lcs_view:lcs_view_view.model-cfg-item
+      - models.column_list:column_list_view.model-cfg-item
       - models.data_browser:data_browser_list_view.model-cfg-item
       - models.data_browser:data_browser_primitive_view.model-cfg-item
       - models.data_browser:data_browser_record_view.model-cfg-item

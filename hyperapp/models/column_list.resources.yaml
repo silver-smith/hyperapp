@@ -1,0 +1,89 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:deduce_t.service
+- builtins:pyobj_creg.service
+- common.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.column_list:item
+- legacy_type.column_list:open_column_list_d
+- legacy_type.column_list:view
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
+- legacy_type.list:view
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
+definitions:
+  column_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: column_list.module
+      attr_name: column_list
+  column_list.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: column_list
+      file_name: column_list.dyn.py
+      import_list:
+        code.mark: common.mark:mark.module
+        htypes.column_list.item: legacy_type.column_list:item
+        htypes.column_list.view: legacy_type.column_list:view
+        htypes.list.view: legacy_type.list:view
+        services.deduce_t: builtins:deduce_t.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+  column_list_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.column_list:item
+  column_list_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: column_list_view.list-ui-t
+      system_fn: column_list_view.system-fn
+  column_list_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.column_list:view
+      model: column_list_view.model
+  column_list_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: column_list
+      ctx_params:
+      - piece
+      - lcs
+      service_params: []
+  list_view_open_column_list.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.list:view
+      command: open_column_list.ui-command
+  open_column_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: column_list.module
+      attr_name: open_column_list
+  open_column_list.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.column_list:open_column_list_d
+  open_column_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_column_list
+      ctx_params:
+      - view
+      service_params: []
+  open_column_list.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: open_column_list.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: open_column_list.system-fn
