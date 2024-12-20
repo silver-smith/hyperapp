@@ -5,6 +5,11 @@ from functools import cached_property
 
 from hyperapp.common.htypes import tInt, TOptional, TRecord
 
+from . import htypes
+from .services import (
+    deduce_t,
+    pyobj_creg,
+    )
 from .code.list_diff import ListDiff
 
 log = logging.getLogger(__name__)
@@ -29,8 +34,9 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
     def __init__(self, feed_factory, lcs, model, item_t):
         self._lcs = lcs
         self._model = model
+        self._model_t = deduce_t(model)
         self._item_t = item_t
-        self._column_names = sorted(self._item_t.fields)
+        self._column_names = sorted(filter(self._column_visible, self._item_t.fields))
         self._item_list = None
         self._subscribers = weakref.WeakSet()
         try:
@@ -39,6 +45,17 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
             self._feed = None
         else:
             self._feed.subscribe(self)
+
+    def _column_d(self, name):
+        return {
+            htypes.column.list_d(),
+            pyobj_creg.actor_to_piece(self.model_t),
+            htypes.column.column_d(name),
+            }
+
+    def _column_visible(self, name):
+        key = self._column_d(name) | {htypes.column.show_d()}
+        return self._lcs.get(key, True)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)

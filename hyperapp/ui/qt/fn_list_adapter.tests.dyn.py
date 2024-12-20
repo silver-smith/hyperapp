@@ -12,7 +12,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.list_diff import ListDiff
 from .fixtures import feed_fixtures, lcs_fixtures
-from .tested.code import fn_list_adapter
+from .tested.code import list_adapter, fn_list_adapter
 
 log = logging.getLogger(__name__)
 
@@ -82,6 +82,17 @@ def sample_feed_list_fn(piece, feed):
         htypes.list_adapter_tests.item(22, "Second item"),
         htypes.list_adapter_tests.item(33, "Third item"),
         ]
+
+
+@mark.fixture
+def lcs():
+    def mock_get(key, default=None):
+        if htypes.column.column_d('desc') in key:
+            return False
+        return default
+    lcs = Mock()
+    lcs.get = mock_get
+    return lcs
 
 
 async def test_feed_fn_adapter(ui_adapter_creg, model, ctx):
