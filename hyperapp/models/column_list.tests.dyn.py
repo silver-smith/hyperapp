@@ -5,17 +5,8 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .fixtures import feed_fixtures
+from .fixtures import feed_fixtures, lcs_fixtures
 from .tested.code import column_list
-
-
-@mark.fixture
-def lcs():
-    def mock_get(key, default=None):
-        return default
-    lcs = Mock()
-    lcs.get = mock_get
-    return lcs
 
 
 @mark.fixture
