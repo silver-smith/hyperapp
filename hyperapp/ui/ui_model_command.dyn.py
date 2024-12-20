@@ -69,6 +69,10 @@ class BoundUiModelCommand(BoundCommandBase):
         self._navigator_rec = ctx.navigator
 
     @property
+    def properties(self):
+        return self._model_command.properties
+
+    @property
     def groups(self):
         return self._groups
 
