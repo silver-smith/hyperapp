@@ -31,12 +31,12 @@ class LCSheet:
         self._d_to_w_to_ap = defaultdict(weakref.WeakKeyDictionary)
         self._load(layers_data, lcs_resource_storage_factory)
 
-    def get(self, dir):
+    def get(self, dir, default=None):
         for storage in self._d_to_storage.values():
             piece = storage.get(dir)
             if piece is not None:
                 return piece
-        return None
+        return default
 
     def set(self, dir, piece):
         log.info("LCS: set to %s: %s -> %s", self._default_layer_name, set(dir), piece)

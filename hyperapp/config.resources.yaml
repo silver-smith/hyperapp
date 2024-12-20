@@ -20,6 +20,7 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - models.column_list:column_list_view.model-cfg-item
+- models.column_list:column_list_view_toggle_visibility.command-cfg-item
 - models.column_list:list_view_open_column_list.command-cfg-item
 - models.command_list_view:global_commands_view_set_shortcut.command-cfg-item
 - models.command_list_view:model_commands_view_set_shortcut.command-cfg-item
@@ -455,6 +456,7 @@ definitions:
       - lcs.lcs_view:lcs_view_view_lcs_move_to_another_layer.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_open_layers.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
+      - models.column_list:column_list_view_toggle_visibility.command-cfg-item
       - models.command_list_view:global_commands_view_set_shortcut.command-cfg-item
       - models.command_list_view:model_commands_view_set_shortcut.command-cfg-item
       - models.data_browser:data_browser_list_view_list_open.command-cfg-item

@@ -1,0 +1,6 @@
+list_d = record
+
+column_d = record:
+  name: string
+
+show_d = record

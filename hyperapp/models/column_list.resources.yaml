@@ -7,10 +7,15 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.column:column_d
+- legacy_type.column:list_d
+- legacy_type.column:show_d
 - legacy_type.column_list:item
 - legacy_type.column_list:open_column_list_d
+- legacy_type.column_list:toggle_visibility_d
 - legacy_type.column_list:view
 - legacy_type.command:cfg_item
+- legacy_type.command:model_command
 - legacy_type.command:ui_command
 - legacy_type.list:view
 - legacy_type.model:cfg_item
@@ -30,6 +35,9 @@ definitions:
       file_name: column_list.dyn.py
       import_list:
         code.mark: common.mark:mark.module
+        htypes.column.column_d: legacy_type.column:column_d
+        htypes.column.list_d: legacy_type.column:list_d
+        htypes.column.show_d: legacy_type.column:show_d
         htypes.column_list.item: legacy_type.column_list:item
         htypes.column_list.view: legacy_type.column_list:view
         htypes.list.view: legacy_type.list:view
@@ -57,6 +65,11 @@ definitions:
       - piece
       - lcs
       service_params: []
+  column_list_view_toggle_visibility.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.column_list:view
+      command: toggle_visibility.model-command
   list_view_open_column_list.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -87,3 +100,30 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_column_list.system-fn
+  toggle_visibility:
+    type: legacy_type.builtin:attribute
+    value:
+      object: column_list.module
+      attr_name: toggle_visibility
+  toggle_visibility.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.column_list:toggle_visibility_d
+  toggle_visibility.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: toggle_visibility.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: toggle_visibility.system-fn
+  toggle_visibility.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: toggle_visibility
+      ctx_params:
+      - piece
+      - current_item
+      - lcs
+      service_params: []

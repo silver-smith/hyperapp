@@ -21,6 +21,19 @@ def column_list(piece, lcs):
     return item_list
 
 
+@mark.command
+def toggle_visibility(piece, current_item, lcs):
+    model_t = pyobj_creg.invite(piece.model_t)
+    key = {
+        htypes.column.list_d(),
+        pyobj_creg.actor_to_piece(model_t),
+        htypes.column.column_d(current_item.name),
+        htypes.column.show_d(),
+        }
+    prev_value = lcs.get(key, True)
+    lcs.set(key, not prev_value)
+
+
 @mark.ui_model_command(htypes.list.view)
 def open_column_list(view):
     model_t = deduce_t(view.adapter.model)

@@ -2,6 +2,7 @@ import:
 - legacy_type.auto_tabs:close_tab_d
 - legacy_type.builtin:string
 - legacy_type.column_list:open_column_list_d
+- legacy_type.column_list:toggle_visibility_d
 - legacy_type.command:command_shortcut_lcs_d
 - legacy_type.command_list_view:set_shortcut_d
 - legacy_type.data_browser:browse_current_model_d
@@ -162,6 +163,10 @@ definitions:
         - open_column_list_d
         - command_shortcut_lcs_d
         value: string_23
+      - key:
+        - toggle_visibility_d
+        - command_shortcut_lcs_d
+        value: string_4
   open_column_list_d:
     type: legacy_type.column_list:open_column_list_d
     value: {}
@@ -279,3 +284,6 @@ definitions:
   string_9:
     type: legacy_type.builtin:string
     value: Esc
+  toggle_visibility_d:
+    type: legacy_type.column_list:toggle_visibility_d
+    value: {}

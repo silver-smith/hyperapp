@@ -6,4 +6,5 @@ item = record:
   name: string
   show: bool
 
+toggle_visibility_d = record
 open_column_list_d = record
