@@ -24,6 +24,8 @@ import:
 - legacy_type.sample_tree:open_feed_sample_fn_tree_d
 - legacy_type.sample_tree:open_sample_fn_tree_d
 - legacy_type.show_current_context:show_current_context_d
+- legacy_type.window_commands:duplicate_window_d
+- legacy_type.window_commands:quit_d
 definitions:
   browse_current_model_d:
     type: legacy_type.data_browser:browse_current_model_d
@@ -33,6 +35,9 @@ definitions:
     value: {}
   command_shortcut_lcs_d:
     type: legacy_type.command:command_shortcut_lcs_d
+    value: {}
+  duplicate_window_d:
+    type: legacy_type.window_commands:duplicate_window_d
     value: {}
   go_back_d:
     type: legacy_type.navigator:go_back_d
@@ -144,6 +149,14 @@ definitions:
         - select_layer_d
         - command_shortcut_lcs_d
         value: string_20
+      - key:
+        - quit_d
+        - command_shortcut_lcs_d
+        value: string_21
+      - key:
+        - duplicate_window_d
+        - command_shortcut_lcs_d
+        value: string_22
   open_feed_sample_fn_list_d:
     type: legacy_type.sample_list:open_feed_sample_fn_list_d
     value: {}
@@ -173,6 +186,9 @@ definitions:
     value: {}
   open_view_item_commands_d:
     type: legacy_type.layout:open_view_item_commands_d
+    value: {}
+  quit_d:
+    type: legacy_type.window_commands:quit_d
     value: {}
   select_layer_d:
     type: legacy_type.lcs_layer_selector:select_layer_d
@@ -225,6 +241,12 @@ definitions:
   string_20:
     type: legacy_type.builtin:string
     value: Return
+  string_21:
+    type: legacy_type.builtin:string
+    value: Alt+Q
+  string_22:
+    type: legacy_type.builtin:string
+    value: Alt+W
   string_3:
     type: legacy_type.builtin:string
     value: Alt+Return
