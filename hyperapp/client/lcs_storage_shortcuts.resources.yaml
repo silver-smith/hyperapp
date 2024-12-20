@@ -8,9 +8,11 @@ import:
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:set_shortcut_d
+- legacy_type.lcs_layer_selector:select_layer_d
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.lcs_view:lcs_move_to_another_layer_d
 - legacy_type.lcs_view:lcs_open_layers_d
+- legacy_type.lcs_view:lcs_open_piece_d
 - legacy_type.lcs_view:open_lcs_view_d
 - legacy_type.model_commands:open_model_commands_d
 - legacy_type.navigator:go_back_d
@@ -46,6 +48,9 @@ definitions:
     value: {}
   lcs_open_layers_d:
     type: legacy_type.lcs_view:lcs_open_layers_d
+    value: {}
+  lcs_open_piece_d:
+    type: legacy_type.lcs_view:lcs_open_piece_d
     value: {}
   lcs_storage_mapping:
     type: legacy_type.lcs_resource_storage:mapping
@@ -131,6 +136,14 @@ definitions:
         - close_tab_d
         - command_shortcut_lcs_d
         value: string_19
+      - key:
+        - lcs_open_piece_d
+        - command_shortcut_lcs_d
+        value: string_20
+      - key:
+        - select_layer_d
+        - command_shortcut_lcs_d
+        value: string_20
   open_feed_sample_fn_list_d:
     type: legacy_type.sample_list:open_feed_sample_fn_list_d
     value: {}
@@ -160,6 +173,9 @@ definitions:
     value: {}
   open_view_item_commands_d:
     type: legacy_type.layout:open_view_item_commands_d
+    value: {}
+  select_layer_d:
+    type: legacy_type.lcs_layer_selector:select_layer_d
     value: {}
   set_shortcut_d:
     type: legacy_type.command_list_view:set_shortcut_d
@@ -206,6 +222,9 @@ definitions:
   string_2:
     type: legacy_type.builtin:string
     value: Alt+F1
+  string_20:
+    type: legacy_type.builtin:string
+    value: Return
   string_3:
     type: legacy_type.builtin:string
     value: Alt+Return
