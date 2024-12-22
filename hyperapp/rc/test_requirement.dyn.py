@@ -28,6 +28,10 @@ class TestedCodeReq(Requirement):
             )
 
     @property
+    def desc(self):
+        return f"{self.code_name} tested code"
+
+    @property
     def piece(self):
         return htypes.test_target.tested_code_req(
             test_module_name=self.test_module_name,
