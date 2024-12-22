@@ -65,7 +65,7 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
         return self._model
 
     def column_count(self):
-        return len(self._item_t.fields)
+        return len(self._column_names)
 
     def column_title(self, column):
         return self._column_names[column]

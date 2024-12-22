@@ -3,4 +3,4 @@ sample_list = record
 item = record:
   id: int
   text: string
-  desc: string
+  xdesc: string

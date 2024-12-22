@@ -1,8 +1,13 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
+- builtins:pyobj_creg.service
 - common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
+- legacy_type.column:column_d
+- legacy_type.column:list_d
+- legacy_type.column:show_d
 definitions:
   list_adapter.module:
     type: legacy_type.builtin:python_module
@@ -11,3 +16,8 @@ definitions:
       file_name: list_adapter.dyn.py
       import_list:
         code.list_diff: common.list_diff:list_diff.module
+        htypes.column.column_d: legacy_type.column:column_d
+        htypes.column.list_d: legacy_type.column:list_d
+        htypes.column.show_d: legacy_type.column:show_d
+        services.deduce_t: builtins:deduce_t.service
+        services.pyobj_creg: builtins:pyobj_creg.service

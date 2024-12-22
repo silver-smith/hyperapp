@@ -16,9 +16,9 @@ def sample_list_fn(piece):
     log.info("Sample list fn: %s", piece)
     assert isinstance(piece, htypes.list_adapter_tests.sample_list), repr(piece)
     return [
-        htypes.list_adapter_tests.item(11, "First item"),
-        htypes.list_adapter_tests.item(22, "Second item"),
-        htypes.list_adapter_tests.item(33, "Third item"),
+        htypes.list_adapter_tests.item(11, "first", "First item"),
+        htypes.list_adapter_tests.item(22, "second", "Second item"),
+        htypes.list_adapter_tests.item(33, "third", "Third item"),
         ]
 
 
@@ -59,10 +59,10 @@ def test_remote_fn_adapter(
             )
         adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
 
-        assert adapter.column_count() == 2
+        assert adapter.column_count() == 3
         assert adapter.column_title(0) == 'id'
         assert adapter.column_title(1) == 'text'
 
         assert adapter.row_count() == 3
         assert adapter.cell_data(1, 0) == 22
-        assert adapter.cell_data(2, 1) == "Third item"
+        assert adapter.cell_data(2, 1) == "third"

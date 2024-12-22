@@ -21,9 +21,9 @@ def sample_list_fn(piece):
     log.info("Sample list fn: %s", piece)
     assert isinstance(piece, htypes.list_adapter_tests.sample_list), repr(piece)
     return [
-        htypes.list_adapter_tests.item(11, "First item"),
-        htypes.list_adapter_tests.item(22, "Second item"),
-        htypes.list_adapter_tests.item(33, "Third item"),
+        htypes.list_adapter_tests.item(11, "first", "First item"),
+        htypes.list_adapter_tests.item(22, "second", "Second item"),
+        htypes.list_adapter_tests.item(33, "third", "Third item"),
         ]
 
 
@@ -35,7 +35,7 @@ def model():
 @mark.fixture
 def lcs():
     def mock_get(key, default=None):
-        if htypes.column.column_d('desc') in key:
+        if htypes.column.column_d('xdesc') in key:
             return False
         return default
     lcs = Mock()
@@ -67,7 +67,7 @@ def test_fn_adapter(ui_adapter_creg, model, ctx):
     assert adapter.column_title(1) == 'text'
     assert adapter.row_count() == 3
     assert adapter.cell_data(1, 0) == 22
-    assert adapter.cell_data(2, 1) == "Third item"
+    assert adapter.cell_data(2, 1) == "third"
 
 
 class Subscriber:
@@ -89,9 +89,9 @@ def sample_feed_list_fn(piece, feed):
     assert isinstance(piece, htypes.list_adapter_tests.sample_list), repr(piece)
     asyncio.create_task(_send_diff(feed))
     return [
-        htypes.list_adapter_tests.item(11, "First item"),
-        htypes.list_adapter_tests.item(22, "Second item"),
-        htypes.list_adapter_tests.item(33, "Third item"),
+        htypes.list_adapter_tests.item(11, "first", "First item"),
+        htypes.list_adapter_tests.item(22, "second", "Second item"),
+        htypes.list_adapter_tests.item(33, "third", "Third item"),
         ]
 
 
@@ -117,7 +117,7 @@ async def test_feed_fn_adapter(ui_adapter_creg, model, ctx):
 
     assert adapter.row_count() == 3
     assert adapter.cell_data(1, 0) == 22
-    assert adapter.cell_data(2, 1) == "Third item"
+    assert adapter.cell_data(2, 1) == "third"
 
     diff = await asyncio.wait_for(queue.get(), timeout=5)
     assert isinstance(diff, ListDiff.Append), repr(diff)
@@ -179,7 +179,7 @@ def test_fn_adapter_with_remote_context(
 
         assert adapter.row_count() == 3
         assert adapter.cell_data(1, 0) == 22
-        assert adapter.cell_data(2, 1) == "Third item"
+        assert adapter.cell_data(2, 1) == "third"
 
         get_fn_called_flag_call = rpc_call_factory(
             sender_identity=identity,
