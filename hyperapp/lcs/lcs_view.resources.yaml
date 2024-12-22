@@ -6,6 +6,7 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
+- legacy_type.builtin:list_mt
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
@@ -122,6 +123,7 @@ definitions:
         code.data_browser: models.data_browser:data_browser.module
         code.directory: ui.directory:directory.module
         code.mark: common.mark:mark.module
+        htypes.builtin.list_mt: legacy_type.builtin:list_mt
         htypes.builtin.record_mt: legacy_type.builtin:record_mt
         htypes.lcs_view.item: legacy_type.lcs_view:item
         htypes.lcs_view.layer_item: legacy_type.lcs_view:layer_item

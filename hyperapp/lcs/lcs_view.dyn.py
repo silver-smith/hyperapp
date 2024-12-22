@@ -9,6 +9,9 @@ from .code.data_browser import data_browser
 
 
 def dir_to_str(d):
+    if isinstance(d, htypes.builtin.list_mt):
+        base = dir_to_str(web.summon(d.element))
+        return f'{base} list'
     if isinstance(d, htypes.builtin.record_mt):
         return f'{d.module_name}.{d.name}'
     else:
