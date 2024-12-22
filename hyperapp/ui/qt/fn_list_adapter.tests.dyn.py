@@ -12,7 +12,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.list_diff import ListDiff
 from .fixtures import feed_fixtures, lcs_fixtures
-from .tested.code import list_adapter, fn_list_adapter
+from .tested.code import fn_list_adapter
 
 log = logging.getLogger(__name__)
 

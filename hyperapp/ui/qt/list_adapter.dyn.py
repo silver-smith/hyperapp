@@ -49,7 +49,7 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
     def _column_d(self, name):
         return {
             htypes.column.list_d(),
-            pyobj_creg.actor_to_piece(self.model_t),
+            pyobj_creg.actor_to_piece(self._model_t),
             htypes.column.column_d(name),
             }
 
