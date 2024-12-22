@@ -23,7 +23,6 @@ def lcs(layer_d):
         htypes.lcs_view_tests.sample_1_d(),
         pyobj_creg.actor_to_piece(htypes.lcs_view_tests.sample_2_d),
         }
-    
     items = [
         (layer_d, dir_1, htypes.lcs_view_tests.sample_model_1()),
         (layer_d, dir_2, htypes.lcs_view_tests.sample_model_2()),
