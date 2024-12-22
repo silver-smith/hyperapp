@@ -8,6 +8,8 @@ import:
 - common.mark:marker_ctl.service
 - common.ref_picker:pick_refs.service
 - common.ref_picker:ref_picker_cache.service
+- lcs.lcs_dirs_view:lcs_dirs_view_view.model-cfg-item
+- lcs.lcs_dirs_view:lcs_view_view_lcs_open_dirs.command-cfg-item
 - lcs.lcs_layer_selector:lcs_view_layer_selector.actor-template
 - lcs.lcs_layer_selector:lcs_view_layer_selector_select_layer.command-cfg-item
 - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
@@ -454,6 +456,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - lcs.lcs_dirs_view:lcs_view_view_lcs_open_dirs.command-cfg-item
       - lcs.lcs_layer_selector:lcs_view_layer_selector_select_layer.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_move_to_another_layer.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_open_layers.command-cfg-item
@@ -764,6 +767,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - lcs.lcs_dirs_view:lcs_dirs_view_view.model-cfg-item
       - lcs.lcs_view:lcs_view_layers_view.model-cfg-item
       - lcs.lcs_view:lcs_view_view.model-cfg-item
       - models.column_list:column_list_view.model-cfg-item

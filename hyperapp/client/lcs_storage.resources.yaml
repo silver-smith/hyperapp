@@ -1,5 +1,9 @@
 import:
+- lcs.lcs_view.config:bool_1
+- lcs.lcs_view.config:list_d
+- lcs.lcs_view.config:show_d
 - legacy_type.builtin:list_mt
+- legacy_type.column:column_d
 - legacy_type.command:custom_model_command_list
 - legacy_type.command:custom_model_commands_lcs_d
 - legacy_type.command:custom_ui_model_command
@@ -7,18 +11,23 @@ import:
 - legacy_type.data_browser:record_item
 - legacy_type.data_browser:record_view
 - legacy_type.data_browser:ref_list_view
+- legacy_type.lcs_dirs_view:view
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.list_as_tree_adapter:adapter
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:readonly_view
 - legacy_type.tree:view
 - legacy_type.ui:model_view_layout_d
-- models.data_browser:list_open.d
 - models.data_browser:data_browser_record_view.system-fn
+- models.data_browser:list_open.d
 - models.data_browser:record_open.d
 - models.data_browser:ref_list_open.d
 - sample.sample_commands:show_state.d
 definitions:
+  column_d_1:
+    type: legacy_type.column:column_d
+    value:
+      name: d
   custom_model_command_list_1:
     type: legacy_type.command:custom_model_command_list
     value:
@@ -45,6 +54,12 @@ definitions:
         - list_mt_1
         - custom_model_commands_lcs_d
         value: custom_model_command_list_1
+      - key:
+        - lcs.lcs_view.config:show_d
+        - lcs.lcs_view.config:list_d
+        - legacy_type.lcs_dirs_view:view
+        - column_d_1
+        value: lcs.lcs_view.config:bool_1
   list_as_tree_adapter_adapter_1:
     type: legacy_type.list_as_tree_adapter:adapter
     value:

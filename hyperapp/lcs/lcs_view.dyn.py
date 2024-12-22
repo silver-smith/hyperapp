@@ -8,7 +8,7 @@ from .code.directory import d_to_name
 from .code.data_browser import data_browser
 
 
-def _dir_to_str(d):
+def dir_to_str(d):
     if isinstance(d, htypes.builtin.record_mt):
         return f'{d.module_name}.{d.name}'
     else:
@@ -23,7 +23,7 @@ def lcs_view(piece, lcs, data_to_ref):
             layer=d_to_name(layer_d),
             dir=tuple(data_to_ref(d) for d in dir_set),
             piece=mosaic.put(piece),
-            dir_str=", ".join(sorted(_dir_to_str(d) for d in dir_set)),
+            dir_str=", ".join(sorted(dir_to_str(d) for d in dir_set)),
             piece_str=str(piece),
             )
         for layer_d, dir_set, piece in sorted(lcs)

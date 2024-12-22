@@ -1,0 +1,87 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.mark:mark.module
+- lcs.lcs_view:lcs_view.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.lcs_dirs_view:item
+- legacy_type.lcs_dirs_view:lcs_open_dirs_d
+- legacy_type.lcs_dirs_view:view
+- legacy_type.lcs_view:view
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
+definitions:
+  lcs_dirs_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_dirs_view.module
+      attr_name: lcs_dirs_view
+  lcs_dirs_view.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: lcs_dirs_view
+      file_name: lcs_dirs_view.dyn.py
+      import_list:
+        code.lcs_view: lcs.lcs_view:lcs_view.module
+        code.mark: common.mark:mark.module
+        htypes.lcs_dirs_view.item: legacy_type.lcs_dirs_view:item
+        htypes.lcs_dirs_view.view: legacy_type.lcs_dirs_view:view
+  lcs_dirs_view_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.lcs_dirs_view:item
+  lcs_dirs_view_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: lcs_dirs_view_view.list-ui-t
+      system_fn: lcs_dirs_view_view.system-fn
+  lcs_dirs_view_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.lcs_dirs_view:view
+      model: lcs_dirs_view_view.model
+  lcs_dirs_view_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_dirs_view
+      ctx_params:
+      - piece
+      - lcs
+      service_params:
+      - data_to_ref
+  lcs_open_dirs:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_dirs_view.module
+      attr_name: lcs_open_dirs
+  lcs_open_dirs.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_dirs_view:lcs_open_dirs_d
+  lcs_open_dirs.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_open_dirs.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: lcs_open_dirs.system-fn
+  lcs_open_dirs.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_open_dirs
+      ctx_params:
+      - piece
+      service_params: []
+  lcs_view_view_lcs_open_dirs.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      command: lcs_open_dirs.model-command

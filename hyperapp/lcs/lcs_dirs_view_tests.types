@@ -1,0 +1,9 @@
+layer_d = record
+
+sample_1_d = record:
+  name: string
+
+sample_2_d = record
+
+sample_model_1 = record
+sample_model_2 = record

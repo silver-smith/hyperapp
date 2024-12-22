@@ -1,8 +1,11 @@
 import:
+- client.lcs_storage_shortcuts:command_shortcut_lcs_d
 - legacy_type.builtin:bool
+- legacy_type.builtin:string
 - legacy_type.column:column_d
 - legacy_type.column:list_d
 - legacy_type.column:show_d
+- legacy_type.lcs_dirs_view:lcs_open_dirs_d
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.lcs_view:view
 definitions:
@@ -21,6 +24,9 @@ definitions:
     type: legacy_type.column:column_d
     value:
       name: piece
+  lcs_open_dirs_d:
+    type: legacy_type.lcs_dirs_view:lcs_open_dirs_d
+    value: {}
   lcs_storage_mapping:
     type: legacy_type.lcs_resource_storage:mapping
     value:
@@ -43,9 +49,16 @@ definitions:
         - column_d_3
         - legacy_type.lcs_view:view
         value: bool_1
+      - key:
+        - lcs_open_dirs_d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d
+        value: string_1
   list_d:
     type: legacy_type.column:list_d
     value: {}
   show_d:
     type: legacy_type.column:show_d
     value: {}
+  string_1:
+    type: legacy_type.builtin:string
+    value: D

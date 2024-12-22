@@ -1,0 +1,8 @@
+view = record
+
+item = record:
+  d: ref
+  d_str: string
+  item_count: int
+
+lcs_open_dirs_d = record
