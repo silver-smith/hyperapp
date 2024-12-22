@@ -1,10 +1,10 @@
 from unittest.mock import Mock
 
 from . import htypes
-from .tested.code import list_adapter
+from .tested.code.list_adapter import FnListAdapterBase
 
 
-class ListAdapterStub(list_adapter.FnListAdapterBase):
+class ListAdapterStub(FnListAdapterBase):
 
     def _call_fn(self, **kw):
         pass
