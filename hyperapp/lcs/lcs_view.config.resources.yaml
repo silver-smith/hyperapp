@@ -1,0 +1,51 @@
+import:
+- legacy_type.builtin:bool
+- legacy_type.column:column_d
+- legacy_type.column:list_d
+- legacy_type.column:show_d
+- legacy_type.lcs_resource_storage:mapping
+- legacy_type.lcs_view:view
+definitions:
+  bool_1:
+    type: legacy_type.builtin:bool
+    value: false
+  column_d_1:
+    type: legacy_type.column:column_d
+    value:
+      name: layer_d
+  column_d_2:
+    type: legacy_type.column:column_d
+    value:
+      name: dir
+  column_d_3:
+    type: legacy_type.column:column_d
+    value:
+      name: piece
+  lcs_storage_mapping:
+    type: legacy_type.lcs_resource_storage:mapping
+    value:
+      elements:
+      - key:
+        - show_d
+        - list_d
+        - column_d_1
+        - legacy_type.lcs_view:view
+        value: bool_1
+      - key:
+        - show_d
+        - list_d
+        - column_d_2
+        - legacy_type.lcs_view:view
+        value: bool_1
+      - key:
+        - show_d
+        - list_d
+        - column_d_3
+        - legacy_type.lcs_view:view
+        value: bool_1
+  list_d:
+    type: legacy_type.column:list_d
+    value: {}
+  show_d:
+    type: legacy_type.column:show_d
+    value: {}

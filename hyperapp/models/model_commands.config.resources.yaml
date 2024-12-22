@@ -1,0 +1,42 @@
+import:
+- lcs.lcs_view.config:bool_1
+- lcs.lcs_view.config:list_d
+- lcs.lcs_view.config:show_d
+- legacy_type.column:column_d
+- legacy_type.lcs_resource_storage:mapping
+- legacy_type.model_commands:view
+definitions:
+  column_d_1:
+    type: legacy_type.column:column_d
+    value:
+      name: ui_command_d
+  column_d_2:
+    type: legacy_type.column:column_d
+    value:
+      name: model_command_d
+  column_d_3:
+    type: legacy_type.column:column_d
+    value:
+      name: repr
+  lcs_storage_mapping:
+    type: legacy_type.lcs_resource_storage:mapping
+    value:
+      elements:
+      - key:
+        - legacy_type.model_commands:view
+        - column_d_1
+        - lcs.lcs_view.config:show_d
+        - lcs.lcs_view.config:list_d
+        value: lcs.lcs_view.config:bool_1
+      - key:
+        - column_d_2
+        - legacy_type.model_commands:view
+        - lcs.lcs_view.config:show_d
+        - lcs.lcs_view.config:list_d
+        value: lcs.lcs_view.config:bool_1
+      - key:
+        - legacy_type.model_commands:view
+        - lcs.lcs_view.config:show_d
+        - lcs.lcs_view.config:list_d
+        - column_d_3
+        value: lcs.lcs_view.config:bool_1
