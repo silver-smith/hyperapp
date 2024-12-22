@@ -1,8 +1,8 @@
-default_layer: client.lcs_storage_custom
+default_layer: default
 layers:
-- name: client.lcs_storage_custom
-  path: client/lcs_storage_custom.resources.yaml
-- name: client.lcs_storage_shortcuts
-  path: client/lcs_storage_shortcuts.resources.yaml
-- name: client.lcs_storage
-  path: client/lcs_storage.resources.yaml
+- name: custom
+  path: client/lcs_storage_custom
+- name: shortcuts
+  path: client/lcs_storage_shortcuts
+- name: default
+  path: client/lcs_storage

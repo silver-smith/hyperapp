@@ -79,9 +79,12 @@ class LCSheet:
             return
         for layer in data['layers']:
             name = layer['name']
-            path = hyperapp_dir / Path(layer['path']).expanduser()
-            d = name_to_d('lcs_layer', name.replace('.', '_'))
-            storage = lcs_resource_storage_factory(name, path)
+            path = layer['path']
+            full_path = hyperapp_dir.joinpath(Path(path).expanduser())
+            resource_path = full_path.with_suffix(full_path.suffix + '.resources.yaml')
+            resource_name = path.replace('/', '.')
+            d = name_to_d('lcs_layer', name)
+            storage = lcs_resource_storage_factory(resource_name, resource_path)
             self._name_to_storage[name] = storage
             self._d_to_storage[d] = storage
         self._default_layer_name = data['default_layer']
