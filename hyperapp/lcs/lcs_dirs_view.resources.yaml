@@ -9,6 +9,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.lcs_dirs_view:item
+- legacy_type.lcs_dirs_view:lcs_dirs_items_d
 - legacy_type.lcs_dirs_view:lcs_open_dirs_d
 - legacy_type.lcs_dirs_view:view
 - legacy_type.lcs_view:view
@@ -17,6 +18,32 @@ import:
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 definitions:
+  lcs_dirs_items:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_dirs_view.module
+      attr_name: lcs_dirs_items
+  lcs_dirs_items.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.lcs_dirs_view:lcs_dirs_items_d
+  lcs_dirs_items.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_dirs_items.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: lcs_dirs_items.system-fn
+  lcs_dirs_items.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_dirs_items
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   lcs_dirs_view:
     type: legacy_type.builtin:attribute
     value:
@@ -32,6 +59,7 @@ definitions:
         code.mark: common.mark:mark.module
         htypes.lcs_dirs_view.item: legacy_type.lcs_dirs_view:item
         htypes.lcs_dirs_view.view: legacy_type.lcs_dirs_view:view
+        htypes.lcs_view.view: legacy_type.lcs_view:view
   lcs_dirs_view_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -55,6 +83,11 @@ definitions:
       - lcs
       service_params:
       - data_to_ref
+  lcs_dirs_view_view_lcs_dirs_items.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_dirs_view:view
+      command: lcs_dirs_items.model-command
   lcs_open_dirs:
     type: legacy_type.builtin:attribute
     value:

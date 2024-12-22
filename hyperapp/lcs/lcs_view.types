@@ -1,4 +1,5 @@
-view = record
+view = record:
+  filter: ref list  # d list
 
 item = record:
   layer_d: ref

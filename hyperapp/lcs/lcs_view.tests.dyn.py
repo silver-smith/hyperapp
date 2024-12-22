@@ -35,13 +35,22 @@ def lcs(layer_d):
 
 @mark.fixture
 def piece():
-    return htypes.lcs_view.view()
+    return htypes.lcs_view.view(filter=())
 
 
 def test_view(lcs, piece):
     item_list = lcs_view.lcs_view(piece, lcs)
     assert type(item_list) is list
     assert len(item_list) == 2
+
+
+def test_filtered_view(lcs):
+    piece = htypes.lcs_view.view(filter=(
+        pyobj_creg.actor_to_ref(htypes.lcs_view_tests.sample_2_d),
+        ))
+    item_list = lcs_view.lcs_view(piece, lcs)
+    assert type(item_list) is list
+    assert len(item_list) == 1, item_list
 
 
 def test_layers_view(data_to_ref, layer_d, lcs):

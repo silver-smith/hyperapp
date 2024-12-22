@@ -5,4 +5,5 @@ item = record:
   d_str: string
   item_count: int
 
+lcs_dirs_items_d = record
 lcs_open_dirs_d = record

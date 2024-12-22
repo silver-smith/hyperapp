@@ -22,4 +22,4 @@ def select_layer(piece, current_item, lcs):
     if target_layer_d == source_layer_d:
         return
     lcs.move(dir, source_layer_d, target_layer_d)
-    return htypes.lcs_view.view()
+    return htypes.lcs_view.view(filter=())

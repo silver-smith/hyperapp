@@ -25,5 +25,12 @@ def lcs_dirs_view(piece, lcs, data_to_ref):
 
 
 @mark.command
+def lcs_dirs_items(piece, current_item):
+    return htypes.lcs_view.view(
+        filter=(current_item.d,),
+        )
+
+
+@mark.command
 def lcs_open_dirs(piece):
     return htypes.lcs_dirs_view.view()

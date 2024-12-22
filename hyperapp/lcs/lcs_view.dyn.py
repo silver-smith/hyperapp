@@ -20,6 +20,10 @@ def dir_to_str(d):
 
 @mark.model
 def lcs_view(piece, lcs, data_to_ref):
+    filter = {
+        web.summon(d_ref)
+        for d_ref in piece.filter
+        }
     return [
         htypes.lcs_view.item(
             layer_d=data_to_ref(layer_d),
@@ -30,6 +34,7 @@ def lcs_view(piece, lcs, data_to_ref):
             piece_str=str(piece),
             )
         for layer_d, dir_set, piece in sorted(lcs)
+        if not filter or filter & dir_set 
         ]
 
 
@@ -65,4 +70,4 @@ def lcs_open_piece(piece, current_item):
     
 @mark.global_command
 def open_lcs_view():
-    return htypes.lcs_view.view()
+    return htypes.lcs_view.view(filter=())
