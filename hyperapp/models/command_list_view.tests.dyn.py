@@ -8,6 +8,7 @@ from .code.mark import mark
 from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
 from .code.ui_model_command import UnboundUiModelCommand, CommandItem
+from .fixtures import feed_fixtures
 from .tested.code import command_list_view
 
 
@@ -72,20 +73,24 @@ def mock_run_input_key_dialog():
     return ''
 
 
-def test_global_set_shortcut(lcs, current_item):
+async def test_global_set_shortcut(feed_factory, lcs, current_item):
     piece = htypes.global_commands.view()
+    feed = feed_factory(piece)
     command_list_view.run_key_input_dialog = mock_run_input_key_dialog
-    command_list_view.set_shortcut(piece, current_item, lcs)
+    await command_list_view.set_shortcut(piece, 0, current_item, lcs)
     lcs.set.assert_called_once()
+    await feed.wait_for_diffs(count=1)
 
 
-def test_model_set_shortcut(lcs, current_item):
+async def test_model_set_shortcut(feed_factory, lcs, current_item):
     model = htypes.command_list_view_tests.sample_model()
     model_state = htypes.command_list_view_tests.sample_model_state()
     piece = htypes.model_commands.view(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )
+    feed = feed_factory(piece)
     command_list_view.run_key_input_dialog = mock_run_input_key_dialog
-    command_list_view.set_shortcut(piece, current_item, lcs)
+    await command_list_view.set_shortcut(piece, 0, current_item, lcs)
     lcs.set.assert_called_once()
+    await feed.wait_for_diffs(count=1)

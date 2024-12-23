@@ -26,7 +26,9 @@ import:
 - models.column_list:column_list_view.model-cfg-item
 - models.column_list:column_list_view_toggle_visibility.command-cfg-item
 - models.column_list:list_view_open_column_list.command-cfg-item
+- models.command_list_view:global_commands_view.feed-template
 - models.command_list_view:global_commands_view_set_shortcut.command-cfg-item
+- models.command_list_view:model_commands_view.feed-template
 - models.command_list_view:model_commands_view_set_shortcut.command-cfg-item
 - models.data_browser:browse_current_model.global-model-command
 - models.data_browser:data_browser_list_view.model-cfg-item
@@ -221,7 +223,6 @@ import:
 - ui.feed_creg:feed_creg.service
 - ui.feed_type_template:feed_feed_template.actor-template
 - ui.identity_command:identity_command_identity_command.actor-template
-- ui.identity_command:model_commands_view.feed-template
 - ui.identity_command:model_commands_view_add_identity_command.command-cfg-item
 - ui.int_adapter:int_adapter_int_adapter.actor-template
 - ui.layout:layout_command_list.model-cfg-item
@@ -399,12 +400,13 @@ definitions:
     value:
       items:
       - models.column_list:column_list_view.feed-template
+      - models.command_list_view:global_commands_view.feed-template
+      - models.command_list_view:model_commands_view.feed-template
       - sample.sample_feed:sample_feed_sample_list_feed.feed-template
       - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
       - sample.sample_list:sample_list_feed_sample_list.feed-template
       - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
       - ui.controller:layout_view.feed-template
-      - ui.identity_command:model_commands_view.feed-template
       - ui.list_as_tree:list_as_tree_opener_commands.feed-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
