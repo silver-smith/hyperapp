@@ -50,8 +50,7 @@ definitions:
     value:
       t: legacy_type.crud_ctr:init_ctr
       function: CrudInitTemplateCtr.from_piece
-      service_params:
-      - data_to_res
+      service_params: []
 
   CrudCommitTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -70,5 +69,4 @@ definitions:
     value:
       t: legacy_type.crud_ctr:commit_ctr
       function: CrudCommitTemplateCtr.from_piece
-      service_params:
-      - data_to_res
+      service_params: []

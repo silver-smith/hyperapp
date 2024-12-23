@@ -10,9 +10,8 @@ class CrudTemplateCtr(ModuleCtr):
 
     _service_name = 'crud_action'
 
-    def __init__(self, data_to_res, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params):
+    def __init__(self, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params):
         super().__init__(module_name)
-        self._data_to_res = data_to_res
         self._attr_qual_name = attr_qual_name
         self._model_t = model_t
         self._action = action
@@ -62,9 +61,8 @@ class CrudTemplateCtr(ModuleCtr):
 class CrudInitTemplateCtr(CrudTemplateCtr):
 
     @classmethod
-    def from_piece(cls, piece, data_to_res):
+    def from_piece(cls, piece):
         return cls(
-            data_to_res=data_to_res,
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             model_t=pyobj_creg.invite(piece.model_t),
@@ -75,8 +73,8 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             record_t=pyobj_creg.invite(piece.record_t),
             )
 
-    def __init__(self, data_to_res, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params, record_t):
-        super().__init__(data_to_res, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params)
+    def __init__(self, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params, record_t):
+        super().__init__(module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params)
         self._record_t = record_t
 
     @property
@@ -104,7 +102,6 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
         else:
             assert 0, f"TODO: {self._action} action support"
         open_command_ctr = CrudOpenCommandCtr(
-            data_to_res=self._data_to_res,
             module_name=self._module_name,
             model_t=self._model_t,
             name=open_command_name,
@@ -123,9 +120,8 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
 class CrudCommitTemplateCtr(CrudTemplateCtr):
 
     @classmethod
-    def from_piece(cls, piece, data_to_res):
+    def from_piece(cls, piece):
         return cls(
-            data_to_res=data_to_res,
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             model_t=pyobj_creg.invite(piece.model_t),
@@ -150,9 +146,8 @@ class CrudCommitTemplateCtr(CrudTemplateCtr):
 
 class CrudOpenCommandCtr(ModuleCtr):
 
-    def __init__(self, data_to_res, module_name, model_t, name, record_t, key_field, commit_command_name, commit_action):
+    def __init__(self, module_name, model_t, name, record_t, key_field, commit_command_name, commit_action):
         super().__init__(module_name)
-        self._data_to_res = data_to_res
         self._model_t = model_t
         self._name = name
         self._record_t = record_t
@@ -179,7 +174,7 @@ class CrudOpenCommandCtr(ModuleCtr):
         d_t_piece = types.get('crud', d_name)
         assert d_t_piece, d_name  # TODO: Make type if missing.
         d_t = pyobj_creg.animate(d_t_piece)
-        return self._data_to_res(d_t())
+        return d_t()
 
     def make_component(self, types, python_module, name_to_res):
         init_action_fn = self._init_resolved_tgt.constructor.make_component(

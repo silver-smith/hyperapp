@@ -5,7 +5,6 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
-    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -169,7 +168,7 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
 @mark.command_enum
 def crud_model_commands(piece, system_fn_creg):
-    command_d = pyobj_creg.invite(piece.commit_command_d)
+    command_d = web.summon(piece.commit_command_d)
     key = web.summon(piece.key)
     commit_fn = system_fn_creg.invite(piece.commit_action_fn)
     return [UnboundCrudCommitCommand(command_d, piece.key_field, key, commit_fn)]

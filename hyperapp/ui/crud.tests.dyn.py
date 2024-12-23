@@ -41,14 +41,14 @@ def _sample_update_fn():
         )
 
 
-def test_open_command_fn(data_to_ref, _sample_get_fn, _sample_update_fn):
+def test_open_command_fn(_sample_get_fn, _sample_update_fn):
     record_t = htypes.crud_tests.sample_record
     piece = htypes.crud.open_command_fn(
         name='edit',
         record_t=pyobj_creg.actor_to_ref(record_t),
         key_field='id',
         init_action_fn=mosaic.put(_sample_get_fn),
-        commit_command_d=data_to_ref(htypes.crud.save_d()),
+        commit_command_d=mosaic.put(htypes.crud.save_d()),
         commit_action_fn=mosaic.put(_sample_update_fn),
         )
     fn = crud.CrudOpenFn.from_piece(piece)
@@ -69,7 +69,7 @@ def model():
 
 
 @mark.fixture
-def crud_model(data_to_ref, model, _sample_get_fn, _sample_update_fn):
+def crud_model(model, _sample_get_fn, _sample_update_fn):
     record_t = htypes.crud_tests.sample_record
     return htypes.crud.model(
         record_t=pyobj_creg.actor_to_ref(record_t),
@@ -77,7 +77,7 @@ def crud_model(data_to_ref, model, _sample_get_fn, _sample_update_fn):
         key=mosaic.put(123),
         key_field='id',
         init_action_fn=mosaic.put(_sample_get_fn),
-        commit_command_d=data_to_ref(htypes.crud.save_d()),
+        commit_command_d=mosaic.put(htypes.crud.save_d()),
         commit_action_fn=mosaic.put(_sample_update_fn),
         )
 
