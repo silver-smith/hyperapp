@@ -21,6 +21,7 @@ import:
 - legacy_type.navigator:go_back_d
 - legacy_type.navigator:go_forward_d
 - legacy_type.sample_commands:details_d
+- legacy_type.sample_commands:sample_tree_info_d
 - legacy_type.sample_commands:show_state_d
 - legacy_type.sample_list:open_feed_sample_fn_list_d
 - legacy_type.sample_list:open_sample_fn_list_d
@@ -183,6 +184,10 @@ definitions:
         - details_d
         - command_shortcut_lcs_d
         value: string_20
+      - key:
+        - sample_tree_info_d
+        - command_shortcut_lcs_d
+        value: string_20
   open_column_list_d:
     type: legacy_type.column_list:open_column_list_d
     value: {}
@@ -218,6 +223,9 @@ definitions:
     value: {}
   quit_d:
     type: legacy_type.window_commands:quit_d
+    value: {}
+  sample_tree_info_d:
+    type: legacy_type.sample_commands:sample_tree_info_d
     value: {}
   select_layer_d:
     type: legacy_type.lcs_layer_selector:select_layer_d
