@@ -1,7 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:pyobj_creg.service
+- builtins:mosaic.service
+- builtins:web.service
 - common.list_diff:list_diff.module
 - common.mark:mark.module
 - legacy_type.builtin:attribute
@@ -32,7 +33,8 @@ definitions:
         code.mark: common.mark:mark.module
         htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
         htypes.command_list_view.item: legacy_type.command_list_view:item
-        services.pyobj_creg: builtins:pyobj_creg.service
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   global_commands_view.feed-template:
     type: legacy_type.feed:feed_template
     value:

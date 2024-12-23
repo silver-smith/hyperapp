@@ -4,7 +4,8 @@ import logging
 
 from . import htypes
 from .services import (
-    pyobj_creg,
+    mosaic,
+    web,
     )
 from .code.mark import mark
 from .code.command_list_view import command_item_to_view_item
@@ -13,10 +14,10 @@ log = logging.getLogger(__name__)
 
 
 @mark.model
-def list_global_commands(piece, lcs, data_to_ref, ui_global_command_items):
+def list_global_commands(piece, lcs, ui_global_command_items):
     command_item_list = ui_global_command_items(lcs)
     return [
-        command_item_to_view_item(data_to_ref, lcs, item)
+        command_item_to_view_item(lcs, item)
         for item in command_item_list.items()
         if item.is_global
         ]
@@ -26,7 +27,7 @@ def list_global_commands(piece, lcs, data_to_ref, ui_global_command_items):
 async def run_command(piece, current_item, lcs, ctx, ui_global_command_items):
     if current_item is None:
         return None  # Empty command list - no item is selected.
-    command_d = pyobj_creg.invite(current_item.ui_command_d)
+    command_d = web.summon(current_item.ui_command_d)
     command_item_list = ui_global_command_items(lcs)
     command_item = command_item_list[command_d]
     if not command_item.enabled:

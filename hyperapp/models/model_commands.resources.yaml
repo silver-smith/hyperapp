@@ -2,7 +2,6 @@
 
 import:
 - builtins:mosaic.service
-- builtins:pyobj_creg.service
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
@@ -37,7 +36,6 @@ definitions:
         code.model_command: ui.model_command:model_command.module
         htypes.model_commands.view: legacy_type.model_commands:view
         services.mosaic: builtins:mosaic.service
-        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
   model_commands_view.list-ui-t:
     type: legacy_type.model:list_ui_t
@@ -62,7 +60,6 @@ definitions:
       - ctx
       - lcs
       service_params:
-      - data_to_ref
       - ui_model_command_items
   model_commands_view_run_command.command-cfg-item:
     type: legacy_type.command:cfg_item

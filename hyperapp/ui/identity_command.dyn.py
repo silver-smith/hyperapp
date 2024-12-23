@@ -73,5 +73,5 @@ async def add_identity_command(piece, lcs, ctx, data_to_ref, feed_factory, ui_mo
         d=data_to_ref(command_d),
         )
     command_item = commands_item_list.add_custom_model_command(command_d, model_command_piece)
-    new_item = command_item_to_view_item(data_to_ref, lcs, command_item)
+    new_item = command_item_to_view_item(lcs, command_item)
     await feed.send(ListDiff.Append(new_item))

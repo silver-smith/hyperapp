@@ -1,7 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:pyobj_creg.service
+- builtins:mosaic.service
+- builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -27,7 +28,8 @@ definitions:
         code.command_list_view: models.command_list_view:command_list_view.module
         code.mark: common.mark:mark.module
         htypes.global_commands.view: legacy_type.global_commands:view
-        services.pyobj_creg: builtins:pyobj_creg.service
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   global_commands_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -50,7 +52,6 @@ definitions:
       - piece
       - lcs
       service_params:
-      - data_to_ref
       - ui_global_command_items
   global_commands_view_run_command.command-cfg-item:
     type: legacy_type.command:cfg_item

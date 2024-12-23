@@ -4,7 +4,6 @@ from unittest.mock import Mock
 from . import htypes
 from .services import (
     mosaic,
-    pyobj_creg,
     )
 from .code.mark import mark
 from .code.context import Context
@@ -62,11 +61,11 @@ def test_list_global_commands(lcs, piece):
     assert 'sample_command' in [item.name for item in item_list]
 
 
-async def test_run_command(data_to_ref, lcs, piece):
+async def test_run_command(lcs, piece):
     navigator = Mock()
     current_item = htypes.command_list_view.item(
-        ui_command_d=data_to_ref(htypes.global_commands_tests.sample_command_d()),
-        model_command_d=data_to_ref(htypes.global_commands_tests.sample_model_command_d()),
+        ui_command_d=mosaic.put(htypes.global_commands_tests.sample_command_d()),
+        model_command_d=mosaic.put(htypes.global_commands_tests.sample_model_command_d()),
         name="<unused>",
         groups="<unused>",
         repr="<unused>",

@@ -2,7 +2,8 @@ import logging
 
 from . import htypes
 from .services import (
-    pyobj_creg,
+    mosaic,
+    web,
     )
 from .code.mark import mark
 from .code.list_diff import ListDiff
@@ -12,10 +13,10 @@ from .code.key_input_dialog import run_key_input_dialog
 log = logging.getLogger(__name__)
 
 
-def command_item_to_view_item(data_to_ref, lcs, item):
+def command_item_to_view_item(lcs, item):
     return htypes.command_list_view.item(
-        ui_command_d=data_to_ref(item.d),
-        model_command_d=data_to_ref(item.model_command_d),
+        ui_command_d=mosaic.put(item.d),
+        model_command_d=mosaic.put(item.model_command_d),
         name=item.name,
         groups=", ".join(d_to_name(g) for g in item.command.groups) if item.enabled else "",
         repr=repr(item.command),
@@ -41,7 +42,7 @@ def _view_item(item, shortcut):
 @mark.command
 async def set_shortcut(piece, current_idx, current_item, lcs, feed_factory):
     feed = feed_factory(piece)
-    command_d = pyobj_creg.invite(current_item.ui_command_d)
+    command_d = web.summon(current_item.ui_command_d)
     shortcut = run_key_input_dialog()
     log.info("Set shortcut for %s: %r", command_d, shortcut)
     new_item = _view_item(current_item, shortcut=shortcut)

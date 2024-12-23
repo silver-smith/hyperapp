@@ -5,7 +5,6 @@ import logging
 from . import htypes
 from .services import (
     mosaic,
-    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -16,13 +15,13 @@ log = logging.getLogger(__name__)
 
 
 @mark.model
-def list_model_commands(piece, ctx, lcs, data_to_ref, ui_model_command_items):
+def list_model_commands(piece, ctx, lcs, ui_model_command_items):
     model, model_t = web.summon_with_t(piece.model)
     model_state = web.summon(piece.model_state)
     command_ctx = model_command_ctx(ctx, model, model_state)
     command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
     return [
-        command_item_to_view_item(data_to_ref, lcs, item)
+        command_item_to_view_item(lcs, item)
         for item in command_item_list.items()
         if not item.is_pure_global
         ]
@@ -36,7 +35,7 @@ async def run_command(piece, current_item, ctx, lcs, ui_model_command_items):
     model_state = web.summon(piece.model_state)
     command_ctx = model_command_ctx(ctx, model, model_state)
     command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
-    command_d = pyobj_creg.invite(current_item.ui_command_d)
+    command_d = web.summon(current_item.ui_command_d)
     command_item = command_item_list[command_d]
     if not command_item.enabled:
         log.warning("Command %s is disabled; not running", command_item.name)

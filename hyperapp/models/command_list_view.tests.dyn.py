@@ -23,7 +23,7 @@ def lcs():
     return lcs
 
 
-def test_command_item_to_item(data_to_ref, partial_ref, model_view_creg, visualizer, lcs):
+def test_command_item_to_item(partial_ref, model_view_creg, visualizer, lcs):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
@@ -49,7 +49,7 @@ def test_command_item_to_item(data_to_ref, partial_ref, model_view_creg, visuali
         model_command_d=htypes.command_list_view_tests.sample_model_command_d(),
         command=command,
         )
-    view_item = command_list_view.command_item_to_view_item(data_to_ref, lcs, command_item)
+    view_item = command_list_view.command_item_to_view_item(lcs, command_item)
     assert view_item
 
 
