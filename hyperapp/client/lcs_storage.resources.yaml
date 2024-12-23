@@ -1,5 +1,8 @@
 import:
+- client.lcs_storage_shortcuts:command_shortcut_lcs_d
+- client.lcs_storage_shortcuts:string_20
 - legacy_type.builtin:list_mt
+- legacy_type.builtin:string
 - legacy_type.command:custom_model_command_list
 - legacy_type.command:custom_model_commands_lcs_d
 - legacy_type.command:custom_ui_model_command
@@ -7,8 +10,12 @@ import:
 - legacy_type.data_browser:record_item
 - legacy_type.data_browser:record_view
 - legacy_type.data_browser:ref_list_view
+- legacy_type.file_bundles:open_file_bundle_list_d
+- legacy_type.global_commands:run_command_d
+- legacy_type.identity_command:add_identity_command_d
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.list_as_tree_adapter:adapter
+- legacy_type.model_commands:run_command_d
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:readonly_view
 - legacy_type.tree:view
@@ -19,6 +26,9 @@ import:
 - models.data_browser:ref_list_open.d
 - sample.sample_commands:show_state.d
 definitions:
+  add_identity_command_d:
+    type: legacy_type.identity_command:add_identity_command_d
+    value: {}
   custom_model_command_list_1:
     type: legacy_type.command:custom_model_command_list
     value:
@@ -45,6 +55,22 @@ definitions:
         - list_mt_1
         - custom_model_commands_lcs_d
         value: custom_model_command_list_1
+      - key:
+        - open_file_bundle_list_d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d
+        value: string_1
+      - key:
+        - run_command_d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d
+        value: client.lcs_storage_shortcuts:string_20
+      - key:
+        - model_commands.run_command_d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d
+        value: client.lcs_storage_shortcuts:string_20
+      - key:
+        - add_identity_command_d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d
+        value: string_2
   list_as_tree_adapter_adapter_1:
     type: legacy_type.list_as_tree_adapter:adapter
     value:
@@ -60,16 +86,31 @@ definitions:
       element:
         hash_algorithm: sha512
         hash: 5/anKMOSV2Lyt19wWL5Ja0TCNdfCT/y/yNk1Mi5Y7ayiiFXRdV6IlEunaVVaAj1q9rc1WXlgYpE6CqluJHGYyw==
+  model_commands.run_command_d:
+    type: legacy_type.model_commands:run_command_d
+    value: {}
   model_view_layout_d:
     type: legacy_type.ui:model_view_layout_d
+    value: {}
+  open_file_bundle_list_d:
+    type: legacy_type.file_bundles:open_file_bundle_list_d
     value: {}
   readonly_view_1:
     type: legacy_type.text:readonly_view
     value:
       adapter: static_str_adapter
+  run_command_d:
+    type: legacy_type.global_commands:run_command_d
+    value: {}
   static_str_adapter:
     type: legacy_type.str_adapter:static_str_adapter
     value: {}
+  string_1:
+    type: legacy_type.builtin:string
+    value: Alt+B
+  string_2:
+    type: legacy_type.builtin:string
+    value: I
   tree_view_1:
     type: legacy_type.tree:view
     value:
