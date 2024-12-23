@@ -153,8 +153,7 @@ definitions:
       ctx_params:
       - piece
       - lcs
-      service_params:
-      - data_to_ref
+      service_params: []
   lcs_view_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -176,8 +175,7 @@ definitions:
       ctx_params:
       - piece
       - lcs
-      service_params:
-      - data_to_ref
+      service_params: []
   lcs_view_view_lcs_move_to_another_layer.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

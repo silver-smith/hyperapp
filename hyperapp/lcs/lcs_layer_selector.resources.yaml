@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:pyobj_creg.service
+- builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -29,7 +29,7 @@ definitions:
         code.mark: common.mark:mark.module
         htypes.lcs_view.layers_view: legacy_type.lcs_view:layers_view
         htypes.lcs_view.view: legacy_type.lcs_view:view
-        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
   lcs_view_layer_selector.actor-template:
     type: legacy_type.system:actor_template
     value:

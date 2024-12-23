@@ -1,19 +1,22 @@
 from collections import defaultdict
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 from .code.lcs_view import dir_to_str
 
 
 @mark.model
-def lcs_dirs_view(piece, lcs, data_to_ref):
+def lcs_dirs_view(piece, lcs):
     d_to_count = defaultdict(int)
     for layer_d, dir_set, piece in lcs:
         for d in dir_set:
             d_to_count[d] += 1
     return [
         htypes.lcs_dirs_view.item(
-            d=data_to_ref(d),
+            d=mosaic.put(d),
             d_str=dir_to_str(d),
             item_count=count
             )

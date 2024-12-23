@@ -19,16 +19,16 @@ def dir_to_str(d):
 
 
 @mark.model
-def lcs_view(piece, lcs, data_to_ref):
+def lcs_view(piece, lcs):
     filter = {
         web.summon(d_ref)
         for d_ref in piece.filter
         }
     return [
         htypes.lcs_view.item(
-            layer_d=data_to_ref(layer_d),
+            layer_d=mosaic.put(layer_d),
             layer=d_to_name(layer_d),
-            dir=tuple(data_to_ref(d) for d in dir_set),
+            dir=tuple(mosaic.put(d) for d in dir_set),
             piece=mosaic.put(piece),
             dir_str=", ".join(sorted(dir_to_str(d) for d in dir_set)),
             piece_str=str(piece),
@@ -39,11 +39,11 @@ def lcs_view(piece, lcs, data_to_ref):
 
 
 @mark.model
-def lcs_layers_view(piece, lcs, data_to_ref):
+def lcs_layers_view(piece, lcs):
     return [
         htypes.lcs_view.layer_item(
             name=d_to_name(layer_d),
-            d=data_to_ref(layer_d),
+            d=mosaic.put(layer_d),
             )
         for layer_d in sorted(lcs.layers())
         ]

@@ -1,6 +1,9 @@
 from unittest.mock import Mock
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 from .tested.code import lcs_layer_selector
 
@@ -13,10 +16,10 @@ def lcs():
 
 
 @mark.fixture
-def piece(data_to_ref):
+def piece():
     return htypes.lcs_view.layer_selector(
-        source_layer_d=data_to_ref(htypes.lcs_layer_selector_tests.layer_1_d()),
-        dir=(data_to_ref(htypes.lcs_layer_selector_tests.sample_d()),),
+        source_layer_d=mosaic.put(htypes.lcs_layer_selector_tests.layer_1_d()),
+        dir=(mosaic.put(htypes.lcs_layer_selector_tests.sample_d()),),
         )
 
 def test_layout(lcs, piece):
@@ -24,10 +27,10 @@ def test_layout(lcs, piece):
     assert view
 
 
-def test_select(data_to_ref, lcs, piece):
+def test_select(lcs, piece):
     current_item = htypes.lcs_view.layer_item(
         name="<unused>",
-        d=data_to_ref(htypes.lcs_layer_selector_tests.layer_2_d()),
+        d=mosaic.put(htypes.lcs_layer_selector_tests.layer_2_d()),
         )
     lcs_layer_selector.select_layer(piece, current_item, lcs)
     lcs.move.assert_called_once()

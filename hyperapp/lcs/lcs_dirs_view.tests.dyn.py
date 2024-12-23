@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -46,10 +47,10 @@ def test_view(lcs, piece):
     assert len(item_list) == 3
 
 
-def test_open_items(data_to_ref, piece):
+def test_open_items(piece):
     d = htypes.lcs_dirs_view_tests.sample_1_d('name')
     current_item = htypes.lcs_dirs_view.item(
-        d=data_to_ref(d),
+        d=mosaic.put(d),
         d_str="<unused>",
         item_count=1,
         )

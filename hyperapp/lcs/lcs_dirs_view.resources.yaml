@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:mosaic.service
 - common.mark:mark.module
 - lcs.lcs_view:lcs_view.module
 - legacy_type.builtin:attribute
@@ -60,6 +61,7 @@ definitions:
         htypes.lcs_dirs_view.item: legacy_type.lcs_dirs_view:item
         htypes.lcs_dirs_view.view: legacy_type.lcs_dirs_view:view
         htypes.lcs_view.view: legacy_type.lcs_view:view
+        services.mosaic: builtins:mosaic.service
   lcs_dirs_view_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -81,8 +83,7 @@ definitions:
       ctx_params:
       - piece
       - lcs
-      service_params:
-      - data_to_ref
+      service_params: []
   lcs_dirs_view_view_lcs_dirs_items.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
