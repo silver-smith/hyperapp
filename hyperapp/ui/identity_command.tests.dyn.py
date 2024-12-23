@@ -14,21 +14,21 @@ def _sample_command_fn(piece, ctx):
 
 
 def _make_sample_command():
-    d_res = data_to_res(htypes.identity_command_tests.sample_d())
+    d = htypes.identity_command_tests.sample_d()
     model_impl = htypes.ui.model_command_impl(
         function=fn_to_ref(_sample_command_fn),
         params=('piece', 'ctx'),
         )
     return htypes.ui.model_command(
-        d=mosaic.put(d_res),
+        d=mosaic.put(d),
         impl=mosaic.put(model_impl),
         )
 
 
-async def test_command_instance(data_to_ref):
+async def test_command_instance():
     d = htypes.identity_command_tests.sample_command_d()
     piece = htypes.identity_command.identity_command(
-        d=data_to_ref(d),
+        d=mosaic.put(d),
         )
     unbound_command = identity_command.UnboundIdentityModelCommand.from_piece(piece)
     assert unbound_command.properties
