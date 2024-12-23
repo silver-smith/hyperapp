@@ -5,6 +5,7 @@ import:
 - legacy_type.column_list:toggle_visibility_d
 - legacy_type.command:command_shortcut_lcs_d
 - legacy_type.command_list_view:set_shortcut_d
+- legacy_type.crud:edit_d
 - legacy_type.data_browser:browse_current_model_d
 - legacy_type.global_commands:open_global_commands_d
 - legacy_type.layout:open_layout_tree_d
@@ -19,6 +20,7 @@ import:
 - legacy_type.model_commands:open_model_commands_d
 - legacy_type.navigator:go_back_d
 - legacy_type.navigator:go_forward_d
+- legacy_type.sample_commands:details_d
 - legacy_type.sample_commands:show_state_d
 - legacy_type.sample_list:open_feed_sample_fn_list_d
 - legacy_type.sample_list:open_sample_fn_list_d
@@ -38,8 +40,14 @@ definitions:
   command_shortcut_lcs_d:
     type: legacy_type.command:command_shortcut_lcs_d
     value: {}
+  details_d:
+    type: legacy_type.sample_commands:details_d
+    value: {}
   duplicate_window_d:
     type: legacy_type.window_commands:duplicate_window_d
+    value: {}
+  edit_d:
+    type: legacy_type.crud:edit_d
     value: {}
   go_back_d:
     type: legacy_type.navigator:go_back_d
@@ -167,6 +175,14 @@ definitions:
         - toggle_visibility_d
         - command_shortcut_lcs_d
         value: string_4
+      - key:
+        - edit_d
+        - command_shortcut_lcs_d
+        value: string_24
+      - key:
+        - details_d
+        - command_shortcut_lcs_d
+        value: string_20
   open_column_list_d:
     type: legacy_type.column_list:open_column_list_d
     value: {}
@@ -263,6 +279,9 @@ definitions:
   string_23:
     type: legacy_type.builtin:string
     value: Alt+Shift+C
+  string_24:
+    type: legacy_type.builtin:string
+    value: E
   string_3:
     type: legacy_type.builtin:string
     value: Alt+Return
