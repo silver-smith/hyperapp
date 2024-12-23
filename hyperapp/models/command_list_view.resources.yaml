@@ -6,7 +6,6 @@ import:
 - common.list_diff:list_diff.module
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:command_shortcut_lcs_d
@@ -69,9 +68,8 @@ definitions:
       object: command_list_view.module
       attr_name: set_shortcut
   set_shortcut.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.command_list_view:set_shortcut_d
+    type: legacy_type.command_list_view:set_shortcut_d
+    value: {}
   set_shortcut.model-command:
     type: legacy_type.command:model_command
     value:

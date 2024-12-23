@@ -5,7 +5,6 @@ import:
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:list_mt
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
@@ -38,9 +37,8 @@ definitions:
       object: lcs_view.module
       attr_name: lcs_move_to_another_layer
   lcs_move_to_another_layer.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_view:lcs_move_to_another_layer_d
+    type: legacy_type.lcs_view:lcs_move_to_another_layer_d
+    value: {}
   lcs_move_to_another_layer.model-command:
     type: legacy_type.command:model_command
     value:
@@ -64,9 +62,8 @@ definitions:
       object: lcs_view.module
       attr_name: lcs_open_layers
   lcs_open_layers.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_view:lcs_open_layers_d
+    type: legacy_type.lcs_view:lcs_open_layers_d
+    value: {}
   lcs_open_layers.model-command:
     type: legacy_type.command:model_command
     value:
@@ -89,9 +86,8 @@ definitions:
       object: lcs_view.module
       attr_name: lcs_open_piece
   lcs_open_piece.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_view:lcs_open_piece_d
+    type: legacy_type.lcs_view:lcs_open_piece_d
+    value: {}
   lcs_open_piece.model-command:
     type: legacy_type.command:model_command
     value:
@@ -197,9 +193,8 @@ definitions:
       object: lcs_view.module
       attr_name: open_lcs_view
   open_lcs_view.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_view:open_lcs_view_d
+    type: legacy_type.lcs_view:open_lcs_view_d
+    value: {}
   open_lcs_view.global-model-command:
     type: legacy_type.command:model_command
     value:

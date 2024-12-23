@@ -5,7 +5,6 @@ import:
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -69,9 +68,8 @@ definitions:
       object: global_commands.module
       attr_name: open_global_commands
   open_global_commands.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.global_commands:open_global_commands_d
+    type: legacy_type.global_commands:open_global_commands_d
+    value: {}
   open_global_commands.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -93,9 +91,8 @@ definitions:
       object: global_commands.module
       attr_name: run_command
   run_command.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.global_commands:run_command_d
+    type: legacy_type.global_commands:run_command_d
+    value: {}
   run_command.model-command:
     type: legacy_type.command:model_command
     value:

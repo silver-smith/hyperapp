@@ -3,7 +3,6 @@
 import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
@@ -20,9 +19,8 @@ definitions:
       object: window_commands.module
       attr_name: duplicate_window
   duplicate_window.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.window_commands:duplicate_window_d
+    type: legacy_type.window_commands:duplicate_window_d
+    value: {}
   duplicate_window.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -47,9 +45,8 @@ definitions:
       object: window_commands.module
       attr_name: quit
   quit.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.window_commands:quit_d
+    type: legacy_type.window_commands:quit_d
+    value: {}
   quit.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

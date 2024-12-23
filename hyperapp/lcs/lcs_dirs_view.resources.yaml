@@ -5,7 +5,6 @@ import:
 - common.mark:mark.module
 - lcs.lcs_view:lcs_view.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -25,9 +24,8 @@ definitions:
       object: lcs_dirs_view.module
       attr_name: lcs_dirs_items
   lcs_dirs_items.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_dirs_view:lcs_dirs_items_d
+    type: legacy_type.lcs_dirs_view:lcs_dirs_items_d
+    value: {}
   lcs_dirs_items.model-command:
     type: legacy_type.command:model_command
     value:
@@ -95,9 +93,8 @@ definitions:
       object: lcs_dirs_view.module
       attr_name: lcs_open_dirs
   lcs_open_dirs.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.lcs_dirs_view:lcs_open_dirs_d
+    type: legacy_type.lcs_dirs_view:lcs_open_dirs_d
+    value: {}
   lcs_open_dirs.model-command:
     type: legacy_type.command:model_command
     value:

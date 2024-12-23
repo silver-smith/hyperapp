@@ -4,7 +4,6 @@ import:
 - builtins:pyobj_creg.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:command_shortcut_lcs_d
@@ -35,9 +34,8 @@ definitions:
       object: layout.module
       attr_name: add_view_command
   add_view_command.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.layout:add_view_command_d
+    type: legacy_type.layout:add_view_command_d
+    value: {}
   add_view_command.model-command:
     type: legacy_type.command:model_command
     value:
@@ -173,9 +171,8 @@ definitions:
       object: layout.module
       attr_name: open_layout_tree
   open_layout_tree.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.layout:open_layout_tree_d
+    type: legacy_type.layout:open_layout_tree_d
+    value: {}
   open_layout_tree.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -197,9 +194,8 @@ definitions:
       object: layout.module
       attr_name: open_view_item_commands
   open_view_item_commands.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.layout:open_view_item_commands_d
+    type: legacy_type.layout:open_view_item_commands_d
+    value: {}
   open_view_item_commands.model-command:
     type: legacy_type.command:model_command
     value:
@@ -223,9 +219,8 @@ definitions:
       object: layout.module
       attr_name: set_escape_shortcut
   set_escape_shortcut.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.layout:set_escape_shortcut_d
+    type: legacy_type.layout:set_escape_shortcut_d
+    value: {}
   set_escape_shortcut.model-command:
     type: legacy_type.command:model_command
     value:
@@ -250,9 +245,8 @@ definitions:
       object: layout.module
       attr_name: set_shortcut
   set_shortcut.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.layout:set_shortcut_d
+    type: legacy_type.layout:set_shortcut_d
+    value: {}
   set_shortcut.model-command:
     type: legacy_type.command:model_command
     value:

@@ -8,7 +8,6 @@ import:
 - common.list_diff:list_diff.module
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -106,9 +105,8 @@ definitions:
       object: list_as_tree.module
       attr_name: open_opener_commands
   open_opener_commands.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.list_as_tree:open_opener_commands_d
+    type: legacy_type.list_as_tree:open_opener_commands_d
+    value: {}
   open_opener_commands.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -137,9 +135,8 @@ definitions:
       object: list_as_tree.module
       attr_name: switch_list_to_tree
   switch_list_to_tree.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.list_as_tree:switch_list_to_tree_d
+    type: legacy_type.list_as_tree:switch_list_to_tree_d
+    value: {}
   switch_list_to_tree.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -166,9 +163,8 @@ definitions:
       object: list_as_tree.module
       attr_name: toggle_open_command
   toggle_open_command.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.list_as_tree:toggle_open_command_d
+    type: legacy_type.list_as_tree:toggle_open_command_d
+    value: {}
   toggle_open_command.model-command:
     type: legacy_type.command:model_command
     value:

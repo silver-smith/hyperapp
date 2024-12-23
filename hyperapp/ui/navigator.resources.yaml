@@ -6,7 +6,6 @@ import:
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
@@ -34,9 +33,8 @@ definitions:
       object: navigator.module
       attr_name: go_back
   go_back.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.navigator:go_back_d
+    type: legacy_type.navigator:go_back_d
+    value: {}
   go_back.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -62,9 +60,8 @@ definitions:
       object: navigator.module
       attr_name: go_forward
   go_forward.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.navigator:go_forward_d
+    type: legacy_type.navigator:go_forward_d
+    value: {}
   go_forward.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

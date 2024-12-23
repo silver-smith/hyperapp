@@ -3,7 +3,6 @@
 import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -24,9 +23,8 @@ definitions:
       object: sample_commands.module
       attr_name: details
   details.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_commands:details_d
+    type: legacy_type.sample_commands:details_d
+    value: {}
   details.model-command:
     type: legacy_type.command:model_command
     value:
@@ -50,9 +48,8 @@ definitions:
       object: sample_commands.module
       attr_name: open_sample_static_list
   open_sample_static_list.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_commands:open_sample_static_list_d
+    type: legacy_type.sample_commands:open_sample_static_list_d
+    value: {}
   open_sample_static_list.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -74,9 +71,8 @@ definitions:
       object: sample_commands.module
       attr_name: open_sample_static_text_1
   open_sample_static_text_1.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_commands:open_sample_static_text_1_d
+    type: legacy_type.sample_commands:open_sample_static_text_1_d
+    value: {}
   open_sample_static_text_1.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -98,9 +94,8 @@ definitions:
       object: sample_commands.module
       attr_name: open_sample_static_text_2
   open_sample_static_text_2.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_commands:open_sample_static_text_2_d
+    type: legacy_type.sample_commands:open_sample_static_text_2_d
+    value: {}
   open_sample_static_text_2.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -135,9 +130,8 @@ definitions:
       object: sample_commands.module
       attr_name: sample_tree_info
   sample_tree_info.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_commands:sample_tree_info_d
+    type: legacy_type.sample_commands:sample_tree_info_d
+    value: {}
   sample_tree_info.model-command:
     type: legacy_type.command:model_command
     value:
@@ -165,9 +159,8 @@ definitions:
       object: sample_commands.module
       attr_name: show_state
   show_state.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_commands:show_state_d
+    type: legacy_type.sample_commands:show_state_d
+    value: {}
   show_state.global-model-command:
     type: legacy_type.command:model_command
     value:

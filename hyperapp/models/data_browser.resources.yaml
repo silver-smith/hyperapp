@@ -6,7 +6,6 @@ import:
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -34,9 +33,8 @@ definitions:
       object: data_browser.module
       attr_name: browse_current_model
   browse_current_model.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.data_browser:browse_current_model_d
+    type: legacy_type.data_browser:browse_current_model_d
+    value: {}
   browse_current_model.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -196,9 +194,8 @@ definitions:
       object: data_browser.module
       attr_name: list_open
   list_open.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.data_browser:list_open_d
+    type: legacy_type.data_browser:list_open_d
+    value: {}
   list_open.model-command:
     type: legacy_type.command:model_command
     value:
@@ -222,9 +219,8 @@ definitions:
       object: data_browser.module
       attr_name: record_open
   record_open.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.data_browser:record_open_d
+    type: legacy_type.data_browser:record_open_d
+    value: {}
   record_open.model-command:
     type: legacy_type.command:model_command
     value:
@@ -248,9 +244,8 @@ definitions:
       object: data_browser.module
       attr_name: ref_list_open
   ref_list_open.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.data_browser:ref_list_open_d
+    type: legacy_type.data_browser:ref_list_open_d
+    value: {}
   ref_list_open.model-command:
     type: legacy_type.command:model_command
     value:
