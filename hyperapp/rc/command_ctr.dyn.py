@@ -12,8 +12,7 @@ LOCAL_PARAMS = {'controller', 'ctx', 'lcs', 'rpc_endpoint', 'identity', 'remote_
 
 class CommandTemplateCtr(Constructor):
 
-    def __init__(self, data_to_res, module_name, attr_qual_name, service_name, ctx_params, service_params):
-        self._data_to_res = data_to_res
+    def __init__(self, module_name, attr_qual_name, service_name, ctx_params, service_params):
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
@@ -43,16 +42,16 @@ class CommandTemplateCtr(Constructor):
         d_t_piece = types.get(type_module, d_name)
         assert d_t_piece, (type_module, d_name)  # TODO: Make type if missing.
         d_t = pyobj_creg.animate(d_t_piece)
-        d_piece = self._data_to_res(d_t())
+        d = d_t()
         properties = htypes.command.properties(
             is_global=self._is_global,
             uses_state=bool(set(self._ctx_params) & STATE_PARAMS),
             remotable=not set(self._ctx_params) & LOCAL_PARAMS,
             )
         if name_to_res is not None:
-            name_to_res[f'{self._fn_name}.d'] = d_piece
+            name_to_res[f'{self._fn_name}.d'] = d
         return self._command_t(
-            d=mosaic.put(d_piece),
+            d=mosaic.put(d),
             properties=properties,
             system_fn=mosaic.put(system_fn),
             )
@@ -83,9 +82,8 @@ class CommandTemplateCtr(Constructor):
 class UntypedCommandTemplateCtr(CommandTemplateCtr):
 
     @classmethod
-    def from_piece(cls, piece, data_to_res):
+    def from_piece(cls, piece):
         return cls(
-            data_to_res=data_to_res,
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
@@ -117,9 +115,8 @@ class UntypedCommandTemplateCtr(CommandTemplateCtr):
 class TypedCommandTemplateCtr(CommandTemplateCtr):
 
     @classmethod
-    def from_piece(cls, piece, data_to_res):
+    def from_piece(cls, piece):
         return cls(
-            data_to_res=data_to_res,
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
@@ -128,8 +125,8 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
             service_params=piece.service_params,
             )
 
-    def __init__(self, data_to_res, module_name, attr_qual_name, service_name, t, ctx_params, service_params):
-        super().__init__(data_to_res, module_name, attr_qual_name, service_name, ctx_params, service_params)
+    def __init__(self, module_name, attr_qual_name, service_name, t, ctx_params, service_params):
+        super().__init__(module_name, attr_qual_name, service_name, ctx_params, service_params)
         self._t = t
 
     @property

@@ -58,8 +58,7 @@ definitions:
     value:
       t: legacy_type.command_resource:ui_command_template_ctr
       function: UiCommandTemplateCtr.from_piece
-      service_params:
-      - data_to_res
+      service_params: []
 
   UniversalUiCommandTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -78,8 +77,7 @@ definitions:
     value:
       t: legacy_type.command_resource:universal_ui_command_template_ctr
       function: UniversalUiCommandTemplateCtr.from_piece
-      service_params:
-      - data_to_res
+      service_params: []
 
   ModelCommandTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -98,8 +96,7 @@ definitions:
     value:
       t: legacy_type.command_resource:model_command_template_ctr
       function: ModelCommandTemplateCtr.from_piece
-      service_params:
-      - data_to_res
+      service_params: []
 
   ModelCommandEnumeratorTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -118,8 +115,7 @@ definitions:
     value:
       t: legacy_type.command_resource:model_command_enumerator_template_ctr
       function: ModelCommandEnumeratorTemplateCtr.from_piece
-      service_params:
-      - data_to_res
+      service_params: []
 
   GlobalModelCommandTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -138,5 +134,4 @@ definitions:
     value:
       t: legacy_type.command_resource:global_model_command_template_ctr
       function: GlobalModelCommandTemplateCtr.from_piece
-      service_params:
-      - data_to_res
+      service_params: []
