@@ -7,7 +7,6 @@ from yaml.scanner import ScannerError
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.resource.resource_registry import UnknownResourceName
-from hyperapp.common.association_registry import Association
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +14,6 @@ log = logging.getLogger(__name__)
 AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
 
 Definition = namedtuple('Definition', 'type value')
-_Association = namedtuple('_Association', 'bases key value')
 
 
 class ResourceModule:
@@ -33,7 +31,6 @@ class ResourceModule:
             resource_dir=None,
             imports=None,
             definitions=None,
-            associations=None,
             ):
         self._mosaic = mosaic
         self._resource_type_producer = resource_type_producer
@@ -45,7 +42,6 @@ class ResourceModule:
         self._resource_dir = resource_dir or (path.parent if path else None)
         self._loaded_imports = imports
         self._loaded_definitions = definitions
-        self._loaded_associations = associations
         self._load_from_file = load_from_file and path is not None
 
     def __repr__(self):
@@ -83,7 +79,6 @@ class ResourceModule:
         self._definition_dict.clear()
         self._loaded_imports = set()
         self._loaded_definitions = {}
-        self._loaded_associations = []
 
     @cached_property
     def is_auto_generated(self):
@@ -143,21 +138,6 @@ class ResourceModule:
                 services.add(l[0])
         return services
 
-    def add_association_list(self, ass_list):
-        for ass in ass_list:
-            self.add_association(ass)
-
-    def add_association(self, ass):
-        log.info("%s: Add association: %r", self._name, ass)
-        key = ass.key
-        if type(key) not in {tuple, list}:
-            key = [key]
-        self._association_list.append(_Association(
-            bases=[self._reverse_resolve(b) for b in ass.bases],
-            key=[self._reverse_resolve(k) for k in key],
-            value=self._reverse_resolve(ass.value),
-            ))
-
     def _resource_to_definition(self, resource):
         resource_t = deduce_value_type(resource)
         t = self._resource_type_producer(resource_t)
@@ -179,7 +159,6 @@ class ResourceModule:
             load_from_file=True,
             imports=self._import_set | module._import_set,
             definitions={**self._definition_dict, **module._definition_dict},
-            associations=self._association_list + module._association_list,
             )
 
     def add_import(self, import_name):
@@ -195,12 +174,6 @@ class ResourceModule:
         self._definition_dict[var_name] = Definition(resource_type, definition_value)
         self._import_set.add(self._resolve_resource_type(resource_type))
 
-    def add_association_def(self, resource_type, definition):
-        assert 0, repr(definition)
-        log.info("%s: Add association definition %s: %r", self._name, resource_type, definition)
-        self._association_list.add(Definition(resource_type, definition))
-        self._import_set.add(self._resolve_resource_type(resource_type))
-
     def _hash_file_path(self, path):
         return path.with_suffix('.hash')
 
@@ -208,12 +181,6 @@ class ResourceModule:
     def as_dict(self):
         d = {}
         d['import'] = sorted(self._import_set)
-        associations = [
-            self._association_as_dict(ass)
-            for ass in sorted(self._association_list)
-            ]
-        if associations:
-            d['associations'] = associations
         d['definitions'] = {
             name: self._definition_as_dict(d)
             for name, d in sorted(self._definition_dict.items())
@@ -241,19 +208,6 @@ class ResourceModule:
         return {
             'type': self._resolve_resource_type(definition.type),
             'value': definition.type.to_dict(definition.value),
-            }
-
-    def _association_as_dict(self, ass):
-        key = ass.key
-        if len(key) == 1:
-            [key] = key
-        d = {}
-        if ass.bases:
-            d['bases'] = ass.bases
-        return {
-            **d,
-            'key': key,
-            'value': ass.value,
             }
 
     def _resolve_resource_type(self, resource_type):
@@ -297,27 +251,6 @@ class ResourceModule:
         self._ensure_loaded()
         return self._loaded_definitions
 
-    @property
-    def _association_list(self):
-        self._ensure_loaded()
-        return self._loaded_associations
-
-    @property
-    def associations(self):
-        ass_list = []
-        for ass in self._association_list:
-            bases, key, value = self._resolve_association(ass)
-            if len(key) == 1:
-                [key] = key
-            else:
-                key = tuple(key)
-            ass_list.append(Association(
-                bases=bases,
-                key=key,
-                value=value,
-                ))
-        return ass_list
-
     def _ensure_loaded(self):
         if self._loaded_definitions is None:
             self._load()
@@ -325,7 +258,6 @@ class ResourceModule:
     def _load(self):
         self._loaded_imports = set()
         self._loaded_definitions = {}
-        self._loaded_associations = []
         if self._text:
             log.info("Loading resource module %s (%d bytes)", self._name, len(self._text))
         elif self._path and self._load_from_file:
@@ -342,8 +274,6 @@ class ResourceModule:
                 raise RuntimeError(f"{self._name}: Importing {name!r}: {x}")
         for name, contents in module_contents.get('definitions', {}).items():
             self._loaded_definitions[name] = self._read_definition(name, contents)
-        for contents in module_contents.get('associations', []):
-            self._loaded_associations.append(self._read_association(contents))
 
     @cached_property
     def _module_contents(self):
@@ -373,29 +303,6 @@ class ResourceModule:
         except Exception as x:
             raise RuntimeError(f"Error loading definition {self._name}/{name}: {x}")
         return Definition(t, value)
-
-    def _read_association(self, data):
-        log.debug("%s: Load association: %s", self._name, data)
-        bases = data.get('bases', [])
-        try:
-            key = data['key']
-            value = data['value']
-        except KeyError as x:
-            raise RuntimeError(f"{self._name}: Invalid association: Missing key: {x}. Value: {data}")
-        if isinstance(key, str):
-            key = [key]
-        elif not isinstance(key, list):
-            raise RuntimeError(f"{self._name}: Invalid association value: Expected string or list, but got: {key}")
-        ass = _Association(bases, key, value)
-        _ = self._resolve_association(ass)
-        return ass
-
-    def _resolve_association(self, ass):
-        return (
-            [self._resolve_name(b) for b in ass.bases],
-            [self._resolve_name(n) for n in ass.key],
-            self._resolve_name(ass.value),
-            )
 
 
 def load_resource_modules(resource_module_factory, resource_dir, resource_registry):

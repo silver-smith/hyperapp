@@ -83,28 +83,6 @@ def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory,
     compare(res_module, 'test_set_partial')
 
 
-def test_add_association(mosaic, resource_registry, resource_module_factory, compare):
-    sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
-    key = attribute_t(
-        object=mosaic.put(sample_module_2),
-        attr_name='sample_key_attr',
-    )
-    value = attribute_t(
-        object=mosaic.put(sample_module_2),
-        attr_name='sample_value_attr',
-    )
-    ass = Association(
-        bases=[key],
-        key=key,
-        value=value,
-        )
-    res_module = resource_module_factory(resource_registry, 'test_module')
-    res_module['sample_key'] = key
-    res_module['sample_value'] = value
-    res_module.add_association(ass)
-    compare(res_module, 'test_add_association')
-
-
 def test_primitive(mosaic, resource_registry, resource_module_factory, compare):
     res_module = resource_module_factory(resource_registry, 'test_module')
     res_module['sample_string'] = 'abcd efgh'
