@@ -8,6 +8,7 @@ import:
 - legacy_type.crud:edit_d
 - legacy_type.data_browser:browse_current_model_d
 - legacy_type.global_commands:open_global_commands_d
+- legacy_type.global_commands:run_command_d
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:set_shortcut_d
@@ -18,6 +19,7 @@ import:
 - legacy_type.lcs_view:lcs_open_piece_d
 - legacy_type.lcs_view:open_lcs_view_d
 - legacy_type.model_commands:open_model_commands_d
+- legacy_type.model_commands:run_command_d
 - legacy_type.navigator:go_back_d
 - legacy_type.navigator:go_forward_d
 - legacy_type.sample_commands:details_d
@@ -31,6 +33,7 @@ import:
 - legacy_type.show_current_context:show_current_context_d
 - legacy_type.window_commands:duplicate_window_d
 - legacy_type.window_commands:quit_d
+- models.data_browser:record_open.d
 definitions:
   browse_current_model_d:
     type: legacy_type.data_browser:browse_current_model_d
@@ -188,6 +191,21 @@ definitions:
         - sample_tree_info_d
         - command_shortcut_lcs_d
         value: string_20
+      - key:
+        - models.data_browser:record_open.d
+        - command_shortcut_lcs_d
+        value: string_20
+      - key:
+        - run_command_d
+        - command_shortcut_lcs_d
+        value: string_20
+      - key:
+        - model_commands.run_command_d
+        - command_shortcut_lcs_d
+        value: string_20
+  model_commands.run_command_d:
+    type: legacy_type.model_commands:run_command_d
+    value: {}
   open_column_list_d:
     type: legacy_type.column_list:open_column_list_d
     value: {}
@@ -223,6 +241,9 @@ definitions:
     value: {}
   quit_d:
     type: legacy_type.window_commands:quit_d
+    value: {}
+  run_command_d:
+    type: legacy_type.global_commands:run_command_d
     value: {}
   sample_tree_info_d:
     type: legacy_type.sample_commands:sample_tree_info_d
