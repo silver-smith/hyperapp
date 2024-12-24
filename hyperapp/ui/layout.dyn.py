@@ -3,7 +3,8 @@ from types import SimpleNamespace
 
 from . import htypes
 from .services import (
-    pyobj_creg,
+    mosaic,
+    web,
     )
 from .code.mark import mark
 from .code.directory import d_to_name
@@ -96,7 +97,7 @@ async def open_view_item_commands(piece, current_item):
         return htypes.layout.command_list(item_id=current_item.id)
 
 
-def _command_to_item(data_to_ref, controller, lcs, ctx, ui_command, item_id):
+def _command_to_item(controller, lcs, ctx, ui_command, item_id):
     layout_command = UnboundLayoutCommand(ui_command)
     shortcut = lcs.get({htypes.command.command_shortcut_lcs_d(), layout_command.d}) or ""
     return htypes.layout.command_item(
@@ -104,14 +105,14 @@ def _command_to_item(data_to_ref, controller, lcs, ctx, ui_command, item_id):
         shortcut=shortcut,
         groups=', '.join(d_to_name(g) for g in ui_command.groups),
         wrapped_groups=', '.join(d_to_name(g) for g in layout_command.groups),
-        command_d=data_to_ref(layout_command.d),
+        command_d=mosaic.put(layout_command.d),
         )
 
 
 @mark.model
-def view_item_commands(piece, controller, lcs, ctx, data_to_ref):
+def view_item_commands(piece, controller, lcs, ctx):
     command_list = [
-        _command_to_item(data_to_ref, controller, lcs, ctx, command, piece.item_id)
+        _command_to_item(controller, lcs, ctx, command, piece.item_id)
         for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)
@@ -120,7 +121,7 @@ def view_item_commands(piece, controller, lcs, ctx, data_to_ref):
 
 @mark.command
 def set_shortcut(piece, current_item, lcs):
-    command_d = pyobj_creg.invite(current_item.command_d)
+    command_d = web.summon(current_item.command_d)
     shortcut = run_key_input_dialog()
     log.info("Set shortcut for %s: %r", command_d, shortcut)
     key = {htypes.command.command_shortcut_lcs_d(), command_d}
@@ -129,7 +130,7 @@ def set_shortcut(piece, current_item, lcs):
 
 @mark.command
 def set_escape_shortcut(piece, current_item, lcs):
-    command_d = pyobj_creg.invite(current_item.command_d)
+    command_d = web.summon(current_item.command_d)
     shortcut = 'Esc'
     log.info("Set shortcut for %s: %r", command_d, shortcut)
     key = {htypes.command.command_shortcut_lcs_d(), command_d}

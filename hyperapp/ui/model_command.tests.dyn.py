@@ -17,7 +17,7 @@ def sample_service():
     return 'a-service'
 
 
-def test_model_command_from_piece(data_to_ref):
+def test_model_command_from_piece():
     d = htypes.model_command_tests.sample_command_d()
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
@@ -25,7 +25,7 @@ def test_model_command_from_piece(data_to_ref):
         service_params=('sample_service',),
         )
     piece = htypes.command.model_command(
-        d=data_to_ref(d),
+        d=mosaic.put(d),
         properties=htypes.command.properties(False, False, False),
         system_fn=mosaic.put(system_fn),
         )
@@ -33,7 +33,7 @@ def test_model_command_from_piece(data_to_ref):
     assert isinstance(command, model_command.UnboundModelCommand)
 
 
-def test_model_command_enumerator_from_piece(data_to_ref):
+def test_model_command_enumerator_from_piece():
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
         ctx_params=('model', 'state'),

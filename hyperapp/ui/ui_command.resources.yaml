@@ -2,7 +2,7 @@
 
 import:
 - builtins:deduce_t.service
-- builtins:pyobj_creg.service
+- builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -66,7 +66,7 @@ definitions:
         code.mark: common.mark:mark.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
         services.deduce_t: builtins:deduce_t.service
-        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
   ui_command_from_piece:
     type: legacy_type.builtin:attribute
     value:

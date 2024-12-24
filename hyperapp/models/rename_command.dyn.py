@@ -2,7 +2,6 @@ import logging
 
 from . import htypes
 from .services import (
-    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -23,7 +22,7 @@ def model_command_get(piece, ui_command_d):
 def model_command_update(piece, ui_command_d, value, lcs, ctx, ui_model_command_items):
     model, model_t = web.summon_with_t(piece.model)
     model_state = web.summon(piece.model_state)
-    prev_d = pyobj_creg.invite(ui_command_d)
+    prev_d = web.summon(ui_command_d)
     new_d = name_to_d('custom_command', value.name)
     log.info("Rename command: %s -> %s", prev_d, new_d)
     command_ctx = model_command_ctx(ctx, model, model_state)

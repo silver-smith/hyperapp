@@ -46,10 +46,10 @@ def master_piece():
 
 
 @mark.fixture
-def piece(data_to_ref, master_piece, command_d):
+def piece(master_piece, command_d):
     return htypes.master_details.view(
         master_view=mosaic.put(master_piece),
-        details_command_d=data_to_ref(command_d),
+        details_command_d=mosaic.put(command_d),
         direction='LeftToRight',
         master_stretch=1,
         details_stretch=1,

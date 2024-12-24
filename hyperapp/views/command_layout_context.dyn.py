@@ -15,20 +15,19 @@ class CommandLayoutContextView(ContextView):
 
     @classmethod
     @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, data_to_ref, view_creg, ui_model_command_items, ui_global_command_items):
+    def from_piece(cls, piece, ctx, view_creg, ui_model_command_items, ui_global_command_items):
         base_view = view_creg.invite(piece.base, ctx)
-        ui_command_d = pyobj_creg.invite(piece.ui_command_d)
+        ui_command_d = web.summon(piece.ui_command_d)
         if piece.model_t is not None:
             model_t = pyobj_creg.invite(piece.model_t)
             command_items = ui_model_command_items(ctx.lcs, model_t, ctx)
         else:
             model_t = None
             command_items = ui_global_command_items(ctx.lcs)
-        return cls(data_to_ref, command_items, base_view, model_t, ui_command_d)
+        return cls(command_items, base_view, model_t, ui_command_d)
 
-    def __init__(self, data_to_ref, command_items, base_view, model_t, ui_command_d):
+    def __init__(self, command_items, base_view, model_t, ui_command_d):
         super().__init__(base_view, label="Command layout")
-        self._data_to_ref = data_to_ref
         self._command_items = command_items
         self._model_t = model_t
         self._ui_command_d = ui_command_d
@@ -38,7 +37,7 @@ class CommandLayoutContextView(ContextView):
         return htypes.command_layout_context.view(
             base=mosaic.put(self._base_view.piece),
             model_t=pyobj_creg.actor_to_ref(self._model_t) if self._model_t is not None else None,
-            ui_command_d=self._data_to_ref(self._ui_command_d),
+            ui_command_d=mosaic.put(self._ui_command_d),
             )
 
     def _set_layout(self, layout):

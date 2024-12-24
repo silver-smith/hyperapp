@@ -1,7 +1,7 @@
 from hyperapp.common.htypes import TRecord
 
 from .services import (
-    pyobj_creg,
+    web,
     )
 
 
@@ -12,7 +12,7 @@ def d_to_name(d):
 
 
 def d_res_ref_to_name(d_ref):
-    d = pyobj_creg.invite(d_ref)
+    d = web.summon(d_ref)
     return d_to_name(d)
 
 

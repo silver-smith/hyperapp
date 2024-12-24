@@ -4,9 +4,6 @@ import logging
 from functools import cached_property
 from enum import Enum
 
-from .services import (
-    pyobj_creg,
-    )
 from .code.directory import d_to_name
 
 log = logging.getLogger(__name__)

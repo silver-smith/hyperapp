@@ -1,7 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:pyobj_creg.service
+- builtins:mosaic.service
+- builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -86,7 +87,8 @@ definitions:
         htypes.layout.command_item: legacy_type.layout:command_item
         htypes.layout.command_list: legacy_type.layout:command_list
         htypes.layout.view: legacy_type.layout:view
-        services.pyobj_creg: builtins:pyobj_creg.service
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   layout_command_list.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -110,8 +112,7 @@ definitions:
       - controller
       - lcs
       - ctx
-      service_params:
-      - data_to_ref
+      service_params: []
   layout_command_list_add_view_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

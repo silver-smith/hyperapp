@@ -60,10 +60,10 @@ def model_command_reg_config(partial_ref):
 
 
 @mark.fixture
-def lcs(data_to_ref):
+def lcs():
     command_3 = htypes.command.custom_ui_model_command(
-        ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_3_d()),
-        model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_2_d()),
+        ui_command_d=mosaic.put(htypes.ui_model_command_tests.sample_command_3_d()),
+        model_command_d=mosaic.put(htypes.ui_model_command_tests.sample_model_command_2_d()),
         layout=None,
         )
     fn_3 = htypes.system_fn.ctx_fn(
@@ -72,12 +72,12 @@ def lcs(data_to_ref):
         service_params=(),
         )
     model_command_3 = htypes.command.model_command(
-        d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_3_d()),
+        d=mosaic.put(htypes.ui_model_command_tests.sample_model_command_3_d()),
         properties=htypes.command.properties(False, False, False),
         system_fn=mosaic.put(fn_3),
         )
     command_4 = htypes.command.custom_ui_command(
-        ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_4_d()),
+        ui_command_d=mosaic.put(htypes.ui_model_command_tests.sample_command_4_d()),
         model_command=mosaic.put(model_command_3),
         layout=None,
         )
@@ -92,11 +92,11 @@ def lcs(data_to_ref):
     return lcs
 
 
-def test_set_custom_ui_model_command(data_to_ref, custom_ui_model_commands, lcs):
+def test_set_custom_ui_model_command(custom_ui_model_commands, lcs):
     model_t = htypes.ui_model_command_tests.sample_model
     command = htypes.command.custom_ui_model_command(
-        ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_2_d()),
-        model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_2_d()),
+        ui_command_d=mosaic.put(htypes.ui_model_command_tests.sample_command_2_d()),
+        model_command_d=mosaic.put(htypes.ui_model_command_tests.sample_model_command_2_d()),
         layout=None,
         )
     custom_commands = custom_ui_model_commands(lcs, model_t)

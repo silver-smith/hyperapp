@@ -79,7 +79,7 @@ async def test_view_commands(get_view_commands, view, widget):
     assert result == 'sample-fn: a-state, a-service', repr(result)
 
 
-def test_ui_command_from_piece(data_to_ref):
+def test_ui_command_from_piece():
     d = htypes.ui_command_tests.sample_command_d()
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
@@ -87,7 +87,7 @@ def test_ui_command_from_piece(data_to_ref):
         service_params=('sample_service',),
         )
     piece = htypes.command.ui_command(
-        d=data_to_ref(d),
+        d=mosaic.put(d),
         properties=htypes.command.properties(False, False, False),
         system_fn=mosaic.put(system_fn),
         )

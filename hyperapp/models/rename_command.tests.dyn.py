@@ -44,9 +44,9 @@ def piece():
 
 
 @mark.fixture
-def d_ref(data_to_ref):
+def d_ref():
     d = htypes.rename_command_tests.sample_command_d()
-    return data_to_ref(d)
+    return mosaic.put(d)
 
 
 def test_get(piece, d_ref):

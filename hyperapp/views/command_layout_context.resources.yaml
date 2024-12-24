@@ -51,7 +51,6 @@ definitions:
       t: legacy_type.command_layout_context:view
       function: CommandLayoutContextView.from_piece
       service_params:
-      - data_to_ref
       - view_creg
       - ui_model_command_items
       - ui_global_command_items

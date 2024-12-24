@@ -3,7 +3,6 @@
 import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
-- builtins:pyobj_creg.service
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.box_layout:state
@@ -48,7 +47,6 @@ definitions:
         htypes.master_details.view: legacy_type.master_details:view
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
-        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
   master_details_view.actor-template:
     type: legacy_type.system:actor_template
@@ -56,7 +54,6 @@ definitions:
       t: legacy_type.master_details:view
       function: MasterDetailsView.from_piece
       service_params:
-      - data_to_ref
       - view_creg
       - model_view_creg
       - visualizer
@@ -115,7 +112,6 @@ definitions:
       - hook
       - ctx
       service_params:
-      - data_to_ref
       - model_view_creg
       - global_model_command_reg
       - get_model_commands

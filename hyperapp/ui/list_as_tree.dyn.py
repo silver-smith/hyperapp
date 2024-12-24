@@ -52,9 +52,9 @@ def open_opener_commands(view, current_path):
         )
 
 
-def _make_command_item(data_to_ref, command, is_opener):
+def _make_command_item(command, is_opener):
     return htypes.list_as_tree.opener_command_item(
-        command_d=data_to_ref(command.d),
+        command_d=mosaic.put(command.d),
         name=d_to_name(command.d),
         is_opener=is_opener,
         )
@@ -62,20 +62,20 @@ def _make_command_item(data_to_ref, command, is_opener):
 
 def _get_current_command_d(root_piece_t, layer_piece_t, adapter):
     if root_piece_t == layer_piece_t:
-        return pyobj_creg.invite_opt(adapter.root_open_children_command_d)
+        return web.summon_opt(adapter.root_open_children_command_d)
     for layer in adapter.layers:
         t = pyobj_creg.invite(layer.piece_t)
         if t == layer_piece_t:
-            return pyobj_creg.invite_opt(layer.open_children_command_d)
+            return web.summon_opt(layer.open_children_command_d)
     # Layer is not yet included into adapter piece.
     return None
 
 
-def _amend_adapter(data_to_ref, root_piece_t, layer_piece_t, adapter, new_command_d):
+def _amend_adapter(root_piece_t, layer_piece_t, adapter, new_command_d):
     if new_command_d is None:
         new_command_d_ref = None
     else:
-        new_command_d_ref = data_to_ref(new_command_d)
+        new_command_d_ref = mosaic.put(new_command_d)
     layers = list(adapter.layers)
     if root_piece_t == layer_piece_t:
         root_open_children_command_d = new_command_d_ref
@@ -106,7 +106,7 @@ def _amend_adapter(data_to_ref, root_piece_t, layer_piece_t, adapter, new_comman
 
 
 @mark.model
-def opener_command_list(piece, lcs, ctx, data_to_ref, get_model_commands, get_custom_layout):
+def opener_command_list(piece, lcs, ctx, get_model_commands, get_custom_layout):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
     model_state = web.summon(piece.model_state)
@@ -119,7 +119,7 @@ def opener_command_list(piece, lcs, ctx, data_to_ref, get_model_commands, get_cu
     command_ctx = model_command_ctx(ctx, layer_piece, model_state)
     command_list = get_model_commands(layer_piece_t, command_ctx)
     return [
-        _make_command_item(data_to_ref, command, is_opener=command.d == current_command_d)
+        _make_command_item(command, is_opener=command.d == current_command_d)
         for command in command_list
         ]
 
@@ -127,7 +127,7 @@ def opener_command_list(piece, lcs, ctx, data_to_ref, get_model_commands, get_cu
 @mark.command
 async def toggle_open_command(
         piece, current_idx, current_item, ctx, lcs,
-        data_to_ref, feed_factory, get_model_commands, get_custom_layout, set_custom_layout):
+        feed_factory, get_model_commands, get_custom_layout, set_custom_layout):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
     model_state = web.summon(piece.model_state)
@@ -146,12 +146,12 @@ async def toggle_open_command(
         cmd.d: (idx, cmd) for idx, cmd
         in enumerate(command_list)
         }
-    current_command_d = pyobj_creg.invite(current_item.command_d)
+    current_command_d = web.summon(current_item.command_d)
     if current_command_d == prev_command_d:
         new_command_d = None
     else:
         new_command_d = current_command_d
-    new_adapter = _amend_adapter(data_to_ref, root_piece_t, layer_piece_t, adapter, new_command_d)
+    new_adapter = _amend_adapter(root_piece_t, layer_piece_t, adapter, new_command_d)
     new_view = htypes.tree.view(
         adapter=mosaic.put(new_adapter),
         )
@@ -162,7 +162,7 @@ async def toggle_open_command(
     except KeyError:
         pass
     else:
-        prev_item = _make_command_item(data_to_ref, prev_command, is_opener=False)
+        prev_item = _make_command_item(prev_command, is_opener=False)
         await feed.send(ListDiff.Replace(idx, prev_item))
     try:
         idx, current_command = idx_command_by_d[current_command_d]
@@ -170,5 +170,5 @@ async def toggle_open_command(
         pass
     else:
         assert idx == current_idx
-        item = _make_command_item(data_to_ref, current_command, is_opener=new_command_d is not None)
+        item = _make_command_item(current_command, is_opener=new_command_d is not None)
         await feed.send(ListDiff.Replace(current_idx, item))

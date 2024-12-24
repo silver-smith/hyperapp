@@ -36,12 +36,12 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
         for rec in piece.layers:
             piece_t = pyobj_creg.invite(rec.piece_t)
             layer = cls._Layer(
-                open_command_d=pyobj_creg.invite_opt(rec.open_children_command_d),
+                open_command_d=web.summon_opt(rec.open_children_command_d),
                 )
             layers[piece_t] = layer
         root_item_t = pyobj_creg.invite(piece.root_item_t)
         root_layer = cls._Layer(
-            open_command_d=pyobj_creg.invite_opt(piece.root_open_children_command_d),
+            open_command_d=web.summon_opt(piece.root_open_children_command_d),
             item_t=root_item_t,
             model_state_t=list_model_state_t(root_item_t),
             list_fn=system_fn_creg.invite(piece.root_function),

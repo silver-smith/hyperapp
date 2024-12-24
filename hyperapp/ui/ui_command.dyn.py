@@ -3,7 +3,7 @@ from functools import partial
 
 from .services import (
     deduce_t,
-    pyobj_creg,
+    web,
     )
 from .code.mark import mark
 from .code.command import UnboundCommand, BoundCommand, CommandKind
@@ -49,7 +49,7 @@ class BoundUiCommand(BoundCommand):
 def ui_command_from_piece(piece, system_fn_creg):
     ctx_fn = system_fn_creg.invite(piece.system_fn)
     return UnboundUiCommand(
-        d=pyobj_creg.invite(piece.d),
+        d=web.summon(piece.d),
         ctx_fn=ctx_fn,
         properties=piece.properties,
         groups=default_command_groups(piece.properties, CommandKind.VIEW),

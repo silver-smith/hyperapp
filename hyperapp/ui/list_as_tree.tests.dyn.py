@@ -116,8 +116,8 @@ def fn_1():
 
 
 @mark.fixture
-def adapter_piece(data_to_ref, root_item_t, fn_1):
-    open_command_1_d_ref = data_to_ref(htypes.list_as_tree_tests.open_1_d())
+def adapter_piece(root_item_t, fn_1):
+    open_command_1_d_ref = mosaic.put(htypes.list_as_tree_tests.open_1_d())
     return htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
@@ -167,10 +167,10 @@ def test_opener_commands_list(adapter_piece, model_state):
     assert len(result) == 1
     [item] = result
     assert item.name == 'open_2'
-    assert pyobj_creg.invite_opt(item.command_d) == htypes.list_as_tree_tests.open_2_d()
+    assert web.summon_opt(item.command_d) == htypes.list_as_tree_tests.open_2_d()
 
 
-async def test_set_root_open_command(data_to_ref, root_item_t, fn_1, model_state):
+async def test_set_root_open_command(root_item_t, fn_1, model_state):
     ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece = root_piece
@@ -189,7 +189,7 @@ async def test_set_root_open_command(data_to_ref, root_item_t, fn_1, model_state
         adapter=mosaic.put(adapter_piece),
         )
     current_item = htypes.list_as_tree.opener_command_item(
-        command_d=data_to_ref(htypes.list_as_tree_tests.open_1_d()),
+        command_d=mosaic.put(htypes.list_as_tree_tests.open_1_d()),
         name="<unused>",
         is_opener=False,
         )
@@ -199,7 +199,7 @@ async def test_set_root_open_command(data_to_ref, root_item_t, fn_1, model_state
     lcs.set.assert_called_once()
 
 
-async def test_set_non_root_open_command(data_to_ref, root_item_t, fn_1, model_state):
+async def test_set_non_root_open_command(root_item_t, fn_1, model_state):
     ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece_t = htypes.list_as_tree_tests.sample_list_2
@@ -226,7 +226,7 @@ async def test_set_non_root_open_command(data_to_ref, root_item_t, fn_1, model_s
         adapter=mosaic.put(adapter_piece),
         )
     current_item = htypes.list_as_tree.opener_command_item(
-        command_d=data_to_ref(htypes.list_as_tree_tests.open_1_d()),
+        command_d=mosaic.put(htypes.list_as_tree_tests.open_1_d()),
         name="<unused>",
         is_opener=False,
         )

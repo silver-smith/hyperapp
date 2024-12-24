@@ -4,7 +4,6 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
-    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -19,7 +18,7 @@ class MasterDetailsView(BoxLayoutView):
     
     @classmethod
     @mark.actor.model_view_creg
-    def from_piece(cls, piece, model, ctx, data_to_ref, view_creg, model_view_creg, visualizer, global_model_command_reg, get_model_commands):
+    def from_piece(cls, piece, model, ctx, view_creg, model_view_creg, visualizer, global_model_command_reg, get_model_commands):
         master_view = model_view_creg.invite(piece.master_view, model, ctx)
         details_view = view_creg.animate(htypes.label.view("Placeholder"), ctx)
         elements = [
@@ -27,9 +26,8 @@ class MasterDetailsView(BoxLayoutView):
             cls._Element(details_view, focusable=False, stretch=piece.details_stretch),
             ]
         direction = cls._direction_to_qt(piece.direction)
-        details_command_d = pyobj_creg.invite(piece.details_command_d)
+        details_command_d = web.summon(piece.details_command_d)
         return cls(
-            data_to_ref=data_to_ref,
             model_view_creg=model_view_creg,
             visualizer=visualizer,
             global_model_command_reg=global_model_command_reg,
@@ -42,7 +40,6 @@ class MasterDetailsView(BoxLayoutView):
 
     def __init__(
             self,
-            data_to_ref,
             model_view_creg,
             global_model_command_reg,
             get_model_commands,
@@ -53,7 +50,6 @@ class MasterDetailsView(BoxLayoutView):
             details_command_d,
             ):
         super().__init__(direction, elements)
-        self._data_to_ref = data_to_ref
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer
         self._global_model_command_reg = global_model_command_reg
@@ -66,7 +62,7 @@ class MasterDetailsView(BoxLayoutView):
         base = super().piece
         return htypes.master_details.view(
             master_view=mosaic.put(self.master_view.piece),
-            details_command_d=self._data_to_ref(self._details_command_d),
+            details_command_d=mosaic.put(self._details_command_d),
             direction=self._direction.name,
             master_stretch=self._elements[0].stretch,
             details_stretch=self._elements[1].stretch,
@@ -163,14 +159,14 @@ def _pick_command(global_model_command_reg, get_model_commands, model_t, command
 
 
 @mark.universal_ui_command
-def wrap_master_details(model, model_state, view, hook, ctx, data_to_ref, model_view_creg, global_model_command_reg, get_model_commands):
+def wrap_master_details(model, model_state, view, hook, ctx, model_view_creg, global_model_command_reg, get_model_commands):
     log.info("Wrap master-details: %s / %s", model, view)
     command_ctx = model_command_ctx(ctx, model, model_state)
     model_t = deduce_t(model)
     command = _pick_command(global_model_command_reg, get_model_commands, model_t, command_ctx)
     view_piece = htypes.master_details.view(
         master_view=mosaic.put(view.piece),
-        details_command_d=data_to_ref(command.d),
+        details_command_d=mosaic.put(command.d),
         direction='LeftToRight',
         master_stretch=1,
         details_stretch=1,

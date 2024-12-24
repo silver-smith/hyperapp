@@ -54,12 +54,12 @@ def test_command_item_to_item(partial_ref, model_view_creg, visualizer, lcs):
 
 
 @mark.fixture
-def current_item(data_to_ref):
+def current_item():
     command_d = htypes.command_list_view_tests.sample_model_command_d()
     model_command_d = htypes.command_list_view_tests.sample_model_command_d()
     return htypes.command_list_view.item(
-        ui_command_d=data_to_ref(command_d),
-        model_command_d=data_to_ref(model_command_d),
+        ui_command_d=mosaic.put(command_d),
+        model_command_d=mosaic.put(model_command_d),
         name="sample-command",
         groups="<unused>",
         repr="<unused>",

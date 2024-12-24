@@ -140,13 +140,13 @@ def model_command_reg_config(partial_ref):
         }
 
 
-async def test_three_layers(data_to_ref):
+async def test_three_layers():
     ctx = Context()
     model = htypes.list_as_tree_adapter_tests.sample_list_1()
     root_item_t = htypes.list_as_tree_adapter_tests.item_1
     root_item_t_piece = pyobj_creg.actor_to_piece(root_item_t)
-    open_command_1_d_ref = data_to_ref(htypes.list_as_tree_adapter_tests.open_1_d())
-    open_command_2_d_ref = data_to_ref(htypes.list_as_tree_adapter_tests.open_2_d())
+    open_command_1_d_ref = mosaic.put(htypes.list_as_tree_adapter_tests.open_1_d())
+    open_command_2_d_ref = mosaic.put(htypes.list_as_tree_adapter_tests.open_2_d())
     piece_2_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.sample_list_2)
     piece_3_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.sample_list_3)
     fn_1 = htypes.system_fn.ctx_fn(

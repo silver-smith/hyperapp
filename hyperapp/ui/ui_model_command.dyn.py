@@ -113,7 +113,7 @@ class CustomCommands:
         result = {}
         for command_ref in command_list.commands:
             command = web.summon(command_ref)
-            ui_command_d = pyobj_creg.invite(command.ui_command_d)
+            ui_command_d = web.summon(command.ui_command_d)
             result[ui_command_d] = command
         return result
 
@@ -124,7 +124,7 @@ class CustomCommands:
         self._lcs.set(self._d, command_list)
 
     def set(self, command):
-        ui_command_d = pyobj_creg.invite(command.ui_command_d)
+        ui_command_d = web.summon(command.ui_command_d)
         self.command_map[ui_command_d] = command
         self._save()
 
@@ -133,7 +133,7 @@ class CustomCommands:
             del self.command_map[ui_command_d]
         except KeyError:
             pass
-        new_ui_command_d = pyobj_creg.invite(command.ui_command_d)
+        new_ui_command_d = web.summon(command.ui_command_d)
         self.command_map[new_ui_command_d] = command
         self._save()
 
@@ -198,7 +198,6 @@ class CommandItemList:
 
     def __init__(
             self,
-            data_to_ref,
             model_view_creg,
             visualizer,
             command_creg,
@@ -206,7 +205,6 @@ class CommandItemList:
             custom_commands,
             lcs,
             ):
-        self._data_to_ref = data_to_ref
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer
         self._command_creg = command_creg
@@ -232,7 +230,7 @@ class CommandItemList:
             ui_d_to_command[ui_command.d] = ui_command
         for ui_command_d, rec in self._custom_commands.command_map.items():
             if isinstance(rec, htypes.command.custom_ui_model_command):
-                model_command_d = pyobj_creg.invite(rec.model_command_d)
+                model_command_d = web.summon(rec.model_command_d)
                 try:
                     model_command = self._model_d_to_command[model_command_d]
                 except KeyError:
@@ -264,8 +262,8 @@ class CommandItemList:
     def set_layout(self, d, layout):
         item = self._d_to_item[d]
         rec = htypes.command.custom_ui_model_command(
-            ui_command_d=self._data_to_ref(d),
-            model_command_d=self._data_to_ref(item.model_command_d),
+            ui_command_d=mosaic.put(d),
+            model_command_d=mosaic.put(item.model_command_d),
             layout=mosaic.put(layout),
             )
         self._custom_commands.set(rec)
@@ -274,7 +272,7 @@ class CommandItemList:
 
     def add_custom_model_command(self, d, model_command_piece):
         rec = htypes.command.custom_ui_command(
-            ui_command_d=self._data_to_ref(d),
+            ui_command_d=mosaic.put(d),
             model_command=mosaic.put(model_command_piece),
             layout=None,
             )
@@ -285,8 +283,8 @@ class CommandItemList:
     def rename_command(self, prev_d, new_d):
         item = self._d_to_item[prev_d]
         rec = htypes.command.custom_ui_model_command(
-            ui_command_d=self._data_to_ref(new_d),
-            model_command_d=self._data_to_ref(item.model_command_d),
+            ui_command_d=mosaic.put(new_d),
+            model_command_d=mosaic.put(item.model_command_d),
             layout=item.layout,
             )
         self._custom_commands.replace(prev_d, rec)
@@ -298,7 +296,6 @@ class ModelCommandItemList(CommandItemList):
 
     def __init__(
             self,
-            data_to_ref,
             model_view_creg,
             visualizer,
             command_creg,
@@ -308,7 +305,6 @@ class ModelCommandItemList(CommandItemList):
             lcs,
             ):
         super().__init__(
-            data_to_ref,
             model_view_creg,
             visualizer,
             command_creg,
@@ -332,7 +328,6 @@ class GlobalCommandItemList(CommandItemList):
         
 @mark.service
 def ui_model_command_items(
-        data_to_ref,
         model_view_creg,
         visualizer,
         command_creg,
@@ -346,7 +341,6 @@ def ui_model_command_items(
     model_commands = get_model_commands(model_t, ctx)
     custom_commands = custom_ui_model_commands(lcs, model_t)
     return ModelCommandItemList(
-        data_to_ref,
         model_view_creg,
         visualizer,
         command_creg,
@@ -359,7 +353,6 @@ def ui_model_command_items(
 
 @mark.service
 def ui_global_command_items(
-        data_to_ref,
         model_view_creg,
         visualizer,
         command_creg,
@@ -369,7 +362,6 @@ def ui_global_command_items(
         ):
     custom_commands = custom_ui_global_model_commands(lcs)
     return GlobalCommandItemList(
-        data_to_ref,
         model_view_creg,
         visualizer,
         command_creg,

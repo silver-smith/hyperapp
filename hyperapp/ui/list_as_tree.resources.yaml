@@ -86,7 +86,6 @@ definitions:
       - lcs
       - ctx
       service_params:
-      - data_to_ref
       - get_model_commands
       - get_custom_layout
   list_as_tree_opener_commands_toggle_open_command.command-cfg-item:
@@ -185,7 +184,6 @@ definitions:
       - ctx
       - lcs
       service_params:
-      - data_to_ref
       - feed_factory
       - get_model_commands
       - get_custom_layout

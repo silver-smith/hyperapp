@@ -4,7 +4,7 @@ from functools import partial
 
 from .services import (
     deduce_t,
-    pyobj_creg,
+    web,
     )
 from .code.mark import mark
 from .code.command import UnboundCommand, BoundCommand
@@ -51,7 +51,7 @@ class BoundModelCommand(BoundCommand):
 def model_command_from_piece(piece, system_fn_creg):
     ctx_fn = system_fn_creg.invite(piece.system_fn)
     return UnboundModelCommand(
-        d=pyobj_creg.invite(piece.d),
+        d=web.summon(piece.d),
         ctx_fn=ctx_fn,
         properties=piece.properties,
         )

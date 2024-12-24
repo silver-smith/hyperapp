@@ -27,21 +27,21 @@ def base_piece():
 
 
 @mark.fixture
-def piece(data_to_ref, base_piece):
+def piece(base_piece):
     model_t = htypes.command_layout_context_tests.sample_model
     return htypes.command_layout_context.view(
         base=mosaic.put(base_piece),
         model_t=pyobj_creg.actor_to_ref(model_t),
-        ui_command_d=data_to_ref(htypes.command_layout_context_tests.sample_command_d()),
+        ui_command_d=mosaic.put(htypes.command_layout_context_tests.sample_command_d()),
         )
 
 
 @mark.fixture
-def open_command_layout_context(data_to_ref, view_creg, piece):
+def open_command_layout_context(view_creg, piece):
     ctx = Context()
     current_item = htypes.command_list_view.item(
-        ui_command_d=data_to_ref(htypes.command_layout_context_tests.sample_command_d()),
-        model_command_d=data_to_ref(htypes.command_layout_context_tests.sample_model_command_d()),
+        ui_command_d=mosaic.put(htypes.command_layout_context_tests.sample_command_d()),
+        model_command_d=mosaic.put(htypes.command_layout_context_tests.sample_model_command_d()),
         name="<unused>",
         groups="<unused>",
         repr="<unused>",

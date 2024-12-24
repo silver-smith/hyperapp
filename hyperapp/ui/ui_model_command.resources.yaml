@@ -83,7 +83,6 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: ui_global_command_items
       service_params:
-      - data_to_ref
       - model_view_creg
       - visualizer
       - command_creg
@@ -123,7 +122,6 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: ui_model_command_items
       service_params:
-      - data_to_ref
       - model_view_creg
       - visualizer
       - command_creg
