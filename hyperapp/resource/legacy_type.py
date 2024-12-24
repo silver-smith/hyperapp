@@ -45,6 +45,12 @@ def convert_builtin_types_to_dict(pyobj_creg, builtin_types):
     return name_to_module
 
 
+def add_legacy_types_to_cache(res_reg, legacy_type_modules):
+    for module_name, module in legacy_type_modules.items():
+        for var_name in module:
+            res_reg.add_to_cache((module_name, var_name), module[var_name])
+
+
 def load_legacy_type_resources(local_types):
     name_to_module = defaultdict(LegacyTypeResourceModule)
     for module_name, local_type_module in local_types.items():

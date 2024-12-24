@@ -24,6 +24,7 @@ from hyperapp.resource.resource_type import ResourceType
 from hyperapp.resource.resource_type_producer import resource_type_producer as resource_type_producer_fn
 from hyperapp.resource.resource_registry import ResourceRegistry
 from hyperapp.resource.resource_module import ResourceModule, load_resource_modules_list
+from hyperapp.resource.legacy_type import add_legacy_types_to_cache
 from hyperapp.resource.python_module import PythonModuleResourceType, python_module_pyobj
 from hyperapp.resource.attribute import AttributeResourceType, attribute_pyobj
 from hyperapp.resource.call import CallResourceType, call_pyobj
@@ -266,6 +267,8 @@ def resource_registry(
         ):
     registry = resource_registry_factory()
     resource_list_loader(resource_dir_list, registry)
-    registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
+    legacy_type_modules = legacy_type_resource_loader({**builtin_types_as_dict(), **local_types})
+    registry.update_modules(legacy_type_modules)
+    add_legacy_types_to_cache(registry, legacy_type_modules)  # Also adds builtin types, again.
     registry.set_module('builtins', builtin_service_resource_loader(registry))
     return registry
