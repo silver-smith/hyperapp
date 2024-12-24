@@ -14,3 +14,5 @@ layers:
   path: ui/layout.config
 - name: lcs
   path: lcs/lcs_view.config
+- name: sample_list
+  path: sample/sample_list.config
