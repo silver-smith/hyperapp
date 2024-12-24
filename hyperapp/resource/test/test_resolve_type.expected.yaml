@@ -1,0 +1,6 @@
+import:
+- legacy_type.test_resources:test_d
+definitions:
+  test_d:
+    type: legacy_type.test_resources:test_d
+    value: {}

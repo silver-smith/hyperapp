@@ -112,3 +112,10 @@ def test_primitive(mosaic, resource_registry, resource_module_factory, compare):
     compare(res_module, 'test_primitive')
     assert res_module['sample_int'] == 12345
     assert res_module['sample_string'] == 'abcd efgh'
+
+
+def test_resolve_legacy_type(mosaic, htypes, resource_registry, resource_module_factory, compare):
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    test_d = htypes.test_resources.test_d
+    res_module['test_d'] = test_d()
+    compare(res_module, 'test_resolve_type')
