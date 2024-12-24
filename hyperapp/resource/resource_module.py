@@ -193,13 +193,13 @@ class ResourceModule:
     def set_definition(self, var_name, resource_type, definition_value):
         log.info("%s: Set definition %r, %s: %r", self._name, var_name, resource_type, definition_value)
         self._definition_dict[var_name] = Definition(resource_type, definition_value)
-        self._import_set.add(self._resource_type_name(resource_type))
+        self._import_set.add(self._resolve_resource_type(resource_type))
 
     def add_association_def(self, resource_type, definition):
         assert 0, repr(definition)
         log.info("%s: Add association definition %s: %r", self._name, resource_type, definition)
         self._association_list.add(Definition(resource_type, definition))
-        self._import_set.add(self._resource_type_name(resource_type))
+        self._import_set.add(self._resolve_resource_type(resource_type))
 
     def _hash_file_path(self, path):
         return path.with_suffix('.hash')
@@ -239,7 +239,7 @@ class ResourceModule:
 
     def _definition_as_dict(self, definition):
         return {
-            'type': self._resource_type_name(definition.type),
+            'type': self._resolve_resource_type(definition.type),
             'value': definition.type.to_dict(definition.value),
             }
 
@@ -256,11 +256,10 @@ class ResourceModule:
             'value': ass.value,
             }
 
-    def _resource_type_name(self, resource_type):
+    def _resolve_resource_type(self, resource_type):
         t = resource_type.resource_t
-        if not t.module_name or not t.name:
-            raise RuntimeError(f"Only named types are supported: {t}")
-        return f'legacy_type.{t.module_name}:{t.name}'
+        piece = self._pyobj_creg.actor_to_piece(t)
+        return self._reverse_resolve(piece)
 
     def _resolve_name(self, name):
         if ':' in name:
