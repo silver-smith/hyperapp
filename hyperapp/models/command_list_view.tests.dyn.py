@@ -70,7 +70,7 @@ def current_item():
 
 
 def mock_run_input_key_dialog():
-    return ''
+    return 'Space'
 
 
 async def test_global_set_shortcut(feed_factory, lcs, current_item):

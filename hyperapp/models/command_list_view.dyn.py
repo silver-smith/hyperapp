@@ -44,6 +44,8 @@ async def set_shortcut(piece, current_idx, current_item, lcs, feed_factory):
     feed = feed_factory(piece)
     command_d = web.summon(current_item.ui_command_d)
     shortcut = run_key_input_dialog()
+    if not shortcut:
+        return
     log.info("Set shortcut for %s: %r", command_d, shortcut)
     new_item = _view_item(current_item, shortcut=shortcut)
     key = {htypes.command.command_shortcut_lcs_d(), command_d}
