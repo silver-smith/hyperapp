@@ -1,7 +1,7 @@
 import:
 - lcs.lcs_view.config:bool_1
-- lcs.lcs_view.config:list_d
-- lcs.lcs_view.config:show_d
+- lcs.lcs_view.config:list_d_1
+- lcs.lcs_view.config:show_d_1
 - legacy_type.column:column_d
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.model_commands:view
@@ -25,18 +25,18 @@ definitions:
       - key:
         - legacy_type.model_commands:view
         - column_d_1
-        - lcs.lcs_view.config:show_d
-        - lcs.lcs_view.config:list_d
+        - lcs.lcs_view.config:show_d_1
+        - lcs.lcs_view.config:list_d_1
         value: lcs.lcs_view.config:bool_1
       - key:
         - column_d_2
         - legacy_type.model_commands:view
-        - lcs.lcs_view.config:show_d
-        - lcs.lcs_view.config:list_d
+        - lcs.lcs_view.config:show_d_1
+        - lcs.lcs_view.config:list_d_1
         value: lcs.lcs_view.config:bool_1
       - key:
         - legacy_type.model_commands:view
-        - lcs.lcs_view.config:show_d
-        - lcs.lcs_view.config:list_d
+        - lcs.lcs_view.config:show_d_1
+        - lcs.lcs_view.config:list_d_1
         - column_d_3
         value: lcs.lcs_view.config:bool_1
