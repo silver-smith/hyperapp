@@ -1,12 +1,15 @@
 import:
 - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-- client.lcs_storage_shortcuts:string_25
+- client.lcs_storage_shortcuts:string_23
 - legacy_type.builtin:record_mt
+- legacy_type.builtin:string
 - legacy_type.command:custom_model_command_list
 - legacy_type.command:custom_model_commands_lcs_d
 - legacy_type.command:custom_ui_command
 - legacy_type.identity_command:identity_command
 - legacy_type.lcs_resource_storage:mapping
+- legacy_type.sample_list:open_feed_sample_fn_list_d
+- legacy_type.sample_list:open_sample_fn_list_d
 - legacy_type.sample_list:sample_list
 definitions:
   custom_model_command_list_1:
@@ -48,4 +51,24 @@ definitions:
       - key:
         - identity_d_1
         - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: client.lcs_storage_shortcuts:string_25
+        value: client.lcs_storage_shortcuts:string_23
+      - key:
+        - open_sample_fn_list_d_1
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
+        value: string_1
+      - key:
+        - open_feed_sample_fn_list_d_1
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
+        value: string_2
+  open_feed_sample_fn_list_d_1:
+    type: legacy_type.sample_list:open_feed_sample_fn_list_d
+    value: {}
+  open_sample_fn_list_d_1:
+    type: legacy_type.sample_list:open_sample_fn_list_d
+    value: {}
+  string_1:
+    type: legacy_type.builtin:string
+    value: F4
+  string_2:
+    type: legacy_type.builtin:string
+    value: F5
