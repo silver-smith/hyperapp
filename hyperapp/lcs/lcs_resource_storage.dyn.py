@@ -93,8 +93,12 @@ class LcsResourceStorage:
         text = yaml.dump(self._res_module.as_dict, sort_keys=False)
         self._path.write_text(text)
 
-    def _require_index(self, t):
+    def _require_index(self, t, stem):
         if not isinstance(t, TRecord):
+            return True
+        if t.name == stem:
+            # Custom type name is added to resource module by type name.
+            # If it matches value name, index suffix should be added to avoid name clash.
             return True
         return t.fields
 
@@ -118,7 +122,7 @@ class LcsResourceStorage:
 
     def _iter_names(self, piece, t):
         stem = self._make_stem(piece, t)
-        if not self._require_index(t):
+        if not self._require_index(t, stem):
             yield stem
             if isinstance(t, TRecord):
                 yield f'{t.module_name}.{stem}'
