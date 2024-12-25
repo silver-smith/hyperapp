@@ -26,6 +26,7 @@ from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
 from ..resource.legacy_type import (
     add_builtin_types_to_pyobj_cache,
+    add_legacy_types_to_cache,
     convert_builtin_types_to_dict,
     load_legacy_type_resources,
     )
@@ -143,6 +144,9 @@ class Services(object):
         self.builtin_types_as_dict = partial(convert_builtin_types_to_dict, self.pyobj_creg, self.builtin_types)
         self.legacy_type_resource_loader = load_legacy_type_resources
         add_builtin_types_to_pyobj_cache(self.pyobj_creg, self.builtin_types)
+        builtin_type_modules = self.legacy_type_resource_loader(self.builtin_types_as_dict())
+        self.resource_registry.update_modules(builtin_type_modules)
+        add_legacy_types_to_cache(self.resource_registry, builtin_type_modules)
         self.builtin_service_resource_loader = partial(
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(

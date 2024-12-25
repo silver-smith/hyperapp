@@ -40,7 +40,6 @@ def main():
         resource_registry = services.resource_registry
         resource_list_loader = services.resource_list_loader
         legacy_type_resource_loader = services.legacy_type_resource_loader
-        builtin_types_as_dict = services.builtin_types_as_dict
         local_types = services.local_types
         pyobj_creg = services.pyobj_creg
 
@@ -48,7 +47,7 @@ def main():
         root_service = sys.argv[2]
 
         resource_list_loader(resource_dir_list, resource_registry)
-        resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
+        resource_registry.update_modules(legacy_type_resource_loader(local_types))
         config = resource_registry[config_file, 'config']
         module_res = resource_registry['system.system', 'system.module']
         module = pyobj_creg.animate(module_res)

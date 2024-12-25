@@ -2,9 +2,7 @@ from hyperapp.resource.legacy_type import add_legacy_types_to_cache
 
 from .services import (
     builtin_service_resource_loader,
-    builtin_types_as_dict,
     legacy_type_resource_loader,
-    local_types,
     resource_registry_factory,
     type_module_loader,
     )
