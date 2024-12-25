@@ -1,38 +1,7 @@
 import:
-- legacy_type.data_browser:list_view
-- legacy_type.data_browser:record_item
-- legacy_type.data_browser:record_view
-- legacy_type.data_browser:ref_list_view
 - legacy_type.lcs_resource_storage:mapping
-- legacy_type.list_as_tree_adapter:adapter
-- legacy_type.tree:view
-- legacy_type.ui:model_view_layout_d
-- models.data_browser:data_browser_record_view.system-fn
-- models.data_browser:list_open.d
-- models.data_browser:record_open.d
-- models.data_browser:ref_list_open.d
 definitions:
   lcs_storage_mapping:
     type: legacy_type.lcs_resource_storage:mapping
     value:
-      elements:
-      - key:
-        - legacy_type.data_browser:record_view
-        - model_view_layout_d_1
-        value: tree_view_1
-  list_as_tree_adapter_adapter_1:
-    type: legacy_type.list_as_tree_adapter:adapter
-    value:
-      root_item_t: legacy_type.data_browser:record_item
-      root_function: models.data_browser:data_browser_record_view.system-fn
-      root_open_children_command_d: models.data_browser:record_open.d
-      layers:
-        legacy_type.data_browser:ref_list_view: models.data_browser:ref_list_open.d
-        legacy_type.data_browser:list_view: models.data_browser:list_open.d
-  model_view_layout_d_1:
-    type: legacy_type.ui:model_view_layout_d
-    value: {}
-  tree_view_1:
-    type: legacy_type.tree:view
-    value:
-      adapter: list_as_tree_adapter_adapter_1
+      elements: []
