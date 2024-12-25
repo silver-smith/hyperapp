@@ -1,13 +1,13 @@
 import:
-- client.lcs_storage_shortcuts:command_shortcut_lcs_d
+- client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
 - client.lcs_storage_shortcuts:string_20
+- lcs.lcs_dirs_view:lcs_dirs_items.d
+- lcs.lcs_dirs_view:lcs_open_dirs.d
 - legacy_type.builtin:bool
 - legacy_type.builtin:string
 - legacy_type.column:column_d
 - legacy_type.column:list_d
 - legacy_type.column:show_d
-- legacy_type.lcs_dirs_view:lcs_dirs_items_d
-- legacy_type.lcs_dirs_view:lcs_open_dirs_d
 - legacy_type.lcs_dirs_view:view
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.lcs_view:view
@@ -31,52 +31,46 @@ definitions:
     type: legacy_type.column:column_d
     value:
       name: d
-  lcs_dirs_items_d:
-    type: legacy_type.lcs_dirs_view:lcs_dirs_items_d
-    value: {}
-  lcs_open_dirs_d:
-    type: legacy_type.lcs_dirs_view:lcs_open_dirs_d
-    value: {}
   lcs_storage_mapping:
     type: legacy_type.lcs_resource_storage:mapping
     value:
       elements:
       - key:
         - legacy_type.lcs_view:view
-        - show_d
-        - list_d
+        - show_d_1
+        - list_d_1
         - column_d_1
         value: bool_1
       - key:
         - legacy_type.lcs_view:view
-        - show_d
-        - list_d
+        - show_d_1
+        - list_d_1
         - column_d_2
         value: bool_1
       - key:
         - legacy_type.lcs_view:view
-        - show_d
-        - list_d
+        - show_d_1
+        - list_d_1
         - column_d_3
         value: bool_1
       - key:
-        - lcs_open_dirs_d
-        - client.lcs_storage_shortcuts:command_shortcut_lcs_d
-        value: string_1
-      - key:
-        - lcs_dirs_items_d
-        - client.lcs_storage_shortcuts:command_shortcut_lcs_d
-        value: client.lcs_storage_shortcuts:string_20
-      - key:
-        - show_d
-        - list_d
+        - show_d_1
+        - list_d_1
         - legacy_type.lcs_dirs_view:view
         - column_d_4
         value: bool_1
-  list_d:
+      - key:
+        - lcs.lcs_dirs_view:lcs_open_dirs.d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
+        value: string_1
+      - key:
+        - lcs.lcs_dirs_view:lcs_dirs_items.d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
+        value: client.lcs_storage_shortcuts:string_20
+  list_d_1:
     type: legacy_type.column:list_d
     value: {}
-  show_d:
+  show_d_1:
     type: legacy_type.column:show_d
     value: {}
   string_1:
