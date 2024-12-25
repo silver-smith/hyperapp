@@ -3,6 +3,7 @@ import:
 - client.lcs_storage_shortcuts:string_20
 - lcs.lcs_dirs_view:lcs_dirs_items.d
 - lcs.lcs_dirs_view:lcs_open_dirs.d
+- lcs.lcs_view:lcs_remove.d
 - legacy_type.builtin:bool
 - legacy_type.builtin:string
 - legacy_type.column:column_d
@@ -67,6 +68,10 @@ definitions:
         - lcs.lcs_dirs_view:lcs_dirs_items.d
         - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
         value: client.lcs_storage_shortcuts:string_20
+      - key:
+        - lcs.lcs_view:lcs_remove.d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
+        value: string_2
   list_d_1:
     type: legacy_type.column:list_d
     value: {}
@@ -76,3 +81,6 @@ definitions:
   string_1:
     type: legacy_type.builtin:string
     value: D
+  string_2:
+    type: legacy_type.builtin:string
+    value: Del
