@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from hyperapp.common.htypes import Type, TRecord, record_mt
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.partial import partial_param_t, partial_t
 from hyperapp.common.htypes.builtin_service import builtin_service_t
@@ -97,3 +98,25 @@ def test_resolve_legacy_type(mosaic, htypes, resource_registry, resource_module_
     test_d = htypes.test_resources.test_d
     res_module['test_d'] = test_d()
     compare(res_module, 'test_resolve_type')
+
+
+# Partial copy of resource/type_reconstructor.dyn.py
+def _type_to_piece(t):
+    if not isinstance(t, Type):
+        return None
+    if isinstance(t, TRecord) and not t.fields and not t.base:
+        return record_mt(
+            module_name=t.module_name,
+            name=t.name,
+            base=None,
+            fields=(),
+            )
+    raise RuntimeError(f"Test reconstructor: Unknown type: {t!r}")
+
+
+def test_add_custom_type(mosaic, htypes, resource_registry, resource_module_factory, reconstructors, compare):
+    reconstructors.append(_type_to_piece)
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    custom_d = TRecord('custom_module', 'custom_d_t')
+    res_module['custom_d'] = custom_d()
+    compare(res_module, 'test_add_custom_type')

@@ -1,0 +1,13 @@
+import:
+- legacy_type.builtin:record_mt
+definitions:
+  custom_d:
+    type: custom_d_t
+    value: {}
+  custom_d_t:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: custom_module
+      name: custom_d_t
+      base: null
+      fields: {}

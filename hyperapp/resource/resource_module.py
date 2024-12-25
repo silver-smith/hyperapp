@@ -169,10 +169,17 @@ class ResourceModule:
         log.info("%s: Remove import: %r", self._name, import_name)
         self._import_set.remove(import_name)
 
+    def _add_resource_type(self, resource_type):
+        piece = self._pyobj_creg.actor_to_piece(resource_type.resource_t)
+        if self._resource_registry.has_piece(piece):
+            _ = self._reverse_resolve(piece)  # Adds to import_set.
+            return
+        self[piece.name] = piece
+
     def set_definition(self, var_name, resource_type, definition_value):
         log.info("%s: Set definition %r, %s: %r", self._name, var_name, resource_type, definition_value)
+        self._add_resource_type(resource_type)
         self._definition_dict[var_name] = Definition(resource_type, definition_value)
-        self._import_set.add(self._resolve_resource_type(resource_type))
 
     def _hash_file_path(self, path):
         return path.with_suffix('.hash')
@@ -204,16 +211,15 @@ class ResourceModule:
         self._path = path
         self._resource_dir = path.parent
 
+    def _resolve_resource_type(self, resource_type):
+        piece = self._pyobj_creg.actor_to_piece(resource_type.resource_t)
+        return self._reverse_resolve(piece)
+
     def _definition_as_dict(self, definition):
         return {
             'type': self._resolve_resource_type(definition.type),
             'value': definition.type.to_dict(definition.value),
             }
-
-    def _resolve_resource_type(self, resource_type):
-        t = resource_type.resource_t
-        piece = self._pyobj_creg.actor_to_piece(t)
-        return self._reverse_resolve(piece)
 
     def _resolve_name(self, name):
         if ':' in name:
