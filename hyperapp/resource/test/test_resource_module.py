@@ -120,3 +120,12 @@ def test_add_custom_type(mosaic, htypes, resource_registry, resource_module_fact
     custom_d = TRecord('custom_module', 'custom_d_t')
     res_module['custom_d'] = custom_d()
     compare(res_module, 'test_add_custom_type')
+
+
+def test_add_custom_type_matching_var_name(mosaic, htypes, resource_registry, resource_module_factory, reconstructors, compare):
+    reconstructors.append(_type_to_piece)
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    custom_d = TRecord('custom_module', 'custom_d')
+    with pytest.raises(RuntimeError) as excinfo:
+        res_module['custom_d'] = custom_d()
+    assert str(excinfo.value) == "Custom type name matches variable name: 'custom_d'"

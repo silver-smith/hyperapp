@@ -175,10 +175,13 @@ class ResourceModule:
             _ = self._reverse_resolve(piece)  # Adds to import_set.
             return
         self[piece.name] = piece
+        return piece.name
 
     def set_definition(self, var_name, resource_type, definition_value):
         log.info("%s: Set definition %r, %s: %r", self._name, var_name, resource_type, definition_value)
-        self._add_resource_type(resource_type)
+        custom_type_name = self._add_resource_type(resource_type)
+        if custom_type_name and var_name == custom_type_name:
+            raise RuntimeError(f"Custom type name matches variable name: {var_name!r}")
         self._definition_dict[var_name] = Definition(resource_type, definition_value)
 
     def _hash_file_path(self, path):
