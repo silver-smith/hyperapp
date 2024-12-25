@@ -1,12 +1,12 @@
 list_feed_ctr = record:
   module_name: string
   t: ref
-  item_t: ref
+  item_t: ref opt
 
 index_tree_feed_ctr = record:
   module_name: string
   t: ref
-  item_t: ref
+  item_t: ref opt
 
 
 feed_template = record:
@@ -14,8 +14,9 @@ feed_template = record:
   feed_type: ref
 
 
+# item_t is unknown when 'remove' feed is used. Currently unused anyway.
 list_feed_type = record:
-  item_t: ref
+  item_t: ref opt
 
 index_tree_feed_type = record:
-  item_t: ref
+  item_t: ref opt

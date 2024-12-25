@@ -14,7 +14,7 @@ class FeedCtr(ModuleCtr):
         return cls(
             module_name=piece.module_name,
             t=pyobj_creg.invite(piece.t),
-            item_t=pyobj_creg.invite(piece.item_t),
+            item_t=pyobj_creg.invite(piece.item_t) if piece.item_t is not None else None,
             )
 
     def __init__(self, module_name, t, item_t):
@@ -38,7 +38,7 @@ class FeedCtr(ModuleCtr):
         return self._constructor_t(
             module_name=self._module_name,
             t=pyobj_creg.actor_to_ref(self._t),
-            item_t=pyobj_creg.actor_to_ref(self._item_t),
+            item_t=pyobj_creg.actor_to_ref(self._item_t) if self._item_t is not None else None,
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
@@ -76,7 +76,7 @@ class ListFeedCtr(FeedCtr):
 
     def _make_feed_type(self):
         return htypes.feed.list_feed_type(
-            item_t=pyobj_creg.actor_to_ref(self._item_t),
+            item_t=pyobj_creg.actor_to_ref(self._item_t) if self._item_t is not None else None,
             )
 
 
@@ -86,5 +86,5 @@ class IndexTreeFeedCtr(FeedCtr):
 
     def _make_feed_type(self):
         return htypes.feed.index_tree_feed_type(
-            item_t=pyobj_creg.actor_to_ref(self._item_t),
+            item_t=pyobj_creg.actor_to_ref(self._item_t) if self._item_t is not None else None,
             )
