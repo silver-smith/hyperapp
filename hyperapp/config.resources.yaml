@@ -15,10 +15,12 @@ import:
 - lcs.lcs_layer_selector:lcs_view_layer_selector_select_layer.command-cfg-item
 - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
 - lcs.lcs_view:lcs_view_layers_view.model-cfg-item
+- lcs.lcs_view:lcs_view_view.feed-template
 - lcs.lcs_view:lcs_view_view.model-cfg-item
 - lcs.lcs_view:lcs_view_view_lcs_move_to_another_layer.command-cfg-item
 - lcs.lcs_view:lcs_view_view_lcs_open_layers.command-cfg-item
 - lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
+- lcs.lcs_view:lcs_view_view_lcs_remove.command-cfg-item
 - lcs.lcs_view:open_lcs_view.global-model-command
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
@@ -399,6 +401,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - lcs.lcs_view:lcs_view_view.feed-template
       - models.column_list:column_list_view.feed-template
       - models.command_list_view:global_commands_view.feed-template
       - models.command_list_view:model_commands_view.feed-template
@@ -465,6 +468,7 @@ definitions:
       - lcs.lcs_view:lcs_view_view_lcs_move_to_another_layer.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_open_layers.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
+      - lcs.lcs_view:lcs_view_view_lcs_remove.command-cfg-item
       - models.column_list:column_list_view_toggle_visibility.command-cfg-item
       - models.command_list_view:global_commands_view_set_shortcut.command-cfg-item
       - models.command_list_view:model_commands_view_set_shortcut.command-cfg-item

@@ -42,6 +42,16 @@ class LCSheet:
         log.info("LCS: set to %s: %s -> %s", self._default_layer_name, set(dir), piece)
         self._default_storage.set(dir, piece)
 
+    def remove(self, dir):
+        log.info("LCS: Remove: %s", dir)
+        for layer_d, storage in self._d_to_storage.items():
+            try:
+                storage.remove(dir)
+            except KeyError:
+                pass
+            else:
+                log.info("LCS: Removed from layer: %s", layer_d)
+
     def __iter__(self):
         for layer_d, storage in self._d_to_storage.items():
             for d_set, piece in storage.items():

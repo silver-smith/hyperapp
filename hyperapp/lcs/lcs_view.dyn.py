@@ -4,6 +4,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.list_diff import ListDiff
 from .code.directory import d_to_name
 from .code.data_browser import data_browser
 
@@ -52,6 +53,14 @@ def lcs_layers_view(piece, lcs):
 @mark.command
 def lcs_open_layers(piece):
     return htypes.lcs_view.layers_view()
+
+
+@mark.command
+async def lcs_remove(piece, current_idx, current_item, lcs, feed_factory):
+    feed = feed_factory(piece)
+    dir = {web.summon(d) for d in current_item.dir}
+    lcs.remove(dir)
+    await feed.send(ListDiff.Remove(current_idx))
 
 
 @mark.command

@@ -3,6 +3,7 @@
 import:
 - builtins:mosaic.service
 - builtins:web.service
+- common.list_diff:list_diff.module
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:list_mt
@@ -10,6 +11,8 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.lcs_view:item
 - legacy_type.lcs_view:layer_item
 - legacy_type.lcs_view:layer_selector
@@ -17,6 +20,7 @@ import:
 - legacy_type.lcs_view:lcs_move_to_another_layer_d
 - legacy_type.lcs_view:lcs_open_layers_d
 - legacy_type.lcs_view:lcs_open_piece_d
+- legacy_type.lcs_view:lcs_remove_d
 - legacy_type.lcs_view:open_lcs_view_d
 - legacy_type.lcs_view:view
 - legacy_type.model:cfg_item
@@ -105,6 +109,34 @@ definitions:
       - piece
       - current_item
       service_params: []
+  lcs_remove:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_view.module
+      attr_name: lcs_remove
+  lcs_remove.d:
+    type: legacy_type.lcs_view:lcs_remove_d
+    value: {}
+  lcs_remove.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_remove.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: lcs_remove.system-fn
+  lcs_remove.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_remove
+      ctx_params:
+      - piece
+      - current_idx
+      - current_item
+      - lcs
+      service_params:
+      - feed_factory
   lcs_view:
     type: legacy_type.builtin:attribute
     value:
@@ -118,6 +150,7 @@ definitions:
       import_list:
         code.data_browser: models.data_browser:data_browser.module
         code.directory: ui.directory:directory.module
+        code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
         htypes.builtin.list_mt: legacy_type.builtin:list_mt
         htypes.builtin.record_mt: legacy_type.builtin:record_mt
@@ -150,6 +183,15 @@ definitions:
       - piece
       - lcs
       service_params: []
+  lcs_view_view.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.lcs_view:view
+      feed_type: lcs_view_view.feed-type
+  lcs_view_view.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: null
   lcs_view_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -187,6 +229,11 @@ definitions:
     value:
       t: legacy_type.lcs_view:view
       command: lcs_open_piece.model-command
+  lcs_view_view_lcs_remove.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      command: lcs_remove.model-command
   open_lcs_view:
     type: legacy_type.builtin:attribute
     value:
