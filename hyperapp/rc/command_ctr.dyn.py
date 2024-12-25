@@ -1,3 +1,5 @@
+from hyperapp.common.htypes import TRecord
+
 from . import htypes
 from .services import (
     mosaic,
@@ -40,8 +42,11 @@ class CommandTemplateCtr(Constructor):
         d_name = self._attr_qual_name[-1] + '_d'
         type_module = self._module_name.split('.')[-1]
         d_t_piece = types.get(type_module, d_name)
-        assert d_t_piece, (type_module, d_name)  # TODO: Make type if missing.
-        d_t = pyobj_creg.animate(d_t_piece)
+        if d_t_piece is None:
+            d_t = TRecord(type_module, d_name)
+            d_t_piece = pyobj_creg.actor_to_piece(d_t)
+        else:
+            d_t = pyobj_creg.animate(d_t_piece)
         d = d_t()
         properties = htypes.command.properties(
             is_global=self._is_global,
