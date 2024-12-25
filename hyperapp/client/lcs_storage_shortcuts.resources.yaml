@@ -7,8 +7,10 @@ import:
 - legacy_type.command_list_view:set_shortcut_d
 - legacy_type.crud:edit_d
 - legacy_type.data_browser:browse_current_model_d
+- legacy_type.file_bundles:open_file_bundle_list_d
 - legacy_type.global_commands:open_global_commands_d
 - legacy_type.global_commands:run_command_d
+- legacy_type.identity_command:add_identity_command_d
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:set_shortcut_d
@@ -35,40 +37,40 @@ import:
 - legacy_type.window_commands:quit_d
 - models.data_browser:record_open.d
 definitions:
-  browse_current_model_d:
+  add_identity_command_d_1:
+    type: legacy_type.identity_command:add_identity_command_d
+    value: {}
+  browse_current_model_d_1:
     type: legacy_type.data_browser:browse_current_model_d
     value: {}
-  close_tab_d:
+  close_tab_d_1:
     type: legacy_type.auto_tabs:close_tab_d
     value: {}
-  command_shortcut_lcs_d:
+  command_shortcut_lcs_d_1:
     type: legacy_type.command:command_shortcut_lcs_d
     value: {}
-  details_d:
+  details_d_1:
     type: legacy_type.sample_commands:details_d
     value: {}
-  duplicate_window_d:
+  duplicate_window_d_1:
     type: legacy_type.window_commands:duplicate_window_d
     value: {}
-  edit_d:
+  edit_d_1:
     type: legacy_type.crud:edit_d
     value: {}
-  go_back_d:
+  go_back_d_1:
     type: legacy_type.navigator:go_back_d
     value: {}
-  go_forward_d:
+  go_forward_d_1:
     type: legacy_type.navigator:go_forward_d
     value: {}
-  layout.set_shortcut_d:
-    type: legacy_type.layout:set_shortcut_d
-    value: {}
-  lcs_move_to_another_layer_d:
+  lcs_move_to_another_layer_d_1:
     type: legacy_type.lcs_view:lcs_move_to_another_layer_d
     value: {}
-  lcs_open_layers_d:
+  lcs_open_layers_d_1:
     type: legacy_type.lcs_view:lcs_open_layers_d
     value: {}
-  lcs_open_piece_d:
+  lcs_open_piece_d_1:
     type: legacy_type.lcs_view:lcs_open_piece_d
     value: {}
   lcs_storage_mapping:
@@ -76,188 +78,202 @@ definitions:
     value:
       elements:
       - key:
-        - browse_current_model_d
-        - command_shortcut_lcs_d
+        - browse_current_model_d_1
+        - command_shortcut_lcs_d_1
         value: string_1
       - key:
-        - open_global_commands_d
-        - command_shortcut_lcs_d
+        - open_global_commands_d_1
+        - command_shortcut_lcs_d_1
         value: string_2
       - key:
-        - show_state_d
-        - command_shortcut_lcs_d
+        - show_state_d_1
+        - command_shortcut_lcs_d_1
         value: string_3
       - key:
-        - set_shortcut_d
-        - command_shortcut_lcs_d
+        - set_shortcut_d_1
+        - command_shortcut_lcs_d_1
         value: string_4
       - key:
-        - open_layout_tree_d
-        - command_shortcut_lcs_d
+        - open_layout_tree_d_1
+        - command_shortcut_lcs_d_1
         value: string_5
       - key:
-        - open_model_commands_d
-        - command_shortcut_lcs_d
+        - open_model_commands_d_1
+        - command_shortcut_lcs_d_1
         value: string_6
       - key:
-        - command_shortcut_lcs_d
-        - open_view_item_commands_d
+        - command_shortcut_lcs_d_1
+        - open_view_item_commands_d_1
         value: string_7
       - key:
-        - layout.set_shortcut_d
-        - command_shortcut_lcs_d
+        - set_shortcut_d_2
+        - command_shortcut_lcs_d_1
         value: string_4
       - key:
-        - go_forward_d
-        - command_shortcut_lcs_d
+        - go_forward_d_1
+        - command_shortcut_lcs_d_1
         value: string_8
       - key:
-        - go_back_d
-        - command_shortcut_lcs_d
+        - go_back_d_1
+        - command_shortcut_lcs_d_1
         value: string_9
       - key:
-        - open_sample_fn_list_d
-        - command_shortcut_lcs_d
+        - open_sample_fn_list_d_1
+        - command_shortcut_lcs_d_1
         value: string_10
       - key:
-        - open_sample_fn_record_d
-        - command_shortcut_lcs_d
+        - open_sample_fn_record_d_1
+        - command_shortcut_lcs_d_1
         value: string_11
       - key:
-        - open_sample_fn_tree_d
-        - command_shortcut_lcs_d
+        - open_sample_fn_tree_d_1
+        - command_shortcut_lcs_d_1
         value: string_12
       - key:
-        - open_feed_sample_fn_tree_d
-        - command_shortcut_lcs_d
+        - open_feed_sample_fn_tree_d_1
+        - command_shortcut_lcs_d_1
         value: string_13
       - key:
-        - open_feed_sample_fn_list_d
-        - command_shortcut_lcs_d
+        - open_feed_sample_fn_list_d_1
+        - command_shortcut_lcs_d_1
         value: string_14
       - key:
-        - show_current_context_d
-        - command_shortcut_lcs_d
+        - show_current_context_d_1
+        - command_shortcut_lcs_d_1
         value: string_15
       - key:
-        - open_lcs_view_d
-        - command_shortcut_lcs_d
+        - open_lcs_view_d_1
+        - command_shortcut_lcs_d_1
         value: string_16
       - key:
-        - lcs_open_layers_d
-        - command_shortcut_lcs_d
+        - lcs_open_layers_d_1
+        - command_shortcut_lcs_d_1
         value: string_17
       - key:
-        - lcs_move_to_another_layer_d
-        - command_shortcut_lcs_d
+        - lcs_move_to_another_layer_d_1
+        - command_shortcut_lcs_d_1
         value: string_18
       - key:
-        - close_tab_d
-        - command_shortcut_lcs_d
+        - close_tab_d_1
+        - command_shortcut_lcs_d_1
         value: string_19
       - key:
-        - lcs_open_piece_d
-        - command_shortcut_lcs_d
+        - lcs_open_piece_d_1
+        - command_shortcut_lcs_d_1
         value: string_20
       - key:
-        - select_layer_d
-        - command_shortcut_lcs_d
+        - select_layer_d_1
+        - command_shortcut_lcs_d_1
         value: string_20
       - key:
-        - quit_d
-        - command_shortcut_lcs_d
+        - quit_d_1
+        - command_shortcut_lcs_d_1
         value: string_21
       - key:
-        - duplicate_window_d
-        - command_shortcut_lcs_d
+        - duplicate_window_d_1
+        - command_shortcut_lcs_d_1
         value: string_22
       - key:
-        - open_column_list_d
-        - command_shortcut_lcs_d
+        - open_column_list_d_1
+        - command_shortcut_lcs_d_1
         value: string_23
       - key:
-        - toggle_visibility_d
-        - command_shortcut_lcs_d
+        - toggle_visibility_d_1
+        - command_shortcut_lcs_d_1
         value: string_4
       - key:
-        - edit_d
-        - command_shortcut_lcs_d
+        - edit_d_1
+        - command_shortcut_lcs_d_1
         value: string_24
       - key:
-        - details_d
-        - command_shortcut_lcs_d
+        - details_d_1
+        - command_shortcut_lcs_d_1
         value: string_20
       - key:
-        - sample_tree_info_d
-        - command_shortcut_lcs_d
+        - sample_tree_info_d_1
+        - command_shortcut_lcs_d_1
         value: string_20
       - key:
         - models.data_browser:record_open.d
-        - command_shortcut_lcs_d
+        - command_shortcut_lcs_d_1
         value: string_20
       - key:
-        - run_command_d
-        - command_shortcut_lcs_d
+        - run_command_d_1
+        - command_shortcut_lcs_d_1
         value: string_20
       - key:
-        - model_commands.run_command_d
-        - command_shortcut_lcs_d
+        - run_command_d_2
+        - command_shortcut_lcs_d_1
         value: string_20
-  model_commands.run_command_d:
-    type: legacy_type.model_commands:run_command_d
-    value: {}
-  open_column_list_d:
+      - key:
+        - add_identity_command_d_1
+        - command_shortcut_lcs_d_1
+        value: string_25
+      - key:
+        - open_file_bundle_list_d_1
+        - command_shortcut_lcs_d_1
+        value: string_26
+  open_column_list_d_1:
     type: legacy_type.column_list:open_column_list_d
     value: {}
-  open_feed_sample_fn_list_d:
+  open_feed_sample_fn_list_d_1:
     type: legacy_type.sample_list:open_feed_sample_fn_list_d
     value: {}
-  open_feed_sample_fn_tree_d:
+  open_feed_sample_fn_tree_d_1:
     type: legacy_type.sample_tree:open_feed_sample_fn_tree_d
     value: {}
-  open_global_commands_d:
+  open_file_bundle_list_d_1:
+    type: legacy_type.file_bundles:open_file_bundle_list_d
+    value: {}
+  open_global_commands_d_1:
     type: legacy_type.global_commands:open_global_commands_d
     value: {}
-  open_layout_tree_d:
+  open_layout_tree_d_1:
     type: legacy_type.layout:open_layout_tree_d
     value: {}
-  open_lcs_view_d:
+  open_lcs_view_d_1:
     type: legacy_type.lcs_view:open_lcs_view_d
     value: {}
-  open_model_commands_d:
+  open_model_commands_d_1:
     type: legacy_type.model_commands:open_model_commands_d
     value: {}
-  open_sample_fn_list_d:
+  open_sample_fn_list_d_1:
     type: legacy_type.sample_list:open_sample_fn_list_d
     value: {}
-  open_sample_fn_record_d:
+  open_sample_fn_record_d_1:
     type: legacy_type.sample_record:open_sample_fn_record_d
     value: {}
-  open_sample_fn_tree_d:
+  open_sample_fn_tree_d_1:
     type: legacy_type.sample_tree:open_sample_fn_tree_d
     value: {}
-  open_view_item_commands_d:
+  open_view_item_commands_d_1:
     type: legacy_type.layout:open_view_item_commands_d
     value: {}
-  quit_d:
+  quit_d_1:
     type: legacy_type.window_commands:quit_d
     value: {}
-  run_command_d:
+  run_command_d_1:
     type: legacy_type.global_commands:run_command_d
     value: {}
-  sample_tree_info_d:
+  run_command_d_2:
+    type: legacy_type.model_commands:run_command_d
+    value: {}
+  sample_tree_info_d_1:
     type: legacy_type.sample_commands:sample_tree_info_d
     value: {}
-  select_layer_d:
+  select_layer_d_1:
     type: legacy_type.lcs_layer_selector:select_layer_d
     value: {}
-  set_shortcut_d:
+  set_shortcut_d_1:
     type: legacy_type.command_list_view:set_shortcut_d
     value: {}
-  show_current_context_d:
+  set_shortcut_d_2:
+    type: legacy_type.layout:set_shortcut_d
+    value: {}
+  show_current_context_d_1:
     type: legacy_type.show_current_context:show_current_context_d
     value: {}
-  show_state_d:
+  show_state_d_1:
     type: legacy_type.sample_commands:show_state_d
     value: {}
   string_1:
@@ -311,6 +327,12 @@ definitions:
   string_24:
     type: legacy_type.builtin:string
     value: E
+  string_25:
+    type: legacy_type.builtin:string
+    value: I
+  string_26:
+    type: legacy_type.builtin:string
+    value: Alt+B
   string_3:
     type: legacy_type.builtin:string
     value: Alt+Return
@@ -332,6 +354,6 @@ definitions:
   string_9:
     type: legacy_type.builtin:string
     value: Esc
-  toggle_visibility_d:
+  toggle_visibility_d_1:
     type: legacy_type.column_list:toggle_visibility_d
     value: {}
