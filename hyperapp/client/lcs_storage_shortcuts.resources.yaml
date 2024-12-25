@@ -34,6 +34,8 @@ import:
 - legacy_type.window_commands:duplicate_window_d
 - legacy_type.window_commands:quit_d
 - models.data_browser:record_open.d
+- sample.sample_commands:open_sample_static_text_1.d
+- views.command_layout_context:open_command_layout_context.d
 definitions:
   add_identity_command_d_1:
     type: legacy_type.identity_command:add_identity_command_d
@@ -203,6 +205,14 @@ definitions:
         - open_file_bundle_list_d_1
         - command_shortcut_lcs_d_1
         value: string_24
+      - key:
+        - views.command_layout_context:open_command_layout_context.d
+        - command_shortcut_lcs_d_1
+        value: string_15
+      - key:
+        - sample.sample_commands:open_sample_static_text_1.d
+        - command_shortcut_lcs_d_1
+        value: string_25
   open_column_list_d_1:
     type: legacy_type.column_list:open_column_list_d
     value: {}
@@ -311,6 +321,9 @@ definitions:
   string_24:
     type: legacy_type.builtin:string
     value: Alt+B
+  string_25:
+    type: legacy_type.builtin:string
+    value: F2
   string_3:
     type: legacy_type.builtin:string
     value: Alt+Return
