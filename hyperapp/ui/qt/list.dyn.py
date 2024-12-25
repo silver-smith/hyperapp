@@ -55,6 +55,9 @@ class _Model(QtCore.QAbstractTableModel):
             left = self.createIndex(diff.idx, 0)
             right = self.createIndex(diff.idx, self.adapter.column_count() - 1)
             self.dataChanged.emit(left, right)
+        elif isinstance(diff, ListDiff.Remove):
+            self.beginRemoveRows(QtCore.QModelIndex(), diff.idx, diff.idx)
+            self.endRemoveRows()
         else:
             raise NotImplementedError(diff)
 

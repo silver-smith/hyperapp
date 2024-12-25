@@ -88,6 +88,8 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
             self._item_list.append(diff.item)
         elif isinstance(diff, ListDiff.Replace):
             self._item_list[diff.idx] = diff.item
+        elif isinstance(diff, ListDiff.Remove):
+            del self._item_list[diff.idx]
         else:
             raise NotImplementedError(diff)
         for subscriber in self._subscribers:
