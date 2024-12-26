@@ -1,6 +1,7 @@
 import logging
 import yaml
 from collections import namedtuple
+from dataclasses import dataclass
 from functools import cached_property
 
 from yaml.scanner import ScannerError
@@ -13,10 +14,23 @@ log = logging.getLogger(__name__)
 
 AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
 
-Definition = namedtuple('Definition', 'type value')
+
+@dataclass
+class _Data:
+    type: str
+    value: dict
+
+    @property
+    def as_dict(self):
+        return {
+            'type': self.type,
+            'value': self.value,
+            }
 
 
 class ResourceModule:
+
+    _Definition = namedtuple('_Definition', 'type value')
 
     def __init__(
             self,
@@ -30,7 +44,9 @@ class ResourceModule:
             text=None,
             resource_dir=None,
             imports=None,
+            data_dicts=None,
             definitions=None,
+            items=None,
             ):
         self._mosaic = mosaic
         self._resource_type_producer = resource_type_producer
@@ -40,78 +56,159 @@ class ResourceModule:
         self._path = path
         self._text = text
         self._resource_dir = resource_dir or (path.parent if path else None)
-        self._loaded_imports = imports
-        self._loaded_definitions = definitions
+        self._import_set = imports
+        self._definitions = definitions  # name -> _Definition
+        self._data = data_dicts  # name -> _Data
+        self._items = items  # name -> piece
         self._load_from_file = load_from_file and path is not None
 
     def __repr__(self):
         return f"<ResourceModule {self._name}>"
 
-    def __iter__(self):
-        return iter(self._definition_dict)
-
-    def __contains__(self, var_name):
-        return var_name in self._definition_dict
-
-    def __getitem__(self, var_name):
-        try:
-            definition = self._definition_dict[var_name]
-        except KeyError:
-            raise KeyError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
-        piece = definition.type.resolve(definition.value, self._resolve_name_to_ref, self._resource_dir)
-        self._resource_registry.add_to_cache((self._name, var_name), piece)
-        log.debug("%s: Loaded resource %r: %s", self._name, var_name, piece)
-        return piece
-
-    def __setitem__(self, name, resource):
-        log.info("%s: Set resource %r: %r", self._name, name, resource)
-        t, definition = self._resource_to_definition(resource)
-        self.set_definition(name, t, definition)
-        self._resource_registry.add_to_cache((self._name, name), resource)
-
-    def __delitem__(self, var_name):
-        del self._definition_dict[var_name]
-        self._resource_registry.remove_from_cache((self._name, var_name))
-
-    def clear(self):
-        for var_name in self._definition_dict:
-            self._resource_registry.remove_from_cache((self._name, var_name))
-        self._definition_dict.clear()
-        self._loaded_imports = set()
-        self._loaded_definitions = {}
-
-    def _resource_to_definition(self, resource):
-        resource_t = deduce_value_type(resource)
-        t = self._resource_type_producer(resource_t)
-        definition = t.reverse_resolve(resource, self._resolve_ref, self._resource_dir)
-        return (t, definition)
-
     @property
     def name(self):
         return self._name
+
+    def __iter__(self):
+        self._ensure_loaded()
+        return iter(self._all_names)
+
+    def __contains__(self, var_name):
+        self._ensure_loaded()
+        return var_name in self._definitions or var_name in self._data
+
+    def __getitem__(self, name):
+        self._ensure_loaded()
+        return self._get(name)
+
+    def __setitem__(self, name, piece):
+        self._ensure_loaded()
+        log.info("%s: Set resource %r: %r", self._name, name, piece)
+        self._set(name, piece)
+
+    def __delitem__(self, name):
+        self._ensure_loaded()
+        try:
+            del self._items[name]
+        except KeyError:
+            pass
+        try:
+            del self._definitions[name]
+        except KeyError:
+            pass
+        else:
+            del self._data[name]
+        self._resource_registry.remove_from_cache((self._name, name))
+
+    def clear(self):
+        self._ensure_loaded()
+        for name in self._all_names:
+            self._resource_registry.remove_from_cache((self._name, name))
+        self._definitions.clear()
+        self._import_set = set()
+        self._definitions = {}
+        self._data = {}
+        self._items = {}
+
+    @property
+    def _is_loaded(self):
+        return self._data is not None
+
+    @property
+    def _all_names(self):
+        return {*self._data, *self._definitions}
+
+    def _resolve_data(self, name, data):
+        resource_t_res = self._resolve_name(data.type)
+        resource_t = self._pyobj_creg.animate(resource_t_res)
+        t = self._resource_type_producer(resource_t)
+        try:
+            value = t.from_dict(data.value)
+        except Exception as x:
+            raise RuntimeError(f"Error resolving definition {self._name}/{name}: {x}")
+        return self._Definition(t, value)
+
+    def _get_data(self, name):
+        try:
+            return self._data[name]
+        except KeyError:
+            pass
+        defn = self._definitions[name]
+        data = _Data(
+            type=self._resolve_resource_type(defn.type),
+            value=defn.type.to_dict(defn.value),
+            )
+        self._data[name] = data
+        return data
+
+    def _get_definition(self, name):
+        try:
+            return self._definitions[name]
+        except KeyError:
+            pass
+        try:
+            data = self._data[name]
+        except KeyError:
+            raise KeyError(f"Resource module {self._name!r}: Unknown resource: {name!r}")
+        defn = self._resolve_data(name, data)
+        self._definitions[name] = defn
+        return defn
+
+    def _get(self, name):
+        try:
+            return self._items[name]
+        except KeyError:
+            pass
+        defn = self._get_definition(name)
+        piece = defn.type.resolve(defn.value, self._resolve_name_to_ref, self._resource_dir)
+        self._items[name] = piece
+        self._resource_registry.add_to_cache((self._name, name), piece)
+        log.debug("%s: Loaded resource %r: %s", self._name, name, piece)
+        return piece
+
+    def _set(self, name, piece):
+        definition = self._piece_to_definition(piece)
+        self._set_definition(name, definition)
+        self._items[name] = piece
+        self._resource_registry.add_to_cache((self._name, name), piece)
+
+    def _piece_to_definition(self, piece):
+        piece_t = deduce_value_type(piece)
+        type = self._resource_type_producer(piece_t)
+        value = type.reverse_resolve(piece, self._resolve_ref, self._resource_dir)
+        return self._Definition(type, value)
+
+    def _set_definition(self, name, definition):
+        log.info("%s: Set definition %r, %s: %r", self._name, name, definition.type, definition.value)
+        custom_type_name = self._add_resource_type(definition.type)
+        if custom_type_name and name == custom_type_name:
+            raise RuntimeError(f"Custom type name matches variable name: {name!r}")
+        self._definitions[name] = definition
+        try:
+            del self._data[name]
+        except KeyError:
+            pass
+        try:
+            del self._items[name]
+        except KeyError:
+            pass
 
     def _add_resource_type(self, resource_type):
         piece = self._pyobj_creg.actor_to_piece(resource_type.resource_t)
         if self._resource_registry.has_piece(piece):
             _ = self._reverse_resolve(piece)  # Adds to import_set.
             return
-        self[piece.name] = piece
+        self._set(piece.name, piece)
         return piece.name
-
-    def set_definition(self, var_name, resource_type, definition_value):
-        log.info("%s: Set definition %r, %s: %r", self._name, var_name, resource_type, definition_value)
-        custom_type_name = self._add_resource_type(resource_type)
-        if custom_type_name and var_name == custom_type_name:
-            raise RuntimeError(f"Custom type name matches variable name: {var_name!r}")
-        self._definition_dict[var_name] = Definition(resource_type, definition_value)
 
     @property
     def as_dict(self):
+        self._ensure_loaded()
         d = {}
         d['import'] = sorted(self._import_set)
         d['definitions'] = {
-            name: self._definition_as_dict(d)
-            for name, d in sorted(self._definition_dict.items())
+            name: self._get_data(name).as_dict
+            for name in sorted(self._all_names)
             }
         return d
 
@@ -128,12 +225,6 @@ class ResourceModule:
     def _resolve_resource_type(self, resource_type):
         piece = self._pyobj_creg.actor_to_piece(resource_type.resource_t)
         return self._reverse_resolve(piece)
-
-    def _definition_as_dict(self, definition):
-        return {
-            'type': self._resolve_resource_type(definition.type),
-            'value': definition.type.to_dict(definition.value),
-            }
 
     def _resolve_name(self, name):
         if ':' in name:
@@ -161,23 +252,15 @@ class ResourceModule:
             self._import_set.add(full_name)
             return full_name
 
-    @property
-    def _import_set(self):
-        self._ensure_loaded()
-        return self._loaded_imports
-
-    @property
-    def _definition_dict(self):
-        self._ensure_loaded()
-        return self._loaded_definitions
-
     def _ensure_loaded(self):
-        if self._loaded_definitions is None:
+        if not self._is_loaded:
             self._load()
 
     def _load(self):
-        self._loaded_imports = set()
-        self._loaded_definitions = {}
+        self._import_set = set()
+        self._definitions = {}
+        self._data = {}
+        self._items = {}
         if self._text:
             log.info("Loading resource module %s (%d bytes)", self._name, len(self._text))
         elif self._path and self._load_from_file:
@@ -185,15 +268,15 @@ class ResourceModule:
         else:
             return
         module_contents = self._module_contents
-        self._loaded_imports = set(module_contents.get('import', []))
-        for name in self._loaded_imports:
+        self._import_set = set(module_contents.get('import', []))
+        for name in self._import_set:
             try:
                 module_name, var_name = name.split(':')
                 self._resource_registry.check_has_name((module_name, var_name))
             except (UnknownResourceName, ValueError) as x:
                 raise RuntimeError(f"{self._name}: Importing {name!r}: {x}")
         for name, contents in module_contents.get('definitions', {}).items():
-            self._loaded_definitions[name] = self._read_definition(name, contents)
+            self._data[name] = self._read_data(name, contents)
 
     @cached_property
     def _module_contents(self):
@@ -208,21 +291,14 @@ class ResourceModule:
                 raise
             raise RuntimeError(f"In {self._path}: {x}") from x
 
-    def _read_definition(self, name, data):
-        log.debug("%s: Load definition %r: %s", self._name, name, data)
+    def _read_data(self, name, data):
+        log.debug("%s: Load %r: %s", self._name, name, data)
         try:
-            resource_t_name = data['type']
-            resource_value = data['value']
+            type_name = data['type']
+            value_dict = data['value']
         except KeyError as x:
             raise RuntimeError(f"{self._name}: definition {name!r} has no {x.args[0]!r} attribute")
-        resource_t_res = self._resolve_name(resource_t_name)
-        resource_t = self._pyobj_creg.animate(resource_t_res)
-        t = self._resource_type_producer(resource_t)
-        try:
-            value = t.from_dict(resource_value)
-        except Exception as x:
-            raise RuntimeError(f"Error loading definition {self._name}/{name}: {x}")
-        return Definition(t, value)
+        return _Data(type_name, value_dict)
 
 
 def load_resource_modules(resource_module_factory, resource_dir, resource_registry):
