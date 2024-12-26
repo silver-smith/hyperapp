@@ -19,7 +19,6 @@ import:
 - legacy_type.lcs_view:lcs_move_to_another_layer_d
 - legacy_type.lcs_view:lcs_open_layers_d
 - legacy_type.lcs_view:lcs_open_piece_d
-- legacy_type.lcs_view:open_lcs_view_d
 - legacy_type.model_commands:open_model_commands_d
 - legacy_type.model_commands:run_command_d
 - legacy_type.navigator:go_back_d
@@ -80,139 +79,135 @@ definitions:
       - key:
         - browse_current_model_d_1
         - command_shortcut_lcs_d_1
-        value: string_1
+        value: shortcut_Ctrl_F1
       - key:
         - open_global_commands_d_1
         - command_shortcut_lcs_d_1
-        value: string_2
+        value: shortcut_Alt_F1
       - key:
         - show_state_d_1
         - command_shortcut_lcs_d_1
-        value: string_3
+        value: shortcut_Alt_Return
       - key:
         - set_shortcut_d_1
         - command_shortcut_lcs_d_1
-        value: string_4
+        value: shortcut_Space
       - key:
         - open_layout_tree_d_1
         - command_shortcut_lcs_d_1
-        value: string_5
+        value: shortcut_Alt_Shift_L
       - key:
         - open_model_commands_d_1
         - command_shortcut_lcs_d_1
-        value: string_6
+        value: shortcut_F1
       - key:
         - command_shortcut_lcs_d_1
         - open_view_item_commands_d_1
-        value: string_7
+        value: shortcut_C
       - key:
         - set_shortcut_d_2
         - command_shortcut_lcs_d_1
-        value: string_4
+        value: shortcut_Space
       - key:
         - go_forward_d_1
         - command_shortcut_lcs_d_1
-        value: string_8
+        value: shortcut_Alt_Right
       - key:
         - go_back_d_1
         - command_shortcut_lcs_d_1
-        value: string_9
+        value: shortcut_Esc
       - key:
         - open_sample_fn_record_d_1
         - command_shortcut_lcs_d_1
-        value: string_10
+        value: shortcut_F7
       - key:
         - open_sample_fn_tree_d_1
         - command_shortcut_lcs_d_1
-        value: string_11
+        value: shortcut_F6
       - key:
         - open_feed_sample_fn_tree_d_1
         - command_shortcut_lcs_d_1
-        value: string_12
+        value: shortcut_Shift_F6
       - key:
         - show_current_context_d_1
         - command_shortcut_lcs_d_1
-        value: string_13
-      - key:
-        - open_lcs_view_d_1
-        - command_shortcut_lcs_d_1
-        value: string_14
+        value: shortcut_Ctrl_Shift_C
       - key:
         - lcs_open_layers_d_1
         - command_shortcut_lcs_d_1
-        value: string_15
+        value: shortcut_L
       - key:
         - lcs_move_to_another_layer_d_1
         - command_shortcut_lcs_d_1
-        value: string_16
+        value: shortcut_M
       - key:
         - close_tab_d_1
         - command_shortcut_lcs_d_1
-        value: string_17
+        value: shortcut_Ctrl_F4
       - key:
         - lcs_open_piece_d_1
         - command_shortcut_lcs_d_1
-        value: string_18
+        value: shortcut_Return
       - key:
         - select_layer_d_1
         - command_shortcut_lcs_d_1
-        value: string_18
+        value: shortcut_Return
       - key:
         - quit_d_1
         - command_shortcut_lcs_d_1
-        value: string_19
+        value: shortcut_Alt_Q
       - key:
         - duplicate_window_d_1
         - command_shortcut_lcs_d_1
-        value: string_20
+        value: shortcut_Alt_W
       - key:
         - open_column_list_d_1
         - command_shortcut_lcs_d_1
-        value: string_21
+        value: shortcut_Alt_Shift_C
       - key:
         - toggle_visibility_d_1
         - command_shortcut_lcs_d_1
-        value: string_4
+        value: shortcut_Space
       - key:
         - edit_d_1
         - command_shortcut_lcs_d_1
-        value: string_22
+        value: shortcut_E
       - key:
         - details_d_1
         - command_shortcut_lcs_d_1
-        value: string_18
+        value: shortcut_Return
       - key:
         - sample_tree_info_d_1
         - command_shortcut_lcs_d_1
-        value: string_18
+        value: shortcut_Return
       - key:
         - models.data_browser:record_open.d
         - command_shortcut_lcs_d_1
-        value: string_18
+        value: shortcut_Return
       - key:
         - run_command_d_1
         - command_shortcut_lcs_d_1
-        value: string_18
+        value: shortcut_Return
       - key:
         - run_command_d_2
         - command_shortcut_lcs_d_1
-        value: string_18
+        value: shortcut_Return
       - key:
         - add_identity_command_d_1
         - command_shortcut_lcs_d_1
-        value: string_23
+        value: shortcut_I
       - key:
         - open_file_bundle_list_d_1
         - command_shortcut_lcs_d_1
-        value: string_24
+        value: shortcut_Alt_B
       - key:
         - views.command_layout_context:open_command_layout_context.d
         - command_shortcut_lcs_d_1
-        value: string_15
+        value: shortcut_L
       - key:
         - sample.sample_commands:open_sample_static_text_1.d
         - command_shortcut_lcs_d_1
-        value: string_25
+        value: shortcut_F2
   open_column_list_d_1:
     type: legacy_type.column_list:open_column_list_d
     value: {}
@@ -227,9 +222,6 @@ definitions:
     value: {}
   open_layout_tree_d_1:
     type: legacy_type.layout:open_layout_tree_d
-    value: {}
-  open_lcs_view_d_1:
-    type: legacy_type.lcs_view:open_lcs_view_d
     value: {}
   open_model_commands_d_1:
     type: legacy_type.model_commands:open_model_commands_d
@@ -264,87 +256,84 @@ definitions:
   set_shortcut_d_2:
     type: legacy_type.layout:set_shortcut_d
     value: {}
+  shortcut_Alt_B:
+    type: legacy_type.builtin:string
+    value: Alt+B
+  shortcut_Alt_F1:
+    type: legacy_type.builtin:string
+    value: Alt+F1
+  shortcut_Alt_Q:
+    type: legacy_type.builtin:string
+    value: Alt+Q
+  shortcut_Alt_Return:
+    type: legacy_type.builtin:string
+    value: Alt+Return
+  shortcut_Alt_Right:
+    type: legacy_type.builtin:string
+    value: Alt+Right
+  shortcut_Alt_Shift_C:
+    type: legacy_type.builtin:string
+    value: Alt+Shift+C
+  shortcut_Alt_Shift_L:
+    type: legacy_type.builtin:string
+    value: Alt+Shift+L
+  shortcut_Alt_W:
+    type: legacy_type.builtin:string
+    value: Alt+W
+  shortcut_C:
+    type: legacy_type.builtin:string
+    value: C
+  shortcut_Ctrl_F1:
+    type: legacy_type.builtin:string
+    value: Ctrl+F1
+  shortcut_Ctrl_F4:
+    type: legacy_type.builtin:string
+    value: Ctrl+F4
+  shortcut_Ctrl_Shift_C:
+    type: legacy_type.builtin:string
+    value: Ctrl+Shift+C
+  shortcut_E:
+    type: legacy_type.builtin:string
+    value: E
+  shortcut_Esc:
+    type: legacy_type.builtin:string
+    value: Esc
+  shortcut_F1:
+    type: legacy_type.builtin:string
+    value: F1
+  shortcut_F2:
+    type: legacy_type.builtin:string
+    value: F2
+  shortcut_F6:
+    type: legacy_type.builtin:string
+    value: F6
+  shortcut_F7:
+    type: legacy_type.builtin:string
+    value: F7
+  shortcut_I:
+    type: legacy_type.builtin:string
+    value: I
+  shortcut_L:
+    type: legacy_type.builtin:string
+    value: L
+  shortcut_M:
+    type: legacy_type.builtin:string
+    value: M
+  shortcut_Return:
+    type: legacy_type.builtin:string
+    value: Return
+  shortcut_Shift_F6:
+    type: legacy_type.builtin:string
+    value: Shift+F6
+  shortcut_Space:
+    type: legacy_type.builtin:string
+    value: Space
   show_current_context_d_1:
     type: legacy_type.show_current_context:show_current_context_d
     value: {}
   show_state_d_1:
     type: legacy_type.sample_commands:show_state_d
     value: {}
-  string_1:
-    type: legacy_type.builtin:string
-    value: Ctrl+F1
-  string_10:
-    type: legacy_type.builtin:string
-    value: F7
-  string_11:
-    type: legacy_type.builtin:string
-    value: F6
-  string_12:
-    type: legacy_type.builtin:string
-    value: Shift+F6
-  string_13:
-    type: legacy_type.builtin:string
-    value: Ctrl+Shift+C
-  string_14:
-    type: legacy_type.builtin:string
-    value: Alt+L
-  string_15:
-    type: legacy_type.builtin:string
-    value: L
-  string_16:
-    type: legacy_type.builtin:string
-    value: M
-  string_17:
-    type: legacy_type.builtin:string
-    value: Ctrl+F4
-  string_18:
-    type: legacy_type.builtin:string
-    value: Return
-  string_19:
-    type: legacy_type.builtin:string
-    value: Alt+Q
-  string_2:
-    type: legacy_type.builtin:string
-    value: Alt+F1
-  string_20:
-    type: legacy_type.builtin:string
-    value: Alt+W
-  string_21:
-    type: legacy_type.builtin:string
-    value: Alt+Shift+C
-  string_22:
-    type: legacy_type.builtin:string
-    value: E
-  string_23:
-    type: legacy_type.builtin:string
-    value: I
-  string_24:
-    type: legacy_type.builtin:string
-    value: Alt+B
-  string_25:
-    type: legacy_type.builtin:string
-    value: F2
-  string_3:
-    type: legacy_type.builtin:string
-    value: Alt+Return
-  string_4:
-    type: legacy_type.builtin:string
-    value: Space
-  string_5:
-    type: legacy_type.builtin:string
-    value: Alt+Shift+L
-  string_6:
-    type: legacy_type.builtin:string
-    value: F1
-  string_7:
-    type: legacy_type.builtin:string
-    value: C
-  string_8:
-    type: legacy_type.builtin:string
-    value: Alt+Right
-  string_9:
-    type: legacy_type.builtin:string
-    value: Esc
   toggle_visibility_d_1:
     type: legacy_type.column_list:toggle_visibility_d
     value: {}

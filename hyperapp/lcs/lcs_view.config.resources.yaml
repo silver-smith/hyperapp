@@ -1,9 +1,10 @@
 import:
 - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-- client.lcs_storage_shortcuts:string_20
+- client.lcs_storage_shortcuts:shortcut_Alt_W
 - lcs.lcs_dirs_view:lcs_dirs_items.d
 - lcs.lcs_dirs_view:lcs_open_dirs.d
 - lcs.lcs_view:lcs_remove.d
+- lcs.lcs_view:open_lcs_view.d
 - legacy_type.builtin:bool
 - legacy_type.builtin:string
 - legacy_type.column:column_d
@@ -63,24 +64,31 @@ definitions:
       - key:
         - lcs.lcs_dirs_view:lcs_open_dirs.d
         - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: string_1
+        value: shortcut_D
       - key:
         - lcs.lcs_dirs_view:lcs_dirs_items.d
         - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: client.lcs_storage_shortcuts:string_20
+        value: client.lcs_storage_shortcuts:shortcut_Alt_W
       - key:
         - lcs.lcs_view:lcs_remove.d
         - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: string_2
+        value: shortcut_Del
+      - key:
+        - lcs.lcs_view:open_lcs_view.d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
+        value: shortcut_Alt_L
   list_d_1:
     type: legacy_type.column:list_d
     value: {}
+  shortcut_Alt_L:
+    type: legacy_type.builtin:string
+    value: Alt+L
+  shortcut_D:
+    type: legacy_type.builtin:string
+    value: D
+  shortcut_Del:
+    type: legacy_type.builtin:string
+    value: Del
   show_d_1:
     type: legacy_type.column:show_d
     value: {}
-  string_1:
-    type: legacy_type.builtin:string
-    value: D
-  string_2:
-    type: legacy_type.builtin:string
-    value: Del
