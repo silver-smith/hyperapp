@@ -1,8 +1,9 @@
 import itertools
 
+import re
 import yaml
 
-from hyperapp.common.htypes import TPrimitive, TRecord
+from hyperapp.common.htypes import TPrimitive, TRecord, tString
 
 from . import htypes
 from .services import (
@@ -18,6 +19,7 @@ from .code.mark import mark
 class LcsResourceStorage:
 
     _mapping_name = 'lcs_storage_mapping'
+    _shortcut_re = re.compile(r'([A-Z][A-Za-z]*\+)*[A-Z][A-Za-z0-9]*$')
 
     def __init__(self, pick_refs, name, path):
         self._pick_refs = pick_refs
@@ -93,7 +95,9 @@ class LcsResourceStorage:
         text = yaml.dump(self._res_module.as_dict, sort_keys=False)
         self._path.write_text(text)
 
-    def _require_index(self, t, stem):
+    def _require_index(self, t, piece, stem):
+        if t is tString and self._shortcut_re.match(piece):
+            return False
         if not isinstance(t, TRecord):
             return True
         if t.name == stem:
@@ -105,7 +109,9 @@ class LcsResourceStorage:
     def _make_stem(self, piece, t=None):
         if t is None:
             t = deduce_t(piece)
-        if isinstance(t, TPrimitive):
+        if t is tString and self._shortcut_re.match(piece):
+            return 'shortcut_' + piece.replace('+', '_')
+        elif isinstance(t, TPrimitive):
             return t.name
         else:
             assert isinstance(t, TRecord)
@@ -122,7 +128,7 @@ class LcsResourceStorage:
 
     def _iter_names(self, piece, t):
         stem = self._make_stem(piece, t)
-        if not self._require_index(t, stem):
+        if not self._require_index(t, piece, stem):
             yield stem
             if isinstance(t, TRecord):
                 yield f'{t.module_name}.{stem}'
