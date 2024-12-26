@@ -80,64 +80,6 @@ class ResourceModule:
         self._loaded_imports = set()
         self._loaded_definitions = {}
 
-    @cached_property
-    def is_auto_generated(self):
-        lines = self._path.read_text().splitlines()
-        return len(lines) >= 1 and lines[0] == AUTO_GEN_LINE
-
-    @cached_property
-    def source_ref_str(self):
-        return self._read_hash_line(0)
-
-    @cached_property
-    def tests_ref_str(self):
-        return self._read_hash_line(1)
-
-    @cached_property
-    def generator_ref_str(self):
-        return self._read_hash_line(2)
-
-    def _read_hash_line(self, idx):
-        path = self._hash_file_path(self._path)
-        if not path.exists():
-            return None
-        lines = path.read_text().splitlines()
-        return lines[idx]
-
-    @property
-    def used_imports(self):
-        module_set = set()
-        if self._loaded_definitions is None:
-            # Do not try to resolve if not loaded.
-            module_contents = self._module_contents
-            import_set = set(module_contents.get('import', []))
-        else:
-            import_set = self._import_set
-        for name in import_set:
-            module_name, var_name = name.split(':')
-            module_set.add((module_name, var_name))
-        return module_set
-
-    def code_module_imports(self, code_name):
-        assert self._loaded_definitions is None  # Not expecting it to be already loaded.
-        module_contents = self._module_contents
-        return module_contents['definitions'][f'{code_name}.module']['value']['import_list']
-
-    @property
-    def provided_services(self):
-        services = set()
-        if self._loaded_definitions is None:
-            # Do not try to resolve if not loaded.
-            module_contents = self._module_contents
-            definitions = set(module_contents.get('definitions', []))
-        else:
-            definitions = self._definition_dict
-        for name in definitions:
-            l = name.split('.')
-            if len(l) == 2 and l[1] == 'service':
-                services.add(l[0])
-        return services
-
     def _resource_to_definition(self, resource):
         resource_t = deduce_value_type(resource)
         t = self._resource_type_producer(resource_t)
@@ -147,27 +89,6 @@ class ResourceModule:
     @property
     def name(self):
         return self._name
-
-    def with_module(self, module):
-        return ResourceModule(
-            mosaic=self._mosaic,
-            resource_type_producer=self._resource_type_producer,
-            pyobj_creg=self._pyobj_creg,
-            resource_registry=self._resource_registry,
-            name=f'{self._name}-with-{module.name}',
-            path=self._path.with_name('dummy'),
-            load_from_file=True,
-            imports=self._import_set | module._import_set,
-            definitions={**self._definition_dict, **module._definition_dict},
-            )
-
-    def add_import(self, import_name):
-        log.info("%s: Add import: %r", self._name, import_name)
-        self._import_set.add(import_name)
-
-    def remove_import(self, import_name):
-        log.info("%s: Remove import: %r", self._name, import_name)
-        self._import_set.remove(import_name)
 
     def _add_resource_type(self, resource_type):
         piece = self._pyobj_creg.actor_to_piece(resource_type.resource_t)
@@ -183,9 +104,6 @@ class ResourceModule:
         if custom_type_name and var_name == custom_type_name:
             raise RuntimeError(f"Custom type name matches variable name: {var_name!r}")
         self._definition_dict[var_name] = Definition(resource_type, definition_value)
-
-    def _hash_file_path(self, path):
-        return path.with_suffix('.hash')
 
     @property
     def as_dict(self):
@@ -206,13 +124,6 @@ class ResourceModule:
             yaml_text,
             ]
         return '\n'.join(lines)
-
-    def save_as(self, path, source_ref_str, tests_ref_str, generator_ref_str):
-        path.write_text(self.as_text)
-        hash_lines = [source_ref_str, tests_ref_str, generator_ref_str]
-        self._hash_file_path(path).write_text('\n'.join(hash_lines))
-        self._path = path
-        self._resource_dir = path.parent
 
     def _resolve_resource_type(self, resource_type):
         piece = self._pyobj_creg.actor_to_piece(resource_type.resource_t)
