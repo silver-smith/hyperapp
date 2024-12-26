@@ -23,4 +23,3 @@ lcs_open_layers_d = record
 lcs_remove_d = record
 lcs_move_to_another_layer_d = record
 lcs_open_piece_d = record
-open_lcs_view_d = record

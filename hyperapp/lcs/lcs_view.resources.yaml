@@ -21,7 +21,6 @@ import:
 - legacy_type.lcs_view:lcs_open_layers_d
 - legacy_type.lcs_view:lcs_open_piece_d
 - legacy_type.lcs_view:lcs_remove_d
-- legacy_type.lcs_view:open_lcs_view_d
 - legacy_type.lcs_view:view
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
@@ -240,7 +239,7 @@ definitions:
       object: lcs_view.module
       attr_name: open_lcs_view
   open_lcs_view.d:
-    type: legacy_type.lcs_view:open_lcs_view_d
+    type: open_lcs_view_d
     value: {}
   open_lcs_view.global-model-command:
     type: legacy_type.command:model_command
@@ -257,3 +256,10 @@ definitions:
       function: open_lcs_view
       ctx_params: []
       service_params: []
+  open_lcs_view_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: lcs_view
+      name: open_lcs_view_d
+      base: null
+      fields: {}
