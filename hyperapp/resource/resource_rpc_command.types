@@ -1,5 +1,0 @@
-rpc_command = record:
-  identity: ref
-  function: ref
-  params: string list  # Attributes from view state to send to server.
-  name: string

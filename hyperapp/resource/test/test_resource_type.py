@@ -251,20 +251,16 @@ def test_reverse_resolve_definition_based(mosaic, resource_type_factory, htypes)
 
 # Inherited record result_t should also work.
 def test_resolve_definition_list_service(mosaic, resource_type_factory, htypes):
-    resource_t = htypes.resource_service.list_service
+    resource_t = htypes.test_resources.test_inherited_2
     resource_type = resource_type_factory(resource_t)
     definition = resource_type.definition_t(
-        identity='some_identity',
-        function='some_function',
-        dir='some_dir',
-        commands=['some_command'],
-        key_attribute='the_key',
+        name='some_name',
+        value='some_value',
+        items=('some_item',),
         )
     names = {
-        'some_identity': mosaic.put('some_identity'),
-        'some_function': mosaic.put('some_function'),
-        'some_dir': mosaic.put('some_dir'),
-        'some_command': mosaic.put('some_command'),
+        'some_value': mosaic.put('some_value'),
+        'some_item': mosaic.put('some_item'),
         }
 
     def resolve_name(name):
@@ -273,9 +269,7 @@ def test_resolve_definition_list_service(mosaic, resource_type_factory, htypes):
     resource = resource_type.resolve(definition, resolve_name, TEST_RESOURCES_DIR)
     log.info('Resolved resource: %r', resource)
     assert resource == resource_t(
-        identity=names['some_identity'],
-        function=names['some_function'],
-        dir=names['some_dir'],
-        commands=(names['some_command'],),
-        key_attribute='the_key',
+        name='some_name',
+        value=names['some_value'],
+        items=(names['some_item'],),
         )

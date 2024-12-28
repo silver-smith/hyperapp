@@ -7,3 +7,11 @@ test_resource_t_base = record:
 
 test_resource_t = record(test_resource_t_base):
   other_value: ref list
+
+
+test_base_2 = record:
+  name: string
+  value: ref
+  items: ref list
+
+test_inherited_2 = record(test_base_2)

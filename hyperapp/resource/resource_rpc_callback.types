@@ -1,5 +1,0 @@
-rpc_callback = record:
-  identity: ref
-  function: ref
-  item_attributes: string list  # Item attributes to pass to rpc callback.
-
