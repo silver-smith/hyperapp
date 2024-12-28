@@ -10,8 +10,12 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:command_shortcut_lcs_d
 - legacy_type.command:model_command
+- legacy_type.command_list_model:form
 - legacy_type.command_list_model:item
 - legacy_type.command_list_model:set_shortcut_d
+- legacy_type.crud:edit_d
+- legacy_type.crud:open_command_fn
+- legacy_type.crud:save_d
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.global_commands:model
@@ -20,6 +24,11 @@ import:
 - ui.directory:directory.module
 - ui.qt.key_input_dialog:key_input_dialog.module
 definitions:
+  command_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_list_model.module
+      attr_name: command_get
   command_list_model.module:
     type: legacy_type.builtin:python_module
     value:
@@ -31,9 +40,15 @@ definitions:
         code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
         htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
+        htypes.command_list_model.form: legacy_type.command_list_model:form
         htypes.command_list_model.item: legacy_type.command_list_model:item
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+  command_update:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_list_model.module
+      attr_name: command_update
   global_commands_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -48,6 +63,55 @@ definitions:
     value:
       t: legacy_type.global_commands:model
       command: set_shortcut.model-command
+  model_commands-model.crud.get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: command_get
+      ctx_params:
+      - piece
+      - ui_command_d
+      - lcs
+      service_params: []
+  model_commands-model.crud.update.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: command_update
+      ctx_params:
+      - piece
+      - ui_command_d
+      - value
+      - lcs
+      service_params: []
+  model_commands-model.edit.command:
+    type: legacy_type.command:model_command
+    value:
+      d: model_commands-model.edit.open-command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: model_commands-model.edit.command-fn
+  model_commands-model.edit.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.model_commands:model
+      command: model_commands-model.edit.command
+  model_commands-model.edit.command-fn:
+    type: legacy_type.crud:open_command_fn
+    value:
+      name: edit
+      value_t: legacy_type.command_list_model:form
+      key_fields:
+      - ui_command_d
+      init_action_fn: model_commands-model.crud.get.system-fn
+      commit_command_d: model_commands-model.edit.commit-command.d
+      commit_action_fn: model_commands-model.crud.update.system-fn
+  model_commands-model.edit.commit-command.d:
+    type: legacy_type.crud:save_d
+    value: {}
+  model_commands-model.edit.open-command.d:
+    type: legacy_type.crud:edit_d
+    value: {}
   model_commands_model.feed-template:
     type: legacy_type.feed:feed_template
     value:

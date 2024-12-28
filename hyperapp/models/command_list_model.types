@@ -8,4 +8,8 @@ item = record:
   text: string
   tooltip: string
 
+form = record:
+  text: string
+  tooltip: string
+
 set_shortcut_d = record

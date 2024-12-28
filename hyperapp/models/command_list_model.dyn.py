@@ -13,6 +13,14 @@ from .code.key_input_dialog import run_key_input_dialog
 log = logging.getLogger(__name__)
 
 
+def _get_command_text(lcs, d):
+    return ""
+
+
+def _get_command_tooltip(lcs, d):
+    return ""
+
+
 def command_item_to_model_item(lcs, item):
     return htypes.command_list_model.item(
         ui_command_d=mosaic.put(item.d),
@@ -21,8 +29,8 @@ def command_item_to_model_item(lcs, item):
         groups=", ".join(d_to_name(g) for g in item.command.groups) if item.enabled else "",
         repr=repr(item.command),
         shortcut=lcs.get({htypes.command.command_shortcut_lcs_d(), item.d}) or "",
-        text="",
-        tooltip="",
+        text=_get_command_text(lcs, item.d),
+        tooltip=_get_command_tooltip(lcs, item.d),
         )
 
 
@@ -51,3 +59,22 @@ async def set_shortcut(piece, current_idx, current_item, lcs, feed_factory):
     key = {htypes.command.command_shortcut_lcs_d(), command_d}
     lcs.set(key, shortcut)
     await feed.send(ListDiff.Replace(current_idx, new_item))
+
+
+@mark.crud.get
+def command_get(piece, ui_command_d, lcs):
+    return htypes.command_list_model.form(
+        text="",
+        tooltip="",
+        )
+
+
+@mark.crud.update
+def command_update(piece, ui_command_d, value, lcs):
+    d = web.summon(ui_command_d)
+    prev_text = _get_command_text(lcs, d)
+    prev_tooltip = _get_command_tooltip(lcs, d)
+    if value.text != prev_text:
+        log.info("Set text for %s: %r", d, value.text)
+    if value.tooltip != prev_tooltip:
+        log.info("Set tooltip for %s: %r", d, value.tooltip)

@@ -29,6 +29,7 @@ import:
 - models.column_list:list_view_open_column_list.command-cfg-item
 - models.command_list_model:global_commands_model.feed-template
 - models.command_list_model:global_commands_model_set_shortcut.command-cfg-item
+- models.command_list_model:model_commands-model.edit.command-cfg-item
 - models.command_list_model:model_commands_model_set_shortcut.command-cfg-item
 - models.data_browser:browse_current_model.global-model-command
 - models.data_browser:data_browser_list_view.model-cfg-item
@@ -47,7 +48,6 @@ import:
 - models.model_commands:model_commands_model.model-cfg-item
 - models.model_commands:model_commands_model_run_command.command-cfg-item
 - models.model_commands:open_model_commands.global-model-command
-- models.rename_command:model_commands-model.edit.command-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 - models.show_current_context:show_current_context_view.model-cfg-item
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
@@ -490,6 +490,7 @@ definitions:
       - lcs.lcs_view:lcs_view_view_lcs_remove.command-cfg-item
       - models.column_list:column_list_view_toggle_visibility.command-cfg-item
       - models.command_list_model:global_commands_model_set_shortcut.command-cfg-item
+      - models.command_list_model:model_commands-model.edit.command-cfg-item
       - models.command_list_model:model_commands_model_set_shortcut.command-cfg-item
       - models.data_browser:data_browser_list_view_list_open.command-cfg-item
       - models.data_browser:data_browser_record_view_record_open.command-cfg-item
@@ -497,7 +498,6 @@ definitions:
       - models.file_bundles:file_bundles_view_open.command-cfg-item
       - models.global_commands:global_commands_model_run_command.command-cfg-item
       - models.model_commands:model_commands_model_run_command.command-cfg-item
-      - models.rename_command:model_commands-model.edit.command-cfg-item
       - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
       - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
