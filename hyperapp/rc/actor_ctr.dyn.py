@@ -118,16 +118,14 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
 
     def update_targets(self, target_set):
         resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
-        # ready target may already have provider set, but in case of
-        # non-typed marker it have not.
+        # Ready target may already have provider set, but when marker is non-typed it have not.
         req = CfgItemReq(self._service_name, self._t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             self._service_name, self._resource_name, req,
             provider=resource_tgt,
             ctr=self,
             )
-        # Resource target may already have resolved target, but in case of
-        # non-typed marker it have not.
+        # Resource target may already have resolved target, but when marker is non-typed it have not.
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def make_component(self, types, python_module, name_to_res=None):
