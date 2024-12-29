@@ -83,7 +83,7 @@ class _TableView(QtWidgets.QTableView):
 class ListView(View):
 
     @classmethod
-    @mark.actor.model_view_creg(htypes.list.view)
+    @mark.view
     def from_piece(cls, piece, model, ctx, ui_adapter_creg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)

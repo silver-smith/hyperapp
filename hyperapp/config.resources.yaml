@@ -268,7 +268,7 @@ import:
 - ui.qt.fn_list_adapter:model_list_ui_t.actor-template
 - ui.qt.form:form_view.actor-template
 - ui.qt.label:label_view.actor-template
-- ui.qt.list:list_view.actor-template
+- ui.qt.list:list_view.view-template
 - ui.qt.list_as_tree_adapter:list_as_tree_adapter_adapter.actor-template
 - ui.qt.menu_bar:menu_bar_view.actor-template
 - ui.qt.record_adapter:model_record_ui_t.actor-template
@@ -377,6 +377,7 @@ definitions:
         ui_type_creg: ui_type_creg
         universal_ui_command_reg: universal_ui_command_reg
         view_creg: view_creg
+        view_reg: view_reg
         view_ui_command_reg: view_ui_command_reg
         view_ui_model_command_reg: view_ui_model_command_reg
         visualizer_reg: visualizer_reg
@@ -508,7 +509,6 @@ definitions:
       items:
       - ui.master_details:master_details_view.actor-template
       - ui.qt.form:form_view.actor-template
-      - ui.qt.list:list_view.actor-template
       - ui.qt.text:text_edit_view.actor-template
       - ui.qt.text:text_readonly_view.actor-template
       - ui.qt.tree:tree_view.actor-template
@@ -754,6 +754,11 @@ definitions:
       - ui.qt.window:window_view.actor-template
       - views.command_layout_context:command_layout_context_view.actor-template
       - views.local_server_context:local_server_context_view.actor-template
+  view_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.qt.list:list_view.view-template
   view_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:

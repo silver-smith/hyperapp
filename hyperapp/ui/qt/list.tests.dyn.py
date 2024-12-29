@@ -18,14 +18,14 @@ def piece(adapter_piece):
     return htypes.list.view(mosaic.put(adapter_piece))
 
 
-def test_list(qapp, model_view_creg, lcs, piece):
+def test_list(qapp, lcs, piece):
     ctx = Context()
     model = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
     state = None
-    view = model_view_creg.animate(piece, model, ctx)
+    view = list.ListView.from_piece(piece, model, ctx)
     view.set_controller_hook(Mock())
     widget = view.construct_widget(state, ctx)
     assert view.piece
