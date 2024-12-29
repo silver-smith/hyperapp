@@ -71,7 +71,7 @@ class ModelProbe:
             attr_qual_name=self._fn.__qualname__.split('.'),
             model_t=model_t,
             ui_t=ui_t,
-            ctx_params=params.other_names,
+            ctx_params=params.ctx_names,
             service_params=params.service_names,
             )
         self._ctr_collector.add_constructor(ctr)

@@ -67,7 +67,7 @@ class CrudProbe:
 
     def _pick_key_field(self, item_t, params):
         fields = []
-        for name in params.other_names:
+        for name in params.ctx_names:
             if name in {'piece', 'model', 'value'}:
                 continue
             if name in item_t.fields:
@@ -91,7 +91,7 @@ class CrudProbe:
             model_t=model_t,
             action=self._action,
             key_field=key_field,
-            ctx_params=params.other_names,
+            ctx_params=params.ctx_names,
             service_params=params.service_names,
             )
 
