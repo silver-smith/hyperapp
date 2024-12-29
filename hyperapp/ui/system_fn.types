@@ -1,7 +1,3 @@
-cfg_item = record:
-  t: ref
-  system_fn: ref
-
 ctx_fn = record:
   function: ref
   ctx_params: string list
