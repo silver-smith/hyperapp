@@ -37,14 +37,14 @@ def fn_params(fn):
 
 
 def split_params(fn, args, kw):
-    all_names = fn_params(fn)
+    fn_names = fn_params(fn)
     if args and is_cls_arg(fn, args[0]):
         # fn is a classmethod and args[0] is a 'cls' argument.
         param_ofs = 1
     else:
         param_ofs = 0
     args_values = {
-        all_names[idx]: arg
+        fn_names[idx]: arg
         for idx, arg in enumerate(args)
         }
     values = {
@@ -52,11 +52,11 @@ def split_params(fn, args, kw):
         **kw,
         }
     other_names = [
-        *all_names[param_ofs:len(args)],
+        *fn_names[param_ofs:len(args)],
         *kw,
         ]
     service_names = [
-        name for name in all_names[param_ofs:]
+        name for name in fn_names[param_ofs:]
         if name not in other_names
         ]
     return Params(other_names, service_names, values)
