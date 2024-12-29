@@ -239,7 +239,10 @@ class _IncompleteError(_ImportJobError):
 
     def make_result(self, recorder, module, key_to_req, system):
         system_reqs = self._used_system_reqs(key_to_req, system)
-        import_reqs = self._imports_to_requirements(recorder.missing_imports | recorder.used_imports)
+        if recorder:
+            import_reqs = self._imports_to_requirements(recorder.missing_imports | recorder.used_imports)
+        else:
+            import_reqs = set()
         return IncompleteImportResult(
             missing_reqs=self._missing_reqs,
             all_reqs=system_reqs | import_reqs,
