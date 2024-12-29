@@ -4,10 +4,7 @@ from .services import (
     web,
     )
 from .code.actor_ctr import ActorTemplateCtr
-from .code.marker_utils import (
-    is_cls_arg,
-    fn_params,
-    )
+from .code.marker_utils import split_params
 
 
 class ActorProbe:
@@ -30,36 +27,29 @@ class ActorProbe:
         return self._fn
 
     def __call__(self, *args, **kw):
-        params = fn_params(self._fn)
-        piece_param_ofs = 0
-        if args and is_cls_arg(self._fn, args[0]):
-            # self._fn is a classmethod and args[0] is a 'cls' argument.
-            piece_param_ofs = 1
-        if len(args) < piece_param_ofs + 1:
+        params = split_params(self._fn, args, kw)
+        if len(params.ctx_names) < 1:
             raise RuntimeError(f"First parameter expected to be a piece: {self._fn!r}")
-        piece = args[piece_param_ofs]
-        creg_param_count = len(args) - piece_param_ofs - 1 + len(kw)
-        creg_params = params[piece_param_ofs + 1:creg_param_count + piece_param_ofs + 1]
-        service_params = params[creg_param_count + piece_param_ofs + 1:]
+        piece = params.values[params.ctx_names[0]]
         if self._t is None:
             t = deduce_t(piece)
         else:
             t = self._t
-        self._add_constructor(t, creg_params, service_params)
+        self._add_constructor(params, t)
         service_kw = {
             name: self._system.resolve_service(name)
-            for name in service_params
+            for name in params.service_names
             }
         return self._fn(*args, **kw, **service_kw)
 
-    def _add_constructor(self, t, creg_params, service_params):
+    def _add_constructor(self, params, t):
         ctr = ActorTemplateCtr(
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             service_name=self._service_name,
             t=t,
-            creg_params=creg_params,
-            service_params=service_params,
+            creg_params=params.ctx_names,
+            service_params=params.service_names,
             )
         self._ctr_collector.add_constructor(ctr)
 
