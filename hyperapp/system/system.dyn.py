@@ -193,15 +193,6 @@ class ActorTemplate:
         return partial(fn, **service_kw)
 
 
-class NotATemplate:
-
-    def __init__(self, value):
-        self._value = value
-
-    def resolve(self, system, service_name):
-        return self._value
-
-
 class System:
 
     _system_name = "System"
