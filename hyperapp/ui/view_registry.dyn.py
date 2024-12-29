@@ -12,3 +12,8 @@ def view_creg(config):
 @mark.service
 def model_view_creg(config):
     return code_registry_ctr('model_view_creg', config)
+
+
+@mark.service
+def view_reg(config):
+    return config

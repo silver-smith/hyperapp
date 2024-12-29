@@ -39,6 +39,20 @@ definitions:
       service_params: []
       want_config: true
       free_params: []
+  view_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_registry.module
+      attr_name: view_reg
+  view_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: view_reg
+      ctl: system-dict_config_ctl.ctl
+      function: view_reg
+      service_params: []
+      want_config: true
+      free_params: []
   view_registry.module:
     type: legacy_type.builtin:python_module
     value:
