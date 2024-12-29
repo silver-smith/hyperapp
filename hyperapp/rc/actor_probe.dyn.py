@@ -7,15 +7,13 @@ from .code.actor_ctr import ActorTemplateCtr
 from .code.marker_utils import split_params
 
 
-class ActorProbe:
+class ActorProbeBase:
 
-    def __init__(self, system_probe, ctr_collector, module_name, service_name, fn, t=None):
+    def __init__(self, system_probe, ctr_collector, module_name, fn):
         self._system = system_probe
         self._ctr_collector = ctr_collector
         self._module_name = module_name
-        self._service_name = service_name
         self._fn = fn
-        self._t = t
         system_probe.add_global(self)
 
     def migrate_to(self, system_probe):
@@ -41,6 +39,14 @@ class ActorProbe:
             for name in params.service_names
             }
         return self._fn(*args, **kw, **service_kw)
+
+
+class ActorProbe(ActorProbeBase):
+
+    def __init__(self, system_probe, ctr_collector, module_name, service_name, fn, t=None):
+        super().__init__(system_probe, ctr_collector, module_name, fn)
+        self._service_name = service_name
+        self._t = t
 
     def _add_constructor(self, params, t):
         ctr = ActorTemplateCtr(
