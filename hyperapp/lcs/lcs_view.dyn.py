@@ -48,7 +48,7 @@ def lcs_layers_view(piece, lcs):
             )
         for layer_d in sorted(lcs.layers())
         ]
-        
+
 
 @mark.command
 def lcs_open_layers(piece):
