@@ -39,6 +39,9 @@ class CodeRegistry:
             raise ConfigItemMissingError(self._service_name, t, f"{self._service_name} actor is missing for: {t}")
         _log.debug('Producing %s actor for %s of type %s using %s(%s, %s)',
                    self._service_name, piece, t, fn, args, kw)
-        result = fn(piece, *args, **kw)
+        result = self._call(fn, piece, args, kw)
         _log.debug('Animated %s actor: %s to %s', self._service_name, piece, str(result))
         return result
+
+    def _call(self, fn, piece, args, kw):
+        return fn(piece, *args, **kw)
