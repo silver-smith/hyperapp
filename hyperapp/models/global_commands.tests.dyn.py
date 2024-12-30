@@ -76,6 +76,6 @@ async def test_run_command(lcs, piece):
     ctx = Context(
         navigator=navigator,
         )
-    result = await global_commands.run_command(piece, current_item, lcs, ctx)
+    result = await global_commands.run_command(piece, current_item, lcs, ctx.push())
     navigator.view.open.assert_called_once()
     assert navigator.view.open.call_args.args[1] == 'sample-fn: a-service'

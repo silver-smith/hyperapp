@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 
 @mark.ui_command(htypes.tabs.view)
-def move_tab_to_new_group(view, widget, state, ctx, view_creg):
+def move_tab_to_new_group(view, widget, state, ctx, view_reg):
     group_idx = state.current_tab
     group_widget = view.item_widget(widget, group_idx)
     group_state = web.summon(state.tabs[group_idx])
@@ -33,7 +33,7 @@ def move_tab_to_new_group(view, widget, state, ctx, view_creg):
         current_tab=0,
         tabs=(tab_state_ref,),
         )
-    new_group = view_creg.animate(new_group_piece, ctx)
+    new_group = view_reg.animate(new_group_piece, ctx)
 
     group.close_tab(group_widget, tab_idx)
     view.insert_tab(ctx, widget, group_idx + 1, "New group", new_group, new_group_state)

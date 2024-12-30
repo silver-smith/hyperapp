@@ -32,10 +32,10 @@ def test_local_server_context_view(qapp):
     assert state
 
 
-def test_open_local_server_context(view_creg):
+def test_open_local_server_context(view_reg):
     ctx = Context()
     piece = htypes.label.view("Sample label")
     state = htypes.label.state()
-    view = view_creg.animate(piece, ctx)
+    view = view_reg.animate(piece, ctx)
     hook = Mock()
     result = local_server_context.open_local_server_context(view, state, hook, ctx)

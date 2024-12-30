@@ -23,7 +23,7 @@ def lcs():
     return lcs
 
 
-def test_command_item_to_item(partial_ref, model_view_creg, visualizer, lcs):
+def test_command_item_to_item(partial_ref, view_reg, visualizer, lcs):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
@@ -37,7 +37,7 @@ def test_command_item_to_item(partial_ref, model_view_creg, visualizer, lcs):
         properties=htypes.command.properties(False, False, False),
         )
     command = UnboundUiModelCommand(
-        model_view_creg=model_view_creg,
+        view_reg=view_reg,
         visualizer=visualizer,
         lcs=lcs,
         d=htypes.command_list_view_tests.sample_model_command_d(),

@@ -32,15 +32,15 @@ class FormInput:
 class FormView(View):
 
     @classmethod
-    @mark.actor.model_view_creg
-    def from_piece(cls, piece, model, ctx, visualizer, ui_adapter_creg, model_view_creg):
+    @mark.view
+    def from_piece(cls, piece, model, ctx, visualizer, ui_adapter_creg, view_reg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
-        return cls(visualizer, model_view_creg, piece.adapter, adapter, ctx.lcs)
+        return cls(visualizer, view_reg, piece.adapter, adapter, ctx.lcs)
 
-    def __init__(self, visualizer, model_view_creg, adapter_ref, adapter, lcs):
+    def __init__(self, visualizer, view_reg, adapter_ref, adapter, lcs):
         super().__init__()
         self._visualizer = visualizer
-        self._model_view_creg = model_view_creg
+        self._view_reg = view_reg
         self._adapter_ref = adapter_ref
         self._adapter = adapter
         self._lcs = lcs
@@ -64,7 +64,8 @@ class FormView(View):
             layout.addWidget(QtWidgets.QLabel(text=name))
             field = self._adapter.get_field(name)
             view_piece = self._visualizer(self._lcs, field)
-            view = self._model_view_creg.animate(view_piece, field, ctx)
+            model_ctx = ctx.clone_with(model=field)
+            view = self._view_reg.animate(view_piece, model_ctx)
             fs = field_state.get(name)
             w = view.construct_widget(fs, ctx)
             self._fields[name] = view

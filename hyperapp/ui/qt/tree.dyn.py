@@ -182,7 +182,7 @@ class _TreeWidget(QtWidgets.QTreeView):
 class TreeView(View):
 
     @classmethod
-    @mark.actor.model_view_creg(htypes.tree.view)
+    @mark.view
     def from_piece(cls, piece, model, ctx, ui_adapter_creg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)

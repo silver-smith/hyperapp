@@ -23,11 +23,11 @@ def tab_piece_ref_label(piece_ref):
 class AutoTabsView(TabsView):
 
     @classmethod
-    @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, view_creg):
+    @mark.view
+    def from_piece(cls, piece, ctx, view_reg):
         tabs = [
             cls._Tab(
-                view=view_creg.invite(view_ref, ctx),
+                view=view_reg.invite(view_ref, ctx),
                 label=tab_piece_ref_label(view_ref),
                 )
             for view_ref in piece.tabs
@@ -54,12 +54,12 @@ class AutoTabsView(TabsView):
 
 
 @mark.ui_command(htypes.auto_tabs.view)
-def duplicate_tab(ctx, view, widget, state, view_creg):
+def duplicate_tab(ctx, view, widget, state, view_reg):
     log.info("Duplicate tab: %s / %s", view, state)
     current_view = view.current_tab(widget).view
     current_widget = view.current_widget(widget)
     tab_state = current_view.widget_state(current_widget)
-    new_view = view_creg.animate(current_view.piece, ctx)
+    new_view = view_reg.animate(current_view.piece, ctx)
     view.insert_tab(ctx, widget, state.current_tab + 1, new_view, tab_state)
 
 

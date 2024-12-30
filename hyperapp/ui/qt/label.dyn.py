@@ -8,7 +8,7 @@ from .code.view import View
 class LabelView(View):
 
     @classmethod
-    @mark.actor.view_creg
+    @mark.view
     def from_piece(cls, piece, ctx):
         return cls(piece.text)
 

@@ -17,10 +17,11 @@ log = logging.getLogger(__name__)
 class MasterDetailsView(BoxLayoutView):
     
     @classmethod
-    @mark.actor.model_view_creg
-    def from_piece(cls, piece, model, ctx, view_creg, model_view_creg, visualizer, global_model_command_reg, get_model_commands):
-        master_view = model_view_creg.invite(piece.master_view, model, ctx)
-        details_view = view_creg.animate(htypes.label.view("Placeholder"), ctx)
+    @mark.view
+    def from_piece(cls, piece, model, ctx, view_reg, visualizer, global_model_command_reg, get_model_commands):
+        model_ctx = ctx.clone_with(model=model)
+        master_view = view_reg.invite(piece.master_view, model_ctx)
+        details_view = view_reg.animate(htypes.label.view("Placeholder"), ctx)
         elements = [
             cls._Element(master_view, focusable=True, stretch=piece.master_stretch),
             cls._Element(details_view, focusable=False, stretch=piece.details_stretch),
@@ -28,7 +29,7 @@ class MasterDetailsView(BoxLayoutView):
         direction = cls._direction_to_qt(piece.direction)
         details_command_d = web.summon(piece.details_command_d)
         return cls(
-            model_view_creg=model_view_creg,
+            view_reg=view_reg,
             visualizer=visualizer,
             global_model_command_reg=global_model_command_reg,
             get_model_commands=get_model_commands,
@@ -40,7 +41,7 @@ class MasterDetailsView(BoxLayoutView):
 
     def __init__(
             self,
-            model_view_creg,
+            view_reg,
             global_model_command_reg,
             get_model_commands,
             visualizer,
@@ -50,7 +51,7 @@ class MasterDetailsView(BoxLayoutView):
             details_command_d,
             ):
         super().__init__(direction, elements)
-        self._model_view_creg = model_view_creg
+        self._view_reg = view_reg
         self._visualizer = visualizer
         self._global_model_command_reg = global_model_command_reg
         self._get_model_commands = get_model_commands
@@ -107,7 +108,8 @@ class MasterDetailsView(BoxLayoutView):
 
     def _model_to_view(self, ctx, piece):
         details_view_piece = self._visualizer(ctx.lcs, piece)
-        return self._model_view_creg.animate(details_view_piece, piece, ctx)
+        model_ctx = ctx.clone_with(model=piece)
+        return self._view_reg.animate(details_view_piece, model_ctx)
 
     def widget_state(self, widget):
         base = super().widget_state(widget)
@@ -126,9 +128,10 @@ class MasterDetailsView(BoxLayoutView):
 
 
 @mark.ui_command(htypes.master_details.view)
-def unwrap_master_details(model, view, state, hook, ctx, model_view_creg):
+def unwrap_master_details(model, view, state, hook, ctx, view_reg):
     log.info("Unwrap master-details: %s / %s", view, state)
-    master_view = model_view_creg.invite(view.piece.master_view, model, ctx)
+    model_ctx = ctx.clone_with(model=model)
+    master_view = view_reg.invite(view.piece.master_view, model_ctx)
     master_state = web.summon(state.master_state)
     hook.replace_view(master_view, master_state)
 
@@ -159,7 +162,7 @@ def _pick_command(global_model_command_reg, get_model_commands, model_t, command
 
 
 @mark.universal_ui_command
-def wrap_master_details(model, model_state, view, hook, ctx, model_view_creg, global_model_command_reg, get_model_commands):
+def wrap_master_details(model, model_state, view, hook, ctx, view_reg, global_model_command_reg, get_model_commands):
     log.info("Wrap master-details: %s / %s", model, view)
     command_ctx = model_command_ctx(ctx, model, model_state)
     model_t = deduce_t(model)
@@ -171,5 +174,6 @@ def wrap_master_details(model, model_state, view, hook, ctx, model_view_creg, gl
         master_stretch=1,
         details_stretch=1,
         )
-    new_view = model_view_creg.animate(view_piece, model, ctx)
+    model_ctx = ctx.clone_with(model=model)
+    new_view = view_reg.animate(view_piece, model_ctx)
     hook.replace_view(new_view)

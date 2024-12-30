@@ -4,9 +4,10 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
 - legacy_type.tree:state
 - legacy_type.tree:view
+- legacy_type.view:view_template
 - ui.qt.tree_visual_diff:tree_visual_diff.module
 - ui.view:view.module
 definitions:
@@ -20,6 +21,16 @@ definitions:
     value:
       object: TreeView
       attr_name: from_piece
+  TreeView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: TreeView.from_piece
+      ctx_params:
+      - piece
+      - model
+      - ctx
+      service_params:
+      - ui_adapter_creg
   tree.module:
     type: legacy_type.builtin:python_module
     value:
@@ -31,10 +42,8 @@ definitions:
         code.view: ui.view:view.module
         htypes.tree.state: legacy_type.tree:state
         htypes.tree.view: legacy_type.tree:view
-  tree_view.actor-template:
-    type: legacy_type.system:actor_template
+  tree_view.view-template:
+    type: legacy_type.view:view_template
     value:
       t: legacy_type.tree:view
-      function: TreeView.from_piece
-      service_params:
-      - ui_adapter_creg
+      system_fn: TreeView_from_piece.system-fn

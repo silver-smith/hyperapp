@@ -42,7 +42,7 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: get_view_commands
       service_params:
-      - model_view_creg
+      - view_reg
       - visualizer
       - view_ui_command_reg
       - view_ui_model_command_reg

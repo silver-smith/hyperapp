@@ -51,7 +51,7 @@ definitions:
       function: controller_running
       service_params:
       - feed_factory
-      - view_creg
+      - view_reg
       - get_view_commands
       - get_ui_model_commands
       want_config: false

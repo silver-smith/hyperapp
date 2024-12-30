@@ -20,11 +20,11 @@ class BoxLayoutView(View):
     _Element = namedtuple('_Element', 'view focusable stretch')
 
     @classmethod
-    @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, view_creg):
+    @mark.view
+    def from_piece(cls, piece, ctx, view_reg):
         elements = [
             cls._Element(
-                view=view_creg.invite(elt.view, ctx) if elt.view else None,
+                view=view_reg.invite(elt.view, ctx) if elt.view else None,
                 focusable=elt.focusable,
                 stretch=elt.stretch,
                 )

@@ -17,7 +17,7 @@ from .tested.code import command_layout_context
 
 
 @mark.fixture
-def view_creg():
+def view_reg():
     return Mock()
 
 
@@ -37,7 +37,7 @@ def piece(base_piece):
 
 
 @mark.fixture
-def open_command_layout_context(view_creg, piece):
+def open_command_layout_context(view_reg, piece):
     ctx = Context()
     current_item = htypes.command_list_view.item(
         ui_command_d=mosaic.put(htypes.command_layout_context_tests.sample_command_d()),
@@ -53,7 +53,7 @@ def open_command_layout_context(view_creg, piece):
     navigator.view.piece = htypes.label.view("Sample view")
     navigator.state = htypes.label.state()
     command_layout_context.open_command_layout_context(piece, current_item, navigator, ctx)
-    view_creg.animate.assert_called_once()
+    view_reg.animate.assert_called_once()
     navigator.hook.replace_view.assert_called_once()
 
 
@@ -108,7 +108,7 @@ def ctx(lcs):
         )
 
 
-def test_view(qapp, view_creg, base_piece, piece, ctx):
+def test_view(qapp, view_reg, base_piece, piece, ctx):
     base_state = htypes.label.state()
     state = htypes.command_layout_context.state(
         base=mosaic.put(base_state),
@@ -118,7 +118,7 @@ def test_view(qapp, view_creg, base_piece, piece, ctx):
     base_view.piece = base_piece
     base_view.widget_state.return_value = base_state
     base_view.construct_widget.return_value = QtWidgets.QLabel()
-    view_creg.invite.return_value = base_view
+    view_reg.invite.return_value = base_view
 
     view = command_layout_context.CommandLayoutContextView.from_piece(piece, ctx)
     assert isinstance(view.piece, htypes.command_layout_context.view)

@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 
 @mark.ui_command(htypes.list.view)
-def switch_list_to_tree(piece, view, hook, ctx, model_view_creg):
+def switch_list_to_tree(piece, view, hook, ctx, view_reg):
     list_adapter = view.adapter
     if not isinstance(list_adapter, FnListAdapter):
         log.info("Switch list to tree: Not an FnListAdapter: %r", list_adapter)
@@ -33,7 +33,8 @@ def switch_list_to_tree(piece, view, hook, ctx, model_view_creg):
     new_view_piece = htypes.tree.view(
         adapter=mosaic.put(adapter),
         )
-    new_view = model_view_creg.animate(new_view_piece, piece, ctx)
+    model_ctx = ctx.clone_with(model=piece)
+    new_view = view_reg.animate(new_view_piece, model_ctx)
     hook.replace_view(new_view)
 
 

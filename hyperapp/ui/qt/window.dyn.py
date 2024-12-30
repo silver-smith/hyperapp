@@ -17,10 +17,10 @@ log = logging.getLogger(__name__)
 class WindowView(View):
 
     @classmethod
-    @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, view_creg):
-        menu_bar_view = view_creg.invite(piece.menu_bar_ref, ctx)
-        central_view = view_creg.invite(piece.central_view_ref, ctx)
+    @mark.view
+    def from_piece(cls, piece, ctx, view_reg):
+        menu_bar_view = view_reg.invite(piece.menu_bar_ref, ctx)
+        central_view = view_reg.invite(piece.central_view_ref, ctx)
         return cls(menu_bar_view, central_view)
 
     def __init__(self, menu_bar_view, central_view):

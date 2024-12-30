@@ -11,9 +11,9 @@ from .code.context_view import ContextView
 class LocalServerContextView(ContextView):
 
     @classmethod
-    @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, view_creg, local_server_peer):
-        base_view = view_creg.invite(piece.base, ctx)
+    @mark.view
+    def from_piece(cls, piece, ctx, view_reg, local_server_peer):
+        base_view = view_reg.invite(piece.base, ctx)
         return cls(local_server_peer, base_view)
 
     def __init__(self, local_server_peer, base_view):
@@ -40,12 +40,12 @@ class LocalServerContextView(ContextView):
 
 
 @mark.ui_command(htypes.navigator.view)
-def open_local_server_context(view, state, hook, ctx, view_creg):
+def open_local_server_context(view, state, hook, ctx, view_reg):
     new_view_piece = htypes.local_server_context.view(
         base=mosaic.put(view.piece),
         )
     new_state = htypes.local_server_context.state(
         base=mosaic.put(state),
         )
-    new_view = view_creg.animate(new_view_piece, ctx)
+    new_view = view_reg.animate(new_view_piece, ctx)
     hook.replace_view(new_view, new_state)

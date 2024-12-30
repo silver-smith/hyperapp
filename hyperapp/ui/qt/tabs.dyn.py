@@ -20,10 +20,10 @@ class TabsView(View):
     _Tab = namedtuple('_Tab', 'view label')
 
     @classmethod
-    @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, view_creg):
+    @mark.view
+    def from_piece(cls, piece, ctx, view_reg):
         tabs = [
-            cls._Tab(view_creg.invite(rec.ctl, ctx), rec.label)
+            cls._Tab(view_reg.invite(rec.ctl, ctx), rec.label)
             for rec in piece.tabs
             ]
         return cls(tabs)

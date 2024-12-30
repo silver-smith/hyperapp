@@ -9,7 +9,8 @@ import:
 - legacy_type.command_groups:pane_2_d
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
-- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view:view_template
 - ui.qt.command_ap:command_ap.module
 - ui.view:view.module
 definitions:
@@ -23,6 +24,14 @@ definitions:
     value:
       object: CommandPaneView
       attr_name: from_piece
+  CommandPaneView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: CommandPaneView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params: []
   command_pane.module:
     type: legacy_type.builtin:python_module
     value:
@@ -37,9 +46,8 @@ definitions:
         htypes.command_groups.pane_2_d: legacy_type.command_groups:pane_2_d
         htypes.command_pane.state: legacy_type.command_pane:state
         htypes.command_pane.view: legacy_type.command_pane:view
-  command_pane_view.actor-template:
-    type: legacy_type.system:actor_template
+  command_pane_view.view-template:
+    type: legacy_type.view:view_template
     value:
       t: legacy_type.command_pane:view
-      function: CommandPaneView.from_piece
-      service_params: []
+      system_fn: CommandPaneView_from_piece.system-fn

@@ -20,7 +20,7 @@ class MenuBar(QtWidgets.QMenuBar):
 class MenuBarView(View):
 
     @classmethod
-    @mark.actor.view_creg
+    @mark.view
     def from_piece(cls, piece, ctx):
         return cls(ctx.lcs)
 

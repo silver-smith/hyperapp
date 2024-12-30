@@ -10,7 +10,7 @@ from .fixtures import qapp_fixtures
 from .tested.code import tab_groups
 
 
-def test_move_tab_to_new_group(qapp, view_creg):
+def test_move_tab_to_new_group(qapp, view_reg):
     label = htypes.label.view("Sample label")
     inner_tabs_piece = htypes.auto_tabs.view(
         tabs=(
@@ -36,7 +36,7 @@ def test_move_tab_to_new_group(qapp, view_creg):
         tabs=(mosaic.put(inner_tabs_state),),
         )
     ctx = Context()
-    view = view_creg.animate(outer_tabs_piece, ctx)
+    view = view_reg.animate(outer_tabs_piece, ctx)
     view.set_controller_hook(Mock())
     view.tabs[0].view.set_controller_hook(Mock())
     widget = view.construct_widget(outer_tabs_state, ctx)

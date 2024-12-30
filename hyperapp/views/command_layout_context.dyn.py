@@ -14,9 +14,9 @@ from .code.context_view import ContextView
 class CommandLayoutContextView(ContextView):
 
     @classmethod
-    @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, view_creg, ui_model_command_items, ui_global_command_items):
-        base_view = view_creg.invite(piece.base, ctx)
+    @mark.view
+    def from_piece(cls, piece, ctx, view_reg, ui_model_command_items, ui_global_command_items):
+        base_view = view_reg.invite(piece.base, ctx)
         ui_command_d = web.summon(piece.ui_command_d)
         if piece.model_t is not None:
             model_t = pyobj_creg.invite(piece.model_t)
@@ -57,7 +57,7 @@ class CommandLayoutContextView(ContextView):
 
 
 @mark.command
-def open_command_layout_context(piece, current_item, navigator, ctx, view_creg):
+def open_command_layout_context(piece, current_item, navigator, ctx, view_reg):
     if isinstance(piece, htypes.model_commands.view):
         model_t = deduce_t(web.summon(piece.model))
         model_t_ref = pyobj_creg.actor_to_ref(model_t)
@@ -72,5 +72,5 @@ def open_command_layout_context(piece, current_item, navigator, ctx, view_creg):
     new_state = htypes.command_layout_context.state(
         base=mosaic.put(navigator.state),
         )
-    new_view = view_creg.animate(new_view_piece, ctx)
+    new_view = view_reg.animate(new_view_piece, ctx)
     navigator.hook.replace_view(new_view, new_state)

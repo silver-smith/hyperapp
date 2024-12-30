@@ -10,7 +10,8 @@ import:
 - legacy_type.box_layout:view
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view:view_template
 - ui.view:view.module
 definitions:
   BoxLayoutView:
@@ -23,6 +24,15 @@ definitions:
     value:
       object: BoxLayoutView
       attr_name: from_piece
+  BoxLayoutView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: BoxLayoutView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params:
+      - view_reg
   box_layout.module:
     type: legacy_type.builtin:python_module
     value:
@@ -37,10 +47,8 @@ definitions:
         htypes.box_layout.view: legacy_type.box_layout:view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  box_layout_view.actor-template:
-    type: legacy_type.system:actor_template
+  box_layout_view.view-template:
+    type: legacy_type.view:view_template
     value:
       t: legacy_type.box_layout:view
-      function: BoxLayoutView.from_piece
-      service_params:
-      - view_creg
+      system_fn: BoxLayoutView_from_piece.system-fn

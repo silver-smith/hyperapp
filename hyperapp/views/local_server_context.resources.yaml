@@ -11,8 +11,8 @@ import:
 - legacy_type.local_server_context:state
 - legacy_type.local_server_context:view
 - legacy_type.navigator:view
-- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.view:view_template
 - views.context_view:context_view.module
 definitions:
   LocalServerContextView:
@@ -25,6 +25,16 @@ definitions:
     value:
       object: LocalServerContextView
       attr_name: from_piece
+  LocalServerContextView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: LocalServerContextView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params:
+      - view_reg
+      - local_server_peer
   local_server_context.module:
     type: legacy_type.builtin:python_module
     value:
@@ -37,14 +47,11 @@ definitions:
         htypes.local_server_context.view: legacy_type.local_server_context:view
         htypes.navigator.view: legacy_type.navigator:view
         services.mosaic: builtins:mosaic.service
-  local_server_context_view.actor-template:
-    type: legacy_type.system:actor_template
+  local_server_context_view.view-template:
+    type: legacy_type.view:view_template
     value:
       t: legacy_type.local_server_context:view
-      function: LocalServerContextView.from_piece
-      service_params:
-      - view_creg
-      - local_server_peer
+      system_fn: LocalServerContextView_from_piece.system-fn
   navigator_view_open_local_server_context.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -68,7 +75,7 @@ definitions:
       - hook
       - ctx
       service_params:
-      - view_creg
+      - view_reg
   open_local_server_context.ui-command:
     type: legacy_type.command:ui_command
     value:

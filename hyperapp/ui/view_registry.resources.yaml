@@ -1,7 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:code_registry_ctr.service
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
@@ -9,37 +8,9 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
-  model_view_creg:
-    type: legacy_type.builtin:attribute
-    value:
-      object: view_registry.module
-      attr_name: model_view_creg
-  model_view_creg.service:
-    type: legacy_type.system:service_template
-    value:
-      name: model_view_creg
-      ctl: system-dict_config_ctl.ctl
-      function: model_view_creg
-      service_params: []
-      want_config: true
-      free_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
-  view_creg:
-    type: legacy_type.builtin:attribute
-    value:
-      object: view_registry.module
-      attr_name: view_creg
-  view_creg.service:
-    type: legacy_type.system:service_template
-    value:
-      name: view_creg
-      ctl: system-dict_config_ctl.ctl
-      function: view_creg
-      service_params: []
-      want_config: true
-      free_params: []
   view_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -61,5 +32,4 @@ definitions:
       file_name: view_registry.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        services.code_registry_ctr: builtins:code_registry_ctr.service
         services.web: builtins:web.service

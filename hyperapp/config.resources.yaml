@@ -244,7 +244,7 @@ import:
 - ui.list_as_tree:tree_view_open_opener_commands.command-cfg-item
 - ui.local_server:local_server_peer.service
 - ui.local_server:local_server_peer_path.service
-- ui.master_details:master_details_view.actor-template
+- ui.master_details:master_details_view.view-template
 - ui.master_details:master_details_view_unwrap_master_details.command-cfg-item
 - ui.master_details:wrap_master_details.universal-ui-command
 - ui.model_cfg_item:model_cfg_item.actor-template
@@ -254,34 +254,34 @@ import:
 - ui.model_command:global_model_command_reg.service
 - ui.model_command:model_command_enumerator_reg.service
 - ui.model_command:model_command_reg.service
-- ui.navigator:navigator_view.actor-template
+- ui.navigator:navigator_view.view-template
 - ui.navigator:navigator_view_go_back.command-cfg-item
 - ui.navigator:navigator_view_go_forward.command-cfg-item
-- ui.qt.auto_tabs:auto_tabs_view.actor-template
+- ui.qt.auto_tabs:auto_tabs_view.view-template
 - ui.qt.auto_tabs:auto_tabs_view_close_tab.command-cfg-item
 - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.command-cfg-item
-- ui.qt.box_layout:box_layout_view.actor-template
-- ui.qt.command_pane:command_pane_view.actor-template
+- ui.qt.box_layout:box_layout_view.view-template
+- ui.qt.command_pane:command_pane_view.view-template
 - ui.qt.fn_index_tree_adapter:model_tree_ui_t.actor-template
 - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
 - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
 - ui.qt.fn_list_adapter:model_list_ui_t.actor-template
-- ui.qt.form:form_view.actor-template
-- ui.qt.label:label_view.actor-template
+- ui.qt.form:form_view.view-template
+- ui.qt.label:label_view.view-template
 - ui.qt.list:list_view.view-template
 - ui.qt.list_as_tree_adapter:list_as_tree_adapter_adapter.actor-template
-- ui.qt.menu_bar:menu_bar_view.actor-template
+- ui.qt.menu_bar:menu_bar_view.view-template
 - ui.qt.record_adapter:model_record_ui_t.actor-template
 - ui.qt.record_adapter:record_adapter_fn_record_adapter.actor-template
 - ui.qt.remote_fn_index_tree_adapter:tree_adapter_remote_fn_index_tree_adapter.actor-template
 - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
-- ui.qt.tabs:tabs_view.actor-template
+- ui.qt.tabs:tabs_view.view-template
 - ui.qt.tabs:tabs_view_open_tab_list.command-cfg-item
 - ui.qt.text:text_edit_view.view-template
 - ui.qt.text:text_readonly_view.view-template
-- ui.qt.tree:tree_view.actor-template
-- ui.qt.window:window_view.actor-template
+- ui.qt.tree:tree_view.view-template
+- ui.qt.window:window_view.view-template
 - ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
 - ui.qt.window_commands:window_view_quit.command-cfg-item
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
@@ -302,8 +302,6 @@ import:
 - ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
 - ui.view_cfg_item:view_view_template.actor-template
-- ui.view_registry:model_view_creg.service
-- ui.view_registry:view_creg.service
 - ui.view_registry:view_reg.service
 - ui.visualizer:builtin_int.actor-template
 - ui.visualizer:builtin_string.actor-template
@@ -313,10 +311,10 @@ import:
 - ui.visualizer:ui_type_creg.service
 - ui.visualizer:visualizer.service
 - ui.visualizer:visualizer_reg.service
-- views.command_layout_context:command_layout_context_view.actor-template
+- views.command_layout_context:command_layout_context_view.view-template
 - views.command_layout_context:global_commands_view_open_command_layout_context.command-cfg-item
 - views.command_layout_context:model_commands_view_open_command_layout_context.command-cfg-item
-- views.local_server_context:local_server_context_view.actor-template
+- views.local_server_context:local_server_context_view.view-template
 - views.local_server_context:navigator_view_open_local_server_context.command-cfg-item
 definitions:
   cfg_item_creg:
@@ -361,7 +359,6 @@ definitions:
         model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
         model_layout_creg: model_layout_creg
-        model_view_creg: model_view_creg
         parcel_registry: parcel_registry
         peer_registry: peer_registry
         rc_constructor_creg: rc_constructor_creg
@@ -378,7 +375,6 @@ definitions:
         ui_adapter_creg: ui_adapter_creg
         ui_type_creg: ui_type_creg
         universal_ui_command_reg: universal_ui_command_reg
-        view_creg: view_creg
         view_reg: view_reg
         view_ui_command_reg: view_ui_command_reg
         view_ui_model_command_reg: view_ui_model_command_reg
@@ -505,13 +501,6 @@ definitions:
       - ui.crud:crud_model.actor-template
       - ui.visualizer:builtin_int.actor-template
       - ui.visualizer:builtin_string.actor-template
-  model_view_creg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - ui.master_details:master_details_view.actor-template
-      - ui.qt.form:form_view.actor-template
-      - ui.qt.tree:tree_view.actor-template
   parcel_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -699,8 +688,6 @@ definitions:
       - ui.ui_model_command:get_ui_model_commands.service
       - ui.ui_model_command:ui_global_command_items.service
       - ui.ui_model_command:ui_model_command_items.service
-      - ui.view_registry:model_view_creg.service
-      - ui.view_registry:view_creg.service
       - ui.view_registry:view_reg.service
       - ui.visualizer:get_custom_layout.service
       - ui.visualizer:model_layout_creg.service
@@ -740,27 +727,26 @@ definitions:
     value:
       items:
       - ui.master_details:wrap_master_details.universal-ui-command
-  view_creg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - ui.navigator:navigator_view.actor-template
-      - ui.qt.auto_tabs:auto_tabs_view.actor-template
-      - ui.qt.box_layout:box_layout_view.actor-template
-      - ui.qt.command_pane:command_pane_view.actor-template
-      - ui.qt.label:label_view.actor-template
-      - ui.qt.menu_bar:menu_bar_view.actor-template
-      - ui.qt.tabs:tabs_view.actor-template
-      - ui.qt.window:window_view.actor-template
-      - views.command_layout_context:command_layout_context_view.actor-template
-      - views.local_server_context:local_server_context_view.actor-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.master_details:master_details_view.view-template
+      - ui.navigator:navigator_view.view-template
+      - ui.qt.auto_tabs:auto_tabs_view.view-template
+      - ui.qt.box_layout:box_layout_view.view-template
+      - ui.qt.command_pane:command_pane_view.view-template
+      - ui.qt.form:form_view.view-template
+      - ui.qt.label:label_view.view-template
       - ui.qt.list:list_view.view-template
+      - ui.qt.menu_bar:menu_bar_view.view-template
+      - ui.qt.tabs:tabs_view.view-template
       - ui.qt.text:text_edit_view.view-template
       - ui.qt.text:text_readonly_view.view-template
+      - ui.qt.tree:tree_view.view-template
+      - ui.qt.window:window_view.view-template
+      - views.command_layout_context:command_layout_context_view.view-template
+      - views.local_server_context:local_server_context_view.view-template
   view_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:

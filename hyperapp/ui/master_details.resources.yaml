@@ -15,8 +15,8 @@ import:
 - legacy_type.master_details:unwrap_master_details_d
 - legacy_type.master_details:view
 - legacy_type.master_details:wrap_master_details_d
-- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.view:view_template
 - ui.directory:directory.module
 - ui.model_command:model_command.module
 - ui.qt.box_layout:box_layout.module
@@ -31,6 +31,19 @@ definitions:
     value:
       object: MasterDetailsView
       attr_name: from_piece
+  MasterDetailsView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: MasterDetailsView.from_piece
+      ctx_params:
+      - piece
+      - model
+      - ctx
+      service_params:
+      - view_reg
+      - visualizer
+      - global_model_command_reg
+      - get_model_commands
   master_details.module:
     type: legacy_type.builtin:python_module
     value:
@@ -48,17 +61,11 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  master_details_view.actor-template:
-    type: legacy_type.system:actor_template
+  master_details_view.view-template:
+    type: legacy_type.view:view_template
     value:
       t: legacy_type.master_details:view
-      function: MasterDetailsView.from_piece
-      service_params:
-      - view_creg
-      - model_view_creg
-      - visualizer
-      - global_model_command_reg
-      - get_model_commands
+      system_fn: MasterDetailsView_from_piece.system-fn
   master_details_view_unwrap_master_details.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -83,7 +90,7 @@ definitions:
       - hook
       - ctx
       service_params:
-      - model_view_creg
+      - view_reg
   unwrap_master_details.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -112,7 +119,7 @@ definitions:
       - hook
       - ctx
       service_params:
-      - model_view_creg
+      - view_reg
       - global_model_command_reg
       - get_model_commands
   wrap_master_details.universal-ui-command:

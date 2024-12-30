@@ -6,7 +6,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.label:state
 - legacy_type.label:view
-- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view:view_template
 - ui.view:view.module
 definitions:
   LabelView:
@@ -19,6 +20,14 @@ definitions:
     value:
       object: LabelView
       attr_name: from_piece
+  LabelView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: LabelView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params: []
   label.module:
     type: legacy_type.builtin:python_module
     value:
@@ -29,9 +38,8 @@ definitions:
         code.view: ui.view:view.module
         htypes.label.state: legacy_type.label:state
         htypes.label.view: legacy_type.label:view
-  label_view.actor-template:
-    type: legacy_type.system:actor_template
+  label_view.view-template:
+    type: legacy_type.view:view_template
     value:
       t: legacy_type.label:view
-      function: LabelView.from_piece
-      service_params: []
+      system_fn: LabelView_from_piece.system-fn

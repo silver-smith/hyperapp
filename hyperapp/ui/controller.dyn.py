@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 
 
 # Services used by controller and it's items.
-CtlServices = namedtuple('CtlServices', 'feed_factory view_creg get_view_commands get_ui_model_commands')
+CtlServices = namedtuple('CtlServices', 'feed_factory view_reg get_view_commands get_ui_model_commands')
 
 # attributes shared by all items.
 ItemMeta = namedtuple('ItemMeta', 'svc counter id_to_item feed')
@@ -161,7 +161,9 @@ class _Item:
             )
         ctx = ctx.copy_from(rctx)
         if 'model' in ctx:
-            ctx = ctx.clone_with(piece=ctx.model)
+            ctx = ctx.clone_with(
+                piece=ctx.model,  # An alias for model.
+                )
         if 'model_state' in ctx:
             ctx = ctx.clone_with(**ctx.attributes(ctx.model_state))
         return ctx
@@ -174,7 +176,7 @@ class _Item:
         d_to_context = {}
         if 'model' in my_rctx.diffs(rctx):
             # model is added or one from a child is replaced.
-            model_t = deduce_t(command_ctx.piece)
+            model_t = deduce_t(command_ctx.model)
             unbound_model_commands = self._meta.svc.get_ui_model_commands(
                 self.ctx.lcs, model_t, command_ctx)
             model_commands = [cmd.bind(command_ctx) for cmd in unbound_model_commands]
@@ -258,7 +260,7 @@ class _WindowItem(_Item):
 
     @classmethod
     def from_refs(cls, meta, ctx, parent, view_ref, state_ref):
-        view = meta.svc.view_creg.invite(view_ref, ctx)
+        view = meta.svc.view_reg.invite(view_ref, ctx)
         state = web.summon(state_ref)
         item_id = next(meta.counter)
         self = cls(meta, item_id, parent, ctx, None, f"window#{item_id}", view, focusable=True)
@@ -338,7 +340,7 @@ class _RootItem(_Item):
         return htypes.root.state(window_list, current_window.idx)
 
     async def create_window(self, piece, state):
-        view = self._meta.svc.view_creg.animate(piece, self.ctx)
+        view = self._meta.svc.view_reg.animate(piece, self.ctx)
         item_id = next(self._meta.counter)
         ctx = view.children_context(self.ctx)
         item = _WindowItem(self._meta, item_id, self, ctx, None, f"window#{item_id}", view, focusable=True)
@@ -443,10 +445,10 @@ class Controller:
 
 @mark.service
 @asynccontextmanager
-async def controller_running(feed_factory, view_creg, get_view_commands, get_ui_model_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
+async def controller_running(feed_factory, view_reg, get_view_commands, get_ui_model_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
     svc = CtlServices(
         feed_factory=feed_factory,
-        view_creg=view_creg,
+        view_reg=view_reg,
         get_view_commands=get_view_commands,
         get_ui_model_commands=get_ui_model_commands,
         )
