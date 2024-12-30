@@ -13,8 +13,8 @@ import:
 - legacy_type.navigator:go_forward_d
 - legacy_type.navigator:history_rec
 - legacy_type.navigator:view
-- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.view:view_template
 - ui.view:view.module
 definitions:
   NavigatorView:
@@ -27,6 +27,16 @@ definitions:
     value:
       object: NavigatorView
       attr_name: from_piece
+  NavigatorView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: NavigatorView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params:
+      - view_reg
+      - set_custom_layout
   go_back:
     type: legacy_type.builtin:attribute
     value:
@@ -44,7 +54,7 @@ definitions:
       - widget
       - ctx
       service_params:
-      - model_view_creg
+      - view_reg
   go_back.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -71,7 +81,7 @@ definitions:
       - widget
       - ctx
       service_params:
-      - model_view_creg
+      - view_reg
   go_forward.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -94,14 +104,11 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  navigator_view.actor-template:
-    type: legacy_type.system:actor_template
+  navigator_view.view-template:
+    type: legacy_type.view:view_template
     value:
       t: legacy_type.navigator:view
-      function: NavigatorView.from_piece
-      service_params:
-      - model_view_creg
-      - set_custom_layout
+      system_fn: NavigatorView_from_piece.system-fn
   navigator_view_go_back.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

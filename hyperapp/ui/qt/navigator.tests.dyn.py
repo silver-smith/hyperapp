@@ -47,7 +47,7 @@ def state():
 
 @mark.fixture
 def ctx():
-    return Context(lcs=None)
+    return Context(lcs=None).push()
 
 
 @mark.fixture

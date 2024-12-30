@@ -20,11 +20,12 @@ _NavigatorRec = namedtuple('_NavigatorRec', 'view state widget_wr hook')
 class NavigatorView(View):
 
     @classmethod
-    @mark.actor.view_creg
-    def from_piece(cls, piece, ctx, model_view_creg, set_custom_layout):
+    @mark.view
+    def from_piece(cls, piece, ctx, view_reg, set_custom_layout):
         lcs = ctx.lcs
         model = web.summon(piece.current_model)
-        current_view = model_view_creg.invite(piece.current_view, model, ctx)
+        model_ctx = ctx.clone_with(model=model)
+        current_view = view_reg.invite(piece.current_view, model_ctx)
         return cls(set_custom_layout, lcs, current_view, model, piece.prev, piece.next)
 
     def __init__(self, set_custom_layout, lcs, current_view, model, prev, next):
@@ -85,27 +86,29 @@ class NavigatorView(View):
         state = None  # TODO: Devise new state.
         self._replace_widget(ctx, state)
 
-    def go_back(self, ctx, widget, model_view_creg):
+    def go_back(self, ctx, widget, view_reg):
         if not self._prev:
             return
         history_rec = self._history_rec(widget)
         prev = web.summon(self._prev)
         prev_model = web.summon(prev.model)
         prev_state = web.summon(prev.state)
-        self._current_view = model_view_creg.invite(prev.view, prev_model, ctx.pop())
+        model_ctx = ctx.pop().clone_with(model=prev_model)
+        self._current_view = view_reg.invite(prev.view, model_ctx)
         self._model = web.summon(prev.model)
         self._prev = prev.prev
         self._next = mosaic.put(history_rec)
         self._replace_widget(ctx, prev_state)
 
-    def go_forward(self, ctx, widget, model_view_creg):
+    def go_forward(self, ctx, widget, view_reg):
         if not self._next:
             return
         history_rec = self._history_rec(widget)
         next = web.summon(self._next)
         next_model = web.summon(next.model)
         next_state = web.summon(next.state)
-        self._current_view = model_view_creg.invite(next.view, next_model, ctx.pop())
+        model_ctx = ctx.pop().clone_with(model=next_model)
+        self._current_view = view_reg.invite(next.view, model_ctx)
         self._model = web.summon(next.model)
         self._prev = mosaic.put(history_rec)
         self._next = next.next
@@ -132,10 +135,10 @@ class NavigatorView(View):
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_back(view, widget, ctx, model_view_creg):
-    view.go_back(ctx, widget, model_view_creg)
+def go_back(view, widget, ctx, view_reg):
+    view.go_back(ctx, widget, view_reg)
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_forward(view, widget, ctx, model_view_creg):
-    view.go_forward(ctx, widget, model_view_creg)
+def go_forward(view, widget, ctx, view_reg):
+    view.go_forward(ctx, widget, view_reg)
