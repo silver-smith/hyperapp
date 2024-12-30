@@ -21,13 +21,13 @@ def model_layout_creg(config):
 
 
 @mark.actor.model_layout_creg
-def string_layout(model, lcs):
+def string_layout(piece, lcs):
     adapter = htypes.str_adapter.static_str_adapter()
     return htypes.text.edit_view(mosaic.put(adapter))
 
 
 @mark.actor.model_layout_creg
-def int_layout(model, lcs):
+def int_layout(piece, lcs):
     adapter = htypes.int_adapter.int_adapter()
     return htypes.text.edit_view(mosaic.put(adapter))
 

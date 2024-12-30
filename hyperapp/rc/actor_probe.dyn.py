@@ -26,8 +26,8 @@ class ActorProbeBase:
 
     def __call__(self, *args, **kw):
         params = split_params(self._fn, args, kw)
-        if len(params.ctx_names) < 1:
-            raise RuntimeError(f"First parameter expected to be a piece: {self._fn!r}")
+        if len(params.ctx_names) < 1 or params.ctx_names[0] != 'piece':
+            raise RuntimeError(f"First parameter expected to be a 'piece': {self._fn!r}: {params.ctx_names!r}")
         piece = params.values[params.ctx_names[0]]
         if self._t is None:
             t = deduce_t(piece)
