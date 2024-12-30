@@ -278,8 +278,8 @@ import:
 - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
 - ui.qt.tabs:tabs_view.actor-template
 - ui.qt.tabs:tabs_view_open_tab_list.command-cfg-item
-- ui.qt.text:text_edit_view.actor-template
-- ui.qt.text:text_readonly_view.actor-template
+- ui.qt.text:text_edit_view.view-template
+- ui.qt.text:text_readonly_view.view-template
 - ui.qt.tree:tree_view.actor-template
 - ui.qt.window:window_view.actor-template
 - ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
@@ -511,8 +511,6 @@ definitions:
       items:
       - ui.master_details:master_details_view.actor-template
       - ui.qt.form:form_view.actor-template
-      - ui.qt.text:text_edit_view.actor-template
-      - ui.qt.text:text_readonly_view.actor-template
       - ui.qt.tree:tree_view.actor-template
   parcel_registry:
     type: legacy_type.system:item_list_config
@@ -761,6 +759,8 @@ definitions:
     value:
       items:
       - ui.qt.list:list_view.view-template
+      - ui.qt.text:text_edit_view.view-template
+      - ui.qt.text:text_readonly_view.view-template
   view_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:

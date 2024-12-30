@@ -26,7 +26,7 @@ class TextInput:
 class ViewTextView(View):
 
     @classmethod
-    @mark.actor.model_view_creg
+    @mark.view
     def from_piece(cls, piece, model, ctx, ui_adapter_creg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)
@@ -68,7 +68,7 @@ class ViewTextView(View):
 class EditTextView(View):
 
     @classmethod
-    @mark.actor.model_view_creg
+    @mark.view
     def from_piece(cls, piece, model, ctx, ui_adapter_creg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)
