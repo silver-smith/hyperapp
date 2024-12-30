@@ -16,4 +16,4 @@ def model_view_creg(config):
 
 @mark.service
 def view_reg(config):
-    return config
+    assert 0, config  # TODO
