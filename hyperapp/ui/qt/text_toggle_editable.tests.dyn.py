@@ -38,21 +38,24 @@ def model():
 
 
 @mark.fixture
-def ctx():
-    return Context()
+def ctx(model):
+    return Context(
+        model=model,
+        )
+
 
 @mark.fixture
 def hook():
     return Mock()
 
 
-def test_readonly_to_edit(qapp, model_view_creg, readonly_piece, state, model, ctx, hook):
-    view = model_view_creg.animate(readonly_piece, model, ctx)
+def test_readonly_to_edit(qapp, view_reg, readonly_piece, state, model, ctx, hook):
+    view = view_reg.animate(readonly_piece, ctx)
     text_toggle_editable.toggle_editable(model, view, hook, ctx)
     hook.replace_view.assert_called_once()
 
 
-def test_edit_to_readonly(qapp, model_view_creg, edit_piece, model, ctx, hook):
-    view = model_view_creg.animate(edit_piece, model, ctx)
+def test_edit_to_readonly(qapp, view_reg, edit_piece, model, ctx, hook):
+    view = view_reg.animate(edit_piece, ctx)
     text_toggle_editable.toggle_editable(model, view, hook, ctx)
     hook.replace_view.assert_called_once()

@@ -48,7 +48,7 @@ definitions:
       - hook
       - ctx
       service_params:
-      - model_view_creg
+      - view_reg
   toggle_editable.ui-command:
     type: legacy_type.command:ui_command
     value:
