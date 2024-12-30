@@ -301,6 +301,7 @@ import:
 - ui.ui_model_command:get_ui_model_commands.service
 - ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
+- ui.view_cfg_item:view_view_template.actor-template
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
 - ui.view_registry:view_reg.service
@@ -335,6 +336,7 @@ definitions:
       - ui.command_cfg_item:command_ui_command.actor-template
       - ui.feed_type_template:feed_feed_template.actor-template
       - ui.model_cfg_item:model_cfg_item.actor-template
+      - ui.view_cfg_item:view_view_template.actor-template
   command_creg:
     type: legacy_type.system:item_list_config
     value:
