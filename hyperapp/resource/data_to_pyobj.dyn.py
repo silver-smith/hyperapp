@@ -8,7 +8,7 @@ from .services import (
     )
 
 
-def _data_to_res(piece, t=None):
+def _data_to_pyobj(piece, t=None):
     if t is None:
         t = deduce_t(piece)
     assert isinstance(t, TRecord)  # TODO: Add support for other types.
@@ -36,9 +36,9 @@ def _data_to_res(piece, t=None):
         )
 
 
-def data_to_res(piece, t=None):
-    return _data_to_res(piece, t)
+def data_to_pyobj(piece, t=None):
+    return _data_to_pyobj(piece, t)
 
 
-def data_to_ref(piece, t=None):
-    return mosaic.put(_data_to_res(piece, t))
+def data_to_pyobj_ref(piece, t=None):
+    return mosaic.put(_data_to_pyobj(piece, t))

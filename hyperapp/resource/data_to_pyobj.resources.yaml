@@ -13,35 +13,35 @@ import:
 
 definitions:
 
-  data_to_ref:
+  data_to_pyobj_ref:
     type: legacy_type.builtin:attribute
     value:
-      object: data_to_res.module
-      attr_name: data_to_ref
+      object: data_to_pyobj.module
+      attr_name: data_to_pyobj_ref
 
-  data_to_ref.service:
+  data_to_pyobj_ref.service:
     type: legacy_type.system:service_template
     value:
-      name: data_to_ref
+      name: data_to_pyobj_ref
       ctl: system.system:dict_config_ctl
-      function: data_to_ref
+      function: data_to_pyobj_ref
       free_params:
       - piece
       - t
       service_params: []
       want_config: false
 
-  data_to_res:
+  data_to_pyobj:
     type: legacy_type.builtin:attribute
     value:
-      object: data_to_res.module
-      attr_name: data_to_res
+      object: data_to_pyobj.module
+      attr_name: data_to_pyobj
 
-  data_to_res.module:
+  data_to_pyobj.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: data_to_res
-      file_name: data_to_res.dyn.py
+      module_name: data_to_pyobj
+      file_name: data_to_pyobj.dyn.py
       import_list:
         htypes.builtin.call: legacy_type.builtin:call
         htypes.builtin.partial: legacy_type.builtin:partial
@@ -51,12 +51,12 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
 
-  data_to_res.service:
+  data_to_pyobj.service:
     type: legacy_type.system:service_template
     value:
-      name: data_to_res
+      name: data_to_pyobj
       ctl: system.system:dict_config_ctl
-      function: data_to_res
+      function: data_to_pyobj
       free_params:
       - piece
       - t

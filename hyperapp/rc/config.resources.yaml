@@ -92,8 +92,8 @@ import:
 - rc.type_req:type_resource_type_req.actor-template
 - rc.view_ctr:view_ctr_view_template_ctr.actor-template
 - rc.view_marker:view.marker-template
-- resource.data_to_res:data_to_ref.service
-- resource.data_to_res:data_to_res.service
+- resource.data_to_pyobj:data_to_pyobj_ref.service
+- resource.data_to_pyobj:data_to_pyobj.service
 - resource.partial_ref:partial_ref.service
 - rpc.rpc_endpoint:cancel_rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_error_response.actor-template
@@ -163,8 +163,8 @@ definitions:
       - rc.rc_resource_creg:rc_resource_creg.service
       - rc.process_pool:process_pool_running.service
       - rc.test_job:test_job_rpc_service_wrapper.service
-      - resource.data_to_res:data_to_ref.service
-      - resource.data_to_res:data_to_res.service
+      - resource.data_to_pyobj:data_to_pyobj_ref.service
+      - resource.data_to_pyobj:data_to_pyobj.service
       - resource.partial_ref:partial_ref.service
       - rpc.rpc_endpoint:cancel_rpc_request_futures.service
       - rpc.rpc_endpoint:rpc_target_creg.service
