@@ -28,7 +28,8 @@ definitions:
       free_params:
       - piece
       - t
-      service_params: []
+      service_params:
+      - data_to_pyobj
       want_config: false
 
   data_to_pyobj:
