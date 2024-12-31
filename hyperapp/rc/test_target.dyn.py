@@ -139,9 +139,18 @@ class TestJobTarget(Target):
         for src in self._types.as_list:
             req = TypeReq.from_type_src(src)
             result[req] = {ImportResource.from_type_src(src)}
+        req_resources = set()
+        tested_modules = set()
         for req, target in self._req_to_target.items():
-            result[req] |= set(req.make_resource_list(target))
+            resources = set(req.make_resource_list(target))
+            result[req] |= resources
+            req_resources |= resources
+            for res in resources:
+                tested_modules |= set(res.tested_modules)
+        for req, target in self._req_to_target.items():
             for aux_req, aux_target in req.aux_requirements(target, self._target_set).items():
+                if isinstance(aux_req, PythonModuleReq) and aux_target.module_name in tested_modules:
+                    assert 0, (aux_req, aux_target, self)
                 result[aux_req] |= set(aux_req.make_resource_list(aux_target))
         for target in self._target_set.completed_python_module_resources:
             req = PythonModuleReq(self._src.name, target.code_name)

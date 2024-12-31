@@ -93,6 +93,7 @@ class TestedCodeReq(Requirement):
         return {
             PythonModuleReq(target.module_name, tgt.code_name): tgt
             for tgt in target_set.completed_python_module_resources
+            if target.module_name != tgt.module_name
             }
 
 
