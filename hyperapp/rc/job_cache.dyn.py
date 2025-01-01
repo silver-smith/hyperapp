@@ -1,3 +1,5 @@
+from hyperapp.common.config_item_missing import ConfigItemMissingError
+
 from . import htypes
 from .services import (
     mosaic,
@@ -86,6 +88,9 @@ class JobCache:
         except FileNotFoundError:
             return
         for entry_piece in piece.entries:
-            entry = CacheEntry.from_piece(
-                entry_piece, self._rc_requirement_creg, self._rc_resource_creg, self._rc_job_result_creg)
-            self._target_to_entry[entry.target_name] = entry
+            try:
+                entry = CacheEntry.from_piece(
+                    entry_piece, self._rc_requirement_creg, self._rc_resource_creg, self._rc_job_result_creg)
+                self._target_to_entry[entry.target_name] = entry
+            except ConfigItemMissingError:
+                pass  # Happens when type changes.
