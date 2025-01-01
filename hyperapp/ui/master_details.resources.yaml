@@ -14,6 +14,7 @@ import:
 - legacy_type.master_details:state
 - legacy_type.master_details:unwrap_master_details_d
 - legacy_type.master_details:view
+- legacy_type.master_details:wrap_master_details_d
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:view_template
 - legacy_type.view_factory:template
@@ -105,6 +106,9 @@ definitions:
     value:
       object: master_details.module
       attr_name: wrap_master_details
+  wrap_master_details.d:
+    type: legacy_type.master_details:wrap_master_details_d
+    value: {}
   wrap_master_details.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -121,5 +125,6 @@ definitions:
   wrap_master_details.view-factory-template:
     type: legacy_type.view_factory:template
     value:
+      d: wrap_master_details.d
       is_wrapper: true
       system_fn: wrap_master_details.system-fn

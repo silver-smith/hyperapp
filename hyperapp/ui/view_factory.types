@@ -1,3 +1,4 @@
 template = record:
+  d: ref
   is_wrapper: bool
   system_fn: ref

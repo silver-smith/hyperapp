@@ -7,6 +7,7 @@ import:
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:template
 - legacy_type.view_factory_ctr:ctr
+- rc.d_type:d_type.module
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -24,6 +25,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
+        code.d_type: rc.d_type:d_type.module
 
   ViewFactoryTemplateCtr:
     type: legacy_type.builtin:attribute
