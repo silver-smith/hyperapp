@@ -1,7 +1,6 @@
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
-    split_params,
     )
 from .code.actor_probe import ActorProbeBase
 from .code.view_ctr import ViewTemplateCtr
