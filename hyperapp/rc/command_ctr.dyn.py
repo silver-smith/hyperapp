@@ -1,11 +1,10 @@
-from hyperapp.common.htypes import TRecord
-
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
     )
 from .code.rc_constructor import Constructor
+from .code.d_type import d_type
 
 
 STATE_PARAMS = {'state', 'model_state', 'current_item', 'current_idx', 'current_path'}
@@ -39,14 +38,7 @@ class CommandTemplateCtr(Constructor):
         return '_'.join(self._attr_qual_name)
 
     def _make_command(self, types, system_fn, name_to_res):
-        d_name = self._attr_qual_name[-1] + '_d'
-        type_module = self._module_name.split('.')[-1]
-        d_t_piece = types.get(type_module, d_name)
-        if d_t_piece is None:
-            d_t = TRecord(type_module, d_name)
-            d_t_piece = pyobj_creg.actor_to_piece(d_t)
-        else:
-            d_t = pyobj_creg.animate(d_t_piece)
+        d_t = d_type(types, self._module_name, name=self._attr_qual_name[-1])
         d = d_t()
         properties = htypes.command.properties(
             is_global=self._is_global,

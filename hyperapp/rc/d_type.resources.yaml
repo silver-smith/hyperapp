@@ -1,0 +1,13 @@
+import:
+- builtins:pyobj_creg.service
+- legacy_type.builtin:python_module
+
+definitions:
+
+  d_type.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: d_type
+      file_name: d_type.dyn.py
+      import_list:
+        services.pyobj_creg: builtins:pyobj_creg.service
