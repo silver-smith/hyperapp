@@ -25,7 +25,7 @@ def cfg_item_piece():
         service_params=('sample_service',),
         )
     t = htypes.view_cfg_item_tests.sample_view
-    return htypes.view.view_template(
+    return htypes.view.template(
         t=pyobj_creg.actor_to_ref(t),
         system_fn=mosaic.put(system_fn),
         )

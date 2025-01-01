@@ -7,7 +7,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_template
-- legacy_type.view:view_template
+- legacy_type.view:template
 definitions:
   ViewCfgItem:
     type: legacy_type.builtin:attribute
@@ -28,9 +28,9 @@ definitions:
         code.mark: common.mark:mark.module
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  view_view_template.actor-template:
+  view_template.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.view:view_template
+      t: legacy_type.view:template
       function: ViewCfgItem.from_piece
       service_params: []

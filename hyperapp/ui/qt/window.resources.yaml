@@ -7,7 +7,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system_fn:ctx_fn
-- legacy_type.view:view_template
+- legacy_type.view:template
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
@@ -48,7 +48,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
   window_view.view-template:
-    type: legacy_type.view:view_template
+    type: legacy_type.view:template
     value:
       t: legacy_type.window:view
       system_fn: WindowView_from_piece.system-fn

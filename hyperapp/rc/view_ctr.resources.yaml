@@ -5,7 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
-- legacy_type.view:view_template
+- legacy_type.view:template
 - legacy_type.view_ctr:view_template_ctr
 - rc.cfg_item_req:cfg_item_req.module
 - rc.rc_constructor:rc_constructor.module
@@ -20,7 +20,7 @@ definitions:
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
-        htypes.view.view_template: legacy_type.view:view_template
+        htypes.view.template: legacy_type.view:template
         htypes.view_ctr.view_template_ctr: legacy_type.view_ctr:view_template_ctr
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
