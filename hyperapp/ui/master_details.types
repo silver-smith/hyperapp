@@ -1,5 +1,4 @@
 unwrap_master_details_d = record
-wrap_master_details_d = record
 
 view = record:
   master_view: ref

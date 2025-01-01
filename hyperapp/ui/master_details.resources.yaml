@@ -8,13 +8,13 @@ import:
 - legacy_type.box_layout:state
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
 - legacy_type.label:view
 - legacy_type.master_details:state
 - legacy_type.master_details:unwrap_master_details_d
 - legacy_type.master_details:view
-- legacy_type.master_details:wrap_master_details_d
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:view_template
 - legacy_type.view_factory:template
@@ -107,7 +107,7 @@ definitions:
       object: master_details.module
       attr_name: wrap_master_details
   wrap_master_details.d:
-    type: legacy_type.master_details:wrap_master_details_d
+    type: wrap_master_details_d
     value: {}
   wrap_master_details.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -128,3 +128,10 @@ definitions:
       d: wrap_master_details.d
       is_wrapper: true
       system_fn: wrap_master_details.system-fn
+  wrap_master_details_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: master_details
+      name: wrap_master_details_d
+      base: null
+      fields: {}
