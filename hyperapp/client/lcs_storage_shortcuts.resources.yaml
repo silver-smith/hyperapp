@@ -34,6 +34,7 @@ import:
 - legacy_type.window_commands:quit_d
 - models.data_browser:record_open.d
 - sample.sample_commands:open_sample_static_text_1.d
+- ui.qt.auto_tabs:duplicate_tab.d
 - views.command_layout_context:open_command_layout_context.d
 definitions:
   add_identity_command_d_1:
@@ -208,6 +209,10 @@ definitions:
         - sample.sample_commands:open_sample_static_text_1.d
         - command_shortcut_lcs_d_1
         value: shortcut_F2
+      - key:
+        - ui.qt.auto_tabs:duplicate_tab.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Shift_F4
   open_column_list_d_1:
     type: legacy_type.column_list:open_column_list_d
     value: {}
@@ -322,6 +327,9 @@ definitions:
   shortcut_Return:
     type: legacy_type.builtin:string
     value: Return
+  shortcut_Shift_F4:
+    type: legacy_type.builtin:string
+    value: Shift+F4
   shortcut_Shift_F6:
     type: legacy_type.builtin:string
     value: Shift+F6
