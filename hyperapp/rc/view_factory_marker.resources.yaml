@@ -1,4 +1,5 @@
 import:
+- builtins:deduce_t.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.marker:marker_template
@@ -13,6 +14,7 @@ definitions:
       module_name: view_factory_marker
       file_name: view_factory_marker.dyn.py
       import_list:
+        services.deduce_t: builtins:deduce_t.service
         code.marker_utils: rc.marker_utils:marker_utils.module
         code.view_factory_ctr: rc.view_factory_ctr:view_factory_ctr.module
 

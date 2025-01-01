@@ -1,3 +1,8 @@
+from hyperapp.common.htypes.deduce_value_type import DeduceTypeError
+
+from .services import (
+    deduce_t,
+    )
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
@@ -22,19 +27,25 @@ class ViewFactoryProbe:
 
     def __call__(self, *args, **kw):
         params = split_params(self._fn, args, kw)
-        self._add_constructor(params)
         service_kw = {
             name: self._system.resolve_service(name)
             for name in params.service_names
             }
-        return self._fn(*args, **kw, **service_kw)
+        result = self._fn(*args, **kw, **service_kw)
+        self._add_constructor(params, result)
+        return result
 
-    def _add_constructor(self, params):
+    def _add_constructor(self, params, result):
+        try:
+            result_t = deduce_t(result)
+        except DeduceTypeError as x:
+            raise RuntimeError(f"{self._fn}: Returned not a deducible data type: {result!r}") from x
         ctr = ViewFactoryTemplateCtr(
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             ctx_params=params.ctx_names,
             service_params=params.service_names,
+            view_t=result_t,
             )
         self._ctr_collector.add_constructor(ctr)
 

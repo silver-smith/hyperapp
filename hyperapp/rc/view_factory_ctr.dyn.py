@@ -18,13 +18,15 @@ class ViewFactoryTemplateCtr(Constructor):
             attr_qual_name=piece.attr_qual_name,
             ctx_params=piece.ctx_params,
             service_params=piece.service_params,
+            view_t=pyobj_creg.invite(piece.view_t),
             )
 
-    def __init__(self, module_name, attr_qual_name, ctx_params, service_params):
+    def __init__(self, module_name, attr_qual_name, ctx_params, service_params, view_t):
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._ctx_params = ctx_params
         self._service_params = service_params
+        self._view_t = view_t
 
     @property
     def piece(self):
@@ -33,6 +35,7 @@ class ViewFactoryTemplateCtr(Constructor):
             attr_qual_name=tuple(self._attr_qual_name),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
+            view_t=pyobj_creg.actor_to_ref(self._view_t),
             )
 
     def update_targets(self, target_set):
@@ -67,6 +70,7 @@ class ViewFactoryTemplateCtr(Constructor):
         d = d_t()
         template = htypes.view_factory.template(
             d=mosaic.put(d),
+            view_t=pyobj_creg.actor_to_ref(self._view_t),
             is_wrapper='inner' in self._ctx_params,
             system_fn=mosaic.put(system_fn),
             )

@@ -1,4 +1,5 @@
 template = record:
   d: ref
+  view_t: ref
   is_wrapper: bool
   system_fn: ref
