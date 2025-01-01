@@ -63,6 +63,7 @@ class ViewFactoryTemplateCtr(Constructor):
             service_params=tuple(self._service_params),
             )
         template = htypes.view_factory.template(
+            is_wrapper='inner' in self._ctx_params,
             system_fn=mosaic.put(system_fn),
             )
         if name_to_res is not None:
