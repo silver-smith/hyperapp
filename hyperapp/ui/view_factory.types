@@ -1,0 +1,2 @@
+template = record:
+  system_fn: ref

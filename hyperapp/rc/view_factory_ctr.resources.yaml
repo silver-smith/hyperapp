@@ -1,0 +1,45 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:template
+- legacy_type.view_factory_ctr:ctr
+- rc.rc_constructor:rc_constructor.module
+
+definitions:
+
+  view_factory_ctr.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: view_factory_ctr
+      file_name: view_factory_ctr.dyn.py
+      import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
+        htypes.view_factory.template: legacy_type.view_factory:template
+        htypes.view_factory_ctr.ctr: legacy_type.view_factory_ctr:ctr
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        code.rc_constructor: rc.rc_constructor:rc_constructor.module
+
+  ViewFactoryTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_factory_ctr.module
+      attr_name: ViewFactoryTemplateCtr
+
+  ViewFactoryTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ViewFactoryTemplateCtr
+      attr_name: from_piece
+
+  view_factory_ctr_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.view_factory_ctr:ctr
+      function: ViewFactoryTemplateCtr.from_piece
+      service_params: []
