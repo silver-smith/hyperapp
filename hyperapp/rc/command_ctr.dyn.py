@@ -38,7 +38,7 @@ class CommandTemplateCtr(Constructor):
         return '_'.join(self._attr_qual_name)
 
     def _make_command(self, types, system_fn, name_to_res):
-        d_t = d_type(types, self._module_name, name=self._attr_qual_name[-1])
+        d_t = d_type(types, self._module_name.split('.')[-1], name=self._attr_qual_name[-1])
         d = d_t()
         properties = htypes.command.properties(
             is_global=self._is_global,

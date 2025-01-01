@@ -4,6 +4,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.rc_constructor import ModuleCtr
+from .code.d_type import d_type
 
 
 class CrudTemplateCtr(ModuleCtr):
@@ -169,11 +170,8 @@ class CrudOpenCommandCtr(ModuleCtr):
     def get_component(self, name_to_res):
         return name_to_res[f'{self._resource_name}.command-cfg-item']
 
-    def _command_d_piece(self, types, name):
-        d_name = f'{name}_d'
-        d_t_piece = types.get('crud', d_name)
-        assert d_t_piece, d_name  # TODO: Make type if missing.
-        d_t = pyobj_creg.animate(d_t_piece)
+    def _command_d(self, types, name):
+        d_t = d_type(types, 'crud', name)
         return d_t()
 
     def make_component(self, types, python_module, name_to_res):
@@ -181,23 +179,23 @@ class CrudOpenCommandCtr(ModuleCtr):
             types, python_module, name_to_res)
         commit_action_fn = self._commit_resolved_tgt.constructor.make_component(
             types, python_module, name_to_res)
-        commit_command_d_piece = self._command_d_piece(types, self._commit_command_name)
+        commit_command_d = self._command_d(types, self._commit_command_name)
         system_fn = htypes.crud.open_command_fn(
             name=self._name,
             record_t=pyobj_creg.actor_to_ref(self._record_t),
             key_field=self._key_field,
             init_action_fn=mosaic.put(init_action_fn),
-            commit_command_d=mosaic.put(commit_command_d_piece),
+            commit_command_d=mosaic.put(commit_command_d),
             commit_action_fn=mosaic.put(commit_action_fn),
             )
-        open_command_d_piece = self._command_d_piece(types, self._name)
+        open_command_d = self._command_d(types, self._name)
         properties = htypes.command.properties(
             is_global=False,
             uses_state=True,
             remotable=False,
             )
         command = htypes.command.model_command(
-            d=mosaic.put(open_command_d_piece),
+            d=mosaic.put(open_command_d),
             properties=properties,
             system_fn=mosaic.put(system_fn),
             )
@@ -205,8 +203,8 @@ class CrudOpenCommandCtr(ModuleCtr):
             t=pyobj_creg.actor_to_ref(self._model_t),
             command=mosaic.put(command),
             )
-        name_to_res[f'{self._resource_name}.open-command.d'] = open_command_d_piece
-        name_to_res[f'{self._resource_name}.commit-command.d'] = commit_command_d_piece
+        name_to_res[f'{self._resource_name}.open-command.d'] = open_command_d
+        name_to_res[f'{self._resource_name}.commit-command.d'] = commit_command_d
         name_to_res[f'{self._resource_name}.command-fn'] = system_fn
         name_to_res[f'{self._resource_name}.command'] = command
         name_to_res[f'{self._resource_name}.command-cfg-item'] = cfg_item

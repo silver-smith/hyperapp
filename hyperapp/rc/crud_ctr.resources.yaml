@@ -11,6 +11,7 @@ import:
 - legacy_type.crud_ctr:init_ctr
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+- rc.d_type:d_type.module
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -32,6 +33,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
+        code.d_type: rc.d_type:d_type.module
 
   CrudInitTemplateCtr:
     type: legacy_type.builtin:attribute
