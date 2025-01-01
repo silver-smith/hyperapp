@@ -246,6 +246,7 @@ import:
 - ui.list_as_tree:tree_view_open_opener_commands.command-cfg-item
 - ui.local_server:local_server_peer.service
 - ui.local_server:local_server_peer_path.service
+- ui.master_details:master_details.view-factory-template
 - ui.master_details:master_details_view.view-template
 - ui.master_details:master_details_view_unwrap_master_details.command-cfg-item
 - ui.model_cfg_item:model_cfg_item.actor-template
@@ -303,6 +304,7 @@ import:
 - ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
 - ui.view.view_cfg_item:view_template.actor-template
+- ui.view.view_factory:view_factory_reg.service
 - ui.view.view_registry:view_reg.service
 - ui.visualizer:builtin_int.actor-template
 - ui.visualizer:builtin_string.actor-template
@@ -375,6 +377,7 @@ definitions:
         system_fn_creg: system_fn_creg
         ui_adapter_creg: ui_adapter_creg
         ui_type_creg: ui_type_creg
+        view_factory_reg: view_factory_reg
         view_reg: view_reg
         view_ui_command_reg: view_ui_command_reg
         view_ui_model_command_reg: view_ui_model_command_reg
@@ -690,6 +693,7 @@ definitions:
       - ui.ui_model_command:get_ui_model_commands.service
       - ui.ui_model_command:ui_global_command_items.service
       - ui.ui_model_command:ui_model_command_items.service
+      - ui.view.view_factory:view_factory_reg.service
       - ui.view.view_registry:view_reg.service
       - ui.visualizer:get_custom_layout.service
       - ui.visualizer:model_layout_creg.service
@@ -724,6 +728,11 @@ definitions:
       - ui.qt.fn_index_tree_adapter:model_tree_ui_t.actor-template
       - ui.qt.fn_list_adapter:model_list_ui_t.actor-template
       - ui.qt.record_adapter:model_record_ui_t.actor-template
+  view_factory_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.master_details:master_details.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
