@@ -45,6 +45,14 @@ definitions:
       - visualizer
       - global_model_command_reg
       - get_model_commands
+  master_details:
+    type: legacy_type.builtin:attribute
+    value:
+      object: master_details.module
+      attr_name: master_details
+  master_details.d:
+    type: master_details_d
+    value: {}
   master_details.module:
     type: legacy_type.builtin:python_module
     value:
@@ -62,6 +70,32 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+  master_details.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: master_details
+      ctx_params:
+      - model
+      - model_state
+      - inner
+      - ctx
+      service_params:
+      - view_reg
+      - global_model_command_reg
+      - get_model_commands
+  master_details.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      d: master_details.d
+      is_wrapper: true
+      system_fn: master_details.system-fn
+  master_details_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: master_details
+      name: master_details_d
+      base: null
+      fields: {}
   master_details_view.view-template:
     type: legacy_type.view:view_template
     value:
@@ -101,37 +135,3 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: unwrap_master_details.system-fn
-  wrap_master_details:
-    type: legacy_type.builtin:attribute
-    value:
-      object: master_details.module
-      attr_name: wrap_master_details
-  wrap_master_details.d:
-    type: wrap_master_details_d
-    value: {}
-  wrap_master_details.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: wrap_master_details
-      ctx_params:
-      - model
-      - model_state
-      - inner
-      - ctx
-      service_params:
-      - view_reg
-      - global_model_command_reg
-      - get_model_commands
-  wrap_master_details.view-factory-template:
-    type: legacy_type.view_factory:template
-    value:
-      d: wrap_master_details.d
-      is_wrapper: true
-      system_fn: wrap_master_details.system-fn
-  wrap_master_details_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: master_details
-      name: wrap_master_details_d
-      base: null
-      fields: {}

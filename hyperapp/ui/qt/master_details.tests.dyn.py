@@ -106,7 +106,7 @@ async def test_run_details_command(qapp, piece, state, model, ctx):
 def test_wrap_master_details(qapp, master_piece, model, model_state, ctx):
     hook = Mock()
     view = Mock()
-    piece = master_details.wrap_master_details(model, model_state, master_piece, ctx)
+    piece = master_details.master_details(model, model_state, master_piece, ctx)
     assert isinstance(piece, htypes.master_details.view)
 
 

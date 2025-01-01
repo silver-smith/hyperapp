@@ -162,7 +162,7 @@ def _pick_command(global_model_command_reg, get_model_commands, model_t, command
 
 
 @mark.view_factory
-def wrap_master_details(model, model_state, inner, ctx, view_reg, global_model_command_reg, get_model_commands):
+def master_details(model, model_state, inner, ctx, view_reg, global_model_command_reg, get_model_commands):
     log.info("Wrap master-details: %s / %s", model, inner)
     command_ctx = model_command_ctx(ctx, model, model_state)
     model_t = deduce_t(model)
