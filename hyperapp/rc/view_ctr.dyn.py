@@ -30,7 +30,7 @@ class ViewTemplateCtr(Constructor):
 
     @property
     def piece(self):
-        return htypes.view_ctr.view_template_ctr(
+        return htypes.view_ctr.template_ctr(
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             t=pyobj_creg.actor_to_ref(self._t),

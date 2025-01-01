@@ -1,4 +1,4 @@
-view_template_ctr = record:
+template_ctr = record:
   module_name: string
   attr_qual_name: string list
   t: ref

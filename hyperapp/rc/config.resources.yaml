@@ -90,7 +90,7 @@ import:
 - rc.test_requirement:test_target_tested_code_req.actor-template
 - rc.test_requirement:test_target_tested_code_resource.actor-template
 - rc.type_req:type_resource_type_req.actor-template
-- rc.view_ctr:view_ctr_view_template_ctr.actor-template
+- rc.view_ctr:view_ctr_template_ctr.actor-template
 - rc.view_factory_ctr:view_factory_ctr_ctr.actor-template
 - rc.view_factory_marker:view_factory.marker-template
 - rc.view_marker:view.marker-template
@@ -300,7 +300,7 @@ definitions:
       - rc.service_ctr:service_resource_finalizer_gen_service_template_ctr.actor-template
       - rc.service_ctr:service_resource_service_template_ctr.actor-template
       - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
-      - rc.view_ctr:view_ctr_view_template_ctr.actor-template
+      - rc.view_ctr:view_ctr_template_ctr.actor-template
       - rc.view_factory_ctr:view_factory_ctr_ctr.actor-template
 
   rc_job_creg:

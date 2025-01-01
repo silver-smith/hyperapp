@@ -6,7 +6,7 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:template
-- legacy_type.view_ctr:view_template_ctr
+- legacy_type.view_ctr:template_ctr
 - rc.cfg_item_req:cfg_item_req.module
 - rc.rc_constructor:rc_constructor.module
 
@@ -21,7 +21,7 @@ definitions:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         htypes.view.template: legacy_type.view:template
-        htypes.view_ctr.view_template_ctr: legacy_type.view_ctr:view_template_ctr
+        htypes.view_ctr.template_ctr: legacy_type.view_ctr:template_ctr
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
@@ -39,9 +39,9 @@ definitions:
       object: ViewTemplateCtr
       attr_name: from_piece
 
-  view_ctr_view_template_ctr.actor-template:
+  view_ctr_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.view_ctr:view_template_ctr
+      t: legacy_type.view_ctr:template_ctr
       function: ViewTemplateCtr.from_piece
       service_params: []
