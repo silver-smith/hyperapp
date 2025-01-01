@@ -77,6 +77,10 @@ class ViewTemplateCtr(Constructor):
         return template
 
     @property
+    def ctx_params(self):
+        return self._ctx_params
+
+    @property
     def _fn_name(self):
         return '_'.join(self._attr_qual_name)
 

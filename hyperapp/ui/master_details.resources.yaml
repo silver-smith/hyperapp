@@ -89,6 +89,10 @@ definitions:
       d: master_details.d
       view_t: legacy_type.master_details:view
       is_wrapper: true
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
       system_fn: master_details.system-fn
   master_details_d:
     type: legacy_type.builtin:record_mt

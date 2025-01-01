@@ -27,6 +27,7 @@ class ViewFactoryTemplateCtr(Constructor):
         self._ctx_params = ctx_params
         self._service_params = service_params
         self._view_t = view_t
+        self._view_resolved_tgt = None
 
     @property
     def piece(self):
@@ -45,6 +46,8 @@ class ViewFactoryTemplateCtr(Constructor):
             provider=resource_tgt,
             ctr=self,
             )
+        self._view_resolved_tgt = target_set.factory.config_item_resolved('view_reg', self._view_type_name)
+        resolved_tgt.add_dep(self._view_resolved_tgt)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def get_component(self, name_to_res):
@@ -72,6 +75,7 @@ class ViewFactoryTemplateCtr(Constructor):
             d=mosaic.put(d),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
             is_wrapper='inner' in self._ctx_params,
+            view_ctx_params=self._view_resolved_tgt.constructor.ctx_params,
             system_fn=mosaic.put(system_fn),
             )
         if name_to_res is not None:
@@ -83,3 +87,7 @@ class ViewFactoryTemplateCtr(Constructor):
     @property
     def _fn_name(self):
         return '_'.join(self._attr_qual_name)
+
+    @property
+    def _view_type_name(self):
+        return f'{self._view_t.module_name}_{self._view_t.name}'
