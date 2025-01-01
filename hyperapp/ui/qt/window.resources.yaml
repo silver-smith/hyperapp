@@ -12,7 +12,7 @@ import:
 - legacy_type.window:size
 - legacy_type.window:state
 - legacy_type.window:view
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   WindowView:
     type: legacy_type.builtin:attribute
@@ -40,7 +40,7 @@ definitions:
       file_name: window.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.window.pos: legacy_type.window:pos
         htypes.window.size: legacy_type.window:size
         htypes.window.state: legacy_type.window:state

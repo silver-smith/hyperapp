@@ -12,7 +12,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:view_template
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   BoxLayoutView:
     type: legacy_type.builtin:attribute
@@ -41,7 +41,7 @@ definitions:
       import_list:
         code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.box_layout.element: legacy_type.box_layout:element
         htypes.box_layout.state: legacy_type.box_layout:state
         htypes.box_layout.view: legacy_type.box_layout:view

@@ -9,7 +9,7 @@ import:
 - legacy_type.text:readonly_view
 - legacy_type.text:state
 - legacy_type.view:view_template
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   EditTextView:
     type: legacy_type.builtin:attribute
@@ -58,7 +58,7 @@ definitions:
       file_name: text.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.readonly_view: legacy_type.text:readonly_view
         htypes.text.state: legacy_type.text:state

@@ -3,7 +3,7 @@
 import:
 - builtins:web.service
 - legacy_type.builtin:python_module
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   context_view.module:
     type: legacy_type.builtin:python_module
@@ -11,5 +11,5 @@ definitions:
       module_name: context_view
       file_name: context_view.dyn.py
       import_list:
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         services.web: builtins:web.service

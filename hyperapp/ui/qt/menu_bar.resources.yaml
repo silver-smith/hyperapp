@@ -13,7 +13,7 @@ import:
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:view_template
 - ui.qt.command_ap:command_ap.module
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   MenuBarView:
     type: legacy_type.builtin:attribute
@@ -41,7 +41,7 @@ definitions:
       import_list:
         code.command_ap: ui.qt.command_ap:command_ap.module
         code.mark: common.mark:mark.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
         htypes.command_groups.global_d: legacy_type.command_groups:global_d
         htypes.command_groups.model_d: legacy_type.command_groups:model_d

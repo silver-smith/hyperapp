@@ -9,7 +9,7 @@ import:
 - legacy_type.tree:view
 - legacy_type.view:view_template
 - ui.qt.tree_visual_diff:tree_visual_diff.module
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   TreeView:
     type: legacy_type.builtin:attribute
@@ -39,7 +39,7 @@ definitions:
       import_list:
         code.mark: common.mark:mark.module
         code.tree_visual_diff: ui.qt.tree_visual_diff:tree_visual_diff.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.tree.state: legacy_type.tree:state
         htypes.tree.view: legacy_type.tree:view
   tree_view.view-template:

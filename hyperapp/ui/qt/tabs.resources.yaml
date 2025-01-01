@@ -15,7 +15,7 @@ import:
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
 - legacy_type.view:view_template
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   TabsView:
     type: legacy_type.builtin:attribute
@@ -67,7 +67,7 @@ definitions:
       file_name: tabs.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.tabs.list_item: legacy_type.tabs:list_item
         htypes.tabs.state: legacy_type.tabs:state
         htypes.tabs.tab: legacy_type.tabs:tab

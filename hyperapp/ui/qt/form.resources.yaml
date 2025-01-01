@@ -11,7 +11,7 @@ import:
 - legacy_type.form:view
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:view_template
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   FormView:
     type: legacy_type.builtin:attribute
@@ -42,7 +42,7 @@ definitions:
       file_name: form.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.form.field: legacy_type.form:field
         htypes.form.state: legacy_type.form:state
         htypes.form.view: legacy_type.form:view

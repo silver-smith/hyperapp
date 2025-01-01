@@ -8,7 +8,7 @@ import:
 - legacy_type.label:view
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:view_template
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   LabelView:
     type: legacy_type.builtin:attribute
@@ -35,7 +35,7 @@ definitions:
       file_name: label.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.label.state: legacy_type.label:state
         htypes.label.view: legacy_type.label:view
   label_view.view-template:

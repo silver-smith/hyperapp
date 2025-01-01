@@ -18,7 +18,7 @@ import:
 - legacy_type.root:view
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   controller.module:
     type: legacy_type.builtin:python_module
@@ -29,7 +29,7 @@ definitions:
         code.context: common.context:context.module
         code.mark: common.mark:mark.module
         code.tree_diff: common.tree_diff:tree_diff.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.layout.item: legacy_type.layout:item
         htypes.layout.view: legacy_type.layout:view
         htypes.root.layout: legacy_type.root:layout

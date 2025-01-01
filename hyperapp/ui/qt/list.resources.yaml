@@ -9,7 +9,7 @@ import:
 - legacy_type.list:view
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:view_template
-- ui.view:view.module
+- ui.view.view:view.module
 definitions:
   ListView:
     type: legacy_type.builtin:attribute
@@ -39,7 +39,7 @@ definitions:
       import_list:
         code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
-        code.view: ui.view:view.module
+        code.view: ui.view.view:view.module
         htypes.list.state: legacy_type.list:state
         htypes.list.view: legacy_type.list:view
   list_view.view-template:
