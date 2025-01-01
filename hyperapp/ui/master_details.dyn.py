@@ -161,19 +161,16 @@ def _pick_command(global_model_command_reg, get_model_commands, model_t, command
     return command_list[0]  # Pick any.
 
 
-@mark.universal_ui_command
-def wrap_master_details(model, model_state, view, hook, ctx, view_reg, global_model_command_reg, get_model_commands):
-    log.info("Wrap master-details: %s / %s", model, view)
+@mark.view_factory
+def wrap_master_details(model, model_state, inner, ctx, view_reg, global_model_command_reg, get_model_commands):
+    log.info("Wrap master-details: %s / %s", model, inner)
     command_ctx = model_command_ctx(ctx, model, model_state)
     model_t = deduce_t(model)
     command = _pick_command(global_model_command_reg, get_model_commands, model_t, command_ctx)
-    view_piece = htypes.master_details.view(
-        master_view=mosaic.put(view.piece),
+    return htypes.master_details.view(
+        master_view=mosaic.put(inner),
         details_command_d=mosaic.put(command.d),
         direction='LeftToRight',
         master_stretch=1,
         details_stretch=1,
         )
-    model_ctx = ctx.clone_with(model=model)
-    new_view = view_reg.animate(view_piece, model_ctx)
-    hook.replace_view(new_view)

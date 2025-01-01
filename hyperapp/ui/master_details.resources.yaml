@@ -14,9 +14,9 @@ import:
 - legacy_type.master_details:state
 - legacy_type.master_details:unwrap_master_details_d
 - legacy_type.master_details:view
-- legacy_type.master_details:wrap_master_details_d
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:view_template
+- legacy_type.view_factory:template
 - ui.directory:directory.module
 - ui.model_command:model_command.module
 - ui.qt.box_layout:box_layout.module
@@ -105,9 +105,6 @@ definitions:
     value:
       object: master_details.module
       attr_name: wrap_master_details
-  wrap_master_details.d:
-    type: legacy_type.master_details:wrap_master_details_d
-    value: {}
   wrap_master_details.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -115,19 +112,14 @@ definitions:
       ctx_params:
       - model
       - model_state
-      - view
-      - hook
+      - inner
       - ctx
       service_params:
       - view_reg
       - global_model_command_reg
       - get_model_commands
-  wrap_master_details.universal-ui-command:
-    type: legacy_type.command:ui_command
+  wrap_master_details.view-factory-template:
+    type: legacy_type.view_factory:template
     value:
-      d: wrap_master_details.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
+      is_wrapper: true
       system_fn: wrap_master_details.system-fn
