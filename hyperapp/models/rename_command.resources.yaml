@@ -64,7 +64,7 @@ definitions:
     type: legacy_type.crud:open_command_fn
     value:
       name: edit
-      record_t: legacy_type.rename_command:form
+      value_t: legacy_type.rename_command:form
       key_field: ui_command_d
       init_action_fn: model_commands-view.crud.get.system-fn
       commit_command_d: model_commands-view.edit.commit-command.d

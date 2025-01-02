@@ -71,12 +71,12 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             key_field=piece.key_field,
             ctx_params=piece.ctx_params,
             service_params=piece.service_params,
-            record_t=pyobj_creg.invite(piece.record_t),
+            value_t=pyobj_creg.invite(piece.value_t),
             )
 
-    def __init__(self, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params, record_t):
+    def __init__(self, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params, value_t):
         super().__init__(module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params)
-        self._record_t = record_t
+        self._value_t = value_t
 
     @property
     def piece(self):
@@ -88,7 +88,7 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             key_field=self._key_field,
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
-            record_t=pyobj_creg.actor_to_ref(self._record_t),
+            value_t=pyobj_creg.actor_to_ref(self._value_t),
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
@@ -106,7 +106,7 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             module_name=self._module_name,
             model_t=self._model_t,
             name=open_command_name,
-            record_t=self._record_t,
+            value_t=self._value_t,
             key_field=self._key_field,
             commit_command_name=commit_command_name,
             commit_action=commit_action,
@@ -147,11 +147,11 @@ class CrudCommitTemplateCtr(CrudTemplateCtr):
 
 class CrudOpenCommandCtr(ModuleCtr):
 
-    def __init__(self, module_name, model_t, name, record_t, key_field, commit_command_name, commit_action):
+    def __init__(self, module_name, model_t, name, value_t, key_field, commit_command_name, commit_action):
         super().__init__(module_name)
         self._model_t = model_t
         self._name = name
-        self._record_t = record_t
+        self._value_t = value_t
         self._key_field = key_field
         self._commit_command_name = commit_command_name
         self._commit_action = commit_action
@@ -182,7 +182,7 @@ class CrudOpenCommandCtr(ModuleCtr):
         commit_command_d = self._command_d(types, self._commit_command_name)
         system_fn = htypes.crud.open_command_fn(
             name=self._name,
-            record_t=pyobj_creg.actor_to_ref(self._record_t),
+            value_t=pyobj_creg.actor_to_ref(self._value_t),
             key_field=self._key_field,
             init_action_fn=mosaic.put(init_action_fn),
             commit_command_d=mosaic.put(commit_command_d),

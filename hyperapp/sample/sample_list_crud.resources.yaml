@@ -49,7 +49,7 @@ definitions:
     type: legacy_type.crud:open_command_fn
     value:
       name: edit
-      record_t: legacy_type.sample_list_crud:form_item
+      value_t: legacy_type.sample_list_crud:form_item
       key_field: id
       init_action_fn: sample_list-sample_list.crud.get.system-fn
       commit_command_d: sample_list-sample_list.edit.commit-command.d

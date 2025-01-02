@@ -8,6 +8,6 @@ ctr = record:
   service_params: string list
 
 init_ctr = record(ctr):
-  record_t: ref
+  value_t: ref
 
 commit_ctr = record(ctr)

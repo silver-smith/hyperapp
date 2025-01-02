@@ -1,5 +1,5 @@
 model = record:
-  record_t: ref
+  value_t: ref
   model: ref
   key: ref
   key_field: string
@@ -10,7 +10,7 @@ model = record:
 
 open_command_fn = record:
   name: string
-  record_t: ref
+  value_t: ref
   key_field: string
   init_action_fn: ref
   commit_command_d: ref

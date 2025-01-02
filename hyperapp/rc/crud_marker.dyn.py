@@ -110,7 +110,7 @@ class CrudProbe:
             raise RuntimeError(f"Result of {self._action} action should be a record, but is: {result_t}")
         return CrudInitTemplateCtr(
             **self._template_ctr_kw(params),
-            record_t=result_t,
+            value_t=result_t,
             )
 
     def _commit_constructor(self, params):

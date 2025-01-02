@@ -23,16 +23,16 @@ class CrudOpenFn:
     def from_piece(cls, piece):
         return cls(
             name=piece.name,
-            record_t_ref=piece.record_t,
+            value_t_ref=piece.value_t,
             key_field=piece.key_field,
             init_action_fn_ref=piece.init_action_fn,
             commit_command_d_ref=piece.commit_command_d,
             commit_action_fn_ref=piece.commit_action_fn,
             )
 
-    def __init__(self, name, record_t_ref, key_field, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
+    def __init__(self, name, value_t_ref, key_field, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
         self._name = name
-        self._record_t_ref = record_t_ref
+        self._value_t_ref = value_t_ref
         self._key_field = key_field
         self._init_action_fn_ref = init_action_fn_ref
         self._commit_command_d_ref = commit_command_d_ref
@@ -52,7 +52,7 @@ class CrudOpenFn:
     def _open(self, model, current_item):
         key = getattr(current_item, self._key_field)
         return htypes.crud.model(
-            record_t=self._record_t_ref,
+            value_t=self._value_t_ref,
             model=mosaic.put(model),
             key=mosaic.put(key),
             key_field=self._key_field,
@@ -101,7 +101,7 @@ class CrudInitFn:
 def crud_model_layout(piece, lcs, system_fn_creg):
     crud_init_fn = htypes.crud.init_fn()
     adapter = htypes.record_adapter.fn_record_adapter(
-        record_t=piece.record_t,
+        record_t=piece.value_t,
         system_fn=mosaic.put(crud_init_fn),
         )
     return htypes.form.view(mosaic.put(adapter))
