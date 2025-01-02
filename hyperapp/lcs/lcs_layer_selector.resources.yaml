@@ -8,6 +8,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.lcs_layer_selector:select_layer_d
+- legacy_type.lcs_view:layer
 - legacy_type.lcs_view:layer_selector
 - legacy_type.lcs_view:layers_view
 - legacy_type.lcs_view:view
@@ -26,6 +27,7 @@ definitions:
       file_name: lcs_layer_selector.dyn.py
       import_list:
         code.mark: common.mark:mark.module
+        htypes.lcs_view.layer: legacy_type.lcs_view:layer
         htypes.lcs_view.layers_view: legacy_type.lcs_view:layers_view
         htypes.lcs_view.view: legacy_type.lcs_view:view
         services.web: builtins:web.service

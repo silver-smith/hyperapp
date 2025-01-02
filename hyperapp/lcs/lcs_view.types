@@ -15,6 +15,9 @@ layer_item = record:
   name: string
   d: ref
 
+layer = record:
+  d: ref
+
 layer_selector = record:
   source_layer_d: ref
   dir: ref list

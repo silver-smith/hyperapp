@@ -23,6 +23,24 @@ def piece():
         )
 
 
+def test_selector_get():
+    value = htypes.lcs_view.layer(
+        d=mosaic.put(htypes.lcs_layer_selector_tests.sample_d()),
+        )
+    piece = lcs_layer_selector.layer_get(value)
+    assert isinstance(piece, htypes.lcs_view.layers_view)
+
+
+def test_selector_put():
+    piece = htypes.lcs_view.layers_view()
+    current_item = htypes.lcs_view.layer_item(
+        name="<unused>",
+        d=mosaic.put(htypes.lcs_layer_selector_tests.layer_2_d()),
+        )
+    value = lcs_layer_selector.layer_put(piece, current_item)
+    assert isinstance(value, htypes.lcs_view.layer)
+
+
 def test_layout(lcs, piece):
     view = lcs_layer_selector.layer_selector_layout(piece, lcs)
     assert view

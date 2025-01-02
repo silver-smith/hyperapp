@@ -9,6 +9,18 @@ from .code.mark import mark
 log = logging.getLogger(__name__)
 
 
+@mark.selector.get
+def layer_get(value):
+    return htypes.lcs_view.layers_view()
+
+
+@mark.selector.put
+def layer_put(piece, current_item):
+    return htypes.lcs_view.layer(
+        d=current_item.d,
+        )
+
+
 @mark.actor.model_layout_creg
 def layer_selector_layout(piece, lcs, visualizer):
     return visualizer(lcs, htypes.lcs_view.layers_view())
