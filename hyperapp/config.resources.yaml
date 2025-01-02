@@ -117,6 +117,7 @@ import:
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
+- rc.selector_marker:selector.marker-template
 - rc.service_ctr:service_resource_finalizer_gen_service_template_ctr.actor-template
 - rc.service_ctr:service_resource_service_template_ctr.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
@@ -461,6 +462,7 @@ definitions:
       - rc.crud_marker:crud.marker-template
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
+      - rc.selector_marker:selector.marker-template
       - rc.service_marker:service.marker-template
       - rc.view_factory_marker:view_factory.marker-template
       - rc.view_marker:view.marker-template
