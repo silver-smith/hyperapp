@@ -4,7 +4,7 @@ from .code.mark import mark
 
 @mark.model
 def view_factory_list(piece, view_factory_reg):
-    return list(view_factory_reg.values())
+    return [factory.item for factory in view_factory_reg.values()]
 
 
 @mark.global_command

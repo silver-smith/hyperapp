@@ -305,6 +305,7 @@ import:
 - ui.ui_model_command:ui_model_command_items.service
 - ui.view.view_cfg_item:view_template.actor-template
 - ui.view.view_factory:view_factory_reg.service
+- ui.view.view_factory_cfg_item:view_factory_template.actor-template
 - ui.view.view_factory_list:open_view_factory_list.global-model-command
 - ui.view.view_factory_list:view_factory_list_view.model-cfg-item
 - ui.view.view_registry:view_reg.service
@@ -340,6 +341,7 @@ definitions:
       - ui.feed_type_template:feed_feed_template.actor-template
       - ui.model_cfg_item:model_cfg_item.actor-template
       - ui.view.view_cfg_item:view_template.actor-template
+      - ui.view.view_factory_cfg_item:view_factory_template.actor-template
   command_creg:
     type: legacy_type.system:item_list_config
     value:

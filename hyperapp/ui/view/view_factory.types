@@ -7,6 +7,9 @@ template = record:
 
 item = record:
   d: ref
+  d_str: string
   view_t: ref
+  view_t_str: string
   is_wrapper: bool
+  view_ctx_params: string list
   system_fn: ref

@@ -5,6 +5,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.system_fn import ContextFn
+from .code.view_factory import ViewFactory
 from .tested.code import view_factory_list
 
 
@@ -21,13 +22,14 @@ def view_factory_reg_config(partial_ref):
         raw_fn=_sample_fn,
         bound_fn=_sample_fn,
         )
-    item = htypes.view_factory.item(
-        d=mosaic.put(htypes.view_factory_list_tests.sample_d()),
-        view_t=pyobj_creg.actor_to_ref(htypes.view_factory_list_tests.sample_view),
+    factory = ViewFactory(
+        d=htypes.view_factory_list_tests.sample_d(),
+        view_t=htypes.view_factory_list_tests.sample_view,
         is_wrapper=False,
-        system_fn=mosaic.put(system_fn.piece),
+        view_ctx_params=[],
+        system_fn=system_fn,
         )
-    return {item.d: item}
+    return {factory.d: factory}
 
 
 @mark.fixture

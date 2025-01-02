@@ -1,0 +1,41 @@
+from .services import (
+    pyobj_creg,
+    web,
+    )
+from .code.mark import mark
+from .code.view_factory import ViewFactory
+
+
+class ViewFactoryTemplate:
+
+    @classmethod
+    @mark.actor.cfg_item_creg
+    def from_piece(cls, piece):
+        return cls(
+            d=web.summon(piece.d),
+            view_t=pyobj_creg.invite(piece.view_t),
+            is_wrapper=piece.is_wrapper,
+            view_ctx_params=piece.view_ctx_params,
+            system_fn=web.summon(piece.system_fn),
+            )
+
+    def __init__(self, d, view_t, is_wrapper, view_ctx_params, system_fn):
+        self._d = d
+        self._view_t = view_t
+        self._is_wrapper = is_wrapper
+        self._view_ctx_params = view_ctx_params
+        self._system_fn = system_fn
+
+    @property
+    def key(self):
+        return self._d
+
+    def resolve(self, system, service_name):
+        system_fn_creg = system.resolve_service('system_fn_creg')
+        return ViewFactory(
+            d=self._d,
+            view_t=self._view_t,
+            is_wrapper=self._is_wrapper,
+            view_ctx_params=self._view_ctx_params,
+            system_fn=system_fn_creg.animate(self._system_fn),
+            )
