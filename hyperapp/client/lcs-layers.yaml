@@ -12,6 +12,8 @@ layers:
   path: models/global_commands.config
 - name: layout
   path: ui/layout.config
+- name: view_factory
+  path: ui/view/view_factory.config
 - name: lcs
   path: lcs/lcs_view.config
 - name: sample_list
