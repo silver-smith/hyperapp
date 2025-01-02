@@ -7,6 +7,7 @@ import:
 - legacy_type.command:model_command
 - legacy_type.command:properties
 - legacy_type.selector_ctr:get_ctr
+- legacy_type.selector_ctr:put_ctr
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - rc.rc_constructor:rc_constructor.module
@@ -24,6 +25,7 @@ definitions:
         htypes.command.model_command: legacy_type.command:model_command
         htypes.command.properties: legacy_type.command:properties
         htypes.selector_ctr.get_ctr: legacy_type.selector_ctr:get_ctr
+        htypes.selector_ctr.put_ctr: legacy_type.selector_ctr:put_ctr
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -46,4 +48,23 @@ definitions:
     value:
       t: legacy_type.selector_ctr:get_ctr
       function: SelectorGetTemplateCtr.from_piece
+      service_params: []
+
+  SelectorPutTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: selector_ctr.module
+      attr_name: SelectorPutTemplateCtr
+
+  SelectorPutTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: SelectorPutTemplateCtr
+      attr_name: from_piece
+
+  selector_ctr_put_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.selector_ctr:put_ctr
+      function: SelectorPutTemplateCtr.from_piece
       service_params: []
