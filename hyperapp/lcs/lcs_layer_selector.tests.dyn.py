@@ -22,6 +22,7 @@ def piece():
         dir=(mosaic.put(htypes.lcs_layer_selector_tests.sample_d()),),
         )
 
+
 def test_layout(lcs, piece):
     view = lcs_layer_selector.layer_selector_layout(piece, lcs)
     assert view
