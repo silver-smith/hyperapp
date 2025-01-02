@@ -4,3 +4,9 @@ template = record:
   is_wrapper: bool
   view_ctx_params: string list
   system_fn: ref
+
+item = record:
+  d: ref
+  view_t: ref
+  is_wrapper: bool
+  system_fn: ref

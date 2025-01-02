@@ -305,6 +305,8 @@ import:
 - ui.ui_model_command:ui_model_command_items.service
 - ui.view.view_cfg_item:view_template.actor-template
 - ui.view.view_factory:view_factory_reg.service
+- ui.view.view_factory_list:open_view_factory_list.global-model-command
+- ui.view.view_factory_list:view_factory_list_view.model-cfg-item
 - ui.view.view_registry:view_reg.service
 - ui.visualizer:builtin_int.actor-template
 - ui.visualizer:builtin_string.actor-template
@@ -436,6 +438,7 @@ definitions:
       - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
       - sample.sample_tree:open_sample_fn_tree.global-model-command
       - ui.layout:open_layout_tree.global-model-command
+      - ui.view.view_factory_list:open_view_factory_list.global-model-command
   identity_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -800,3 +803,4 @@ definitions:
       - ui.layout:layout_command_list.model-cfg-item
       - ui.layout:layout_view.model-cfg-item
       - ui.list_as_tree:list_as_tree_opener_commands.model-cfg-item
+      - ui.view.view_factory_list:view_factory_list_view.model-cfg-item
