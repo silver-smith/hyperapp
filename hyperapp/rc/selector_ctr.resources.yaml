@@ -1,0 +1,49 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.command:properties
+- legacy_type.selector_ctr:get_ctr
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+- rc.rc_constructor:rc_constructor.module
+
+definitions:
+
+  selector_ctr.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: selector_ctr
+      file_name: selector_ctr.dyn.py
+      import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.command.cfg_item: legacy_type.command:cfg_item
+        htypes.command.model_command: legacy_type.command:model_command
+        htypes.command.properties: legacy_type.command:properties
+        htypes.selector_ctr.get_ctr: legacy_type.selector_ctr:get_ctr
+        htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        code.rc_constructor: rc.rc_constructor:rc_constructor.module
+
+  SelectorGetTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: selector_ctr.module
+      attr_name: SelectorGetTemplateCtr
+
+  SelectorGetTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: SelectorGetTemplateCtr
+      attr_name: from_piece
+
+  selector_ctr_get_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.selector_ctr:get_ctr
+      function: SelectorGetTemplateCtr.from_piece
+      service_params: []

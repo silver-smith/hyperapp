@@ -1,8 +1,12 @@
+from .services import (
+    deduce_t,
+    )
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
     split_params,
     )
+from .code.selector_ctr import SelectorGetTemplateCtr
 
 
 class SelectorProbe:
@@ -32,7 +36,17 @@ class SelectorProbe:
 class SelectorGetProbe(SelectorProbe):
 
     def _add_constructor(self, params, result):
-        pass
+        if list(params.ctx_names) != ['value']:
+            raise RuntimeError(f"{self._fn}: Expected single non-service parameter, 'value': {params.ctx_names}")
+        value = params.values['value']
+        value_t = deduce_t(value)
+        ctr = SelectorGetTemplateCtr(
+            module_name=self._module_name,
+            attr_qual_name=self._fn.__qualname__.split('.'),
+            service_params=params.service_names,
+            value_t=value_t,
+            )
+        self._ctr_collector.add_constructor(ctr)
 
 
 class SelectorPutProbe(SelectorProbe):

@@ -1,0 +1,5 @@
+get_ctr = record:
+  module_name: string
+  attr_qual_name: string list
+  service_params: string list
+  value_t: ref
