@@ -128,6 +128,9 @@ class ConfigProbe:
     def items(self):
         return self._config.items()
 
+    def values(self):
+        return self._config.values()
+
     def update(self, config):
         self._config.update(config)
 
