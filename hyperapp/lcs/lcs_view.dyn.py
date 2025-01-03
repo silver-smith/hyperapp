@@ -39,22 +39,6 @@ def lcs_view(piece, lcs):
         ]
 
 
-@mark.model
-def lcs_layers_view(piece, lcs):
-    return [
-        htypes.lcs_view.layer_item(
-            name=d_to_name(layer_d),
-            d=mosaic.put(layer_d),
-            )
-        for layer_d in sorted(lcs.layers())
-        ]
-
-
-@mark.command
-def lcs_open_layers(piece):
-    return htypes.lcs_view.layers_view()
-
-
 @mark.command
 async def lcs_remove(piece, current_idx, current_item, lcs, feed_factory):
     feed = feed_factory(piece)

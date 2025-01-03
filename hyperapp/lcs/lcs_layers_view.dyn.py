@@ -2,28 +2,47 @@ import logging
 
 from . import htypes
 from .services import (
+    mosaic,
     web,
     )
 from .code.mark import mark
+from .code.directory import d_to_name
 
 log = logging.getLogger(__name__)
 
 
+
+@mark.model
+def lcs_layers_view(piece, lcs):
+    return [
+        htypes.lcs_layers_view.item(
+            name=d_to_name(layer_d),
+            d=mosaic.put(layer_d),
+            )
+        for layer_d in sorted(lcs.layers())
+        ]
+
+
+@mark.command
+def lcs_open_layers(piece):
+    return htypes.lcs_layers_view.view()
+
+
 @mark.selector.get
 def layer_get(value):
-    return htypes.lcs_view.layers_view()
+    return htypes.lcs_layers_view.view()
 
 
 @mark.selector.put
 def layer_put(piece, current_item):
-    return htypes.lcs_view.layer(
+    return htypes.lcs_layers_view.layer(
         d=current_item.d,
         )
 
 
 @mark.actor.model_layout_creg
 def layer_selector_layout(piece, lcs, ctx, visualizer):
-    return visualizer(lcs, ctx, htypes.lcs_view.layers_view())
+    return visualizer(lcs, ctx, htypes.lcs_layers_view.view())
 
 
 @mark.command

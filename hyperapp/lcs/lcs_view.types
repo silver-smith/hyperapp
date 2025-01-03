@@ -9,20 +9,5 @@ item = record:
   dir_str: string
   piece_str: string
 
-layers_view = record
-
-layer_item = record:
-  name: string
-  d: ref
-
-layer = record:
-  d: ref
-
-layer_selector = record:
-  source_layer_d: ref
-  dir: ref list
-
-lcs_open_layers_d = record
 lcs_remove_d = record
-lcs_move_to_another_layer_d = record
 lcs_open_piece_d = record
