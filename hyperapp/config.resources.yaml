@@ -11,6 +11,7 @@ import:
 - lcs.lcs_dirs_view:lcs_dirs_view_view.model-cfg-item
 - lcs.lcs_dirs_view:lcs_dirs_view_view_lcs_dirs_items.command-cfg-item
 - lcs.lcs_dirs_view:lcs_view_view_lcs_open_dirs.command-cfg-item
+- lcs.lcs_layer_selector:lcs_view-layer.selector
 - lcs.lcs_layer_selector:lcs_view_layer_selector.actor-template
 - lcs.lcs_layer_selector:lcs_view_layer_selector_select_layer.command-cfg-item
 - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
@@ -289,6 +290,7 @@ import:
 - ui.qt.window:window_view.view-template
 - ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
 - ui.qt.window_commands:window_view_quit.command-cfg-item
+- ui.selector:selector_reg.service
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.system_fn:system_fn_ctx_fn.actor-template
 - ui.system_fn_creg:system_fn_creg.service
@@ -379,6 +381,7 @@ definitions:
         route_registry: route_registry
         rpc_message_creg: rpc_message_creg
         rpc_target_creg: rpc_target_creg
+        selector_reg: selector_reg
         signature_registry: signature_registry
         system: system
         system_fn_creg: system_fn_creg
@@ -607,6 +610,11 @@ definitions:
       - rc.rc_job:rc_job_job_target.actor-template
       - rpc.rpc_endpoint:rpc_function_target.actor-template
       - rpc.rpc_endpoint:rpc_service_target.actor-template
+  selector_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - lcs.lcs_layer_selector:lcs_view-layer.selector
   signature_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -693,6 +701,7 @@ definitions:
       - ui.model_command:global_model_command_reg.service
       - ui.model_command:model_command_enumerator_reg.service
       - ui.model_command:model_command_reg.service
+      - ui.selector:selector_reg.service
       - ui.system_fn_creg:system_fn_creg.service
       - ui.ui_adapter_creg:ui_adapter_creg.service
       - ui.ui_command:get_view_commands.service
