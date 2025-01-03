@@ -142,6 +142,7 @@ class SelectorCtr(Constructor):
         put_fn = self._put_resolved_tgt.constructor.make_function(
             types, python_module, name_to_res)
         selector = htypes.selector.selector(
+            value_t=pyobj_creg.actor_to_ref(self._value_t),
             get_fn=mosaic.put(get_fn),
             put_fn=mosaic.put(put_fn),
             )

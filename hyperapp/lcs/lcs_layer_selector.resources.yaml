@@ -45,6 +45,7 @@ definitions:
   lcs_view-layer.selector:
     type: legacy_type.selector:selector
     value:
+      value_t: legacy_type.lcs_view:layer
       get_fn: lcs_view-layer.selector.get.system-fn
       put_fn: lcs_view-layer.selector.put.system-fn
   lcs_view-layer.selector.get.system-fn:
