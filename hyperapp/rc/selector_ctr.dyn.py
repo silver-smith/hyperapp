@@ -4,6 +4,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.rc_constructor import Constructor, ModuleCtr
+from .code.cfg_item_req import CfgItemReq
 
 
 _ACTION_SERVICE_NAME = 'selector_action'
@@ -127,8 +128,10 @@ class SelectorCtr(Constructor):
             _ACTION_SERVICE_NAME, _action_resource_name(self._type_name, 'get'))
         self._put_resolved_tgt = target_set.factory.config_item_resolved(
             _ACTION_SERVICE_NAME, _action_resource_name(self._type_name, 'put'))
+        service_name = 'selector_reg'
+        req = CfgItemReq(service_name, self._value_t)
         _, resolved_tgt, _ = target_set.factory.config_items(
-            'selector_reg', self._type_name, provider=resource_tgt, ctr=self)
+            service_name, self._type_name, req, provider=resource_tgt, ctr=self)
         resolved_tgt.add_dep(self._get_resolved_tgt)
         resolved_tgt.add_dep(self._put_resolved_tgt)
         resource_tgt.add_cfg_item_target(resolved_tgt)

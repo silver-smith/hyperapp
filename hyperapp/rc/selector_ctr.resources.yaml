@@ -8,6 +8,7 @@ import:
 - legacy_type.selector_ctr:put_ctr
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+- rc.cfg_item_req:cfg_item_req.module
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -25,6 +26,7 @@ definitions:
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
+        code.cfg_item_req: rc.cfg_item_req:cfg_item_req.module
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
   SelectorGetTemplateCtr:
