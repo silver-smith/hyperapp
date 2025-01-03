@@ -98,7 +98,7 @@ class CrudInitFn:
 
 
 @mark.actor.model_layout_creg
-def crud_model_layout(piece, lcs, system_fn_creg):
+def crud_model_layout(piece, lcs, ctx, system_fn_creg):
     crud_init_fn = htypes.crud.init_fn()
     adapter = htypes.record_adapter.fn_record_adapter(
         record_t=piece.value_t,

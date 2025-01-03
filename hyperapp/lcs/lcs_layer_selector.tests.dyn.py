@@ -5,6 +5,7 @@ from .services import (
     mosaic,
     )
 from .code.mark import mark
+from .code.context import Context
 from .tested.code import lcs_layer_selector
 
 
@@ -13,6 +14,11 @@ def lcs():
     mock = Mock()
     mock.get.return_value = None
     return mock
+
+
+@mark.fixture
+def ctx():
+    return Context()
 
 
 @mark.fixture
@@ -41,8 +47,8 @@ def test_selector_put():
     assert isinstance(value, htypes.lcs_view.layer)
 
 
-def test_layout(lcs, piece):
-    view = lcs_layer_selector.layer_selector_layout(piece, lcs)
+def test_layout(lcs, ctx, piece):
+    view = lcs_layer_selector.layer_selector_layout(piece, lcs, ctx)
     assert view
 
 

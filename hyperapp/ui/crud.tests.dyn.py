@@ -41,6 +41,11 @@ def _sample_update_fn():
         )
 
 
+@mark.fixture
+def ctx():
+    return Context()
+
+
 def test_open_command_fn(_sample_get_fn, _sample_update_fn):
     value_t = htypes.crud_tests.sample_record
     piece = htypes.crud.open_command_fn(
@@ -95,9 +100,9 @@ def test_init_fn(crud_model):
     assert result == htypes.crud_tests.sample_record(123, 'item#123')
 
 
-def test_model_layout(crud_model):
+def test_model_layout(crud_model, ctx):
     lcs = Mock()
-    result = crud.crud_model_layout(crud_model, lcs)
+    result = crud.crud_model_layout(crud_model, lcs, ctx)
     assert isinstance(result, htypes.form.view)
 
 

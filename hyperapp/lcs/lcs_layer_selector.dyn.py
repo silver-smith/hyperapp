@@ -22,8 +22,8 @@ def layer_put(piece, current_item):
 
 
 @mark.actor.model_layout_creg
-def layer_selector_layout(piece, lcs, visualizer):
-    return visualizer(lcs, htypes.lcs_view.layers_view())
+def layer_selector_layout(piece, lcs, ctx, visualizer):
+    return visualizer(lcs, ctx, htypes.lcs_view.layers_view())
 
 
 @mark.command

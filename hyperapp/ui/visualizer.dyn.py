@@ -21,13 +21,13 @@ def model_layout_creg(config):
 
 
 @mark.actor.model_layout_creg
-def string_layout(piece, lcs):
+def string_layout(piece, lcs, ctx):
     adapter = htypes.str_adapter.static_str_adapter()
     return htypes.text.edit_view(mosaic.put(adapter))
 
 
 @mark.actor.model_layout_creg
-def int_layout(piece, lcs):
+def int_layout(piece, lcs, ctx):
     adapter = htypes.int_adapter.int_adapter()
     return htypes.text.edit_view(mosaic.put(adapter))
 
@@ -85,9 +85,9 @@ def set_custom_layout(lcs, t, layout):
 
 
 @mark.service
-def visualizer(model_layout_creg, visualizer_reg, ui_type_creg, get_custom_layout, lcs, model):
+def visualizer(model_layout_creg, visualizer_reg, ui_type_creg, get_custom_layout, lcs, ctx, model):
     try:
-        return model_layout_creg.animate(model, lcs)
+        return model_layout_creg.animate(model, lcs, ctx)
     except KeyError:
         pass
     model_t = deduce_t(model)

@@ -8,6 +8,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.context import Context
 from .code.fn_list_adapter import list_ui_type_layout
 from .tested.code import visualizer as visualizer_module
 
@@ -20,6 +21,11 @@ def lcs():
     return lcs
 
 
+@mark.fixture
+def ctx():
+    return Context()
+
+
 @mark.config_fixture('model_layout_creg')
 def model_layout_creg_config():
     return {
@@ -28,37 +34,37 @@ def model_layout_creg_config():
         }
 
 
-def test_model_layout_creg(model_layout_creg, lcs):
-    layout = model_layout_creg.animate("Some string", lcs)
+def test_model_layout_creg(model_layout_creg, lcs, ctx):
+    layout = model_layout_creg.animate("Some string", lcs, ctx)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_string_layout(lcs):
-    layout = visualizer_module.string_layout("<unused>", lcs)
+def test_string_layout(lcs, ctx):
+    layout = visualizer_module.string_layout("<unused>", lcs, ctx)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_int_layout(lcs):
-    layout = visualizer_module.int_layout(12345, lcs)
+def test_int_layout(lcs, ctx):
+    layout = visualizer_module.int_layout(12345, lcs, ctx)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_string(visualizer, lcs):
-    layout = visualizer(lcs, "Sample text")
+def test_string(visualizer, lcs, ctx):
+    layout = visualizer(lcs, ctx, "Sample text")
     assert layout
 
 
-def test_int(visualizer, lcs):
-    layout = visualizer(lcs, 12345)
+def test_int(visualizer, lcs, ctx):
+    layout = visualizer(lcs, ctx, 12345)
     assert layout
 
 
-def test_list(visualizer, lcs):
+def test_list(visualizer, lcs, ctx):
     value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = visualizer(lcs, value)
+    layout = visualizer(lcs, ctx, value)
     assert layout
 
 
@@ -92,9 +98,9 @@ def ui_type_creg_config():
         }
 
 
-def test_sample_list(visualizer, lcs):
+def test_sample_list(visualizer, lcs, ctx):
     piece = htypes.visualizer_tests.sample_list()
-    layout = visualizer(lcs, piece)
+    layout = visualizer(lcs, ctx, piece)
     assert isinstance(layout, htypes.list.view)
 
 

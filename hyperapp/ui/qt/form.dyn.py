@@ -63,7 +63,7 @@ class FormView(View):
         for name, t in self._adapter.record_t.fields.items():
             layout.addWidget(QtWidgets.QLabel(text=name))
             field = self._adapter.get_field(name)
-            view_piece = self._visualizer(self._lcs, field)
+            view_piece = self._visualizer(self._lcs, ctx, field)
             model_ctx = ctx.clone_with(model=field)
             view = self._view_reg.animate(view_piece, model_ctx)
             fs = field_state.get(name)

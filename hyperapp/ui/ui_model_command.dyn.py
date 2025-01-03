@@ -92,7 +92,7 @@ class BoundUiModelCommand(BoundCommandBase):
         if piece is None:
             return None
         if self._layout is None:
-            view_piece = self._visualizer(self._lcs, piece)
+            view_piece = self._visualizer(self._lcs, self._ctx, piece)
         else:
             view_piece = self._layout
         model_ctx = self._ctx.pop().clone_with(model=piece)
