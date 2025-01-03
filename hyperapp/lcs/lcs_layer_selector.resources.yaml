@@ -12,9 +12,20 @@ import:
 - legacy_type.lcs_view:layer_selector
 - legacy_type.lcs_view:layers_view
 - legacy_type.lcs_view:view
+- legacy_type.selector:selector
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
+  layer_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_layer_selector.module
+      attr_name: layer_get
+  layer_put:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_layer_selector.module
+      attr_name: layer_put
   layer_selector_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -31,6 +42,26 @@ definitions:
         htypes.lcs_view.layers_view: legacy_type.lcs_view:layers_view
         htypes.lcs_view.view: legacy_type.lcs_view:view
         services.web: builtins:web.service
+  lcs_view-layer.selector:
+    type: legacy_type.selector:selector
+    value:
+      get_fn: lcs_view-layer.selector.get.system-fn
+      put_fn: lcs_view-layer.selector.put.system-fn
+  lcs_view-layer.selector.get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: layer_get
+      ctx_params:
+      - value
+      service_params: []
+  lcs_view-layer.selector.put.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: layer_put
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   lcs_view_layer_selector.actor-template:
     type: legacy_type.system:actor_template
     value:

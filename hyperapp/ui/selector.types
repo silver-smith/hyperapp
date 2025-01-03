@@ -1,0 +1,3 @@
+selector = record:
+  get_fn: ref
+  put_fn: ref
