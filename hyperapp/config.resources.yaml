@@ -11,7 +11,7 @@ import:
 - lcs.lcs_dirs_view:lcs_dirs_view_view.model-cfg-item
 - lcs.lcs_dirs_view:lcs_dirs_view_view_lcs_dirs_items.command-cfg-item
 - lcs.lcs_dirs_view:lcs_view_view_lcs_open_dirs.command-cfg-item
-- lcs.lcs_layer_selector:lcs_view-layer.selector
+- lcs.lcs_layer_selector:lcs_view-layer.selector-template
 - lcs.lcs_layer_selector:lcs_view_layer_selector.actor-template
 - lcs.lcs_layer_selector:lcs_view_layer_selector_select_layer.command-cfg-item
 - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
@@ -291,6 +291,7 @@ import:
 - ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
 - ui.qt.window_commands:window_view_quit.command-cfg-item
 - ui.selector:selector_reg.service
+- ui.selector:selector_template.actor-template
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.system_fn:system_fn_ctx_fn.actor-template
 - ui.system_fn_creg:system_fn_creg.service
@@ -345,6 +346,7 @@ definitions:
       - ui.command_cfg_item:command_ui_command.actor-template
       - ui.feed_type_template:feed_feed_template.actor-template
       - ui.model_cfg_item:model_cfg_item.actor-template
+      - ui.selector:selector_template.actor-template
       - ui.view.view_cfg_item:view_template.actor-template
       - ui.view.view_factory_cfg_item:view_factory_template.actor-template
   command_creg:
@@ -614,7 +616,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - lcs.lcs_layer_selector:lcs_view-layer.selector
+      - lcs.lcs_layer_selector:lcs_view-layer.selector-template
   signature_registry:
     type: legacy_type.system:item_list_config
     value:

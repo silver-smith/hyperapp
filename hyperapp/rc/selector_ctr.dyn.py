@@ -137,19 +137,19 @@ class SelectorCtr(Constructor):
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def get_component(self, name_to_res):
-        return name_to_res[f'{self._type_name}.selector']
+        return name_to_res[f'{self._type_name}.selector-template']
 
     def make_component(self, types, python_module, name_to_res):
         get_fn = self._get_resolved_tgt.constructor.make_function(
             types, python_module, name_to_res)
         put_fn = self._put_resolved_tgt.constructor.make_function(
             types, python_module, name_to_res)
-        selector = htypes.selector.selector(
+        template = htypes.selector.template(
             value_t=pyobj_creg.actor_to_ref(self._value_t),
             get_fn=mosaic.put(get_fn),
             put_fn=mosaic.put(put_fn),
             )
-        name_to_res[f'{self._type_name}.selector'] = selector
+        name_to_res[f'{self._type_name}.selector-template'] = template
 
     @property
     def _type_name(self):

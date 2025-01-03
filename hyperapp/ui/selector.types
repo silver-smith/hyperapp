@@ -1,4 +1,4 @@
-selector = record:
+template = record:
   value_t: ref
   get_fn: ref
   put_fn: ref

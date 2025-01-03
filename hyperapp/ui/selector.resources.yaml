@@ -1,12 +1,26 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:pyobj_creg.service
+- builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.selector:template
+- legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
+  SelectorTemplate:
+    type: legacy_type.builtin:attribute
+    value:
+      object: selector.module
+      attr_name: SelectorTemplate
+  SelectorTemplate.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: SelectorTemplate
+      attr_name: from_piece
   selector.module:
     type: legacy_type.builtin:python_module
     value:
@@ -14,6 +28,8 @@ definitions:
       file_name: selector.dyn.py
       import_list:
         code.mark: common.mark:mark.module
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
   selector_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -28,6 +44,12 @@ definitions:
       service_params: []
       want_config: true
       free_params: []
+  selector_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.selector:template
+      function: SelectorTemplate.from_piece
+      service_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

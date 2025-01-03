@@ -12,7 +12,7 @@ import:
 - legacy_type.lcs_view:layer_selector
 - legacy_type.lcs_view:layers_view
 - legacy_type.lcs_view:view
-- legacy_type.selector:selector
+- legacy_type.selector:template
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
@@ -42,8 +42,8 @@ definitions:
         htypes.lcs_view.layers_view: legacy_type.lcs_view:layers_view
         htypes.lcs_view.view: legacy_type.lcs_view:view
         services.web: builtins:web.service
-  lcs_view-layer.selector:
-    type: legacy_type.selector:selector
+  lcs_view-layer.selector-template:
+    type: legacy_type.selector:template
     value:
       value_t: legacy_type.lcs_view:layer
       get_fn: lcs_view-layer.selector.get.system-fn
