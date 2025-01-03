@@ -3,6 +3,7 @@
 import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:web.service
 - common.context:context.module
 - common.mark:mark.module
@@ -56,6 +57,7 @@ definitions:
         htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
   crud_init_fn.actor-template:
     type: legacy_type.system:actor_template
@@ -71,6 +73,7 @@ definitions:
       function: crud_model_layout
       service_params:
       - system_fn_creg
+      - selector_reg
   crud_model_commands:
     type: legacy_type.builtin:attribute
     value:

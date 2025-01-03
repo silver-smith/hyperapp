@@ -8,9 +8,12 @@ class Context:
         self._items = {**kw, **(items or {})}
 
     def _get(self, name):
-        if self._next and name in self._next:
-            return getattr(self._next, name)
-        return self._items[name]
+        try:
+            return self._items[name]
+        except KeyError:
+            if not self._next:
+                raise
+        return getattr(self._next, name)
 
     def __getattr__(self, name):
         if name.startswith('_'):

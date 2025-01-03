@@ -6,3 +6,7 @@ sample_item = record:
 sample_record = record:
   id: int
   text: string
+
+sample_selector = record
+
+phony_view = record

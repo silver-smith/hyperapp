@@ -5,6 +5,7 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -97,14 +98,32 @@ class CrudInitFn:
         return action_fn.call(ctx)
 
 
-@mark.actor.model_layout_creg
-def crud_model_layout(piece, lcs, ctx, system_fn_creg):
+def _form_view(value_t_ref):
     crud_init_fn = htypes.crud.init_fn()
     adapter = htypes.record_adapter.fn_record_adapter(
-        record_t=piece.value_t,
+        record_t=value_t_ref,
         system_fn=mosaic.put(crud_init_fn),
         )
     return htypes.form.view(mosaic.put(adapter))
+
+
+def _pick_ctx_value(ctx):
+    try:
+        return ctx.value
+    except KeyError:
+        input = ctx.input
+        return input.get_value()
+
+
+@mark.actor.model_layout_creg
+def crud_model_layout(piece, lcs, ctx, system_fn_creg, selector_reg):
+    value_t = pyobj_creg.invite(piece.value_t)
+    try:
+        selector = selector_reg[value_t]
+    except KeyError:
+        return _form_view(piece.value_t)
+    value = _pick_ctx_value(ctx)
+    return selector.get_fn.call(ctx, value=value)
 
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
@@ -154,8 +173,7 @@ class BoundCrudCommitCommand(BoundCommandBase):
     async def run(self):
         crud_model = self._ctx.model
         model = web.summon(crud_model.model)
-        input = self._ctx.input
-        value = input.get_value()
+        value = _pick_ctx_value(self._ctx)
         log.info("Run CRUD commit command %r: %s=%r; value=%r", self.name, self._key_field, self._key, value)
         ctx = self._ctx.clone_with(
             piece=model,

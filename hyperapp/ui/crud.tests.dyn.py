@@ -10,32 +10,33 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
+from .code.selector import Selector
 from .tested.code import crud
 
 log = logging.getLogger(__name__)
 
 
-def _sample_get(piece, id):
+def _sample_crud_get(piece, id):
     return htypes.crud_tests.sample_record(id, f'item#{id}')
 
 
-def _sample_update(piece, id, value):
+def _sample_crud_update(piece, id, value):
     log.info("Update %s: #%d -> %s", piece, id, value)
 
 
 @mark.fixture
-def _sample_get_fn():
+def _sample_crud_get_fn():
     return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(_sample_get),
+        function=pyobj_creg.actor_to_ref(_sample_crud_get),
         ctx_params=('piece', 'id'),
         service_params=(),
         )
 
 
 @mark.fixture
-def _sample_update_fn():
+def _sample_crud_update_fn():
     return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(_sample_update),
+        function=pyobj_creg.actor_to_ref(_sample_crud_update),
         ctx_params=('piece', 'id', 'value'),
         service_params=(),
         )
@@ -46,15 +47,15 @@ def ctx():
     return Context()
 
 
-def test_open_command_fn(_sample_get_fn, _sample_update_fn):
+def test_open_command_fn(_sample_crud_get_fn, _sample_crud_update_fn):
     value_t = htypes.crud_tests.sample_record
     piece = htypes.crud.open_command_fn(
         name='edit',
         value_t=pyobj_creg.actor_to_ref(value_t),
         key_field='id',
-        init_action_fn=mosaic.put(_sample_get_fn),
+        init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
-        commit_action_fn=mosaic.put(_sample_update_fn),
+        commit_action_fn=mosaic.put(_sample_crud_update_fn),
         )
     fn = crud.CrudOpenFn.from_piece(piece)
 
@@ -74,16 +75,16 @@ def model():
 
 
 @mark.fixture
-def crud_model(model, _sample_get_fn, _sample_update_fn):
+def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
     value_t = htypes.crud_tests.sample_record
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
         model=mosaic.put(model),
         key=mosaic.put(123),
         key_field='id',
-        init_action_fn=mosaic.put(_sample_get_fn),
+        init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
-        commit_action_fn=mosaic.put(_sample_update_fn),
+        commit_action_fn=mosaic.put(_sample_crud_update_fn),
         )
 
 
@@ -100,10 +101,59 @@ def test_init_fn(crud_model):
     assert result == htypes.crud_tests.sample_record(123, 'item#123')
 
 
-def test_model_layout(crud_model, ctx):
+def _sample_selector_get(value):
+    return htypes.crud_tests.phony_view()
+
+
+@mark.fixture
+def _sample_selector_get_fn(partial_ref):
+    return ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=('value',),
+        service_params=(),
+        raw_fn=_sample_selector_get,
+        bound_fn=_sample_selector_get,
+        )
+
+
+@mark.config_fixture('selector_reg')
+def selector_reg_config(_sample_selector_get_fn):
+    value_t = htypes.crud_tests.sample_selector
+    get_fn = put_fn = None
+    selector = Selector(
+        get_fn=_sample_selector_get_fn,
+        put_fn=None,
+        )
+    return {value_t: selector}
+
+
+@mark.fixture
+def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
+    value_t = htypes.crud_tests.sample_selector
+    return htypes.crud.model(
+        value_t=pyobj_creg.actor_to_ref(value_t),
+        model=mosaic.put(model),
+        key=mosaic.put(123),
+        key_field='id',
+        init_action_fn=mosaic.put(_sample_crud_get_fn),
+        commit_command_d=mosaic.put(htypes.crud.save_d()),
+        commit_action_fn=mosaic.put(_sample_crud_update_fn),
+        )
+
+
+def test_record_model_layout(crud_model, ctx):
     lcs = Mock()
-    result = crud.crud_model_layout(crud_model, lcs, ctx)
-    assert isinstance(result, htypes.form.view)
+    view_piece = crud.crud_model_layout(crud_model, lcs, ctx)
+    assert isinstance(view_piece, htypes.form.view)
+
+
+def test_selector_model_layout(selector_crud_model):
+    lcs = Mock()
+    ctx = Context(
+        value=htypes.crud_tests.sample_selector(),
+        )
+    view_piece = crud.crud_model_layout(selector_crud_model, lcs, ctx)
+    assert isinstance(view_piece, htypes.crud_tests.phony_view)
 
 
 async def test_model_commands(crud_model):
