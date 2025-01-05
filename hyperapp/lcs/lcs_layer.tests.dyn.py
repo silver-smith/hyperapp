@@ -59,7 +59,7 @@ def test_open():
 
 def test_selector_get():
     value = htypes.lcs_layer.layer(
-        d=mosaic.put(htypes.lcs_layer_tests.sample_1_d()),
+        layer_d=mosaic.put(htypes.lcs_layer_tests.sample_1_d()),
         )
     piece = lcs_layer.layer_get(value)
     assert isinstance(piece, htypes.lcs_layer.model)

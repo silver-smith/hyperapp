@@ -1,0 +1,129 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- builtins:web.service
+- common.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.lcs_layer:item
+- legacy_type.lcs_layer:layer
+- legacy_type.lcs_layer:model
+- legacy_type.lcs_view:view
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.selector:template
+- legacy_type.system_fn:ctx_fn
+- ui.directory:directory.module
+definitions:
+  layer_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_layer.module
+      attr_name: layer_get
+  layer_put:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_layer.module
+      attr_name: layer_put
+  lcs_layer-layer.selector-template:
+    type: legacy_type.selector:template
+    value:
+      value_t: legacy_type.lcs_layer:layer
+      get_fn: lcs_layer-layer.selector.get.system-fn
+      put_fn: lcs_layer-layer.selector.put.system-fn
+  lcs_layer-layer.selector.get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: layer_get
+      ctx_params:
+      - value
+      service_params: []
+  lcs_layer-layer.selector.put.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: layer_put
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  lcs_layer.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: lcs_layer
+      file_name: lcs_layer.dyn.py
+      import_list:
+        code.directory: ui.directory:directory.module
+        code.mark: common.mark:mark.module
+        htypes.lcs_layer.item: legacy_type.lcs_layer:item
+        htypes.lcs_layer.layer: legacy_type.lcs_layer:layer
+        htypes.lcs_layer.model: legacy_type.lcs_layer:model
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+  lcs_layer_model.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.lcs_layer:item
+  lcs_layer_model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: lcs_layer_model.list-ui-t
+      system_fn: lcs_layer_model.system-fn
+  lcs_layer_model.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.lcs_layer:model
+      model: lcs_layer_model.model
+  lcs_layer_model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_layers_model
+      ctx_params:
+      - piece
+      - lcs
+      service_params: []
+  lcs_layers_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_layer.module
+      attr_name: lcs_layers_model
+  lcs_open_layers:
+    type: legacy_type.builtin:attribute
+    value:
+      object: lcs_layer.module
+      attr_name: lcs_open_layers
+  lcs_open_layers.d:
+    type: lcs_open_layers_d
+    value: {}
+  lcs_open_layers.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_open_layers.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: lcs_open_layers.system-fn
+  lcs_open_layers.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_open_layers
+      ctx_params:
+      - piece
+      service_params: []
+  lcs_open_layers_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: lcs_layer
+      name: lcs_open_layers_d
+      base: null
+      fields: {}
+  lcs_view_view_lcs_open_layers.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      command: lcs_open_layers.model-command

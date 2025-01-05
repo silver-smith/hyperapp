@@ -5,5 +5,4 @@ item = record:
   d: ref
 
 layer = record:
-  dir: ref list
   layer_d: ref

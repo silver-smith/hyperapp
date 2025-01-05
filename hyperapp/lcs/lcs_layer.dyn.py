@@ -36,5 +36,5 @@ def layer_get(value):
 @mark.selector.put
 def layer_put(piece, current_item):
     return htypes.lcs_layer.layer(
-        d=current_item.d,
+        layer_d=current_item.d,
         )

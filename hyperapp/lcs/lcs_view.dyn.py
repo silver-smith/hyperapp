@@ -48,15 +48,14 @@ async def lcs_remove(piece, current_idx, current_item, lcs, feed_factory):
 
 
 @mark.crud.get_layer(commit_action='move')
-def lcs_get_layer(piece, dir, layer_id):
+def lcs_get_layer(piece, layer_d):
     return htypes.lcs_layer.layer(
-        dir=dir,
         layer_d=layer_d,
         )
 
 
 @mark.crud.move
-def lcs_move_to_another_layer(piece, dir, layer_id, value, lcs):
+def lcs_move_to_another_layer(piece, dir, layer_d, value, lcs):
     source_layer_d = web.summon(layer_d)
     dir_actor = [web.summon(d) for d in dir]
     target_layer_d = web.summon(value.layer_d)

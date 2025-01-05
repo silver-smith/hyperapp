@@ -90,7 +90,6 @@ def test_open_view():
 def test_get_layer(layer_1_d, piece):
     layer = lcs_view.lcs_get_layer(
         piece,
-        dir=(mosaic.put(htypes.lcs_view_tests.sample_1_d()),),
         layer_d=mosaic.put(layer_1_d),
         )
     assert isinstance(layer, htypes.lcs_layer.layer)
@@ -99,8 +98,7 @@ def test_get_layer(layer_1_d, piece):
 def test_move(lcs, piece, layer_1_d):
     dir = (mosaic.put(htypes.lcs_view_tests.sample_1_d()),)
     value = htypes.lcs_layer.layer(
-        dir=dir,
         layer_d=mosaic.put(htypes.lcs_layer_tests.layer_2_d()),
         )
-    lcs_layer.lcs_move_to_another_layer(piece, dir, layer_1_d, value, lcs)
+    lcs_view.lcs_move_to_another_layer(piece, dir, mosaic.put(layer_1_d), value, lcs)
     lcs.move.assert_called_once()
