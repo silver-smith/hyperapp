@@ -25,22 +25,22 @@ class CrudOpenFn:
         return cls(
             name=piece.name,
             value_t_ref=piece.value_t,
-            key_field=piece.key_field,
+            key_fields=piece.key_fields,
             init_action_fn_ref=piece.init_action_fn,
             commit_command_d_ref=piece.commit_command_d,
             commit_action_fn_ref=piece.commit_action_fn,
             )
 
-    def __init__(self, name, value_t_ref, key_field, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
+    def __init__(self, name, value_t_ref, key_fields, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
         self._name = name
         self._value_t_ref = value_t_ref
-        self._key_field = key_field
+        self._key_fields = key_fields
         self._init_action_fn_ref = init_action_fn_ref
         self._commit_command_d_ref = commit_command_d_ref
         self._commit_action_fn_ref = commit_action_fn_ref
 
     def __repr__(self):
-        return f"<CrudOpenFn {self._name} key={self._key_field})>"
+        return f"<CrudOpenFn {self._name} keys={self._key_fields})>"
 
     def missing_params(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
@@ -51,12 +51,15 @@ class CrudOpenFn:
         return self._open(ctx_kw['model'], ctx_kw['current_item'])
 
     def _open(self, model, current_item):
-        key = getattr(current_item, self._key_field)
+        keys = tuple(
+            mosaic.put(getattr(current_item, name))
+            for name in self._key_fields
+            )
         return htypes.crud.model(
             value_t=self._value_t_ref,
             model=mosaic.put(model),
-            key=mosaic.put(key),
-            key_field=self._key_field,
+            keys=keys,
+            key_fields=self._key_fields,
             init_action_fn=self._init_action_fn_ref,
             commit_command_d=self._commit_command_d_ref,
             commit_action_fn=self._commit_action_fn_ref,
@@ -88,12 +91,16 @@ class CrudInitFn:
 
     def _init(self, crud_model):
         model = web.summon(crud_model.model)
-        key = web.summon(crud_model.key)
+        key_values = [web.summon(key) for key in crud_model.keys]
+        keys_kw = {
+            name: value
+            for name, value in zip(crud_model.key_fields, key_values)
+            }
         action_fn = self._system_fn_creg.invite(crud_model.init_action_fn)
         ctx = Context(
             piece=model,
             model=model,
-            **{crud_model.key_field: key},
+            **keys_kw,
             )
         return action_fn.call(ctx)
 
@@ -128,10 +135,10 @@ def crud_model_layout(piece, lcs, ctx, system_fn_creg, selector_reg):
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
-    def __init__(self, d, key_field, key, commit_fn):
+    def __init__(self, d, key_fields, keys, commit_fn):
         super().__init__(d)
-        self._key_field = key_field
-        self._key = key
+        self._key_fields = key_fields
+        self._keys = keys
         self._commit_fn = commit_fn
 
     @property
@@ -143,17 +150,17 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
             )
 
     def bind(self, ctx):
-        return BoundCrudCommitCommand(self._d, self._key_field, self._key, self._commit_fn, ctx)
+        return BoundCrudCommitCommand(self._d, self._key_fields, self._keys, self._commit_fn, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
     _required_kw = {'model', 'input'}
 
-    def __init__(self, d, key_field, key, commit_fn, ctx):
+    def __init__(self, d, key_fields, keys, commit_fn, ctx):
         super().__init__(d)
-        self._key_field = key_field
-        self._key = key
+        self._key_fields = key_fields
+        self._keys = keys
         self._commit_fn = commit_fn
         self._ctx = ctx
 
@@ -174,12 +181,16 @@ class BoundCrudCommitCommand(BoundCommandBase):
         crud_model = self._ctx.model
         model = web.summon(crud_model.model)
         value = _pick_ctx_value(self._ctx)
-        log.info("Run CRUD commit command %r: %s=%r; value=%r", self.name, self._key_field, self._key, value)
+        log.info("Run CRUD commit command %r: %s=%r; value=%r", self.name, self._key_fields, self._keys, value)
+        keys_kw = {
+            name: value
+            for name, value in zip(self._key_fields, self._keys)
+            }
         ctx = self._ctx.clone_with(
             piece=model,
             model=model,
             value=value,
-            **{self._key_field: self._key},
+            **keys_kw,
             )
         return self._commit_fn.call(ctx)
 
@@ -187,6 +198,6 @@ class BoundCrudCommitCommand(BoundCommandBase):
 @mark.command_enum
 def crud_model_commands(piece, system_fn_creg):
     command_d = web.summon(piece.commit_command_d)
-    key = web.summon(piece.key)
+    keys = [web.summon(k) for k in piece.keys]
     commit_fn = system_fn_creg.invite(piece.commit_action_fn)
-    return [UnboundCrudCommitCommand(command_d, piece.key_field, key, commit_fn)]
+    return [UnboundCrudCommitCommand(command_d, piece.key_fields, keys, commit_fn)]

@@ -50,7 +50,8 @@ definitions:
     value:
       name: edit
       value_t: legacy_type.sample_list_crud:form_item
-      key_field: id
+      key_fields:
+      - id
       init_action_fn: sample_list-sample_list.crud.get.system-fn
       commit_command_d: sample_list-sample_list.edit.commit-command.d
       commit_action_fn: sample_list-sample_list.crud.update.system-fn

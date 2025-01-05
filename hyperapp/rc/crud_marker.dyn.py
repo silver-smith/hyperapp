@@ -15,12 +15,13 @@ from .code.crud_ctr import CrudInitTemplateCtr, CrudCommitTemplateCtr
 
 class CrudProbe:
 
-    def __init__(self, system_probe, ctr_collector, module_name, action, fn):
+    def __init__(self, system_probe, ctr_collector, module_name, action, fn, commit_action):
         self._system = system_probe
         self._ctr_collector = ctr_collector
         self._module_name = module_name
         self._action = action
         self._fn = fn
+        self._commit_action = commit_action
         system_probe.add_global(self)
 
     def migrate_to(self, system_probe):
@@ -65,7 +66,7 @@ class CrudProbe:
             raise RuntimeError(f"Model item type is expected to be a record: {item_t}")
         return item_t
 
-    def _pick_key_field(self, item_t, params):
+    def _pick_key_fields(self, item_t, params):
         fields = []
         for name in params.ctx_names:
             if name in {'piece', 'model', 'value'}:
@@ -74,34 +75,30 @@ class CrudProbe:
                 fields.append(name)
         if not fields:
             expected_fields = ", ".join(item_t.fields)
-            raise RuntimeError(f"Expected one key parameter, one of: {expected_fields}")
-        if len(fields) > 1:
-            fields_str = ", ".join(fields)
-            raise RuntimeError(f"Only one key parameter is expected, but got: {fields_str}")
-        return fields[0]
+            raise RuntimeError(f"Expected at least one key parameter, one of: {expected_fields}")
+        return fields
 
     def _template_ctr_kw(self, params):
         model_field, model_t = self._deduce_piece_t(params, ['piece', 'model'])
         ui_t = self._pick_model_ui_t(model_t)
         item_t = self._get_item_t(ui_t)
-        key_field = self._pick_key_field(item_t, params)
+        key_fields = self._pick_key_fields(item_t, params)
         return dict(
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             model_t=model_t,
             action=self._action,
-            key_field=key_field,
+            key_fields=tuple(key_fields),
             ctx_params=params.ctx_names,
             service_params=params.service_names,
             )
 
     def _add_constructor(self, params, result):
-        if self._action == 'get':
+        if self._action == 'get' or self._commit_action:
             ctr = self._init_constructor(params, result)
-        elif self._action == 'update':
-            ctr = self._commit_constructor(params)
         else:
-            raise RuntimeError(f"Action {self._action!r} is not yet supported")
+            # Note: All actions which is not 'get' and does not have commit_action defined treated as commit actions.
+            ctr = self._commit_constructor(params)
         self._ctr_collector.add_constructor(ctr)
 
     def _init_constructor(self, params, result):
@@ -110,6 +107,7 @@ class CrudProbe:
             raise RuntimeError(f"Result of {self._action} action should be a record, but is: {result_t}")
         return CrudInitTemplateCtr(
             **self._template_ctr_kw(params),
+            commit_action=self._commit_action,
             value_t=result_t,
             )
 
@@ -121,16 +119,21 @@ class CrudProbe:
 
 class CrudDecorator:
 
-    def __init__(self, system_probe, ctr_collector, module_name, action):
+    def __init__(self, system_probe, ctr_collector, module_name, action, commit_action=None):
         self._system = system_probe
         self._ctr_collector = ctr_collector
         self._module_name = module_name
         self._action = action
+        self._commit_action = commit_action
 
-    def __call__(self, fn):
+    def __call__(self, fn=None, *, commit_action=None):
+        if fn is None:
+            if self._commit_action:
+                raise RuntimeError(f"Single argument, function is expected for CRUD decorator")
+            return CrudDecorator(self._system, self._ctr_collector, self._module_name, self._action, commit_action)
         check_not_classmethod(fn)
         check_is_function(fn)
-        return CrudProbe(self._system, self._ctr_collector, self._module_name, self._action, fn)
+        return CrudProbe(self._system, self._ctr_collector, self._module_name, self._action, fn, commit_action)
 
 
 class CrudMarker:

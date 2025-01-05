@@ -1,8 +1,8 @@
 model = record:
   value_t: ref
   model: ref
-  key: ref
-  key_field: string
+  keys: ref list
+  key_fields: string list
   init_action_fn: ref
   commit_command_d: ref
   commit_action_fn: ref
@@ -11,7 +11,7 @@ model = record:
 open_command_fn = record:
   name: string
   value_t: ref
-  key_field: string
+  key_fields: string list
   init_action_fn: ref
   commit_command_d: ref
   commit_action_fn: ref

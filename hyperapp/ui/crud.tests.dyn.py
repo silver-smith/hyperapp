@@ -52,7 +52,7 @@ def test_open_command_fn(_sample_crud_get_fn, _sample_crud_update_fn):
     piece = htypes.crud.open_command_fn(
         name='edit',
         value_t=pyobj_creg.actor_to_ref(value_t),
-        key_field='id',
+        key_fields=('id',),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
@@ -80,8 +80,8 @@ def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
         model=mosaic.put(model),
-        key=mosaic.put(123),
-        key_field='id',
+        keys=(mosaic.put(123),),
+        key_fields=('id',),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
@@ -133,8 +133,8 @@ def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
         model=mosaic.put(model),
-        key=mosaic.put(123),
-        key_field='id',
+        keys=(mosaic.put(123),),
+        key_fields=('id',),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
