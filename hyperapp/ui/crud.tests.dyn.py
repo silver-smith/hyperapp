@@ -102,7 +102,7 @@ def test_init_fn(crud_model):
 
 
 def _sample_selector_get(value):
-    return htypes.crud_tests.phony_view()
+    return htypes.crud_tests.phony_model()
 
 
 @mark.fixture
@@ -147,13 +147,19 @@ def test_record_model_layout(crud_model, ctx):
     assert isinstance(view_piece, htypes.form.view)
 
 
-def test_selector_model_layout(selector_crud_model):
+@mark.config_fixture('model_layout_creg')
+def model_layout_config():
+    return {
+        htypes.crud_tests.phony_model:
+            lambda piece, lcs, ctx: htypes.crud_tests.phony_view(),
+        }
+
+
+def test_selector_model_layout(ctx, selector_crud_model):
     lcs = Mock()
-    ctx = Context(
-        value=htypes.crud_tests.sample_selector(),
-        )
+    lcs.get.return_value = None  # Used by visualizer.
     view_piece = crud.crud_model_layout(selector_crud_model, lcs, ctx)
-    assert isinstance(view_piece, htypes.crud_tests.phony_view)
+    assert isinstance(view_piece, htypes.crud_tests.phony_view), view_piece
 
 
 async def test_model_commands(crud_model):

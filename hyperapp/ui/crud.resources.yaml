@@ -73,6 +73,7 @@ definitions:
       function: crud_model_layout
       service_params:
       - system_fn_creg
+      - visualizer
       - selector_reg
   crud_model_commands:
     type: legacy_type.builtin:attribute

@@ -66,6 +66,22 @@ class CrudOpenFn:
             )
 
 
+def _run_crud_init(system_fn_creg, crud_model):
+    model = web.summon(crud_model.model)
+    key_values = [web.summon(key) for key in crud_model.keys]
+    keys_kw = {
+        name: value
+        for name, value in zip(crud_model.key_fields, key_values)
+        }
+    action_fn = system_fn_creg.invite(crud_model.init_action_fn)
+    ctx = Context(
+        piece=model,
+        model=model,
+        **keys_kw,
+        )
+    return action_fn.call(ctx)
+
+
 class CrudInitFn:
 
     _required_kw = {'model'}
@@ -90,19 +106,7 @@ class CrudInitFn:
         return self._init(ctx_kw['model'])
 
     def _init(self, crud_model):
-        model = web.summon(crud_model.model)
-        key_values = [web.summon(key) for key in crud_model.keys]
-        keys_kw = {
-            name: value
-            for name, value in zip(crud_model.key_fields, key_values)
-            }
-        action_fn = self._system_fn_creg.invite(crud_model.init_action_fn)
-        ctx = Context(
-            piece=model,
-            model=model,
-            **keys_kw,
-            )
-        return action_fn.call(ctx)
+        return _run_crud_init(self._system_fn_creg, crud_model)
 
 
 def _form_view(value_t_ref):
@@ -123,14 +127,15 @@ def _pick_ctx_value(ctx):
 
 
 @mark.actor.model_layout_creg
-def crud_model_layout(piece, lcs, ctx, system_fn_creg, selector_reg):
+def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg):
     value_t = pyobj_creg.invite(piece.value_t)
     try:
         selector = selector_reg[value_t]
     except KeyError:
         return _form_view(piece.value_t)
-    value = _pick_ctx_value(ctx)
-    return selector.get_fn.call(ctx, value=value)
+    value = _run_crud_init(system_fn_creg, piece)
+    selector_model = selector.get_fn.call(ctx, value=value)
+    return visualizer(lcs, ctx, selector_model)
 
 
 class UnboundCrudCommitCommand(UnboundCommandBase):

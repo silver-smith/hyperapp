@@ -9,4 +9,5 @@ sample_record = record:
 
 sample_selector = record
 
+phony_model = record
 phony_view = record
