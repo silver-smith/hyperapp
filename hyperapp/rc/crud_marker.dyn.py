@@ -133,7 +133,7 @@ class CrudDecorator:
             return CrudDecorator(self._system, self._ctr_collector, self._module_name, self._action, commit_action)
         check_not_classmethod(fn)
         check_is_function(fn)
-        return CrudProbe(self._system, self._ctr_collector, self._module_name, self._action, fn, commit_action)
+        return CrudProbe(self._system, self._ctr_collector, self._module_name, self._action, fn, self._commit_action)
 
 
 class CrudMarker:
