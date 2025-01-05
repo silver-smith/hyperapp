@@ -13,9 +13,9 @@ log = logging.getLogger(__name__)
 
 
 @mark.model
-def lcs_layers_view(piece, lcs):
+def lcs_layers_model(piece, lcs):
     return [
-        htypes.lcs_layers_view.item(
+        htypes.lcs_layer.item(
             name=d_to_name(layer_d),
             d=mosaic.put(layer_d),
             )
@@ -25,24 +25,24 @@ def lcs_layers_view(piece, lcs):
 
 @mark.command
 def lcs_open_layers(piece):
-    return htypes.lcs_layers_view.view()
+    return htypes.lcs_layer.model()
 
 
 @mark.selector.get
 def layer_get(value):
-    return htypes.lcs_layers_view.view()
+    return htypes.lcs_layer.model()
 
 
 @mark.selector.put
 def layer_put(piece, current_item):
-    return htypes.lcs_layers_view.layer(
+    return htypes.lcs_layer.layer(
         d=current_item.d,
         )
 
 
 @mark.actor.model_layout_creg
 def layer_selector_layout(piece, lcs, ctx, visualizer):
-    return visualizer(lcs, ctx, htypes.lcs_layers_view.view())
+    return visualizer(lcs, ctx, htypes.lcs_layer.model())
 
 
 @mark.command

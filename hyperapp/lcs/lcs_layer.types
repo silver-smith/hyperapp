@@ -1,4 +1,4 @@
-view = record
+model = record
 
 item = record:
   name: string
