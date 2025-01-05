@@ -73,17 +73,3 @@ def test_selector_put():
         )
     value = lcs_layer.layer_put(piece, current_item)
     assert isinstance(value, htypes.lcs_layer.layer)
-
-
-def test_layout(lcs, ctx, piece):
-    view = lcs_layer.layer_selector_layout(piece, lcs, ctx)
-    assert view
-
-
-def test_select(lcs, piece):
-    current_item = htypes.lcs_layer.item(
-        name="<unused>",
-        d=mosaic.put(htypes.lcs_layer_tests.layer_2_d()),
-        )
-    lcs_layer.select_layer(piece, current_item, lcs)
-    lcs.move.assert_called_once()

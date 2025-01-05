@@ -11,12 +11,12 @@ from .tested.code import lcs_view
 
 
 @mark.fixture
-def layer_d():
-    return htypes.lcs_view_tests.layer_d()
+def layer_1_d():
+    return htypes.lcs_view_tests.layer_1_d()
 
 
 @mark.fixture
-def lcs(layer_d):
+def lcs(layer_1_d):
     dir_1 = {
         htypes.lcs_view_tests.sample_1_d(),
         }
@@ -25,12 +25,12 @@ def lcs(layer_d):
         pyobj_creg.actor_to_piece(htypes.lcs_view_tests.sample_2_d),
         }
     items = [
-        (layer_d, dir_1, htypes.lcs_view_tests.sample_model_1()),
-        (layer_d, dir_2, htypes.lcs_view_tests.sample_model_2()),
+        (layer_1_d, dir_1, htypes.lcs_view_tests.sample_model_1()),
+        (layer_1_d, dir_2, htypes.lcs_view_tests.sample_model_2()),
         ]
     mock = MagicMock()
     mock.__iter__.return_value = items
-    mock.layers.return_value = [layer_d]
+    mock.layers.return_value = [layer_1_d]
     return mock
 
 
@@ -54,10 +54,10 @@ def test_filtered_view(lcs):
     assert len(item_list) == 1, item_list
 
 
-async def test_remove(layer_d, piece, lcs, feed_factory):
+async def test_remove(layer_1_d, piece, lcs, feed_factory):
     feed = feed_factory(piece)
     current_item = htypes.lcs_view.item(
-        layer_d=mosaic.put(layer_d),
+        layer_d=mosaic.put(layer_1_d),
         layer="<unused>",
         dir=(mosaic.put(htypes.lcs_view_tests.sample_1_d()),),
         piece=mosaic.put(htypes.lcs_view_tests.sample_model_1()),
@@ -69,22 +69,9 @@ async def test_remove(layer_d, piece, lcs, feed_factory):
     await feed.wait_for_diffs(count=1)
 
 
-# def test_move(layer_d, piece):
-#     current_item = htypes.lcs_view.item(
-#         layer_d=mosaic.put(layer_d),
-#         layer="<unused>",
-#         dir=(mosaic.put(htypes.lcs_view_tests.sample_1_d()),),
-#         piece=mosaic.put(htypes.lcs_view_tests.sample_model_1()),
-#         dir_str="<unused>",
-#         piece_str="<unused>",
-#         )
-#     selector = lcs_view.lcs_move_to_another_layer(piece, current_item)
-#     assert selector
-
-
-def test_open_piece(layer_d, piece):
+def test_open_piece(layer_1_d, piece):
     current_item = htypes.lcs_view.item(
-        layer_d=mosaic.put(layer_d),
+        layer_d=mosaic.put(layer_1_d),
         layer="<unused>",
         dir=(mosaic.put(htypes.lcs_view_tests.sample_1_d()),),
         piece=mosaic.put(htypes.lcs_view_tests.sample_model_1()),
@@ -98,3 +85,22 @@ def test_open_piece(layer_d, piece):
 def test_open_view():
     piece = lcs_view.open_lcs_view()
     assert piece
+
+
+def test_get_layer(layer_1_d, piece):
+    layer = lcs_view.lcs_get_layer(
+        piece,
+        dir=(mosaic.put(htypes.lcs_view_tests.sample_1_d()),),
+        layer_d=mosaic.put(layer_1_d),
+        )
+    assert isinstance(layer, htypes.lcs_layer.layer)
+
+
+def test_move(lcs, piece, layer_1_d):
+    dir = (mosaic.put(htypes.lcs_view_tests.sample_1_d()),)
+    value = htypes.lcs_layer.layer(
+        dir=dir,
+        layer_d=mosaic.put(htypes.lcs_layer_tests.layer_2_d()),
+        )
+    lcs_layer.lcs_move_to_another_layer(piece, dir, layer_1_d, value, lcs)
+    lcs.move.assert_called_once()

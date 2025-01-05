@@ -38,19 +38,3 @@ def layer_put(piece, current_item):
     return htypes.lcs_layer.layer(
         d=current_item.d,
         )
-
-
-@mark.actor.model_layout_creg
-def layer_selector_layout(piece, lcs, ctx, visualizer):
-    return visualizer(lcs, ctx, htypes.lcs_layer.model())
-
-
-@mark.command
-def select_layer(piece, current_item, lcs):
-    source_layer_d = web.summon(piece.source_layer_d)
-    dir = [web.summon(d) for d in piece.dir]
-    target_layer_d = web.summon(current_item.d)
-    if target_layer_d == source_layer_d:
-        return
-    lcs.move(dir, source_layer_d, target_layer_d)
-    return htypes.lcs_view.view(filter=())

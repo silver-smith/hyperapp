@@ -47,12 +47,23 @@ async def lcs_remove(piece, current_idx, current_item, lcs, feed_factory):
     await feed.send(ListDiff.Remove(current_idx))
 
 
-@mark.command
-def lcs_move_to_another_layer(piece, current_item):
-    return htypes.lcs_view.layer_selector(
-        source_layer_d=current_item.layer_d,
-        dir=current_item.dir,
+@mark.crud.get_layer(commit_action='move')
+def lcs_get_layer(piece, dir, layer_id):
+    return htypes.lcs_layer.layer(
+        dir=dir,
+        layer_d=layer_d,
         )
+
+
+@mark.crud.move
+def lcs_move_to_another_layer(piece, dir, layer_id, value, lcs):
+    source_layer_d = web.summon(layer_d)
+    dir_actor = [web.summon(d) for d in dir]
+    target_layer_d = web.summon(value.layer_d)
+    if target_layer_d == source_layer_d:
+        return
+    lcs.move(dir_actor, source_layer_d, target_layer_d)
+    return htypes.lcs_view.view(filter=())
 
 
 @mark.command
