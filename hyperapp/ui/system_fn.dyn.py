@@ -49,11 +49,15 @@ class ContextFn:
 
     def missing_params(self, ctx, **kw):
         fn_kw = self.fn_kw(ctx, **kw)
-        return set(self._ctx_params) - fn_kw.keys()
+        return self._ctx_params_set - fn_kw.keys()
+
+    @property
+    def _ctx_params_set(self):
+        return set(self._ctx_params)
 
     def _fn_kw(self, ctx, additional_kw):
         fn_kw = self.fn_kw(ctx, **additional_kw)
-        missing_params = set(self._ctx_params) - fn_kw.keys()
+        missing_params = self._ctx_params_set - fn_kw.keys()
         if missing_params:
             missing_str = ", ".join(missing_params)
             raise RuntimeError(f"{self._raw_fn}: Required parameters not provided: {missing_str}")
@@ -66,6 +70,8 @@ class ContextFn:
         kw = {
             **ctx.as_dict(),
             }
+        if not {'widget', 'state'} & self._ctx_params_set:
+            return kw
         try:
             view = ctx.view
         except KeyError:
@@ -77,7 +83,8 @@ class ContextFn:
         if widget is None:
             raise RuntimeError(f"{self!r}: widget is gone")
         kw['widget'] = widget
-        kw['state'] = view.widget_state(widget)
+        if 'state' in self._ctx_params_set:
+            kw['state'] = view.widget_state(widget)
         return kw
 
     def partial_ref(self, ctx, **kw):
