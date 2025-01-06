@@ -35,7 +35,7 @@ definitions:
     value:
       value_t: legacy_type.lcs_layer:layer
       get_fn: lcs_layer-layer.selector.get.system-fn
-      put_fn: lcs_layer-layer.selector.put.system-fn
+      pick_fn: lcs_layer-layer.selector.pick.system-fn
   lcs_layer-layer.selector.get.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -43,7 +43,7 @@ definitions:
       ctx_params:
       - value
       service_params: []
-  lcs_layer-layer.selector.put.system-fn:
+  lcs_layer-layer.selector.pick.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: layer_put

@@ -119,10 +119,10 @@ def _sample_selector_get_fn(partial_ref):
 @mark.config_fixture('selector_reg')
 def selector_reg_config(_sample_selector_get_fn):
     value_t = htypes.crud_tests.sample_selector
-    get_fn = put_fn = None
+    get_fn = pick_fn = None
     selector = Selector(
         get_fn=_sample_selector_get_fn,
-        put_fn=None,
+        pick_fn=None,
         )
     return {value_t: selector}
 

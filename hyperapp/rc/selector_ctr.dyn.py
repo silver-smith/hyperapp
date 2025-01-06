@@ -87,9 +87,9 @@ class SelectorGetTemplateCtr(SelectorTemplateCtrBase):
         ctr.update_selector_targets(resource_tgt, target_set)
 
 
-class SelectorPutTemplateCtr(SelectorTemplateCtrBase):
+class SelectorPickTemplateCtr(SelectorTemplateCtrBase):
 
-    _action = 'put'
+    _action = 'pick'
 
     @classmethod
     def from_piece(cls, piece):
@@ -107,7 +107,7 @@ class SelectorPutTemplateCtr(SelectorTemplateCtrBase):
 
     @property
     def piece(self):
-        return htypes.selector_ctr.put_ctr(
+        return htypes.selector_ctr.pick_ctr(
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             ctx_params=tuple(self._ctx_params),
@@ -121,19 +121,19 @@ class SelectorCtr(Constructor):
     def __init__(self, value_t):
         self._value_t = value_t
         self._get_resolved_tgt = None
-        self._put_resolved_tgt = None
+        self._pick_resolved_tgt = None
 
     def update_selector_targets(self, resource_tgt, target_set):
         self._get_resolved_tgt = target_set.factory.config_item_resolved(
             _ACTION_SERVICE_NAME, _action_resource_name(self._type_name, 'get'))
-        self._put_resolved_tgt = target_set.factory.config_item_resolved(
-            _ACTION_SERVICE_NAME, _action_resource_name(self._type_name, 'put'))
+        self._pick_resolved_tgt = target_set.factory.config_item_resolved(
+            _ACTION_SERVICE_NAME, _action_resource_name(self._type_name, 'pick'))
         service_name = 'selector_reg'
         req = CfgItemReq(service_name, self._value_t)
         _, resolved_tgt, _ = target_set.factory.config_items(
             service_name, self._type_name, req, provider=resource_tgt, ctr=self)
         resolved_tgt.add_dep(self._get_resolved_tgt)
-        resolved_tgt.add_dep(self._put_resolved_tgt)
+        resolved_tgt.add_dep(self._pick_resolved_tgt)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def get_component(self, name_to_res):
@@ -142,12 +142,12 @@ class SelectorCtr(Constructor):
     def make_component(self, types, python_module, name_to_res):
         get_fn = self._get_resolved_tgt.constructor.make_function(
             types, python_module, name_to_res)
-        put_fn = self._put_resolved_tgt.constructor.make_function(
+        pick_fn = self._pick_resolved_tgt.constructor.make_function(
             types, python_module, name_to_res)
         template = htypes.selector.template(
             value_t=pyobj_creg.actor_to_ref(self._value_t),
             get_fn=mosaic.put(get_fn),
-            put_fn=mosaic.put(put_fn),
+            pick_fn=mosaic.put(pick_fn),
             )
         name_to_res[f'{self._type_name}.selector-template'] = template
 

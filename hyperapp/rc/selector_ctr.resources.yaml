@@ -5,7 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.selector:template
 - legacy_type.selector_ctr:get_ctr
-- legacy_type.selector_ctr:put_ctr
+- legacy_type.selector_ctr:pick_ctr
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - rc.cfg_item_req:cfg_item_req.module
@@ -22,7 +22,7 @@ definitions:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.selector.template: legacy_type.selector:template
         htypes.selector_ctr.get_ctr: legacy_type.selector_ctr:get_ctr
-        htypes.selector_ctr.put_ctr: legacy_type.selector_ctr:put_ctr
+        htypes.selector_ctr.pick_ctr: legacy_type.selector_ctr:pick_ctr
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -48,21 +48,21 @@ definitions:
       function: SelectorGetTemplateCtr.from_piece
       service_params: []
 
-  SelectorPutTemplateCtr:
+  SelectorPickTemplateCtr:
     type: legacy_type.builtin:attribute
     value:
       object: selector_ctr.module
-      attr_name: SelectorPutTemplateCtr
+      attr_name: SelectorPickTemplateCtr
 
-  SelectorPutTemplateCtr.from_piece:
+  SelectorPickTemplateCtr.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: SelectorPutTemplateCtr
+      object: SelectorPickTemplateCtr
       attr_name: from_piece
 
-  selector_ctr_put_ctr.actor-template:
+  selector_ctr_pick_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.selector_ctr:put_ctr
-      function: SelectorPutTemplateCtr.from_piece
+      t: legacy_type.selector_ctr:pick_ctr
+      function: SelectorPickTemplateCtr.from_piece
       service_params: []

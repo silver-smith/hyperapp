@@ -21,7 +21,7 @@ def template_piece():
     return htypes.selector.template(
         value_t=pyobj_creg.actor_to_ref(htypes.selector_tests.sample_value),
         get_fn=mosaic.put(system_fn),
-        put_fn=mosaic.put(system_fn),
+        pick_fn=mosaic.put(system_fn),
         )
 
 

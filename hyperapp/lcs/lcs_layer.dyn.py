@@ -33,7 +33,7 @@ def layer_get(value):
     return htypes.lcs_layer.model()
 
 
-@mark.selector.put
+@mark.selector.pick
 def layer_put(piece, current_item):
     return htypes.lcs_layer.layer(
         layer_d=current_item.d,

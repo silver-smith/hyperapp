@@ -7,9 +7,9 @@ from .code.mark import mark
 
 class Selector:
 
-    def __init__(self, get_fn, put_fn):
+    def __init__(self, get_fn, pick_fn):
         self.get_fn = get_fn
-        self.put_fn = put_fn
+        self.pick_fn = pick_fn
 
 
 class SelectorTemplate:
@@ -20,13 +20,13 @@ class SelectorTemplate:
         return cls(
             value_t=pyobj_creg.invite(piece.value_t),
             get_fn=web.summon(piece.get_fn),
-            put_fn=web.summon(piece.put_fn),
+            pick_fn=web.summon(piece.pick_fn),
             )
 
-    def __init__(self, value_t, get_fn, put_fn):
+    def __init__(self, value_t, get_fn, pick_fn):
         self._value_t = value_t
         self._get_fn = get_fn
-        self._put_fn = put_fn
+        self._pick_fn = pick_fn
 
     @property
     def key(self):
@@ -36,7 +36,7 @@ class SelectorTemplate:
         system_fn_creg = system.resolve_service('system_fn_creg')
         return Selector(
             get_fn=system_fn_creg.animate(self._get_fn),
-            put_fn=system_fn_creg.animate(self._put_fn),
+            pick_fn=system_fn_creg.animate(self._pick_fn),
             )
 
 

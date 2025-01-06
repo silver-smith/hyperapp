@@ -6,7 +6,7 @@ from .code.marker_utils import (
     check_not_classmethod,
     split_params,
     )
-from .code.selector_ctr import SelectorGetTemplateCtr, SelectorPutTemplateCtr
+from .code.selector_ctr import SelectorGetTemplateCtr, SelectorPickTemplateCtr
 
 
 class SelectorProbe:
@@ -49,11 +49,11 @@ class SelectorGetProbe(SelectorProbe):
         self._ctr_collector.add_constructor(ctr)
 
 
-class SelectorPutProbe(SelectorProbe):
+class SelectorPickProbe(SelectorProbe):
 
     def _add_constructor(self, params, result):
         value_t = deduce_t(result)
-        ctr = SelectorPutTemplateCtr(
+        ctr = SelectorPickTemplateCtr(
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             ctx_params=params.ctx_names,
@@ -89,5 +89,5 @@ class SelectorMarker:
         return SelectorDecorator(self._system, self._ctr_collector, self._module_name, SelectorGetProbe)
 
     @property
-    def put(self):
-        return SelectorDecorator(self._system, self._ctr_collector, self._module_name, SelectorPutProbe)
+    def pick(self):
+        return SelectorDecorator(self._system, self._ctr_collector, self._module_name, SelectorPickProbe)

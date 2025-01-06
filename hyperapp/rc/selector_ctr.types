@@ -4,7 +4,7 @@ get_ctr = record:
   service_params: string list
   value_t: ref
 
-put_ctr = record:
+pick_ctr = record:
   module_name: string
   attr_qual_name: string list
   ctx_params: string list
