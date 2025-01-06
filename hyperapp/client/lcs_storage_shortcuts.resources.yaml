@@ -7,6 +7,7 @@ import:
 - legacy_type.navigator:go_back_d
 - models.column_list:open_column_list.d
 - models.command_list_model:set_shortcut.d
+- models.file_bundles:open.d
 - models.global_commands:open_global_commands.d
 - models.global_commands:run_command.d
 - models.model_commands:open_model_commands.d
@@ -108,6 +109,10 @@ definitions:
         - sample.sample_list_crud:sample_list-sample_list.edit.commit-command.d
         - command_shortcut_lcs_d_1
         value: shortcut_Ctrl_Return
+      - key:
+        - command_shortcut_lcs_d_1
+        - models.file_bundles:open.d
+        value: shortcut_Return
   shortcut_Alt_F1:
     type: legacy_type.builtin:string
     value: Alt+F1
