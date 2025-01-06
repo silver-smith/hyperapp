@@ -43,13 +43,6 @@ class ResourceRegistry:
     def get_module(self, module_name):
         return self._module_registry.get(module_name)
 
-    @property
-    def associations(self):
-        association_list = []
-        for module in self._module_registry.values():
-            association_list += module.associations
-        return association_list
-
     def set_module(self, name, module):
         self._module_registry[name] = module
 

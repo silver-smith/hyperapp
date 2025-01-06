@@ -26,10 +26,6 @@ class BuiltinServiceResourceModule:
     def __iter__(self):
         return iter(self._name_to_piece)
 
-    @property
-    def associations(self):
-        return []
-
     def merge_with(self, other):
         assert isinstance(other, BuiltinServiceResourceModule)
         return BuiltinServiceResourceModule({

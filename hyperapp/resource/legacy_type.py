@@ -25,10 +25,6 @@ class LegacyTypeResourceModule:
     def __iter__(self):
         return iter(self._name_to_piece)
 
-    @property
-    def associations(self):
-        return []
-
 
 def add_builtin_types_to_pyobj_cache(pyobj_creg, builtin_types):
     for t in builtin_types.values():
