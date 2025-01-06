@@ -5,6 +5,7 @@ model = record:
   key_fields: string list
   init_action_fn: ref
   commit_command_d: ref
+  get_fn: ref opt
   commit_action_fn: ref
 
 

@@ -42,6 +42,21 @@ def _sample_crud_update_fn():
         )
 
 
+def _sample_selector_get(value):
+    return htypes.crud_tests.phony_model()
+
+
+@mark.fixture
+def _sample_selector_get_fn(partial_ref):
+    return ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=('value',),
+        service_params=(),
+        raw_fn=_sample_selector_get,
+        bound_fn=_sample_selector_get,
+        )
+
+
 @mark.fixture
 def ctx():
     return Context()
@@ -67,6 +82,30 @@ def test_open_command_fn(_sample_crud_get_fn, _sample_crud_update_fn):
     assert not fn.missing_params(ctx)
     crud_model = fn.call(ctx)
     assert isinstance(crud_model, htypes.crud.model)
+    assert not crud_model.get_fn
+
+
+def test_open_command_fn_with_selector(_sample_crud_get_fn, _sample_crud_update_fn):
+    value_t = htypes.crud_tests.sample_selector
+    piece = htypes.crud.open_command_fn(
+        name='edit',
+        value_t=pyobj_creg.actor_to_ref(value_t),
+        key_fields=('id',),
+        init_action_fn=mosaic.put(_sample_crud_get_fn),
+        commit_command_d=mosaic.put(htypes.crud.save_d()),
+        commit_action_fn=mosaic.put(_sample_crud_update_fn),
+        )
+    fn = crud.CrudOpenFn.from_piece(piece)
+
+    assert fn.missing_params(Context()) == {'model', 'current_item'}
+    ctx = Context(
+        model=htypes.crud_tests.sample_model(),
+        current_item=htypes.crud_tests.sample_item(id=123),
+        )
+    assert not fn.missing_params(ctx)
+    crud_model = fn.call(ctx)
+    assert isinstance(crud_model, htypes.crud.model)
+    assert crud_model.get_fn
 
 
 @mark.fixture
@@ -84,6 +123,7 @@ def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
         key_fields=('id',),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
+        get_fn=None,
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
         )
 
@@ -101,21 +141,6 @@ def test_init_fn(crud_model):
     assert result == htypes.crud_tests.sample_record(123, 'item#123')
 
 
-def _sample_selector_get(value):
-    return htypes.crud_tests.phony_model()
-
-
-@mark.fixture
-def _sample_selector_get_fn(partial_ref):
-    return ContextFn(
-        partial_ref=partial_ref, 
-        ctx_params=('value',),
-        service_params=(),
-        raw_fn=_sample_selector_get,
-        bound_fn=_sample_selector_get,
-        )
-
-
 @mark.config_fixture('selector_reg')
 def selector_reg_config(_sample_selector_get_fn):
     value_t = htypes.crud_tests.sample_selector
@@ -128,7 +153,7 @@ def selector_reg_config(_sample_selector_get_fn):
 
 
 @mark.fixture
-def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
+def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn, _sample_selector_get_fn):
     value_t = htypes.crud_tests.sample_selector
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
@@ -137,6 +162,7 @@ def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
         key_fields=('id',),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
+        get_fn=mosaic.put(_sample_selector_get_fn.piece),
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
         )
 

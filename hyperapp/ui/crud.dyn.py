@@ -21,19 +21,21 @@ class CrudOpenFn:
 
     @classmethod
     @mark.actor.system_fn_creg
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, selector_reg):
         return cls(
+            selector_reg=selector_reg,
             name=piece.name,
-            value_t_ref=piece.value_t,
+            value_t=pyobj_creg.invite(piece.value_t),
             key_fields=piece.key_fields,
             init_action_fn_ref=piece.init_action_fn,
             commit_command_d_ref=piece.commit_command_d,
             commit_action_fn_ref=piece.commit_action_fn,
             )
 
-    def __init__(self, name, value_t_ref, key_fields, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
+    def __init__(self, selector_reg, name, value_t, key_fields, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
+        self._selector_reg = selector_reg
         self._name = name
-        self._value_t_ref = value_t_ref
+        self._value_t = value_t
         self._key_fields = key_fields
         self._init_action_fn_ref = init_action_fn_ref
         self._commit_command_d_ref = commit_command_d_ref
@@ -55,13 +57,20 @@ class CrudOpenFn:
             mosaic.put(getattr(current_item, name))
             for name in self._key_fields
             )
+        try:
+            selector = self._selector_reg[self._value_t]
+        except KeyError:
+            get_fn = None
+        else:
+            get_fn = selector.get_fn
         return htypes.crud.model(
-            value_t=self._value_t_ref,
+            value_t=pyobj_creg.actor_to_ref(self._value_t),
             model=mosaic.put(model),
             keys=keys,
             key_fields=self._key_fields,
             init_action_fn=self._init_action_fn_ref,
             commit_command_d=self._commit_command_d_ref,
+            get_fn=mosaic.put(get_fn.piece) if get_fn else None,
             commit_action_fn=self._commit_action_fn_ref,
             )
 
@@ -128,13 +137,11 @@ def _pick_ctx_value(ctx):
 
 @mark.actor.model_layout_creg
 def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg):
-    value_t = pyobj_creg.invite(piece.value_t)
-    try:
-        selector = selector_reg[value_t]
-    except KeyError:
+    if not piece.get_fn:
         return _form_view(piece.value_t)
+    get_fn = system_fn_creg.invite(piece.get_fn)
     value = _run_crud_init(system_fn_creg, piece)
-    selector_model = selector.get_fn.call(ctx, value=value)
+    selector_model = get_fn.call(ctx, value=value)
     return visualizer(lcs, ctx, selector_model)
 
 

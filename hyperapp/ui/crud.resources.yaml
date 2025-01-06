@@ -107,4 +107,5 @@ definitions:
     value:
       t: legacy_type.crud:open_command_fn
       function: CrudOpenFn.from_piece
-      service_params: []
+      service_params:
+      - selector_reg
