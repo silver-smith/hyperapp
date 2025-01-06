@@ -12,6 +12,7 @@ import:
 - models.model_commands:open_model_commands.d
 - models.model_commands:run_command.d
 - sample.sample_commands:show_state.d
+- sample.sample_list_crud:sample_list-sample_list.edit.commit-command.d
 - sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
 - ui.layout:open_layout_tree.d
 - ui.layout:set_shortcut.d
@@ -103,6 +104,10 @@ definitions:
         - sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
         - command_shortcut_lcs_d_1
         value: shortcut_E
+      - key:
+        - sample.sample_list_crud:sample_list-sample_list.edit.commit-command.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Ctrl_Return
   shortcut_Alt_F1:
     type: legacy_type.builtin:string
     value: Alt+F1
@@ -127,6 +132,9 @@ definitions:
   shortcut_Ctrl_F4:
     type: legacy_type.builtin:string
     value: Ctrl+F4
+  shortcut_Ctrl_Return:
+    type: legacy_type.builtin:string
+    value: Ctrl+Return
   shortcut_E:
     type: legacy_type.builtin:string
     value: E
