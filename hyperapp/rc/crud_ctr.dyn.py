@@ -26,10 +26,11 @@ class CrudTemplateCtr(ModuleCtr):
         ready_tgt.set_provider(resource_tgt)
         resolved_tgt.resolve(self)
 
-    def get_component(self, name_to_res):
-        return name_to_res[f'{self._resource_name}.system-fn']
+    @property
+    def key_fields(self):
+        return set(self._key_fields)
 
-    def make_component(self, types, python_module, name_to_res):
+    def make_function(self, types, python_module, name_to_res):
         object = python_module
         prefix = []
         for name in self._attr_qual_name:
@@ -114,7 +115,6 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             model_t=self._model_t,
             name=open_command_name,
             value_t=self._value_t,
-            key_fields=self._key_fields,
             commit_command_name=commit_command_name,
             commit_action=commit_action,
             )
@@ -154,12 +154,11 @@ class CrudCommitTemplateCtr(CrudTemplateCtr):
 
 class CrudOpenCommandCtr(ModuleCtr):
 
-    def __init__(self, module_name, model_t, name, value_t, key_fields, commit_command_name, commit_action):
+    def __init__(self, module_name, model_t, name, value_t, commit_command_name, commit_action):
         super().__init__(module_name)
         self._model_t = model_t
         self._name = name
         self._value_t = value_t
-        self._key_fields = key_fields
         self._commit_command_name = commit_command_name
         self._commit_action = commit_action
         self._init_resolved_tgt = None
@@ -182,15 +181,19 @@ class CrudOpenCommandCtr(ModuleCtr):
         return d_t()
 
     def make_component(self, types, python_module, name_to_res):
-        init_action_fn = self._init_resolved_tgt.constructor.make_component(
+        key_fields = sorted(
+            self._init_resolved_tgt.constructor.key_fields
+            | self._commit_resolved_tgt.constructor.key_fields
+            )
+        init_action_fn = self._init_resolved_tgt.constructor.make_function(
             types, python_module, name_to_res)
-        commit_action_fn = self._commit_resolved_tgt.constructor.make_component(
+        commit_action_fn = self._commit_resolved_tgt.constructor.make_function(
             types, python_module, name_to_res)
         commit_command_d = self._command_d(types, self._commit_command_name)
         system_fn = htypes.crud.open_command_fn(
             name=self._name,
             value_t=pyobj_creg.actor_to_ref(self._value_t),
-            key_fields=tuple(self._key_fields),
+            key_fields=tuple(key_fields),
             init_action_fn=mosaic.put(init_action_fn),
             commit_command_d=mosaic.put(commit_command_d),
             commit_action_fn=mosaic.put(commit_action_fn),

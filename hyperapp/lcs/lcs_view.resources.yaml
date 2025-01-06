@@ -133,6 +133,7 @@ definitions:
       name: move
       value_t: legacy_type.lcs_layer:layer
       key_fields:
+      - dir
       - layer_d
       init_action_fn: lcs_view-view.crud.get_layer.system-fn
       commit_command_d: lcs_view-view.move.commit-command.d
