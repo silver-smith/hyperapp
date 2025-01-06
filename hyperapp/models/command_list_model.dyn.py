@@ -13,8 +13,8 @@ from .code.key_input_dialog import run_key_input_dialog
 log = logging.getLogger(__name__)
 
 
-def command_item_to_view_item(lcs, item):
-    return htypes.command_list_view.item(
+def command_item_to_model_item(lcs, item):
+    return htypes.command_list_model.item(
         ui_command_d=mosaic.put(item.d),
         model_command_d=mosaic.put(item.model_command_d),
         name=item.name,
@@ -27,7 +27,7 @@ def command_item_to_view_item(lcs, item):
 
 
 def _view_item(item, shortcut):
-    return htypes.command_list_view.item(
+    return htypes.command_list_model.item(
         ui_command_d=item.ui_command_d,
         model_command_d=item.model_command_d,
         name=item.name,

@@ -84,7 +84,7 @@ def test_list_model_commands(lcs, piece):
 
 async def test_run_command(lcs, piece):
     navigator = Mock()
-    current_item = htypes.command_list_view.item(
+    current_item = htypes.command_list_model.item(
         ui_command_d=mosaic.put(htypes.model_commands_tests.sample_command_2_d()),
         model_command_d=mosaic.put(htypes.model_commands_tests.sample_model_command_2_d()),
         name="<unused>",

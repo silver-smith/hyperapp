@@ -39,7 +39,7 @@ def piece(base_piece):
 @mark.fixture
 def open_command_layout_context(view_reg, piece):
     ctx = Context()
-    current_item = htypes.command_list_view.item(
+    current_item = htypes.command_list_model.item(
         ui_command_d=mosaic.put(htypes.command_layout_context_tests.sample_command_d()),
         model_command_d=mosaic.put(htypes.command_layout_context_tests.sample_model_command_d()),
         name="<unused>",

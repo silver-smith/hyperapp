@@ -9,7 +9,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.model_command import model_command_ctx
-from .code.command_list_view import command_item_to_view_item
+from .code.command_list_model import command_item_to_model_item
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def list_model_commands(piece, ctx, lcs, ui_model_command_items):
     command_ctx = model_command_ctx(ctx, model, model_state)
     command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
     return [
-        command_item_to_view_item(lcs, item)
+        command_item_to_model_item(lcs, item)
         for item in command_item_list.items()
         if not item.is_pure_global
         ]

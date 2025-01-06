@@ -6,7 +6,7 @@ import:
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.navigator:go_back_d
 - models.column_list:open_column_list.d
-- models.command_list_view:set_shortcut.d
+- models.command_list_model:set_shortcut.d
 - models.global_commands:open_global_commands.d
 - models.global_commands:run_command.d
 - models.model_commands:open_model_commands.d
@@ -45,7 +45,7 @@ definitions:
         - command_shortcut_lcs_d_1
         value: shortcut_F1
       - key:
-        - models.command_list_view:set_shortcut.d
+        - models.command_list_model:set_shortcut.d
         - command_shortcut_lcs_d_1
         value: shortcut_Space
       - key:

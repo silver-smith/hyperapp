@@ -10,7 +10,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:properties
-- legacy_type.command_list_view:item
+- legacy_type.command_list_model:item
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.identity_command:add_identity_command_d
@@ -18,7 +18,7 @@ import:
 - legacy_type.model_commands:model
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
-- models.command_list_view:command_list_view.module
+- models.command_list_model:command_list_model.module
 - ui.command:command.module
 - ui.directory:directory.module
 - ui.model_command:model_command.module
@@ -69,7 +69,7 @@ definitions:
       file_name: identity_command.dyn.py
       import_list:
         code.command: ui.command:command.module
-        code.command_list_view: models.command_list_view:command_list_view.module
+        code.command_list_model: models.command_list_model:command_list_model.module
         code.directory: ui.directory:directory.module
         code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
@@ -93,7 +93,7 @@ definitions:
   model_commands_model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
-      item_t: legacy_type.command_list_view:item
+      item_t: legacy_type.command_list_model:item
   model_commands_model_add_identity_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

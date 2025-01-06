@@ -9,7 +9,7 @@ from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
 from .code.ui_model_command import UnboundUiModelCommand, CommandItem
 from .fixtures import feed_fixtures
-from .tested.code import command_list_view
+from .tested.code import command_list_model
 
 
 def _sample_fn(model, state):
@@ -32,7 +32,7 @@ def test_command_item_to_item(partial_ref, view_reg, visualizer, lcs):
         bound_fn=_sample_fn,
         )
     model_command = UnboundModelCommand(
-        d=htypes.command_list_view_tests.sample_model_command_d(),
+        d=htypes.command_list_model_tests.sample_model_command_d(),
         ctx_fn=system_fn,
         properties=htypes.command.properties(False, False, False),
         )
@@ -40,24 +40,24 @@ def test_command_item_to_item(partial_ref, view_reg, visualizer, lcs):
         view_reg=view_reg,
         visualizer=visualizer,
         lcs=lcs,
-        d=htypes.command_list_view_tests.sample_model_command_d(),
+        d=htypes.command_list_model_tests.sample_model_command_d(),
         model_command=model_command,
         layout=None,
         )
     command_item = CommandItem(
-        d=htypes.command_list_view_tests.sample_command_d(),
-        model_command_d=htypes.command_list_view_tests.sample_model_command_d(),
+        d=htypes.command_list_model_tests.sample_command_d(),
+        model_command_d=htypes.command_list_model_tests.sample_model_command_d(),
         command=command,
         )
-    view_item = command_list_view.command_item_to_view_item(lcs, command_item)
+    view_item = command_list_model.command_item_to_model_item(lcs, command_item)
     assert view_item
 
 
 @mark.fixture
 def current_item():
-    command_d = htypes.command_list_view_tests.sample_model_command_d()
-    model_command_d = htypes.command_list_view_tests.sample_model_command_d()
-    return htypes.command_list_view.item(
+    command_d = htypes.command_list_model_tests.sample_model_command_d()
+    model_command_d = htypes.command_list_model_tests.sample_model_command_d()
+    return htypes.command_list_model.item(
         ui_command_d=mosaic.put(command_d),
         model_command_d=mosaic.put(model_command_d),
         name="sample-command",
@@ -76,21 +76,21 @@ def mock_run_input_key_dialog():
 async def test_global_set_shortcut(feed_factory, lcs, current_item):
     piece = htypes.global_commands.model()
     feed = feed_factory(piece)
-    command_list_view.run_key_input_dialog = mock_run_input_key_dialog
-    await command_list_view.set_shortcut(piece, 0, current_item, lcs)
+    command_list_model.run_key_input_dialog = mock_run_input_key_dialog
+    await command_list_model.set_shortcut(piece, 0, current_item, lcs)
     lcs.set.assert_called_once()
     await feed.wait_for_diffs(count=1)
 
 
 async def test_model_set_shortcut(feed_factory, lcs, current_item):
-    model = htypes.command_list_view_tests.sample_model()
-    model_state = htypes.command_list_view_tests.sample_model_state()
+    model = htypes.command_list_model_tests.sample_model()
+    model_state = htypes.command_list_model_tests.sample_model_state()
     piece = htypes.model_commands.model(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )
     feed = feed_factory(piece)
-    command_list_view.run_key_input_dialog = mock_run_input_key_dialog
-    await command_list_view.set_shortcut(piece, 0, current_item, lcs)
+    command_list_model.run_key_input_dialog = mock_run_input_key_dialog
+    await command_list_model.set_shortcut(piece, 0, current_item, lcs)
     lcs.set.assert_called_once()
     await feed.wait_for_diffs(count=1)
