@@ -74,7 +74,7 @@ def mock_run_input_key_dialog():
 
 
 async def test_global_set_shortcut(feed_factory, lcs, current_item):
-    piece = htypes.global_commands.view()
+    piece = htypes.global_commands.model()
     feed = feed_factory(piece)
     command_list_view.run_key_input_dialog = mock_run_input_key_dialog
     await command_list_view.set_shortcut(piece, 0, current_item, lcs)

@@ -68,7 +68,7 @@ def test_open_model_command_layout_context(open_command_layout_context):
 
 
 def test_open_global_command_layout_context(open_command_layout_context):
-    piece = htypes.global_commands.view()
+    piece = htypes.global_commands.model()
     open_command_layout_context(piece)
 
 

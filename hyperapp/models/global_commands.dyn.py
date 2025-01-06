@@ -42,4 +42,4 @@ async def run_command(piece, current_item, lcs, ctx, ui_global_command_items):
 
 @mark.global_command
 def open_global_commands():
-    return htypes.global_commands.view()
+    return htypes.global_commands.model()

@@ -14,7 +14,7 @@ import:
 - legacy_type.command_list_view:set_shortcut_d
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
-- legacy_type.global_commands:view
+- legacy_type.global_commands:model
 - legacy_type.model_commands:model
 - legacy_type.system_fn:ctx_fn
 - ui.directory:directory.module
@@ -34,19 +34,19 @@ definitions:
         htypes.command_list_view.item: legacy_type.command_list_view:item
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  global_commands_view.feed-template:
+  global_commands_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.global_commands:view
-      feed_type: global_commands_view.feed-type
-  global_commands_view.feed-type:
+      t: legacy_type.global_commands:model
+      feed_type: global_commands_model.feed-type
+  global_commands_model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.command_list_view:item
-  global_commands_view_set_shortcut.command-cfg-item:
+  global_commands_model_set_shortcut.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.global_commands:view
+      t: legacy_type.global_commands:model
       command: set_shortcut.model-command
   model_commands_model.feed-template:
     type: legacy_type.feed:feed_template

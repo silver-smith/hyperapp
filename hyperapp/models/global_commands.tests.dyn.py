@@ -52,7 +52,7 @@ def lcs():
 
 @mark.fixture
 def piece():
-    return htypes.global_commands.view()
+    return htypes.global_commands.model()
 
 
 def test_list_global_commands(lcs, piece):

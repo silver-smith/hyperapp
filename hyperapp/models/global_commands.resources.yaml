@@ -9,9 +9,9 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command_list_view:item
+- legacy_type.global_commands:model
 - legacy_type.global_commands:open_global_commands_d
 - legacy_type.global_commands:run_command_d
-- legacy_type.global_commands:view
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
@@ -26,24 +26,24 @@ definitions:
       import_list:
         code.command_list_view: models.command_list_view:command_list_view.module
         code.mark: common.mark:mark.module
-        htypes.global_commands.view: legacy_type.global_commands:view
+        htypes.global_commands.model: legacy_type.global_commands:model
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  global_commands_view.list-ui-t:
+  global_commands_model.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
       item_t: legacy_type.command_list_view:item
-  global_commands_view.model:
+  global_commands_model.model:
     type: legacy_type.model:model
     value:
-      ui_t: global_commands_view.list-ui-t
-      system_fn: global_commands_view.system-fn
-  global_commands_view.model-cfg-item:
+      ui_t: global_commands_model.list-ui-t
+      system_fn: global_commands_model.system-fn
+  global_commands_model.model-cfg-item:
     type: legacy_type.model:cfg_item
     value:
-      t: legacy_type.global_commands:view
-      model: global_commands_view.model
-  global_commands_view.system-fn:
+      t: legacy_type.global_commands:model
+      model: global_commands_model.model
+  global_commands_model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: list_global_commands
@@ -52,10 +52,10 @@ definitions:
       - lcs
       service_params:
       - ui_global_command_items
-  global_commands_view_run_command.command-cfg-item:
+  global_commands_model_run_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.global_commands:view
+      t: legacy_type.global_commands:model
       command: run_command.model-command
   list_global_commands:
     type: legacy_type.builtin:attribute
