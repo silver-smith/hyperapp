@@ -15,7 +15,7 @@ import:
 - lcs.lcs_layer:lcs_layer_model.model-cfg-item
 - lcs.lcs_layer:lcs_view_view_lcs_open_layers.command-cfg-item
 - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
-- lcs.lcs_view:lcs_view-view.move.command-cfg-item
+- lcs.lcs_view:lcs_view-view.open_move.command-cfg-item
 - lcs.lcs_view:lcs_view_view.feed-template
 - lcs.lcs_view:lcs_view_view.model-cfg-item
 - lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
@@ -484,7 +484,7 @@ definitions:
       - lcs.lcs_dirs_view:lcs_dirs_view_view_lcs_dirs_items.command-cfg-item
       - lcs.lcs_dirs_view:lcs_view_view_lcs_open_dirs.command-cfg-item
       - lcs.lcs_layer:lcs_view_view_lcs_open_layers.command-cfg-item
-      - lcs.lcs_view:lcs_view-view.move.command-cfg-item
+      - lcs.lcs_view:lcs_view-view.open_move.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_open_piece.command-cfg-item
       - lcs.lcs_view:lcs_view_view_lcs_remove.command-cfg-item
       - models.column_list:column_list_view_toggle_visibility.command-cfg-item

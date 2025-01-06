@@ -102,7 +102,7 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
     def _add_open_command_targets(self, resource_tgt, target_set):
         if self._commit_action:
             commit_action = self._commit_action
-            open_command_name = self._commit_action
+            open_command_name = f'open_{self._commit_action}'
             commit_command_name = self._commit_action
         elif self._action == 'get':
             open_command_name = 'edit'
