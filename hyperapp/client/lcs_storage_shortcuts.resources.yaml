@@ -1,269 +1,108 @@
 import:
-- legacy_type.auto_tabs:close_tab_d
+- lcs.lcs_view:lcs_view-view.open_move.commit-command.d
+- lcs.lcs_view:lcs_view-view.open_move.open-command.d
 - legacy_type.builtin:string
-- legacy_type.column_list:open_column_list_d
-- legacy_type.column_list:toggle_visibility_d
 - legacy_type.command:command_shortcut_lcs_d
-- legacy_type.command_list_view:set_shortcut_d
-- legacy_type.crud:edit_d
-- legacy_type.data_browser:browse_current_model_d
-- legacy_type.file_bundles:open_file_bundle_list_d
-- legacy_type.global_commands:open_global_commands_d
-- legacy_type.global_commands:run_command_d
-- legacy_type.identity_command:add_identity_command_d
-- legacy_type.layout:open_layout_tree_d
-- legacy_type.layout:open_view_item_commands_d
-- legacy_type.layout:set_shortcut_d
-- legacy_type.lcs_layer_selector:select_layer_d
 - legacy_type.lcs_resource_storage:mapping
-- legacy_type.lcs_view:lcs_move_to_another_layer_d
-- legacy_type.lcs_view:lcs_open_layers_d
-- legacy_type.lcs_view:lcs_open_piece_d
-- legacy_type.model_commands:open_model_commands_d
-- legacy_type.model_commands:run_command_d
 - legacy_type.navigator:go_back_d
-- legacy_type.navigator:go_forward_d
-- legacy_type.sample_commands:details_d
-- legacy_type.sample_commands:sample_tree_info_d
-- legacy_type.sample_commands:show_state_d
-- legacy_type.sample_record:open_sample_fn_record_d
-- legacy_type.sample_tree:open_feed_sample_fn_tree_d
-- legacy_type.sample_tree:open_sample_fn_tree_d
-- legacy_type.show_current_context:show_current_context_d
-- legacy_type.window_commands:duplicate_window_d
-- legacy_type.window_commands:quit_d
-- models.data_browser:record_open.d
-- sample.sample_commands:open_sample_static_text_1.d
+- models.column_list:open_column_list.d
+- models.command_list_view:set_shortcut.d
+- models.global_commands:open_global_commands.d
+- models.global_commands:run_command.d
+- models.model_commands:open_model_commands.d
+- models.model_commands:run_command.d
+- sample.sample_commands:show_state.d
+- sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
+- ui.layout:open_layout_tree.d
+- ui.layout:set_shortcut.d
+- ui.navigator:go_forward.d
+- ui.qt.auto_tabs:close_tab.d
 - ui.qt.auto_tabs:duplicate_tab.d
-- views.command_layout_context:open_command_layout_context.d
+- ui.qt.window_commands:duplicate_window.d
+- ui.qt.window_commands:quit.d
 definitions:
-  add_identity_command_d_1:
-    type: legacy_type.identity_command:add_identity_command_d
-    value: {}
-  browse_current_model_d_1:
-    type: legacy_type.data_browser:browse_current_model_d
-    value: {}
-  close_tab_d_1:
-    type: legacy_type.auto_tabs:close_tab_d
-    value: {}
   command_shortcut_lcs_d_1:
     type: legacy_type.command:command_shortcut_lcs_d
     value: {}
-  details_d_1:
-    type: legacy_type.sample_commands:details_d
-    value: {}
-  duplicate_window_d_1:
-    type: legacy_type.window_commands:duplicate_window_d
-    value: {}
-  edit_d_1:
-    type: legacy_type.crud:edit_d
-    value: {}
   go_back_d_1:
     type: legacy_type.navigator:go_back_d
-    value: {}
-  go_forward_d_1:
-    type: legacy_type.navigator:go_forward_d
-    value: {}
-  lcs_move_to_another_layer_d_1:
-    type: legacy_type.lcs_view:lcs_move_to_another_layer_d
-    value: {}
-  lcs_open_layers_d_1:
-    type: legacy_type.lcs_view:lcs_open_layers_d
-    value: {}
-  lcs_open_piece_d_1:
-    type: legacy_type.lcs_view:lcs_open_piece_d
     value: {}
   lcs_storage_mapping:
     type: legacy_type.lcs_resource_storage:mapping
     value:
       elements:
       - key:
-        - browse_current_model_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Ctrl_F1
-      - key:
-        - open_global_commands_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Alt_F1
-      - key:
-        - show_state_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Alt_Return
-      - key:
-        - set_shortcut_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Space
-      - key:
-        - open_layout_tree_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Alt_Shift_L
-      - key:
-        - open_model_commands_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_F1
-      - key:
-        - command_shortcut_lcs_d_1
-        - open_view_item_commands_d_1
-        value: shortcut_C
-      - key:
-        - set_shortcut_d_2
-        - command_shortcut_lcs_d_1
-        value: shortcut_Space
-      - key:
-        - go_forward_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Alt_Right
-      - key:
         - go_back_d_1
         - command_shortcut_lcs_d_1
         value: shortcut_Esc
       - key:
-        - open_sample_fn_record_d_1
+        - models.global_commands:open_global_commands.d
         - command_shortcut_lcs_d_1
-        value: shortcut_F7
+        value: shortcut_Alt_F1
       - key:
-        - open_sample_fn_tree_d_1
+        - models.model_commands:open_model_commands.d
         - command_shortcut_lcs_d_1
-        value: shortcut_F6
+        value: shortcut_F1
       - key:
-        - open_feed_sample_fn_tree_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Shift_F6
-      - key:
-        - show_current_context_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Ctrl_Shift_C
-      - key:
-        - lcs_open_layers_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_L
-      - key:
-        - lcs_move_to_another_layer_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_M
-      - key:
-        - close_tab_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Ctrl_F4
-      - key:
-        - lcs_open_piece_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Return
-      - key:
-        - select_layer_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Return
-      - key:
-        - quit_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Alt_Q
-      - key:
-        - duplicate_window_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Alt_W
-      - key:
-        - open_column_list_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_Alt_Shift_C
-      - key:
-        - toggle_visibility_d_1
+        - models.command_list_view:set_shortcut.d
         - command_shortcut_lcs_d_1
         value: shortcut_Space
       - key:
-        - edit_d_1
-        - command_shortcut_lcs_d_1
-        value: shortcut_E
-      - key:
-        - details_d_1
+        - models.global_commands:run_command.d
         - command_shortcut_lcs_d_1
         value: shortcut_Return
       - key:
-        - sample_tree_info_d_1
+        - ui.layout:open_layout_tree.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Alt_Shift_L
+      - key:
+        - ui.navigator:go_forward.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Alt_Right
+      - key:
+        - lcs.lcs_view:lcs_view-view.open_move.open-command.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_M
+      - key:
+        - lcs.lcs_view:lcs_view-view.open_move.commit-command.d
         - command_shortcut_lcs_d_1
         value: shortcut_Return
       - key:
-        - models.data_browser:record_open.d
+        - sample.sample_commands:show_state.d
         - command_shortcut_lcs_d_1
-        value: shortcut_Return
+        value: shortcut_Alt_Return
       - key:
-        - run_command_d_1
+        - ui.layout:set_shortcut.d
         - command_shortcut_lcs_d_1
-        value: shortcut_Return
+        value: shortcut_Space
       - key:
-        - run_command_d_2
+        - models.column_list:open_column_list.d
         - command_shortcut_lcs_d_1
-        value: shortcut_Return
+        value: shortcut_Alt_Shift_C
       - key:
-        - add_identity_command_d_1
+        - ui.qt.window_commands:duplicate_window.d
         - command_shortcut_lcs_d_1
-        value: shortcut_I
+        value: shortcut_Alt_W
       - key:
-        - open_file_bundle_list_d_1
+        - ui.qt.window_commands:quit.d
         - command_shortcut_lcs_d_1
-        value: shortcut_Alt_B
+        value: shortcut_Alt_Q
       - key:
-        - views.command_layout_context:open_command_layout_context.d
+        - ui.qt.auto_tabs:close_tab.d
         - command_shortcut_lcs_d_1
-        value: shortcut_L
-      - key:
-        - sample.sample_commands:open_sample_static_text_1.d
-        - command_shortcut_lcs_d_1
-        value: shortcut_F2
+        value: shortcut_Ctrl_F4
       - key:
         - ui.qt.auto_tabs:duplicate_tab.d
         - command_shortcut_lcs_d_1
         value: shortcut_Shift_F4
-  open_column_list_d_1:
-    type: legacy_type.column_list:open_column_list_d
-    value: {}
-  open_feed_sample_fn_tree_d_1:
-    type: legacy_type.sample_tree:open_feed_sample_fn_tree_d
-    value: {}
-  open_file_bundle_list_d_1:
-    type: legacy_type.file_bundles:open_file_bundle_list_d
-    value: {}
-  open_global_commands_d_1:
-    type: legacy_type.global_commands:open_global_commands_d
-    value: {}
-  open_layout_tree_d_1:
-    type: legacy_type.layout:open_layout_tree_d
-    value: {}
-  open_model_commands_d_1:
-    type: legacy_type.model_commands:open_model_commands_d
-    value: {}
-  open_sample_fn_record_d_1:
-    type: legacy_type.sample_record:open_sample_fn_record_d
-    value: {}
-  open_sample_fn_tree_d_1:
-    type: legacy_type.sample_tree:open_sample_fn_tree_d
-    value: {}
-  open_view_item_commands_d_1:
-    type: legacy_type.layout:open_view_item_commands_d
-    value: {}
-  quit_d_1:
-    type: legacy_type.window_commands:quit_d
-    value: {}
-  run_command_d_1:
-    type: legacy_type.global_commands:run_command_d
-    value: {}
-  run_command_d_2:
-    type: legacy_type.model_commands:run_command_d
-    value: {}
-  sample_tree_info_d_1:
-    type: legacy_type.sample_commands:sample_tree_info_d
-    value: {}
-  select_layer_d_1:
-    type: legacy_type.lcs_layer_selector:select_layer_d
-    value: {}
-  set_shortcut_d_1:
-    type: legacy_type.command_list_view:set_shortcut_d
-    value: {}
-  set_shortcut_d_2:
-    type: legacy_type.layout:set_shortcut_d
-    value: {}
-  shortcut_Alt_B:
-    type: legacy_type.builtin:string
-    value: Alt+B
+      - key:
+        - models.model_commands:run_command.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Return
+      - key:
+        - sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_E
   shortcut_Alt_F1:
     type: legacy_type.builtin:string
     value: Alt+F1
@@ -285,18 +124,9 @@ definitions:
   shortcut_Alt_W:
     type: legacy_type.builtin:string
     value: Alt+W
-  shortcut_C:
-    type: legacy_type.builtin:string
-    value: C
-  shortcut_Ctrl_F1:
-    type: legacy_type.builtin:string
-    value: Ctrl+F1
   shortcut_Ctrl_F4:
     type: legacy_type.builtin:string
     value: Ctrl+F4
-  shortcut_Ctrl_Shift_C:
-    type: legacy_type.builtin:string
-    value: Ctrl+Shift+C
   shortcut_E:
     type: legacy_type.builtin:string
     value: E
@@ -306,21 +136,6 @@ definitions:
   shortcut_F1:
     type: legacy_type.builtin:string
     value: F1
-  shortcut_F2:
-    type: legacy_type.builtin:string
-    value: F2
-  shortcut_F6:
-    type: legacy_type.builtin:string
-    value: F6
-  shortcut_F7:
-    type: legacy_type.builtin:string
-    value: F7
-  shortcut_I:
-    type: legacy_type.builtin:string
-    value: I
-  shortcut_L:
-    type: legacy_type.builtin:string
-    value: L
   shortcut_M:
     type: legacy_type.builtin:string
     value: M
@@ -330,18 +145,6 @@ definitions:
   shortcut_Shift_F4:
     type: legacy_type.builtin:string
     value: Shift+F4
-  shortcut_Shift_F6:
-    type: legacy_type.builtin:string
-    value: Shift+F6
   shortcut_Space:
     type: legacy_type.builtin:string
     value: Space
-  show_current_context_d_1:
-    type: legacy_type.show_current_context:show_current_context_d
-    value: {}
-  show_state_d_1:
-    type: legacy_type.sample_commands:show_state_d
-    value: {}
-  toggle_visibility_d_1:
-    type: legacy_type.column_list:toggle_visibility_d
-    value: {}

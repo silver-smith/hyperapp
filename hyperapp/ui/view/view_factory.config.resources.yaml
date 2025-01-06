@@ -8,6 +8,7 @@ import:
 - legacy_type.column:column_d
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.view_factory_list:view
+- ui.layout:open_view_item_commands.d
 - ui.view.view_factory_list:open_view_factory_list.d
 definitions:
   column_d_1:
@@ -44,6 +45,13 @@ definitions:
         - lcs.lcs_view.config:list_d_1
         - legacy_type.view_factory_list:view
         value: lcs.lcs_view.config:bool_1
+      - key:
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
+        - ui.layout:open_view_item_commands.d
+        value: shortcut_C
   shortcut_Alt_F:
     type: legacy_type.builtin:string
     value: Alt+F
+  shortcut_C:
+    type: legacy_type.builtin:string
+    value: C
