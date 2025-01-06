@@ -17,10 +17,16 @@ log = logging.getLogger(__name__)
 
 
 def _sample_crud_get(piece, id):
-    return htypes.crud_tests.sample_record(id, f'item#{id}')
+    assert isinstance(piece, (htypes.crud_tests.sample_model, htypes.crud_tests.sample_selector_model)), piece
+    if isinstance(piece, htypes.crud_tests.sample_model):
+        return htypes.crud_tests.sample_record(id, f'item#{id}')
+    else:
+        return htypes.crud_tests.sample_selector()
 
 
 def _sample_crud_update(piece, id, value):
+    assert isinstance(piece, (htypes.crud_tests.sample_model, htypes.crud_tests.sample_selector_model)), piece
+    assert isinstance(value, (htypes.crud_tests.sample_record, htypes.crud_tests.sample_selector)), value
     log.info("Update %s: #%d -> %s", piece, id, value)
 
 
@@ -43,10 +49,14 @@ def _sample_crud_update_fn():
 
 
 def _sample_selector_get(value):
-    return htypes.crud_tests.phony_model()
+    assert isinstance(value, htypes.crud_tests.sample_selector), value
+    return htypes.crud_tests.sample_selector_model()
 
-def _sample_selector_pick(value):
-    return htypes.crud_tests.phony_model()
+
+def _sample_selector_pick(piece, current_item):
+    assert isinstance(piece, htypes.crud_tests.sample_selector_model), piece
+    assert isinstance(current_item, htypes.crud_tests.sample_selector_item)
+    return htypes.crud_tests.sample_selector()
 
 
 @mark.fixture
@@ -64,7 +74,7 @@ def _sample_selector_get_fn(partial_ref):
 def _sample_selector_pick_fn(partial_ref):
     return ContextFn(
         partial_ref=partial_ref, 
-        ctx_params=('value',),
+        ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=_sample_selector_pick,
         bound_fn=_sample_selector_pick,
@@ -130,6 +140,11 @@ def model():
 
 
 @mark.fixture
+def selector_model():
+    return htypes.crud_tests.sample_selector_model()
+
+
+@mark.fixture
 def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
     value_t = htypes.crud_tests.sample_record
     return htypes.crud.model(
@@ -169,11 +184,11 @@ def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
 
 
 @mark.fixture
-def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn, _sample_selector_get_fn, _sample_selector_pick_fn):
+def selector_crud_model(selector_model, _sample_crud_get_fn, _sample_crud_update_fn, _sample_selector_get_fn, _sample_selector_pick_fn):
     value_t = htypes.crud_tests.sample_selector
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
-        model=mosaic.put(model),
+        model=mosaic.put(selector_model),
         keys=(mosaic.put(123),),
         key_fields=('id',),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
@@ -193,7 +208,7 @@ def test_record_model_layout(crud_model, ctx):
 @mark.config_fixture('model_layout_creg')
 def model_layout_config():
     return {
-        htypes.crud_tests.phony_model:
+        htypes.crud_tests.sample_selector_model:
             lambda piece, lcs, ctx: htypes.crud_tests.phony_view(),
         }
 
@@ -210,7 +225,7 @@ async def test_model_commands(crud_model):
     assert commands
     [unbound_cmd] = commands
     assert unbound_cmd.properties
-    value = {'text': "Some text"}
+    value = htypes.crud_tests.sample_record(12345, "Some text")
     input = Mock()
     input.get_value.return_value = value
     ctx = Context(
@@ -219,4 +234,20 @@ async def test_model_commands(crud_model):
         input=input,
         )
     bound_cmd = unbound_cmd.bind(ctx)
+    assert bound_cmd.enabled
+    await bound_cmd.run()
+
+
+async def test_model_commands_selector(selector_model, selector_crud_model):
+    commands = crud.crud_model_commands(selector_crud_model)
+    assert commands
+    [unbound_cmd] = commands
+    assert unbound_cmd.properties
+    ctx = Context(
+        model=selector_crud_model,
+        piece=selector_crud_model,
+        current_item=htypes.crud_tests.sample_selector_item(),
+        )
+    bound_cmd = unbound_cmd.bind(ctx)
+    assert bound_cmd.enabled
     await bound_cmd.run()

@@ -130,14 +130,6 @@ def _form_view(value_t_ref):
     return htypes.form.view(mosaic.put(adapter))
 
 
-def _pick_ctx_value(ctx):
-    try:
-        return ctx.value
-    except KeyError:
-        input = ctx.input
-        return input.get_value()
-
-
 @mark.actor.model_layout_creg
 def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg):
     if not piece.get_fn:
@@ -150,10 +142,11 @@ def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg)
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
-    def __init__(self, d, key_fields, keys, commit_fn):
+    def __init__(self, d, key_fields, keys, pick_fn, commit_fn):
         super().__init__(d)
         self._key_fields = key_fields
         self._keys = keys
+        self._pick_fn = pick_fn
         self._commit_fn = commit_fn
 
     @property
@@ -165,17 +158,16 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
             )
 
     def bind(self, ctx):
-        return BoundCrudCommitCommand(self._d, self._key_fields, self._keys, self._commit_fn, ctx)
+        return BoundCrudCommitCommand(self._d, self._key_fields, self._keys, self._pick_fn, self._commit_fn, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    _required_kw = {'model', 'input'}
-
-    def __init__(self, d, key_fields, keys, commit_fn, ctx):
+    def __init__(self, d, key_fields, keys, pick_fn, commit_fn, ctx):
         super().__init__(d)
         self._key_fields = key_fields
         self._keys = keys
+        self._pick_fn = pick_fn
         self._commit_fn = commit_fn
         self._ctx = ctx
 
@@ -190,12 +182,19 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
     @cached_property
     def _missing_params(self):
-        return self._required_kw - self._ctx.as_dict().keys()
+        required_kw = {'model'}
+        if not self._pick_fn:
+            required_kw |= {'input'}
+        return required_kw - self._ctx.as_dict().keys()
 
     async def run(self):
         crud_model = self._ctx.model
         model = web.summon(crud_model.model)
-        value = _pick_ctx_value(self._ctx)
+        if self._pick_fn:
+            model_ctx = self._ctx.clone_with(piece=model, model=model)
+            value = self._pick_fn.call(model_ctx)
+        else:
+            value = self._pick_ctx_value(self._ctx)
         log.info("Run CRUD commit command %r: %s=%r; value=%r", self.name, self._key_fields, self._keys, value)
         keys_kw = {
             name: value
@@ -209,10 +208,19 @@ class BoundCrudCommitCommand(BoundCommandBase):
             )
         return self._commit_fn.call(ctx)
 
+    @staticmethod
+    def _pick_ctx_value(ctx):
+        try:
+            return ctx.value
+        except KeyError:
+            input = ctx.input
+            return input.get_value()
+
 
 @mark.command_enum
 def crud_model_commands(piece, system_fn_creg):
     command_d = web.summon(piece.commit_command_d)
     keys = [web.summon(k) for k in piece.keys]
+    pick_fn = system_fn_creg.invite_opt(piece.pick_fn)
     commit_fn = system_fn_creg.invite(piece.commit_action_fn)
-    return [UnboundCrudCommitCommand(command_d, piece.key_fields, keys, commit_fn)]
+    return [UnboundCrudCommitCommand(command_d, piece.key_fields, keys, pick_fn, commit_fn)]
