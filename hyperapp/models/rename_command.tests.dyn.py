@@ -37,7 +37,7 @@ def model_command_reg_config(partial_ref):
 def piece():
     model = htypes.rename_command_tests.sample_model()
     model_state = htypes.rename_command_tests.sample_model_state()
-    return htypes.model_commands.view(
+    return htypes.model_commands.model(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )

@@ -14,7 +14,7 @@ import:
 - legacy_type.command_layout_context:state
 - legacy_type.command_layout_context:view
 - legacy_type.global_commands:view
-- legacy_type.model_commands:view
+- legacy_type.model_commands:model
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:template
 - views.context_view:context_view.module
@@ -51,7 +51,7 @@ definitions:
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view
         htypes.global_commands.view: legacy_type.global_commands:view
-        htypes.model_commands.view: legacy_type.model_commands:view
+        htypes.model_commands.model: legacy_type.model_commands:model
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -66,10 +66,10 @@ definitions:
     value:
       t: legacy_type.global_commands:view
       command: open_command_layout_context.model-command
-  model_commands_view_open_command_layout_context.command-cfg-item:
+  model_commands_model_open_command_layout_context.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.model_commands:view
+      t: legacy_type.model_commands:model
       command: open_command_layout_context.model-command
   open_command_layout_context:
     type: legacy_type.builtin:attribute

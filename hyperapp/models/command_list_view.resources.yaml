@@ -15,7 +15,7 @@ import:
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.global_commands:view
-- legacy_type.model_commands:view
+- legacy_type.model_commands:model
 - legacy_type.system_fn:ctx_fn
 - ui.directory:directory.module
 - ui.qt.key_input_dialog:key_input_dialog.module
@@ -48,19 +48,19 @@ definitions:
     value:
       t: legacy_type.global_commands:view
       command: set_shortcut.model-command
-  model_commands_view.feed-template:
+  model_commands_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.model_commands:view
-      feed_type: model_commands_view.feed-type
-  model_commands_view.feed-type:
+      t: legacy_type.model_commands:model
+      feed_type: model_commands_model.feed-type
+  model_commands_model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.command_list_view:item
-  model_commands_view_set_shortcut.command-cfg-item:
+  model_commands_model_set_shortcut.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.model_commands:view
+      t: legacy_type.model_commands:model
       command: set_shortcut.model-command
   set_shortcut:
     type: legacy_type.builtin:attribute

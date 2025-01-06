@@ -12,9 +12,9 @@ import:
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
+- legacy_type.model_commands:model
 - legacy_type.model_commands:open_model_commands_d
 - legacy_type.model_commands:run_command_d
-- legacy_type.model_commands:view
 - legacy_type.system_fn:ctx_fn
 - models.command_list_view:command_list_view.module
 - ui.model_command:model_command.module
@@ -33,24 +33,24 @@ definitions:
         code.command_list_view: models.command_list_view:command_list_view.module
         code.mark: common.mark:mark.module
         code.model_command: ui.model_command:model_command.module
-        htypes.model_commands.view: legacy_type.model_commands:view
+        htypes.model_commands.model: legacy_type.model_commands:model
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  model_commands_view.list-ui-t:
+  model_commands_model.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
       item_t: legacy_type.command_list_view:item
-  model_commands_view.model:
+  model_commands_model.model:
     type: legacy_type.model:model
     value:
-      ui_t: model_commands_view.list-ui-t
-      system_fn: model_commands_view.system-fn
-  model_commands_view.model-cfg-item:
+      ui_t: model_commands_model.list-ui-t
+      system_fn: model_commands_model.system-fn
+  model_commands_model.model-cfg-item:
     type: legacy_type.model:cfg_item
     value:
-      t: legacy_type.model_commands:view
-      model: model_commands_view.model
-  model_commands_view.system-fn:
+      t: legacy_type.model_commands:model
+      model: model_commands_model.model
+  model_commands_model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: list_model_commands
@@ -60,10 +60,10 @@ definitions:
       - lcs
       service_params:
       - ui_model_command_items
-  model_commands_view_run_command.command-cfg-item:
+  model_commands_model_run_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.model_commands:view
+      t: legacy_type.model_commands:model
       command: run_command.model-command
   open_model_commands:
     type: legacy_type.builtin:attribute

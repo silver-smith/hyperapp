@@ -60,7 +60,7 @@ def open_command_layout_context(view_reg, piece):
 def test_open_model_command_layout_context(open_command_layout_context):
     model = htypes.command_layout_context_tests.sample_model()
     model_state = htypes.command_layout_context_tests.sample_model_state()
-    piece = htypes.model_commands.view(
+    piece = htypes.model_commands.model(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )

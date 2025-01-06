@@ -85,7 +85,7 @@ async def test_global_set_shortcut(feed_factory, lcs, current_item):
 async def test_model_set_shortcut(feed_factory, lcs, current_item):
     model = htypes.command_list_view_tests.sample_model()
     model_state = htypes.command_list_view_tests.sample_model_state()
-    piece = htypes.model_commands.view(
+    piece = htypes.model_commands.model(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )

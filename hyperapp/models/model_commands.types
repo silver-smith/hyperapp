@@ -1,4 +1,4 @@
-view = record:
+model = record:
   model: ref
   model_state: ref
 

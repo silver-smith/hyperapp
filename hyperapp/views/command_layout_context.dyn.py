@@ -58,7 +58,7 @@ class CommandLayoutContextView(ContextView):
 
 @mark.command
 def open_command_layout_context(piece, current_item, navigator, ctx, view_reg):
-    if isinstance(piece, htypes.model_commands.view):
+    if isinstance(piece, htypes.model_commands.model):
         model_t = deduce_t(web.summon(piece.model))
         model_t_ref = pyobj_creg.actor_to_ref(model_t)
     else:

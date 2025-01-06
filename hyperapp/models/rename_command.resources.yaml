@@ -10,7 +10,7 @@ import:
 - legacy_type.crud:edit_d
 - legacy_type.crud:open_command_fn
 - legacy_type.crud:save_d
-- legacy_type.model_commands:view
+- legacy_type.model_commands:model
 - legacy_type.rename_command:form
 - legacy_type.system_fn:ctx_fn
 - ui.directory:directory.module
@@ -26,7 +26,7 @@ definitions:
     value:
       object: rename_command.module
       attr_name: model_command_update
-  model_commands-view.crud.get.system-fn:
+  model_commands-model.crud.get.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: model_command_get
@@ -34,7 +34,7 @@ definitions:
       - piece
       - ui_command_d
       service_params: []
-  model_commands-view.crud.update.system-fn:
+  model_commands-model.crud.update.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: model_command_update
@@ -46,34 +46,34 @@ definitions:
       - ctx
       service_params:
       - ui_model_command_items
-  model_commands-view.edit.command:
+  model_commands-model.edit.command:
     type: legacy_type.command:model_command
     value:
-      d: model_commands-view.edit.open-command.d
+      d: model_commands-model.edit.open-command.d
       properties:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: model_commands-view.edit.command-fn
-  model_commands-view.edit.command-cfg-item:
+      system_fn: model_commands-model.edit.command-fn
+  model_commands-model.edit.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.model_commands:view
-      command: model_commands-view.edit.command
-  model_commands-view.edit.command-fn:
+      t: legacy_type.model_commands:model
+      command: model_commands-model.edit.command
+  model_commands-model.edit.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
       name: edit
       value_t: legacy_type.rename_command:form
       key_fields:
       - ui_command_d
-      init_action_fn: model_commands-view.crud.get.system-fn
-      commit_command_d: model_commands-view.edit.commit-command.d
-      commit_action_fn: model_commands-view.crud.update.system-fn
-  model_commands-view.edit.commit-command.d:
+      init_action_fn: model_commands-model.crud.get.system-fn
+      commit_command_d: model_commands-model.edit.commit-command.d
+      commit_action_fn: model_commands-model.crud.update.system-fn
+  model_commands-model.edit.commit-command.d:
     type: legacy_type.crud:save_d
     value: {}
-  model_commands-view.edit.open-command.d:
+  model_commands-model.edit.open-command.d:
     type: legacy_type.crud:edit_d
     value: {}
   rename_command.module:

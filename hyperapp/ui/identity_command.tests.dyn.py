@@ -49,7 +49,7 @@ async def test_add_command(feed_factory):
     lcs.get.return_value = None  # Imitate missing command list; do not return Mock instance.
     model = htypes.identity_command_tests.sample_model()
     model_state = htypes.identity_command_tests.sample_model_state()
-    piece = htypes.model_commands.view(
+    piece = htypes.model_commands.model(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )

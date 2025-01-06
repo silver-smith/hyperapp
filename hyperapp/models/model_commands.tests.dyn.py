@@ -70,7 +70,7 @@ def lcs():
 def piece():
     model = htypes.model_commands_tests.sample_model_2()
     model_state = htypes.model_commands_tests.sample_model_state()
-    return htypes.model_commands.view(
+    return htypes.model_commands.model(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )
