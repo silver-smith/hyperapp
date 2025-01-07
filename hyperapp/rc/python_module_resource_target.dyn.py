@@ -16,7 +16,7 @@ rc_log = logging.getLogger('rc')
 
 
 @dataclass(frozen=True)
-class PythonModuleReq(Requirement):
+class PythonModuleReqBase(Requirement):
 
     required_by_module_name: str
     code_name: str
@@ -29,21 +29,45 @@ class PythonModuleReq(Requirement):
             )
 
     @property
+    def desc(self):
+        return f"{self.code_name} module"
+
+    def make_resource(self, target):
+        return ImportResource(self.required_by_module_name, ['code', self.code_name], target.python_module_piece)
+
+
+class ImportPythonModuleReq(PythonModuleReqBase):
+
+    @property
+    def piece(self):
+        return htypes.python_module_resource_target.import_python_module_req(
+            required_by_module_name=self.required_by_module_name,
+            code_name=self.code_name,
+            )
+
+    def get_target(self, target_factory):
+        try:
+            return target_factory.python_module_imported_by_code_name(self.code_name)
+        except KeyError:
+            target = target_factory.python_module_resource_by_code_name(self.code_name)
+            assert target.is_manual
+            return target
+
+
+class PythonModuleReq(PythonModuleReqBase):
+
+    @property
     def piece(self):
         return htypes.python_module_resource_target.python_module_req(
             required_by_module_name=self.required_by_module_name,
             code_name=self.code_name,
             )
 
-    @property
-    def desc(self):
-        return f"{self.code_name} module"
-
     def get_target(self, target_factory):
         return target_factory.python_module_resource_by_code_name(self.code_name)
 
-    def make_resource(self, target):
-        return ImportResource(self.required_by_module_name, ['code', self.code_name], target.python_module_piece)
+    def to_import_req(self):
+        return ImportPythonModuleReq(self.required_by_module_name, self.code_name)
 
 
 class PythonModuleResourceTarget(Target):
