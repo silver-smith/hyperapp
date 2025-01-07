@@ -12,7 +12,7 @@ from .code.config_item_resource import ConfigItemResource
 from .code.python_module_resource_target import PythonModuleReq, PythonModuleResourceTarget
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(frozen=True)
 class TestedCodeReq(Requirement):
 
     test_module_name: str
@@ -96,7 +96,7 @@ class TestedCodeReq(Requirement):
             }
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(frozen=True)
 class FixturesModuleReq(Requirement):
 
     import_path: tuple[str]

@@ -15,7 +15,7 @@ from .code.import_resource import ImportResource
 rc_log = logging.getLogger('rc')
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(frozen=True)
 class PythonModuleReq(Requirement):
 
     required_by_module_name: str

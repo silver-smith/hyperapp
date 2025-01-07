@@ -6,7 +6,7 @@ from .code.rc_requirement import Requirement
 from .code.import_resource import ImportResource
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(frozen=True)
 class BuiltinServiceReq(Requirement):
 
     required_by_module_name: str
