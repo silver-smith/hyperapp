@@ -214,14 +214,14 @@ class TestTarget(Target):
     def set_test_target(self, test_target):
         self._test_target = test_target
 
-    def check_cache(self):
+    def create_job_target(self):
         try:
             entry = self._cache[self.name]
         except KeyError:
             pass
         else:
             if entry.src == self._src:
-                self._create_cache_target(entry)
+                self._create_cached_target(entry)
                 return
         self._create_job_target()
 
@@ -245,7 +245,7 @@ class TestTarget(Target):
         self._current_job_target = target
         self._target_set.add(target)
 
-    def _create_cache_target(self, entry):
+    def _create_cached_target(self, entry):
         req_to_target = _resolve_requirements(self._target_set.factory, entry.deps.keys())
         target = TestCachedTarget(self._cached_count, self._target_set, self, self._src, self._function, entry.deps, req_to_target, entry.result)
         self._current_job_target = target

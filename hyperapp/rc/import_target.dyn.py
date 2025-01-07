@@ -206,14 +206,14 @@ class ImportTarget(Target):
         if self._got_requirements:
             self._completed = all(target.completed for target in self.deps)
 
-    def check_cache(self):
+    def create_job_target(self):
         try:
             entry = self._cache[self.name]
         except KeyError:
             pass
         else:
             if entry.src == self._src:
-                self._create_cache_target(entry)
+                self._create_cached_target(entry)
                 return
         self._create_job_target()
 
@@ -226,7 +226,7 @@ class ImportTarget(Target):
         self._init_current_job_target(target)
         self._all_imports_known_tgt.add_import_target(target)
 
-    def _create_cache_target(self, entry):
+    def _create_cached_target(self, entry):
         entry.result.non_ready_update_targets(self, self._target_set)
         req_to_target = self._resolve_requirements(entry.deps.keys())
         target = ImportCachedTarget(
@@ -280,7 +280,7 @@ class ImportTarget(Target):
         for req in req_to_target:
             req.apply_test_target(self, test_target, self._target_set)
         self._target_set.add(test_target)
-        test_target.check_cache()
+        test_target.create_job_target()
 
     def recorded_python_module(self, tag=''):
         assert self._completed
