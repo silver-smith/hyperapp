@@ -4,7 +4,7 @@ from collections import defaultdict
 from .code.rc_target import TargetMissingError, Target
 from .code.type_req import TypeReq
 from .code.import_resource import ImportResource
-from .code.python_module_resource_target import PythonModuleReq
+from .code.python_module_resource_target import ImportPythonModuleReq, PythonModuleReq
 from .code.test_job import TestJob
 
 rc_log = logging.getLogger('rc')
@@ -97,11 +97,15 @@ class TestJobTarget(Target):
         self._function = function
         self._req_to_target = req_to_target
         self._tested_imports = tested_imports  # import targets being tested.
+        self._picked_import_from_tested_import_tgt = set()
         self._fixtures_deps = fixtures_deps  # import targets with fixtures.
         self._tested_deps = tested_deps  # targets required by tested code targets.
         self._idx = idx
         self._completed = False
         self._ready = False
+        self._tested_modules = set()  # Tested module full names
+        for req in self._req_to_target:
+            self._tested_modules |= req.tested_modules(self._target_set)
 
     @property
     def name(self):
@@ -120,15 +124,29 @@ class TestJobTarget(Target):
         return {*self._tested_imports, *self._fixtures_deps, *self._tested_deps, *self._req_to_target.values()}
 
     def update_status(self):
-        # Note: Copy is at TestTarget.update_status method.
-        for target in self._tested_imports:
-            if target.completed:
-                self._tested_deps |= target.deps
+        for tested_import_tgt in self._tested_imports:
+            self._pick_import_from_tested_import_tgt(tested_import_tgt)
         if not all(target.completed for target in self.deps):
             return
         # if target is not one of our tested modules, second resolve shifts from resolved to complete target.
         self._req_to_target = _resolve_requirements(self._target_set.factory, self._req_to_target)
         self._ready = all(target.completed for target in self.deps)
+
+    def _pick_import_from_tested_import_tgt(self, tested_import_tgt):
+        if not tested_import_tgt.completed:
+            return
+        if tested_import_tgt in self._picked_import_from_tested_import_tgt:
+            return
+        self._tested_deps |= tested_import_tgt.deps
+        for import_req in tested_import_tgt.import_requirements:
+            if (isinstance(import_req, ImportPythonModuleReq)
+                    and self._target_set.full_module_name(import_req.code_name) in self._tested_modules):
+                # Tested module imported from another tested module.
+                req = import_req
+            else:
+                req = import_req.to_test_req()
+            self._req_to_target[req] = req.get_target(self._target_set.factory)
+        self._picked_import_from_tested_import_tgt.add(tested_import_tgt)
 
     def make_job(self):
         return TestJob(self._src, self._idx, self._req_to_resources, self._function.name)
@@ -147,11 +165,6 @@ class TestJobTarget(Target):
             req_resources |= resources
             for res in resources:
                 tested_modules |= set(res.tested_modules)
-        for req, target in self._req_to_target.items():
-            for aux_req, aux_target in req.aux_requirements(target, self._target_set).items():
-                if isinstance(aux_req, PythonModuleReq) and aux_target.module_name in tested_modules:
-                    assert 0, (aux_req, aux_target, self)
-                result[aux_req] |= set(aux_req.make_resource_list(aux_target))
         for target in self._target_set.completed_python_module_resources:
             req = PythonModuleReq(self._src.name, target.code_name)
             result[req] = {ImportResource(self._src.name, ['code', target.code_name], target.python_module_piece)}
@@ -206,7 +219,7 @@ class TestTarget(Target):
         return {*self._tested_imports, self._current_job_target}
 
     def update_status(self):
-        # Note: Copy is at TestJobTarget.update_status method.
+        # TODO: Check where to copy tested import picking from TestJobTarget.update_status method.
         for target in self._tested_imports:
             if target.completed:
                 self._tested_deps |= target.deps

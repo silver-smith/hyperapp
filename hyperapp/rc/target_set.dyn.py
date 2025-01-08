@@ -62,6 +62,9 @@ class TargetSet:
             self.add(target)
             return target
 
+    def full_module_name(self, code_name):
+        return self._stem_to_python_module_src[code_name].name
+
     @property
     def _completed_targets(self):
         return set(self.iter_completed())

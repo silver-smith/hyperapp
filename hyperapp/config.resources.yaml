@@ -106,6 +106,7 @@ import:
 - rc.model_ctr:model_resource_model_ctr.actor-template
 - rc.model_marker:model.marker-template
 - rc.process_pool:process_pool_running.service
+- rc.python_module_resource_target:python_module_resource_target_import_python_module_req.actor-template
 - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
 - rc.rc:compile_resources.service
 - rc.rc:rc_main.service
@@ -573,6 +574,7 @@ definitions:
       items:
       - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
       - rc.cfg_item_req:actor_resource_cfg_item_req.actor-template
+      - rc.python_module_resource_target:python_module_resource_target_import_python_module_req.actor-template
       - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
       - rc.service_req:service_resource_service_req.actor-template
       - rc.test_module_resources_req:test_module_resources_req_test_module_resources_req.actor-template

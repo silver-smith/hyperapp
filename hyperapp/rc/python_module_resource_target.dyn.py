@@ -53,6 +53,9 @@ class ImportPythonModuleReq(PythonModuleReqBase):
             assert target.is_manual
             return target
 
+    def to_test_req(self):
+        return PythonModuleReq(self.required_by_module_name, self.code_name)
+
 
 class PythonModuleReq(PythonModuleReqBase):
 

@@ -23,5 +23,14 @@ class Requirement:
         resource = self.make_resource(target)
         return [resource]
 
-    def aux_requirements(self, target, target_set):
-        return {}
+    # def imports_from_tested(self, target):
+    #     return set()
+
+    def tested_modules(self, target_set):
+        return set()
+
+    def to_import_req(self):
+        return self
+
+    def to_test_req(self):
+        return self

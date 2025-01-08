@@ -249,6 +249,10 @@ class ImportTarget(Target):
     def module_name(self):
         return self._src.name
 
+    @property
+    def import_requirements(self):
+        return self._req_to_target.keys()
+
     def set_current_job_target(self, target):
         self._current_job_target = target
 
@@ -256,7 +260,9 @@ class ImportTarget(Target):
         self._test_constructors.add(ctr)
 
     def set_requirements(self, req_to_target):
-        self._req_to_target = req_to_target
+        for req in req_to_target:
+            import_req = req.to_import_req()
+            self._req_to_target[import_req] = import_req.get_target(self._target_set.factory)
         self._got_requirements = True
 
     def create_resource_target(self, resource_dir):
@@ -274,9 +280,13 @@ class ImportTarget(Target):
         return target
 
     def create_test_target(self, function, req_to_target):
+        test_req_to_target = {}
+        for req, target in req_to_target.items():
+            import_req = req.to_test_req()
+            test_req_to_target[import_req] = import_req.get_target(self._target_set.factory)
         test_target = TestTarget(
             self._cache, self._cached_count, self._target_set, self._types, self._config_tgt,
-            self, self._src, function, req_to_target)
+            self, self._src, function, test_req_to_target)
         for req in req_to_target:
             req.apply_test_target(self, test_target, self._target_set)
         self._target_set.add(test_target)
@@ -286,6 +296,11 @@ class ImportTarget(Target):
         assert self._completed
         recorder_piece, module_piece = self._src.recorded_python_module(tag)
         return (self._src.name, recorder_piece, module_piece)
+
+    @property
+    def python_module_piece(self):
+        recorder_piece, module_piece = self._src.recorded_python_module(tag='')
+        return module_piece
 
     @property
     def test_resources(self):

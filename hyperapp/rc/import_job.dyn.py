@@ -95,6 +95,7 @@ class SucceededImportResult(_SucceededImportResultBase):
 
     def update_targets(self, import_tgt, target_set):
         req_to_target = self._resolve_requirements(target_set.factory, self._all_reqs)
+        import_tgt.set_requirements(req_to_target)
         if self._is_tests or self._is_fixtures:
             self._update_fixtures_targets(import_tgt, target_set)
         if self._is_tests:
@@ -102,7 +103,6 @@ class SucceededImportResult(_SucceededImportResultBase):
             self._add_tests(import_tgt, target_set, req_to_target)
         elif not self._is_fixtures:
             self._update_resource(import_tgt, target_set, req_to_target)
-        import_tgt.set_requirements(req_to_target)
 
     def _update_fixtures_targets(self, import_tgt, target_set):
         for ctr in self._constructors:

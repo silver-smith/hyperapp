@@ -89,12 +89,11 @@ class TestedCodeReq(Requirement):
             )
         return [*resources, tested_code_res]
 
-    def aux_requirements(self, target, target_set):
-        return {
-            PythonModuleReq(target.module_name, tgt.code_name): tgt
-            for tgt in target_set.completed_python_module_resources
-            if target.module_name != tgt.module_name
-            }
+    def tested_modules(self, target_set):
+        return {target_set.full_module_name(self.code_name)}
+
+    # def imports_from_tested(self, target):
+    #     return target.import_requirements
 
 
 @dataclass(frozen=True)
@@ -124,11 +123,8 @@ class FixturesModuleReq(Requirement):
     def make_resource_list(self, target):
         return target.test_resources
 
-    def aux_requirements(self, target, target_set):
-        return {
-            PythonModuleReq(target.module_name, tgt.code_name): tgt
-            for tgt in target_set.completed_python_module_resources
-            }
+    def aux_requirements(self, target):
+        return target.import_requirements
 
 
 class TestedCodeResource(Resource):

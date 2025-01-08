@@ -19,5 +19,9 @@ class Target:
         pass
 
     @property
+    def import_requirements(self):
+        return set()
+
+    @property
     def has_output(self):
         return False
