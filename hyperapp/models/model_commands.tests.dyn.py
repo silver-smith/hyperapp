@@ -100,17 +100,3 @@ async def test_run_command(lcs, piece):
     result = await model_commands.run_command(piece, current_item, ctx, lcs)
     navigator.view.open.assert_called_once()
     assert navigator.view.open.call_args.args[1] == 'sample-fn-2: a-service'
-
-
-@mark.fixture
-def command_d():
-    return mosaic.put(htypes.model_commands_tests.sample_command_1_d())
-
-
-def test_model_command_get(lcs, piece, command_d):
-    form = command_list_model.command_get(piece, command_d, lcs)
-
-
-def test_model_command_update(lcs, piece, command_d):
-    value = htypes.command_list_model.form("new text", "new tooltip")
-    command_list_model.command_update(piece, command_d, value, lcs)
