@@ -23,9 +23,6 @@ class Requirement:
         resource = self.make_resource(target)
         return [resource]
 
-    # def imports_from_tested(self, target):
-    #     return set()
-
     def tested_modules(self, target_set):
         return set()
 

@@ -97,7 +97,7 @@ class TestJobTarget(Target):
         self._function = function
         self._req_to_target = req_to_target
         self._tested_imports = tested_imports  # import targets being tested.
-        self._picked_import_from_tested_import_tgt = set()
+        self._picked_import_from_import_tgt = set()
         self._fixtures_deps = fixtures_deps  # import targets with fixtures.
         self._tested_deps = tested_deps  # targets required by tested code targets.
         self._idx = idx
@@ -126,6 +126,8 @@ class TestJobTarget(Target):
     def update_status(self):
         for tested_import_tgt in self._tested_imports:
             self._pick_import_from_tested_import_tgt(tested_import_tgt)
+        for fixtures_import_tgt in self._fixtures_deps:
+            self._pick_import_from_fixtures_import_tgt(fixtures_import_tgt)
         if not all(target.completed for target in self.deps):
             return
         # if target is not one of our tested modules, second resolve shifts from resolved to complete target.
@@ -135,7 +137,7 @@ class TestJobTarget(Target):
     def _pick_import_from_tested_import_tgt(self, tested_import_tgt):
         if not tested_import_tgt.completed:
             return
-        if tested_import_tgt in self._picked_import_from_tested_import_tgt:
+        if tested_import_tgt in self._picked_import_from_import_tgt:
             return
         self._tested_deps |= tested_import_tgt.deps
         for import_req in tested_import_tgt.import_requirements:
@@ -146,7 +148,22 @@ class TestJobTarget(Target):
             else:
                 req = import_req.to_test_req()
             self._req_to_target[req] = req.get_target(self._target_set.factory)
-        self._picked_import_from_tested_import_tgt.add(tested_import_tgt)
+        self._picked_import_from_import_tgt.add(tested_import_tgt)
+
+    def _pick_import_from_fixtures_import_tgt(self, fixtures_import_tgt):
+        if not fixtures_import_tgt.completed:
+            return
+        if fixtures_import_tgt in self._picked_import_from_import_tgt:
+            return
+        for import_req in fixtures_import_tgt.import_requirements:
+            if (isinstance(import_req, ImportPythonModuleReq)
+                    and self._target_set.full_module_name(import_req.code_name) in self._tested_modules):
+                # Tested module imported from another tested module.
+                req = import_req
+            else:
+                req = import_req.to_test_req()
+            self._req_to_target[req] = req.get_target(self._target_set.factory)
+        self._picked_import_from_import_tgt.add(fixtures_import_tgt)
 
     def make_job(self):
         return TestJob(self._src, self._idx, self._req_to_resources, self._function.name)
@@ -273,9 +290,9 @@ class TestTarget(Target):
         self._current_job_target = target
         self._target_set.add(target)
 
-    def add_fixtures_import(self, target):
+    def add_fixtures_import(self, fixtures_import_tgt):
         assert not self._current_job_target
-        self._fixtures_deps.add(target)
+        self._fixtures_deps.add(fixtures_import_tgt)
 
     def add_tested_import(self, target):
         assert not self._current_job_target

@@ -287,8 +287,8 @@ class ImportTarget(Target):
         test_target = TestTarget(
             self._cache, self._cached_count, self._target_set, self._types, self._config_tgt,
             self, self._src, function, test_req_to_target)
-        for req in req_to_target:
-            req.apply_test_target(self, test_target, self._target_set)
+        for req, target in req_to_target.items():
+            req.apply_test_target(target, test_target, self._target_set)
         self._target_set.add(test_target)
         test_target.create_job_target()
 
