@@ -9,7 +9,7 @@ from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
 from .code.ui_model_command import UnboundUiModelCommand, CommandItem
 from .fixtures import feed_fixtures
-from .tested.code import command_list_model, model_commands
+from .tested.code import command_list_model, model_commands, global_commands
 
 
 def _sample_fn(model, state):
@@ -107,6 +107,11 @@ def model_piece():
 
 
 @mark.fixture
+def global_piece():
+    return htypes.global_commands.model()
+
+
+@mark.fixture
 def command_d():
     return mosaic.put(htypes.command_list_model_tests.sample_command_d())
 
@@ -115,6 +120,16 @@ def test_model_command_get(lcs, model_piece, command_d):
     form = command_list_model.command_get(model_piece, command_d, lcs)
 
 
+def test_global_command_get(lcs, global_piece, command_d):
+    form = command_list_model.command_get(global_piece, command_d, lcs)
+
+
 def test_model_command_update(lcs, model_piece, command_d):
     value = htypes.command_list_model.form("new text", "new tooltip")
     command_list_model.command_update(model_piece, command_d, value, lcs)
+
+
+def test_global_command_update(lcs, global_piece, command_d):
+    value = htypes.command_list_model.form("new text", "new tooltip")
+    command_list_model.command_update(global_piece, command_d, value, lcs)
+

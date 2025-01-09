@@ -9,7 +9,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
-from .tested.code import global_commands
+from .tested.code import command_list_model, global_commands
 
 
 def test_open_global_commands():
