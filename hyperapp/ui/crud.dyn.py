@@ -9,7 +9,6 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.context import Context
 from .code.command import BoundCommandBase, UnboundCommandBase
 
 log = logging.getLogger(__name__)
@@ -78,7 +77,7 @@ class CrudOpenFn:
             )
 
 
-def _run_crud_init(system_fn_creg, crud_model):
+def _run_crud_init(ctx, system_fn_creg, crud_model):
     model = web.summon(crud_model.model)
     key_values = [web.summon(key) for key in crud_model.keys]
     keys_kw = {
@@ -86,12 +85,12 @@ def _run_crud_init(system_fn_creg, crud_model):
         for name, value in zip(crud_model.key_fields, key_values)
         }
     action_fn = system_fn_creg.invite(crud_model.init_action_fn)
-    ctx = Context(
+    model_ctx = ctx.clone_with(
         piece=model,
         model=model,
         **keys_kw,
         )
-    return action_fn.call(ctx)
+    return action_fn.call(model_ctx)
 
 
 class CrudInitFn:
@@ -115,10 +114,10 @@ class CrudInitFn:
 
     def call(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
-        return self._init(ctx_kw['model'])
+        return self._init(ctx, ctx_kw['model'])
 
-    def _init(self, crud_model):
-        return _run_crud_init(self._system_fn_creg, crud_model)
+    def _init(self, ctx, crud_model):
+        return _run_crud_init(ctx, self._system_fn_creg, crud_model)
 
 
 def _form_view(value_t_ref):
@@ -135,7 +134,7 @@ def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg)
     if not piece.get_fn:
         return _form_view(piece.value_t)
     get_fn = system_fn_creg.invite(piece.get_fn)
-    value = _run_crud_init(system_fn_creg, piece)
+    value = _run_crud_init(ctx, system_fn_creg, piece)
     selector_model = get_fn.call(ctx, value=value)
     return visualizer(lcs, ctx, selector_model)
 
