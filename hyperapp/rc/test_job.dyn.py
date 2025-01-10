@@ -9,7 +9,6 @@ from hyperapp.boot.config_item_missing import ConfigItemMissingError
 from . import htypes
 from .services import (
     mosaic,
-    hyperapp_dir,
     pyobj_creg,
     )
 from .code.config_ctl import DictConfigCtl
