@@ -10,11 +10,6 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
-  feed_creg:
-    type: legacy_type.builtin:attribute
-    value:
-      object: feed_creg.module
-      attr_name: feed_creg
   feed_creg.module:
     type: legacy_type.builtin:python_module
     value:
@@ -25,12 +20,17 @@ definitions:
         services.cached_code_registry_ctr: builtins:cached_code_registry_ctr.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  feed_creg.service:
+  feed_type_creg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: feed_creg.module
+      attr_name: feed_type_creg
+  feed_type_creg.service:
     type: legacy_type.system:service_template
     value:
-      name: feed_creg
+      name: feed_type_creg
       ctl: system-dict_config_ctl.ctl
-      function: feed_creg
+      function: feed_type_creg
       service_params: []
       want_config: true
       free_params: []

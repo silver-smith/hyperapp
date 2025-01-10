@@ -32,6 +32,6 @@ class FeedTypeTemplate:
         # Should resolve it here manually.
         # If added as dependency to from_piece, it fails resolving
         # because cfg_item_creg is a system resource and resolved
-        # before regular resources such as feed_creg.
-        feed_creg = system.resolve_service('feed_creg')
-        return feed_creg.invite(self._feed_type_ref)
+        # before regular resources such as feed_type_creg.
+        feed_type_creg = system.resolve_service('feed_type_creg')
+        return feed_type_creg.invite(self._feed_type_ref)
