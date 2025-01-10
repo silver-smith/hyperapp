@@ -15,6 +15,8 @@ import:
 - sample.sample_commands:show_state.d
 - sample.sample_list_crud:sample_list-sample_list.edit.commit-command.d
 - sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
+- sample.sample_tree:open_feed_sample_fn_tree.d
+- sample.sample_tree:open_sample_fn_tree.d
 - ui.layout:open_layout_tree.d
 - ui.layout:set_shortcut.d
 - ui.navigator:go_forward.d
@@ -113,6 +115,14 @@ definitions:
         - command_shortcut_lcs_d_1
         - models.file_bundles:open.d
         value: shortcut_Return
+      - key:
+        - sample.sample_tree:open_sample_fn_tree.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_F6
+      - key:
+        - sample.sample_tree:open_feed_sample_fn_tree.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Shift_F6
   shortcut_Alt_F1:
     type: legacy_type.builtin:string
     value: Alt+F1
@@ -149,6 +159,9 @@ definitions:
   shortcut_F1:
     type: legacy_type.builtin:string
     value: F1
+  shortcut_F6:
+    type: legacy_type.builtin:string
+    value: F6
   shortcut_M:
     type: legacy_type.builtin:string
     value: M
@@ -158,6 +171,9 @@ definitions:
   shortcut_Shift_F4:
     type: legacy_type.builtin:string
     value: Shift+F4
+  shortcut_Shift_F6:
+    type: legacy_type.builtin:string
+    value: Shift+F6
   shortcut_Space:
     type: legacy_type.builtin:string
     value: Space

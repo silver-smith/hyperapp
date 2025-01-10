@@ -8,6 +8,7 @@ import:
 - legacy_type.identity_command:identity_command
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.sample_list:sample_list
+- sample.sample_list:open_feed_sample_fn_list.d
 - sample.sample_list:open_sample_fn_list.d
 definitions:
   custom_model_command_list_1:
@@ -50,6 +51,13 @@ definitions:
         - sample.sample_list:open_sample_fn_list.d
         - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
         value: shortcut_F4
+      - key:
+        - sample.sample_list:open_feed_sample_fn_list.d
+        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
+        value: shortcut_F5
   shortcut_F4:
     type: legacy_type.builtin:string
     value: F4
+  shortcut_F5:
+    type: legacy_type.builtin:string
+    value: F5
