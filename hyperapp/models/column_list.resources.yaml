@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:deduce_t.service
 - builtins:pyobj_creg.service
 - common.list_diff:list_diff.module
-- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.column:column_d
@@ -37,7 +37,7 @@ definitions:
       file_name: column_list.dyn.py
       import_list:
         code.list_diff: common.list_diff:list_diff.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.column.column_d: legacy_type.column:column_d
         htypes.column.list_d: legacy_type.column:list_d
         htypes.column.show_d: legacy_type.column:show_d

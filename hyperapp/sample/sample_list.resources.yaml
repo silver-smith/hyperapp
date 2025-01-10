@@ -1,8 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - common.list_diff:list_diff.module
-- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:model_command
@@ -81,7 +81,7 @@ definitions:
       file_name: sample_list.dyn.py
       import_list:
         code.list_diff: common.list_diff:list_diff.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.sample_list.feed_sample_list: legacy_type.sample_list:feed_sample_list
         htypes.sample_list.item: legacy_type.sample_list:item
         htypes.sample_list.sample_list: legacy_type.sample_list:sample_list

@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:mosaic.service
 - builtins:web.service
 - common.list_diff:list_diff.module
-- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:list_mt
 - legacy_type.builtin:python_module
@@ -153,7 +153,7 @@ definitions:
         code.data_browser: models.data_browser:data_browser.module
         code.directory: ui.directory:directory.module
         code.list_diff: common.list_diff:list_diff.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.builtin.list_mt: legacy_type.builtin:list_mt
         htypes.builtin.record_mt: legacy_type.builtin:record_mt
         htypes.lcs_layer.layer: legacy_type.lcs_layer:layer

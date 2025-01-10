@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:mosaic.service
 - builtins:web.service
 - common.list_diff:list_diff.module
-- common.mark:mark.module
 - legacy_type.box_layout:element
 - legacy_type.box_layout:state
 - legacy_type.box_layout:view
@@ -40,7 +40,7 @@ definitions:
       file_name: box_layout.dyn.py
       import_list:
         code.list_diff: common.list_diff:list_diff.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
         htypes.box_layout.element: legacy_type.box_layout:element
         htypes.box_layout.state: legacy_type.box_layout:state

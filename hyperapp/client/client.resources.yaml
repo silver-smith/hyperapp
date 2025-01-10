@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
+- base.reconstructors:reconstructors.module
 - builtins:hyperapp_dir.service
 - builtins:mosaic.service
 - common.context:context.module
-- common.mark:mark.module
-- common.reconstructors:reconstructors.module
 - lcs.lcs:lcs.module
 - legacy_type.auto_tabs:view
 - legacy_type.box_layout:element
@@ -42,8 +42,8 @@ definitions:
         code.context: common.context:context.module
         code.controller: ui.controller:controller.module
         code.lcs: lcs.lcs:lcs.module
-        code.mark: common.mark:mark.module
-        code.reconstructors: common.reconstructors:reconstructors.module
+        code.mark: base.mark:mark.module
+        code.reconstructors: base.reconstructors:reconstructors.module
         htypes.auto_tabs.view: legacy_type.auto_tabs:view
         htypes.box_layout.element: legacy_type.box_layout:element
         htypes.box_layout.state: legacy_type.box_layout:state

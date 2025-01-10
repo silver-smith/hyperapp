@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
 - common.context:context.module
-- common.mark:mark.module
 - common.tree_diff:tree_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -27,7 +27,7 @@ definitions:
       file_name: controller.dyn.py
       import_list:
         code.context: common.context:context.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         code.tree_diff: common.tree_diff:tree_diff.module
         code.view: ui.view.view:view.module
         htypes.layout.item: legacy_type.layout:item

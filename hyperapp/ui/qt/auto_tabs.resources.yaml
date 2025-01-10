@@ -1,9 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:web.service
 - common.list_diff:list_diff.module
-- common.mark:mark.module
 - legacy_type.auto_tabs:close_tab_d
 - legacy_type.auto_tabs:duplicate_tab_d
 - legacy_type.auto_tabs:view
@@ -41,7 +41,7 @@ definitions:
       file_name: auto_tabs.dyn.py
       import_list:
         code.list_diff: common.list_diff:list_diff.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         code.tabs: ui.qt.tabs:tabs.module
         htypes.auto_tabs.view: legacy_type.auto_tabs:view
         services.web: builtins:web.service

@@ -1,9 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:mosaic.service
 - builtins:web.service
-- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
@@ -25,7 +25,7 @@ definitions:
       file_name: global_commands.dyn.py
       import_list:
         code.command_list_model: models.command_list_model:command_list_model.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.global_commands.model: legacy_type.global_commands:model
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service

@@ -23,7 +23,7 @@ handlers:
 loggers:
   hyperapp.common.mosaic: {level: INFO}
   hyperapp.common.web: {level: WARNING}
-  hyperapp.common.bundler: {level: WARNING}
+  hyperapp.base.bundler: {level: WARNING}
   hyperapp.common.type_module_repository: {level: WARNING}
   hyperapp.common.module_manager: {level: INFO}
   hyperapp.server.transport.tcp: {level: DEBUG}

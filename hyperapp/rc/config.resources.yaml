@@ -4,11 +4,11 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 
-- common.bundler:bundler.service
-- common.file_bundle:file_bundle.service
-- common.mark:marker_ctl.service
-- common.ref_picker:pick_refs.service
-- common.ref_picker:ref_picker_cache.service
+- base.bundler:bundler.service
+- base.file_bundle:file_bundle.service
+- base.mark:marker_ctl.service
+- base.ref_picker:pick_refs.service
+- base.ref_picker:ref_picker_cache.service
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
@@ -147,11 +147,11 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - common.bundler:bundler.service
-      - common.file_bundle:file_bundle.service
-      - common.mark:marker_ctl.service
-      - common.ref_picker:pick_refs.service
-      - common.ref_picker:ref_picker_cache.service
+      - base.bundler:bundler.service
+      - base.file_bundle:file_bundle.service
+      - base.mark:marker_ctl.service
+      - base.ref_picker:pick_refs.service
+      - base.ref_picker:ref_picker_cache.service
       - system.system_stop:stop_signal.service
       - system.system_stop:system_failed.service
       - rc.ctr_collector:ctr_collector.service

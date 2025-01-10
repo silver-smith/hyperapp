@@ -1,9 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
-- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.form:view
@@ -33,7 +33,7 @@ definitions:
       module_name: record_adapter
       file_name: record_adapter.dyn.py
       import_list:
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.form.view: legacy_type.form:view
         htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
         services.mosaic: builtins:mosaic.service

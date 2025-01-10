@@ -1,9 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:mosaic.service
 - builtins:web.service
-- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
@@ -66,7 +66,7 @@ definitions:
       module_name: tabs
       file_name: tabs.dyn.py
       import_list:
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
         htypes.tabs.list_item: legacy_type.tabs:list_item
         htypes.tabs.state: legacy_type.tabs:state

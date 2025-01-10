@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
-- common.mark:mark.module
 - legacy_type.box_layout:state
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -61,7 +61,7 @@ definitions:
       import_list:
         code.box_layout: ui.qt.box_layout:box_layout.module
         code.directory: ui.directory:directory.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
         htypes.box_layout.state: legacy_type.box_layout:state
         htypes.label.view: legacy_type.label:view

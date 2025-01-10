@@ -1,8 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:mosaic.service
-- common.mark:mark.module
 - lcs.lcs_view:lcs_view.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -55,7 +55,7 @@ definitions:
       file_name: lcs_dirs_view.dyn.py
       import_list:
         code.lcs_view: lcs.lcs_view:lcs_view.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.lcs_dirs_view.item: legacy_type.lcs_dirs_view:item
         htypes.lcs_dirs_view.view: legacy_type.lcs_dirs_view:view
         htypes.lcs_view.view: legacy_type.lcs_view:view

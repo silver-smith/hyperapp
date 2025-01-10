@@ -1,12 +1,12 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
 - common.list_diff:list_diff.module
-- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
@@ -42,7 +42,7 @@ definitions:
         code.fn_list_adapter: ui.qt.fn_list_adapter:fn_list_adapter.module
         code.list_as_tree_adapter: ui.qt.list_as_tree_adapter:list_as_tree_adapter.module
         code.list_diff: common.list_diff:list_diff.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
         htypes.list.view: legacy_type.list:view
         htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item

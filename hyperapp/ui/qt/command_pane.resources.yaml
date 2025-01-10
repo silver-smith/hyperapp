@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.mark:mark.module
+- base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:command_shortcut_lcs_d
@@ -39,7 +39,7 @@ definitions:
       file_name: command_pane.dyn.py
       import_list:
         code.command_ap: ui.qt.command_ap:command_ap.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
         htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
         htypes.command_groups.pane_1_d: legacy_type.command_groups:pane_1_d

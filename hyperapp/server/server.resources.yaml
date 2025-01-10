@@ -1,9 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
+- base.reconstructors:reconstructors.module
 - builtins:mosaic.service
-- common.mark:mark.module
-- common.reconstructors:reconstructors.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:dict_config_ctl
@@ -15,8 +15,8 @@ definitions:
       module_name: server
       file_name: server.dyn.py
       import_list:
-        code.mark: common.mark:mark.module
-        code.reconstructors: common.reconstructors:reconstructors.module
+        code.mark: base.mark:mark.module
+        code.reconstructors: base.reconstructors:reconstructors.module
         services.mosaic: builtins:mosaic.service
   server_main:
     type: legacy_type.builtin:attribute

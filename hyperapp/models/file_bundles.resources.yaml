@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.mark:mark.module
+- base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
@@ -27,7 +27,7 @@ definitions:
       module_name: file_bundles
       file_name: file_bundles.dyn.py
       import_list:
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.data_browser.record_view: legacy_type.data_browser:record_view
         htypes.file_bundles.item: legacy_type.file_bundles:item
         htypes.file_bundles.view: legacy_type.file_bundles:view

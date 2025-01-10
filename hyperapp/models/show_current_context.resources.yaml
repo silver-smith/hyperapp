@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.mark:mark.module
+- base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:model_command
@@ -41,7 +41,7 @@ definitions:
       module_name: show_current_context
       file_name: show_current_context.dyn.py
       import_list:
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.show_current_context.item: legacy_type.show_current_context:item
         htypes.show_current_context.view: legacy_type.show_current_context:view
   show_current_context.system-fn:

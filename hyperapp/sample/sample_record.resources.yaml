@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.mark:mark.module
+- base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:model_command
@@ -47,7 +47,7 @@ definitions:
       module_name: sample_record
       file_name: sample_record.dyn.py
       import_list:
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         htypes.sample_record.item: legacy_type.sample_record:item
         htypes.sample_record.sample_record: legacy_type.sample_record:sample_record
   sample_record_sample_record.model:

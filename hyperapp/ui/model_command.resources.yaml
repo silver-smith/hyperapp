@@ -1,9 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.mark:mark.module
 - builtins:deduce_t.service
 - builtins:web.service
-- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:model_command
@@ -76,7 +76,7 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.command_config_ctl: ui.command_config_ctl:command_config_ctl.module
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
         services.web: builtins:web.service
   model_command_enumerator_from_piece:

@@ -3,7 +3,7 @@ disable_existing_loggers: False
 
 loggers:
   hyperapp.common.web: {level: INFO}
-  hyperapp.common.bundler: {level: INFO}
+  hyperapp.base.bundler: {level: INFO}
   hyperapp.common.type_module_repository: {level: WARNING}
   hyperapp.common.module_manager: {level: INFO}
   hyperapp.client.registry: {level: INFO}

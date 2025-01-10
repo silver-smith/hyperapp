@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.mark:mark.module
+- base.mark:mark.module
 - common.tree_diff:tree_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -80,7 +80,7 @@ definitions:
       module_name: sample_tree
       file_name: sample_tree.dyn.py
       import_list:
-        code.mark: common.mark:mark.module
+        code.mark: base.mark:mark.module
         code.tree_diff: common.tree_diff:tree_diff.module
         htypes.sample_tree.feed_sample_tree: legacy_type.sample_tree:feed_sample_tree
         htypes.sample_tree.item: legacy_type.sample_tree:item

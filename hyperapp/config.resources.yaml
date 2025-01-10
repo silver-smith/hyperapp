@@ -1,13 +1,13 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.bundler:bundler.service
+- base.file_bundle:file_bundle.service
+- base.mark:marker_ctl.service
+- base.ref_picker:pick_refs.service
+- base.ref_picker:ref_picker_cache.service
 - client.client:client_async_main.service
 - client.client:client_main.service
-- common.bundler:bundler.service
-- common.file_bundle:file_bundle.service
-- common.mark:marker_ctl.service
-- common.ref_picker:pick_refs.service
-- common.ref_picker:ref_picker_cache.service
 - lcs.lcs_dirs_view:lcs_dirs_view_view.model-cfg-item
 - lcs.lcs_dirs_view:lcs_dirs_view_view_lcs_dirs_items.command-cfg-item
 - lcs.lcs_dirs_view:lcs_view_view_lcs_open_dirs.command-cfg-item
@@ -626,13 +626,13 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - base.bundler:bundler.service
+      - base.file_bundle:file_bundle.service
+      - base.mark:marker_ctl.service
+      - base.ref_picker:pick_refs.service
+      - base.ref_picker:ref_picker_cache.service
       - client.client:client_async_main.service
       - client.client:client_main.service
-      - common.bundler:bundler.service
-      - common.file_bundle:file_bundle.service
-      - common.mark:marker_ctl.service
-      - common.ref_picker:pick_refs.service
-      - common.ref_picker:ref_picker_cache.service
       - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
       - rc.ctr_collector:ctr_collector.service
       - rc.htest.sample_config:sample_config_service.service
