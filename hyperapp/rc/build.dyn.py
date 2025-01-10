@@ -97,6 +97,7 @@ class TypeSrc:
     name: str
     type_piece: Any
 
+    # Unused.
     @property
     def piece(self):
         return htypes.build.type_src(
