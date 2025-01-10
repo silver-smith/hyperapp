@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import TList, TRecord, tString
+from hyperapp.boot.htypes import TList, TRecord, tString
 
 
 def is_named_pair_list_t(t):

@@ -3,7 +3,7 @@ import logging
 import weakref
 from functools import cached_property
 
-from hyperapp.common.htypes import tInt, TOptional, TRecord
+from hyperapp.boot.htypes import tInt, TOptional, TRecord
 
 from . import htypes
 from .services import (

@@ -2,7 +2,7 @@ import logging
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 
-from hyperapp.common.ref import ref_repr
+from hyperapp.boot.ref import ref_repr
 
 from .services import (
     mosaic,

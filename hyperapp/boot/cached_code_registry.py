@@ -1,6 +1,6 @@
 import threading
 
-from hyperapp.common.code_registry import CodeRegistry
+from hyperapp.boot.code_registry import CodeRegistry
 
 
 class CachedCodeRegistry(CodeRegistry):

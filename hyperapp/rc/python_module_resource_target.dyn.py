@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from functools import cached_property
 
-from hyperapp.common.util import flatten
+from hyperapp.boot.util import flatten
 
 from . import htypes
 from .services import (

@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from hyperapp.common.htypes import (
+from hyperapp.boot.htypes import (
     TPrimitive,
     TOptional,
     TList,

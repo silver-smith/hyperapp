@@ -5,13 +5,13 @@ import logging
 import argparse
 from pathlib import Path
 
-from hyperapp.common.htypes import (
+from hyperapp.boot.htypes import (
     TList,
     tTypeDef,
     make_builtins_type_namespace,
     )    
-from hyperapp.common.visual_rep import pprint
-from hyperapp.common.type_module_parser import Lexer, load_type_module
+from hyperapp.boot.visual_rep import pprint
+from hyperapp.boot.type_module_parser import Lexer, load_type_module
 
 log = logging.getLogger(__name__)
 

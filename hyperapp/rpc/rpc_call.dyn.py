@@ -3,7 +3,7 @@ import uuid
 from concurrent.futures import Future
 from functools import partial
 
-from hyperapp.common.htypes import HException
+from hyperapp.boot.htypes import HException
 
 from . import htypes
 from .services import (

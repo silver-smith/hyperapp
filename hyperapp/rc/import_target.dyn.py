@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 from functools import cached_property
 
-from hyperapp.common.util import flatten
+from hyperapp.boot.util import flatten
 
 from .code.rc_target import Target
 from .code.type_req import TypeReq

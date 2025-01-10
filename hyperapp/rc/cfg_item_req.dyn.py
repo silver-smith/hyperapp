@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import Type
+from hyperapp.boot.htypes import Type
 
 from . import htypes
 from .services import (

@@ -2,7 +2,7 @@ import os.path
 from pathlib import Path
 import pytest
 
-from hyperapp.common.htypes import (
+from hyperapp.boot.htypes import (
     tInt,
     tString,
     tBool,
@@ -13,9 +13,9 @@ from hyperapp.common.htypes import (
     TList,
     ref_t,
     )
-from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.type_module_loader import CircularDepError, TypeModuleLoader
-from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
+from hyperapp.boot import cdr_coders  # register codec
+from hyperapp.boot.type_module_loader import CircularDepError, TypeModuleLoader
+from hyperapp.boot.test.hyper_types_namespace import HyperTypesNamespace
 
 
 TEST_MODULES_DIR = Path(__file__).parent.resolve()

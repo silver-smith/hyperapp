@@ -6,8 +6,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
-from hyperapp.common.htypes import bundle_t
-from hyperapp.common.htypes.packet_coders import packet_coders
+from hyperapp.boot.htypes import bundle_t
+from hyperapp.boot.htypes.packet_coders import packet_coders
 
 from . import htypes
 from .services import (

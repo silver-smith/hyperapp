@@ -1,13 +1,13 @@
 from functools import partial
 
-from ..common.htypes.partial import (
+from ..boot.htypes.partial import (
     partial_param_t,
     partial_param_def_t,
     partial_t,
     partial_def_t,
     )
-from ..common.dict_decoder import NamedPairsDictDecoder
-from ..common.dict_encoder import NamedPairsDictEncoder
+from ..boot.dict_decoder import NamedPairsDictDecoder
+from ..boot.dict_encoder import NamedPairsDictEncoder
 
 
 class PartialResourceType:

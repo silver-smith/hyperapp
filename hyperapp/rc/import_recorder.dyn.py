@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.python_importer import Finder
+from hyperapp.boot.python_importer import Finder
 
 log = logging.getLogger(__name__)
 

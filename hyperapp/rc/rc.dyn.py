@@ -5,7 +5,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from pathlib import Path
 
-from hyperapp.common.htypes import HException
+from hyperapp.boot.htypes import HException
 
 from . import htypes
 from .services import (

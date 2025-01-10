@@ -1,4 +1,4 @@
-from hyperapp.common.htypes.deduce_value_type import DeduceTypeError
+from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
 
 from .services import (
     deduce_t,

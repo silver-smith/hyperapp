@@ -4,15 +4,15 @@ from pathlib import Path
 
 import pytest
 
-from hyperapp.common.htypes.python_module import python_module_t, python_module_def_t, import_rec_t, import_rec_def_t
+from hyperapp.boot.htypes.python_module import python_module_t, python_module_def_t, import_rec_t, import_rec_def_t
 from hyperapp.resource.python_module import PythonModuleResourceType
-from hyperapp.common import cdr_coders  # self-registering
+from hyperapp.boot import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
 
 
 pytest_plugins = [
-    'hyperapp.common.test.services',
+    'hyperapp.boot.test.services',
     ]
 
 TEST_DIR = Path(__file__).parent.resolve()

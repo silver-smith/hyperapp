@@ -1,6 +1,6 @@
-from ..common.htypes.raw import raw_t, raw_def_t
-from ..common.dict_decoder import NamedPairsDictDecoder
-from ..common.dict_encoder import NamedPairsDictEncoder
+from ..boot.htypes.raw import raw_t, raw_def_t
+from ..boot.dict_decoder import NamedPairsDictDecoder
+from ..boot.dict_encoder import NamedPairsDictEncoder
 
 
 class RawResourceType:

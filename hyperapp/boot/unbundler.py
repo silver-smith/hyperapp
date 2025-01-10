@@ -2,7 +2,7 @@
 
 import logging
 
-from hyperapp.common.association_registry import Association
+from hyperapp.boot.association_registry import Association
 
 log = logging.getLogger(__name__)
 

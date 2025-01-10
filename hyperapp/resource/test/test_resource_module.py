@@ -4,18 +4,18 @@ from pathlib import Path
 
 import pytest
 
-from hyperapp.common.htypes import Type, TRecord, record_mt
-from hyperapp.common.htypes.attribute import attribute_t
-from hyperapp.common.htypes.partial import partial_param_t, partial_t
-from hyperapp.common.htypes.builtin_service import builtin_service_t
-from hyperapp.common.association_registry import Association
-from hyperapp.common import cdr_coders  # self-registering
+from hyperapp.boot.htypes import Type, TRecord, record_mt
+from hyperapp.boot.htypes.attribute import attribute_t
+from hyperapp.boot.htypes.partial import partial_param_t, partial_t
+from hyperapp.boot.htypes.builtin_service import builtin_service_t
+from hyperapp.boot.association_registry import Association
+from hyperapp.boot import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
 
 
 pytest_plugins = [
-    'hyperapp.common.test.services',
+    'hyperapp.boot.test.services',
     ]
 
 TEST_DIR = Path(__file__).parent.resolve()

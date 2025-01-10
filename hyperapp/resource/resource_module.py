@@ -6,7 +6,7 @@ from functools import cached_property
 
 from yaml.scanner import ScannerError
 
-from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.boot.htypes.deduce_value_type import deduce_value_type
 from hyperapp.resource.resource_registry import UnknownResourceName
 
 log = logging.getLogger(__name__)

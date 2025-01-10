@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import Type
+from hyperapp.boot.htypes import Type
 from hyperapp.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (

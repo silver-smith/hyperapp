@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from hyperapp.common.htypes import tString, tInt
+from hyperapp.boot.htypes import tString, tInt
 
 from . import htypes
 from .services import (

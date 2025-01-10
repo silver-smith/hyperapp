@@ -4,8 +4,8 @@ import struct
 import threading
 from collections import namedtuple
 
-from hyperapp.common.htypes import bundle_t
-from hyperapp.common.htypes.packet_coders import packet_coders
+from hyperapp.boot.htypes import bundle_t
+from hyperapp.boot.htypes.packet_coders import packet_coders
 
 from .services import (
     mosaic,

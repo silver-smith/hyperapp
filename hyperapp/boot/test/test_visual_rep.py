@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes import (
+from hyperapp.boot.htypes import (
     tInt,
     tString,
     tBool,
@@ -8,7 +8,7 @@ from hyperapp.common.htypes import (
     TRecord,
     TList,
     )
-from hyperapp.common.visual_rep import VisualRepEncoder
+from hyperapp.boot.visual_rep import VisualRepEncoder
 
 log = logging.getLogger(__name__)
 

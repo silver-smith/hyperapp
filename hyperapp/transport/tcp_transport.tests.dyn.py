@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes.packet_coders import packet_coders
+from hyperapp.boot.htypes.packet_coders import packet_coders
 
 from . import htypes
 from .services import (

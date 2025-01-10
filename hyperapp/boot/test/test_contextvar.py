@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from hyperapp.common.test.barrier import Barrier
+from hyperapp.boot.test.barrier import Barrier
 
 _log = logging.getLogger(__name__)
 

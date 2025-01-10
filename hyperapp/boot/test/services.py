@@ -4,22 +4,22 @@ from types import SimpleNamespace
 
 import pytest
 
-from hyperapp.common.htypes import BuiltinTypeRegistry, register_builtin_types
-from hyperapp.common.htypes.python_module import python_module_t
-from hyperapp.common.htypes.attribute import attribute_t
-from hyperapp.common.htypes.call import call_t
-from hyperapp.common.htypes.partial import partial_t
-from hyperapp.common.htypes.deduce_value_type import deduce_value_type
-from hyperapp.common.mosaic import Mosaic
-from hyperapp.common.web import Web
-from hyperapp.common.services import HYPERAPP_DIR, pyobj_config
-from hyperapp.common.code_registry import CodeRegistry
-from hyperapp.common.pyobj_registry import PyObjRegistry
-from hyperapp.common.association_registry import AssociationRegistry
-from hyperapp.common.python_importer import PythonImporter
-from hyperapp.common.type_module_loader import TypeModuleLoader
-from hyperapp.common.resource_dir import ResourceDir
-from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
+from hyperapp.boot.htypes import BuiltinTypeRegistry, register_builtin_types
+from hyperapp.boot.htypes.python_module import python_module_t
+from hyperapp.boot.htypes.attribute import attribute_t
+from hyperapp.boot.htypes.call import call_t
+from hyperapp.boot.htypes.partial import partial_t
+from hyperapp.boot.htypes.deduce_value_type import deduce_value_type
+from hyperapp.boot.mosaic import Mosaic
+from hyperapp.boot.web import Web
+from hyperapp.boot.services import HYPERAPP_DIR, pyobj_config
+from hyperapp.boot.code_registry import CodeRegistry
+from hyperapp.boot.pyobj_registry import PyObjRegistry
+from hyperapp.boot.association_registry import AssociationRegistry
+from hyperapp.boot.python_importer import PythonImporter
+from hyperapp.boot.type_module_loader import TypeModuleLoader
+from hyperapp.boot.resource_dir import ResourceDir
+from hyperapp.boot.test.hyper_types_namespace import HyperTypesNamespace
 from hyperapp.resource.resource_type import ResourceType
 from hyperapp.resource.resource_type_producer import resource_type_producer as resource_type_producer_fn
 from hyperapp.resource.resource_registry import ResourceRegistry

@@ -3,7 +3,7 @@ import itertools
 import re
 import yaml
 
-from hyperapp.common.htypes import TPrimitive, TRecord, tString
+from hyperapp.boot.htypes import TPrimitive, TRecord, tString
 
 from . import htypes
 from .services import (

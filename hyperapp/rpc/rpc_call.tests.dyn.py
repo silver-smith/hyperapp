@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes import HException
+from hyperapp.boot.htypes import HException
 
 from .services import (
     mosaic,

@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any
 
-from hyperapp.common.htypes.association import association_t
+from hyperapp.boot.htypes.association import association_t
 
 log = logging.getLogger(__name__)
 

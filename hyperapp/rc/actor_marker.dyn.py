@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import Type
+from hyperapp.boot.htypes import Type
 
 from .code.actor_probe import ActorProbe
 from .code.actor_ctr import ActorProbeCtr

@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-from hyperapp.common.init_logging import setup_filter
+from hyperapp.boot.init_logging import setup_filter
 
 log = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import (
+from hyperapp.boot.htypes import (
     Type,
     TOptional,
     TList,

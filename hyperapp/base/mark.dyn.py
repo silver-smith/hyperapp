@@ -1,6 +1,6 @@
 import inspect
 
-from hyperapp.common.htypes import Type
+from hyperapp.boot.htypes import Type
 
 
 class NoOpMarker:

@@ -4,7 +4,7 @@ import sys
 from contextlib import contextmanager
 from pathlib import Path
 
-from hyperapp.common.htypes.packet_coders import packet_coders
+from hyperapp.boot.htypes.packet_coders import packet_coders
 
 from .services import (
     mosaic,

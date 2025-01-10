@@ -1,9 +1,9 @@
 import logging
 import sys
 
-from hyperapp.common.init_logging import init_logging
-from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.services import HYPERAPP_DIR, Services
+from hyperapp.boot.init_logging import init_logging
+from hyperapp.boot import cdr_coders  # register codec
+from hyperapp.boot.services import HYPERAPP_DIR, Services
 
 log = logging.getLogger('rc.main')
 

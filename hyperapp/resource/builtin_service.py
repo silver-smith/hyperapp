@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes.builtin_service import builtin_service_t
+from hyperapp.boot.htypes.builtin_service import builtin_service_t
 
 log = logging.getLogger(__name__)
 

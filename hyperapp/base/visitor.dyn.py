@@ -1,6 +1,6 @@
 from functools import singledispatchmethod
 
-from hyperapp.common.htypes import (
+from hyperapp.boot.htypes import (
     TPrimitive,
     TOptional,
     TRecord,

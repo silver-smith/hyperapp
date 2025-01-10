@@ -1,7 +1,7 @@
 import inspect
 
-from hyperapp.common.htypes import TList, TRecord
-from hyperapp.common.htypes.deduce_value_type import DeduceTypeError
+from hyperapp.boot.htypes import TList, TRecord
+from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
 
 from . import htypes
 from .services import (

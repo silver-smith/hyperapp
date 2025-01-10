@@ -21,11 +21,11 @@ handlers:
     backupCount: 5
 
 loggers:
-  hyperapp.common.mosaic: {level: INFO}
-  hyperapp.common.web: {level: WARNING}
+  hyperapp.boot.mosaic: {level: INFO}
+  hyperapp.boot.web: {level: WARNING}
   hyperapp.base.bundler: {level: WARNING}
-  hyperapp.common.type_module_repository: {level: WARNING}
-  hyperapp.common.module_manager: {level: INFO}
+  hyperapp.boot.type_module_repository: {level: WARNING}
+  hyperapp.boot.module_manager: {level: INFO}
   hyperapp.server.transport.tcp: {level: DEBUG}
 
 root:

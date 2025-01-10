@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from functools import cached_property, partial
 from typing import Any, Self
 
-from hyperapp.common import dict_coders  # register codec
+from hyperapp.boot import dict_coders  # register codec
 
 from . import htypes
 from .services import (

@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from hyperapp.common import dict_coders
+from hyperapp.boot import dict_coders
 
 from .code.mark import mark
 

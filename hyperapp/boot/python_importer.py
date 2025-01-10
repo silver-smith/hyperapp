@@ -3,7 +3,7 @@ import importlib.util
 import logging
 import sys
 
-from hyperapp.common.htypes import HException
+from hyperapp.boot.htypes import HException
 
 log = logging.getLogger(__name__)
 

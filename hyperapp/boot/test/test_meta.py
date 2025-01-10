@@ -3,7 +3,7 @@
 import logging
 import pytest
 
-from hyperapp.common.htypes import (
+from hyperapp.boot.htypes import (
     TPrimitive,
     tNone,
     tString,
@@ -22,7 +22,7 @@ from hyperapp.common.htypes import (
     record_mt,
     exception_mt,
     )
-from hyperapp.common import cdr_coders  # register codec
+from hyperapp.boot import cdr_coders  # register codec
 
 log = logging.getLogger(__name__)
 

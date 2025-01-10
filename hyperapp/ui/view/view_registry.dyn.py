@@ -1,4 +1,4 @@
-from hyperapp.common.code_registry import CodeRegistry
+from hyperapp.boot.code_registry import CodeRegistry
 
 from .services import (
     web,

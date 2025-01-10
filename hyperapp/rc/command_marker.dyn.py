@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import Type
+from hyperapp.boot.htypes import Type
 
 from .services import deduce_t
 from .code.command_ctr import (

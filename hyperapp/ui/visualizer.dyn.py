@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes import TList
+from hyperapp.boot.htypes import TList
 
 from . import htypes
 from .services import (

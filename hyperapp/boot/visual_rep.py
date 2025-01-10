@@ -19,7 +19,7 @@ from .htypes import (
 from .util import encode_path, encode_route
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_ref
-from hyperapp.common.type_repr import type_repr_registry
+from hyperapp.boot.type_repr import type_repr_registry
 
 log = logging.getLogger(__name__)
 

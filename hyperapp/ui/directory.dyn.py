@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import TRecord
+from hyperapp.boot.htypes import TRecord
 
 from .services import (
     web,

@@ -4,7 +4,7 @@ import logging
 import weakref
 from functools import cached_property
 
-from hyperapp.common.htypes import tInt, TList, TOptional, TRecord
+from hyperapp.boot.htypes import tInt, TList, TOptional, TRecord
 
 from .code.tree_diff import TreeDiff
 from .code.tree_visual_diff import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace

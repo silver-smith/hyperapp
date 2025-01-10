@@ -5,7 +5,7 @@ import weakref
 from collections import defaultdict
 from functools import partial
 
-from hyperapp.common.config_item_missing import ConfigItemMissingError
+from hyperapp.boot.config_item_missing import ConfigItemMissingError
 
 from .services import (
     pyobj_creg,

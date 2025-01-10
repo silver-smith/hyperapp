@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from hyperapp.common.htypes import TPrimitive, TOptional, tString
+from hyperapp.boot.htypes import TPrimitive, TOptional, tString
 
 from . import htypes
 from .services import (

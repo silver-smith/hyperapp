@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import TPrimitive, TList, TOptional, TRecord, ref_t
+from hyperapp.boot.htypes import TPrimitive, TList, TOptional, TRecord, ref_t
 
 from . import htypes
 from .services import (

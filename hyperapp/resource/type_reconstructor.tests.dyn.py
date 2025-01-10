@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from hyperapp.common.htypes import (
+from hyperapp.boot.htypes import (
     TOptional,
     TList,
     TRecord,

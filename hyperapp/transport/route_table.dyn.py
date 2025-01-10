@@ -1,8 +1,8 @@
 import logging
 from collections import defaultdict
 
-from hyperapp.common.config_item_missing import ConfigItemMissingError
-from hyperapp.common.association_registry import Association
+from hyperapp.boot.config_item_missing import ConfigItemMissingError
+from hyperapp.boot.association_registry import Association
 
 from .services import (
     association_reg,

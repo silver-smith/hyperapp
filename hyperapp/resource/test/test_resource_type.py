@@ -3,15 +3,15 @@ from pathlib import Path
 
 import pytest
 
-from hyperapp.common.htypes import tString, TOptional, TList, TRecord
-from hyperapp.common.htypes.partial import partial_param_t, partial_t
-from hyperapp.common import cdr_coders  # self-registering
+from hyperapp.boot.htypes import tString, TOptional, TList, TRecord
+from hyperapp.boot.htypes.partial import partial_param_t, partial_t
+from hyperapp.boot import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
 
 
 pytest_plugins = [
-    'hyperapp.common.test.services',
+    'hyperapp.boot.test.services',
     ]
 
 TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hyperapp.common import dict_coders  # register codec
+from hyperapp.boot import dict_coders  # register codec
 
 from . import htypes
 from .code.mark import mark

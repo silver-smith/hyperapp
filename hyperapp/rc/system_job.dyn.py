@@ -3,8 +3,8 @@ import traceback
 from collections import defaultdict
 from itertools import groupby
 
-from hyperapp.common.htypes import HException
-from hyperapp.common.config_item_missing import ConfigItemMissingError
+from hyperapp.boot.htypes import HException
+from hyperapp.boot.config_item_missing import ConfigItemMissingError
 from hyperapp.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
