@@ -1,7 +1,0 @@
-
-attribute = record:
-  name: string
-  resource: ref
-
-mock_module = record:
-  attributes: attribute list
