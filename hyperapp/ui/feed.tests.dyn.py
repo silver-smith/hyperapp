@@ -10,8 +10,8 @@ from .tested.code import feed as feed_module
 @mark.config_fixture('feed_factory')
 def feed_factory_config():
     return {
-        htypes.feed_tests.sample_list_feed: feed_module.ListFeed(),
-        htypes.feed_tests.sample_index_tree_feed: feed_module.IndexTreeFeed(),
+        htypes.feed_tests.sample_list_feed: feed_module.ListFeed,
+        htypes.feed_tests.sample_index_tree_feed: feed_module.IndexTreeFeed,
         }
 
 
@@ -34,11 +34,11 @@ def item_t():
 
 def test_list_feed_actor(feed_creg, item_t):
     piece = htypes.feed.list_feed_type(mosaic.put(item_t))
-    feed = feed_creg.animate(piece)
-    assert isinstance(feed, feed_module.ListFeed), repr(feed)
+    feed_type = feed_creg.animate(piece)
+    assert feed_type is feed_module.ListFeed, repr(feed_type)
 
 
 def test_index_tree_feed_actor(feed_creg, item_t):
     piece = htypes.feed.index_tree_feed_type(mosaic.put(item_t))
-    feed = feed_creg.animate(piece)
-    assert isinstance(feed, feed_module.IndexTreeFeed), repr(feed)
+    feed_type = feed_creg.animate(piece)
+    assert feed_type is feed_module.IndexTreeFeed, repr(feed_type)
