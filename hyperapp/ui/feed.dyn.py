@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 class Feed:
 
+    # TODO: Remove empty entries when all weak refs in value are gone.
     _subscribers = defaultdict(weakref.WeakSet)
 
     @classmethod
