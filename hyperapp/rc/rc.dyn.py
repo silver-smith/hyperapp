@@ -230,7 +230,7 @@ def _parse_args(sys_argv):
     )
 
 
-def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg, job_cache, pool, targets, options):
+def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg, job_cache, project, pool, targets, options):
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
     build = load_build(hyperapp_dir, job_cache)
@@ -238,7 +238,7 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
     build.report()
 
     target_set = TargetSet(hyperapp_dir, build.types, build.python_modules)
-    init_targets(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, job_cache, cached_count, target_set, build)
+    init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, hyperapp_dir, job_cache, cached_count, target_set, build)
     target_set.update_statuses()
     if options.check:
         target_set.check_statuses()
@@ -258,7 +258,7 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
         build.job_cache.save()
 
 
-def rc_main(process_pool_running, compile_resources, sys_argv):
+def rc_main(process_pool_running, compile_resources, project, sys_argv):
     args = _parse_args(sys_argv)
     rc_log.info("Compile resources: %s", ", ".join(args.targets) if args.targets else 'all')
 
@@ -268,4 +268,4 @@ def rc_main(process_pool_running, compile_resources, sys_argv):
     register_reconstructors()
 
     with process_pool_running(args.process_count, args.options.timeout) as pool:
-        compile_resources(pool, args.targets, args.options)
+        compile_resources(project, pool, args.targets, args.options)

@@ -32,6 +32,7 @@ def server_main(
         rpc_endpoint,
         file_bundle,
         tcp_server_factory,
+        project,
         sys_argv,
         ):
     args = _parse_args(sys_argv)

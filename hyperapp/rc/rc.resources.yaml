@@ -47,6 +47,7 @@ definitions:
       ctl: system.system:dict_config_ctl
       function: compile_resources
       free_params:
+      - project
       - pool
       - targets
       - options
@@ -71,6 +72,7 @@ definitions:
       ctl: system.system:dict_config_ctl
       function: rc_main
       free_params:
+      - project
       - sys_argv
       service_params:
       - process_pool_running

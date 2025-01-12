@@ -31,7 +31,7 @@ def main():
         module_piece = project['system.system', 'system.module']
         module = pyobj_creg.animate(module_piece)
 
-        module.run_system(config, root_service, sys.argv[3:])
+        module.run_system(config, root_service, project, sys.argv[3:])
 
     finally:
         log.info("Stopping.")

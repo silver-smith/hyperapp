@@ -11,6 +11,7 @@ def stop_signal():
 
 
 def test_server(server_main):
+    project = None
     identity_path = Path('/tmp/server-test-identity.json')
     try:
         identity_path.unlink()
@@ -19,4 +20,4 @@ def test_server(server_main):
     sys_argv = [
         f'--identity-path={identity_path}',
         ]
-    server_main(sys_argv)
+    server_main(project, sys_argv)

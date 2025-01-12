@@ -3,7 +3,6 @@ from hyperapp.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (
     code_registry_ctr,
-    resource_registry,
     web,
     )
 from .code.custom_resource_registry import create_custom_resource_registry
@@ -21,7 +20,7 @@ def ctr_from_template_creg(config):
     return code_registry_ctr('ctr_from_template_creg', config)
 
 
-def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set):
+def add_base_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set):
     for service_name, config in system_config_template.items():
         ctl = config_ctl[service_name]
         for key, value in config.items():
@@ -36,13 +35,13 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
                 key = f'{key.module_name}_{key.name}'
             item_piece = ctl.item_piece(value)
             ctr = ctr_from_template_creg.animate(item_piece)
-            module_name, var_name = resource_registry.reverse_resolve(item_piece)
+            module_name, var_name = project.reverse_resolve(item_piece)
             resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
             assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
             _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
 
 
-def init_targets(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, cached_count, target_set, build):
+def init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, root_dir, cache, cached_count, target_set, build):
     custom_resource_registry = create_custom_resource_registry(build)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
@@ -64,7 +63,7 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, roo
         import_tgt = ImportTarget(cache, cached_count, target_set, custom_resource_registry, build.types, config_tgt, all_imports_known_tgt, src)
         target_set.add(import_tgt)
         import_target_list.append(import_tgt)
-    add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set)
+    add_base_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set)
     for import_tgt in import_target_list:
         import_tgt.create_job_target()
     all_imports_known_tgt.init_completed()
