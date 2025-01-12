@@ -32,25 +32,21 @@ def main():
 
     services = Services(module_dir_list)
     services.init_services()
-    services.load_type_modules()
     log.debug("Initialized.")
 
     try:
-        resource_dir_list = services.resource_dir_list
-        resource_registry = services.resource_registry
-        resource_list_loader = services.resource_list_loader
-        legacy_type_resource_loader = services.legacy_type_resource_loader
-        local_types = services.local_types
         pyobj_creg = services.pyobj_creg
+        project_factory = services.project_factory
 
         config_file = sys.argv[1]
         root_service = sys.argv[2]
 
-        resource_list_loader(resource_dir_list, resource_registry)
-        resource_registry.update_modules(legacy_type_resource_loader(local_types))
-        config = resource_registry[config_file, 'config']
-        module_res = resource_registry['system.system', 'system.module']
-        module = pyobj_creg.animate(module_res)
+        project = project_factory('everything')
+        project.load(HYPERAPP_DIR)
+
+        config = project[config_file, 'config']
+        module_piece = project['system.system', 'system.module']
+        module = pyobj_creg.animate(module_piece)
 
         module.run_system(config, root_service, sys.argv[3:])
 

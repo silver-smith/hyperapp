@@ -38,7 +38,7 @@ def convert_builtin_types_to_dict(pyobj_creg, builtin_types):
         type_piece = pyobj_creg.actor_to_piece(t)
         module_dict = name_to_module[t.module_name]
         module_dict[t.name] = type_piece
-    return name_to_module
+    return dict(name_to_module)
 
 
 def add_legacy_types_to_cache(res_reg, legacy_type_modules):

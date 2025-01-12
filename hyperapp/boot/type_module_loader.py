@@ -6,7 +6,7 @@ from .htypes import (
     )
 from .ref import ref_repr
 from .visual_rep import pprint
-from .type_module_parser import RecordMtGenerator, load_type_module_source
+from .type_module_parser import RecordMtGenerator, parse_type_module_source, load_type_module_source
 from .mapper import Mapper
 
 log = logging.getLogger(__name__)
@@ -72,6 +72,18 @@ class TypeModuleLoader(object):
                 source = load_type_module_source(self._builtin_types, self._mosaic, path, name)
                 name_to_source[name] = source
         return name_to_source
+
+    # registry: module name -> name -> mt piece.
+    def load_texts(self, root_dir, path_to_text, registry):
+        name_to_source = {}
+        for path, text in path_to_text.items():
+            fname = path.split('/')[-1]
+            module_name, ext = fname.split('.')
+            source = parse_type_module_source(self._builtin_types, self._mosaic, path, module_name, text)
+            name_to_source[module_name] = source
+        for module_name, source in sorted(name_to_source.items()):
+            module = self._resolve_module(name_to_source, registry, module_name, [])
+            registry[module_name] = module
 
     def _resolve_module(self, name_to_source, name_to_module, name, dep_stack):
         if name in dep_stack:

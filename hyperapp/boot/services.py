@@ -24,6 +24,7 @@ from ..resource.python_module import PythonModuleResourceType, python_module_pyo
 from .htypes.python_module import python_module_t
 from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
+from .project import Project
 from ..resource.legacy_type import (
     add_builtin_types_to_pyobj_cache,
     add_legacy_types_to_cache,
@@ -163,6 +164,8 @@ class Services(object):
         self.code_registry_ctr = partial(CodeRegistry, self.web)
         self.cached_code_registry_ctr = partial(CachedCodeRegistry, self.mosaic, self.web)
         add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
+        self.project_factory = partial(
+            Project, builtin_type_modules, self.builtin_service_resource_loader, self.type_module_loader, self.resource_module_factory)
 
     def stop(self):
         log.info("Stop services.")
