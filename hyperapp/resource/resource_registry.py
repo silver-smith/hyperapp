@@ -10,13 +10,6 @@ class ResourceRegistry:
         self._piece_to_name_pair = {}
         self._module_registry = {}
 
-    def clone(self):
-        registry = ResourceRegistry()
-        registry._name_pair_to_piece.update(self._name_pair_to_piece)
-        registry._piece_to_name_pair.update(self._piece_to_name_pair)
-        registry._module_registry.update(self._module_registry)
-        return registry
-
     def __getitem__(self, name_pair):
         return self.resolve(name_pair)
 
