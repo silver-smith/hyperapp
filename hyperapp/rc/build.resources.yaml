@@ -11,6 +11,7 @@ import:
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.import_recorder:import_recorder
+- rc.utils:utils.module
 
 definitions:
 
@@ -32,3 +33,4 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.type_module_loader: builtins:type_module_loader.service
         services.pyobj_creg: builtins:pyobj_creg.service
+        code.utils: rc.utils:utils.module

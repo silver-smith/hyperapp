@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
@@ -13,6 +14,7 @@ from .services import (
     pyobj_creg,
     type_module_loader,
     )
+from .code.utils import iter_types
 
 log = logging.getLogger(__name__)
 
@@ -57,56 +59,6 @@ class PythonModuleSrc:
         return (recorder, python_module)
 
 
-class TypeSources:
-
-    def __init__(self, type_src_list):
-        self._type_src_list = type_src_list
-
-    @property
-    def as_list(self):
-        return self._type_src_list
-
-    def get(self, module_name, name):
-        return self.as_dict.get(module_name, {}).get(name)
-
-    def get_src(self, module_name, name):
-        return self.as_src_dict.get(module_name, {}).get(name)
-
-    # Make same format as local_types service.
-    @cached_property
-    def as_dict(self):
-        custom_types = {}
-        for src in self._type_src_list:
-            name_to_type = custom_types.setdefault(src.module_name, {})
-            name_to_type[src.name] = src.type_piece
-        return custom_types
-
-    @cached_property
-    def as_src_dict(self):
-        custom_types = {}
-        for src in self._type_src_list:
-            name_to_type = custom_types.setdefault(src.module_name, {})
-            name_to_type[src.name] = src
-        return custom_types
-
-
-@dataclass
-class TypeSrc:
-
-    module_name: str
-    name: str
-    type_piece: Any
-
-    # Unused.
-    @property
-    def piece(self):
-        return htypes.build.type_src(
-            module_name=self.module_name,
-            name=self.name,
-            type=mosaic.put(self.type_piece),
-            )
-
-
 class Build:
 
     def __init__(self, types, python_modules, job_cache):
@@ -122,8 +74,8 @@ class Build:
             )
 
     def report(self):
-        for t in self.types.as_list:
-            log.info("\tType: %s", t)
+        for module_name, name, piece in iter_types(self.types):
+            log.info("\tType: %s.%s: %s", module_name, name, piece)
         for m in self.python_modules:
             log.info("\tPython module: %s", m)
 
@@ -142,19 +94,21 @@ def _load_pyhon_modules(root_dir):
 
 
 def _load_types(root_dir):
+    name_to_module = defaultdict(dict)
     types = local_types.copy()
     for name, t in builtin_types.items():
-        type_piece = pyobj_creg.actor_to_piece(t)
-        yield TypeSrc('builtin', name, type_piece)
+        piece = pyobj_creg.actor_to_piece(t)
+        name_to_module['builtin'][name] = piece
     type_module_loader.load_type_modules([root_dir], types)
     for module_name, name_to_type in types.items():
         for name, type_piece in name_to_type.items():
-            yield TypeSrc(module_name, name, type_piece)
+            name_to_module[module_name][name] = type_piece
+    return dict(name_to_module)
 
 
 def load_build(root_dir, job_cache):
     return Build(
-        types=TypeSources(list(_load_types(root_dir))),
+        types=_load_types(root_dir),
         python_modules=list(_load_pyhon_modules(root_dir)),
         job_cache=job_cache,
         )

@@ -7,6 +7,7 @@ import:
 - rc.rc_target:rc_target.module
 - rc.test_target:test_target.module
 - rc.type_req:type_req.module
+- rc.utils:utils.module
 
 definitions:
 
@@ -23,3 +24,4 @@ definitions:
         code.rc_target: rc.rc_target:rc_target.module
         code.test_target: rc.test_target:test_target.module
         code.type_req: rc.type_req:type_req.module
+        code.utils: rc.utils:utils.module

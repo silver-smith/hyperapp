@@ -24,7 +24,7 @@ class TypeTarget(Target):
     @property
     def resource(self):
         try:
-            src = self._types.as_src_dict[self._module_name][self._name]
+            piece = self._types[self._module_name][self._name]
         except KeyError:
             raise TargetMissingError(f"Type is missing: {self._module_name}.{self._name}")
-        return ImportResource.from_type_src(src)
+        return ImportResource.for_type(self._module_name, self._name, piece)

@@ -5,10 +5,6 @@ from .code.rc_requirement import Requirement
 class TypeReq(Requirement):
 
     @classmethod
-    def from_type_src(cls, type_src):
-        return cls(type_src.module_name, type_src.name)
-
-    @classmethod
     def from_piece(cls, piece):
         return cls(
             module_name=piece.module_name,

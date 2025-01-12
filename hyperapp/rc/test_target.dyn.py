@@ -6,6 +6,7 @@ from .code.type_req import TypeReq
 from .code.import_resource import ImportResource
 from .code.python_module_resource_target import ImportPythonModuleReq, PythonModuleReq
 from .code.test_job import TestJob
+from .code.utils import iter_types
 
 rc_log = logging.getLogger('rc')
 
@@ -171,9 +172,9 @@ class TestJobTarget(Target):
     @property
     def _req_to_resources(self):
         result = defaultdict(set)
-        for src in self._types.as_list:
-            req = TypeReq.from_type_src(src)
-            result[req] = {ImportResource.from_type_src(src)}
+        for module_name, name, piece in iter_types(self._types):
+            req = TypeReq(module_name, name)
+            result[req] = {ImportResource.for_type(module_name, name, piece)}
         req_resources = set()
         tested_modules = set()
         for req, target in self._req_to_target.items():

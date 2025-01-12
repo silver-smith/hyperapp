@@ -203,8 +203,10 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
                 continue
             if name[0] != 'htypes':
                 continue
-            type_src = self._types.get_src(name[1], name[2])
-            resource = ImportResource.from_type_src(type_src)
+            module_name = name[1]
+            name = name[2]
+            piece = self._types[module_name][name]
+            resource = ImportResource.for_type(module_name, name, piece)
             self._type_resources.add(resource)
 
     @cached_property

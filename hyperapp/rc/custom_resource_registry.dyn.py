@@ -10,7 +10,7 @@ from .services import (
 
 def create_custom_resource_registry(build):
     res_reg = resource_registry_factory()
-    legacy_type_modules = legacy_type_resource_loader(build.types.as_dict)
+    legacy_type_modules = legacy_type_resource_loader(build.types)
     add_legacy_types_to_cache(res_reg, legacy_type_modules)
     res_reg.update_modules(legacy_type_modules)
     res_reg.set_module('builtins', builtin_service_resource_loader(res_reg))
