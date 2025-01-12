@@ -5,14 +5,13 @@ class UnknownResourceName(Exception):
 
 class ResourceRegistry:
 
-    def __init__(self, mosaic):
-        self._mosaic = mosaic
+    def __init__(self):
         self._name_pair_to_piece = {}
         self._piece_to_name_pair = {}
         self._module_registry = {}
 
     def clone(self):
-        registry = ResourceRegistry(self._mosaic)
+        registry = ResourceRegistry()
         registry._name_pair_to_piece.update(self._name_pair_to_piece)
         registry._piece_to_name_pair.update(self._piece_to_name_pair)
         registry._module_registry.update(self._module_registry)

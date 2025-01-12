@@ -125,7 +125,7 @@ class Services(object):
             python_importer=self.python_importer,
             pyobj_creg=self.pyobj_creg,
             )
-        self.resource_registry_factory = partial(ResourceRegistry, self.mosaic)
+        self.resource_registry_factory = ResourceRegistry
         self.resource_registry = self.resource_registry_factory()
         self.resource_module_factory = partial(
             ResourceModule,

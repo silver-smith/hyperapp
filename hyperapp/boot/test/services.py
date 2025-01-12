@@ -167,7 +167,7 @@ def deduce_t(mosaic, pyobj_creg):
 
 @pytest.fixture
 def resource_registry_factory(mosaic):
-    return partial(ResourceRegistry, mosaic)
+    return ResourceRegistry
 
 
 @pytest.fixture
