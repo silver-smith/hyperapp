@@ -4,7 +4,6 @@ from hyperapp.boot.htypes.packet_coders import packet_coders
 
 from . import htypes
 from .services import (
-    module_dir_list,
     mosaic,
     pyobj_creg,
     )
