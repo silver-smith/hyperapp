@@ -67,7 +67,6 @@ class Services(object):
         'cached_code_registry_ctr',
         'code_registry_ctr',
         'hyperapp_dir',
-        'module_dir_list',
         'mosaic',
         'web',
         'local_types',
@@ -89,13 +88,8 @@ class Services(object):
         'deduce_t',
     ]
 
-    def __init__(self, module_dir_list, additional_resource_dirs=None):
+    def __init__(self):
         self.hyperapp_dir = HYPERAPP_DIR
-        self.resource_dir_list = [
-            ResourceDir(HYPERAPP_DIR, module_dir_list),
-            *(additional_resource_dirs or []),
-            ]
-        self.module_dir_list = module_dir_list
         self.on_stop = []
         self._is_stopped = False
 
@@ -177,10 +171,6 @@ class Services(object):
         self.python_importer.remove_modules()
         self._is_stopped = True
         log.info("Services are stopped.")
-
-    def load_type_modules(self):
-        log.info("Load type modules.")
-        self.type_module_loader.load_type_modules(self.module_dir_list, self.local_types)
 
     def unregister_import_meta_hook(self):
         self.python_importer.unregister_meta_hook()

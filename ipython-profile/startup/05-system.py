@@ -42,7 +42,6 @@ def setup_system():
 
     services = Services(module_dir_list)
     services.init_services()
-    services.load_type_modules()
     ipython_atexit(services.stop)
     log.debug("Initialized.")
 

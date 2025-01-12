@@ -40,7 +40,7 @@ def subprocess_main(process_name, connection, main_fn_bundle_cdr):
 
 def subprocess_main_safe(connection, main_fn_bundle_cdr):
     log.info("Subprocess: Init services.")
-    services = Services(module_dir_list=[])
+    services = Services()
     services.init_services()
 
     pyobj_creg = services.pyobj_creg

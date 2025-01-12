@@ -10,27 +10,10 @@ from hyperapp.boot.services import HYPERAPP_DIR, Services
 log = logging.getLogger('rc.main')
 
 
-module_dir_list = [
-    HYPERAPP_DIR,
-    HYPERAPP_DIR / 'common',
-    HYPERAPP_DIR / 'resource',
-    HYPERAPP_DIR / 'system',
-    HYPERAPP_DIR / 'transport',
-    HYPERAPP_DIR / 'rpc',
-    HYPERAPP_DIR / 'subprocess',
-    HYPERAPP_DIR / 'rc',
-    HYPERAPP_DIR / 'command_line',
-    HYPERAPP_DIR / 'sample',
-    HYPERAPP_DIR / 'ui',
-    HYPERAPP_DIR / 'views',
-    HYPERAPP_DIR / 'models',
-    ]
-
-
 def main():
     init_logging('hyperapp')
 
-    services = Services(module_dir_list)
+    services = Services()
     services.init_services()
     log.debug("Initialized.")
 
