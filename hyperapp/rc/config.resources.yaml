@@ -9,6 +9,29 @@ import:
 - base.mark:marker_ctl.service
 - base.ref_picker:pick_refs.service
 - base.ref_picker:ref_picker_cache.service
+- base.rpc.rpc_endpoint:cancel_rpc_request_futures.service
+- base.rpc.rpc_endpoint:rpc_error_response.actor-template
+- base.rpc.rpc_endpoint:rpc_request.actor-template
+- base.rpc.rpc_endpoint:rpc_response.actor-template
+- base.rpc.rpc_endpoint:rpc_endpoint.service
+- base.rpc.rpc_endpoint:rpc_message_creg.service
+- base.rpc.rpc_endpoint:rpc_request_futures.service
+- base.rpc.rpc_endpoint:rpc_target_creg.service
+- base.rpc.rpc_endpoint:rpc_function_target.actor-template
+- base.rpc.rpc_endpoint:rpc_service_target.actor-template
+- base.rpc.rpc_call:rpc_call_factory.service
+- base.rpc.rpc_call:rpc_servant_wrapper.service
+- base.rpc.rpc_call:rpc_service_wrapper.service
+- base.rpc.rpc_call:rpc_submit_factory.service
+- base.rpc.rpc_call:rpc_submit_target_factory.service
+- base.rpc.rpc_call:rpc_wait_for_future.service
+- base.rpc.rpc_call:service_call_factory.service
+- base.rpc.rpc_call:service_submit_factory.service
+- base.subprocess.subprocess:subprocess_running.service
+- base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
+- base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+- base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
+- base.subprocess.subprocess_transport:subprocess_transport.service
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
 - base.transport.endpoint:endpoint_registry.service
@@ -117,29 +140,6 @@ import:
 - resource.data_to_pyobj:data_to_pyobj_ref.service
 - resource.data_to_pyobj:data_to_pyobj.service
 - resource.partial_ref:partial_ref.service
-- rpc.rpc_endpoint:cancel_rpc_request_futures.service
-- rpc.rpc_endpoint:rpc_error_response.actor-template
-- rpc.rpc_endpoint:rpc_request.actor-template
-- rpc.rpc_endpoint:rpc_response.actor-template
-- rpc.rpc_endpoint:rpc_endpoint.service
-- rpc.rpc_endpoint:rpc_message_creg.service
-- rpc.rpc_endpoint:rpc_request_futures.service
-- rpc.rpc_endpoint:rpc_target_creg.service
-- rpc.rpc_endpoint:rpc_function_target.actor-template
-- rpc.rpc_endpoint:rpc_service_target.actor-template
-- rpc.rpc_call:rpc_call_factory.service
-- rpc.rpc_call:rpc_servant_wrapper.service
-- rpc.rpc_call:rpc_service_wrapper.service
-- rpc.rpc_call:rpc_submit_factory.service
-- rpc.rpc_call:rpc_submit_target_factory.service
-- rpc.rpc_call:rpc_wait_for_future.service
-- rpc.rpc_call:service_call_factory.service
-- rpc.rpc_call:service_submit_factory.service
-- base.subprocess.subprocess:subprocess_running.service
-- base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
-- base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-- base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
-- base.subprocess.subprocess_transport:subprocess_transport.service
 
 definitions:
 
@@ -152,6 +152,19 @@ definitions:
       - base.mark:marker_ctl.service
       - base.ref_picker:pick_refs.service
       - base.ref_picker:ref_picker_cache.service
+      - base.rpc.rpc_endpoint:cancel_rpc_request_futures.service
+      - base.rpc.rpc_endpoint:rpc_target_creg.service
+      - base.rpc.rpc_endpoint:rpc_message_creg.service
+      - base.rpc.rpc_endpoint:rpc_endpoint.service
+      - base.rpc.rpc_endpoint:rpc_request_futures.service
+      - base.rpc.rpc_call:rpc_submit_target_factory.service
+      - base.rpc.rpc_call:rpc_servant_wrapper.service
+      - base.rpc.rpc_call:rpc_service_wrapper.service
+      - base.rpc.rpc_call:rpc_submit_factory.service
+      - base.rpc.rpc_call:service_submit_factory.service
+      - base.rpc.rpc_call:rpc_wait_for_future.service
+      - base.rpc.rpc_call:rpc_call_factory.service
+      - base.rpc.rpc_call:service_call_factory.service
       - base.subprocess.subprocess:subprocess_running.service
       - base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
       - base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
@@ -187,19 +200,6 @@ definitions:
       - resource.data_to_pyobj:data_to_pyobj_ref.service
       - resource.data_to_pyobj:data_to_pyobj.service
       - resource.partial_ref:partial_ref.service
-      - rpc.rpc_endpoint:cancel_rpc_request_futures.service
-      - rpc.rpc_endpoint:rpc_target_creg.service
-      - rpc.rpc_endpoint:rpc_message_creg.service
-      - rpc.rpc_endpoint:rpc_endpoint.service
-      - rpc.rpc_endpoint:rpc_request_futures.service
-      - rpc.rpc_call:rpc_submit_target_factory.service
-      - rpc.rpc_call:rpc_servant_wrapper.service
-      - rpc.rpc_call:rpc_service_wrapper.service
-      - rpc.rpc_call:rpc_submit_factory.service
-      - rpc.rpc_call:service_submit_factory.service
-      - rpc.rpc_call:rpc_wait_for_future.service
-      - rpc.rpc_call:rpc_call_factory.service
-      - rpc.rpc_call:service_call_factory.service
 
   cfg_item_creg:
     type: legacy_type.system:item_list_config
@@ -271,16 +271,16 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rpc.rpc_endpoint:rpc_request.actor-template
-      - rpc.rpc_endpoint:rpc_response.actor-template
-      - rpc.rpc_endpoint:rpc_error_response.actor-template
+      - base.rpc.rpc_endpoint:rpc_request.actor-template
+      - base.rpc.rpc_endpoint:rpc_response.actor-template
+      - base.rpc.rpc_endpoint:rpc_error_response.actor-template
 
   rpc_target_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rpc.rpc_endpoint:rpc_function_target.actor-template
-      - rpc.rpc_endpoint:rpc_service_target.actor-template
+      - base.rpc.rpc_endpoint:rpc_function_target.actor-template
+      - base.rpc.rpc_endpoint:rpc_service_target.actor-template
       - rc.rc_job:rc_job_job_target.actor-template
 
   rc_constructor_creg:

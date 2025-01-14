@@ -1,4 +1,5 @@
 import:
+- base.rpc.rpc_proxy:rpc_proxy.module
 - base.subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
 - base.subprocess.subprocess_system_main:subprocess_system_main.module
 - base.system.system:dict_config_ctl
@@ -6,7 +7,6 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.system:service_template
 - builtins:pyobj_creg.service
-- rpc.rpc_proxy:rpc_proxy.module
 
 definitions:
 
@@ -17,7 +17,7 @@ definitions:
       file_name: subprocess_rpc_server.dyn.py
       import_list:
         services.pyobj_creg: builtins:pyobj_creg.service
-        code.rpc_proxy: rpc.rpc_proxy:rpc_proxy.module
+        code.rpc_proxy: base.rpc.rpc_proxy:rpc_proxy.module
         code.subprocess_system_main: base.subprocess.subprocess_system_main:subprocess_system_main.module
         code.subprocess_rpc_server_main: base.subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
 
