@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.transport.tcp_utils:tcp_utils.module
 - builtins:mosaic.service
 - builtins:unbundler.service
 - legacy_type.builtin:attribute
@@ -11,7 +12,6 @@ import:
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
 - legacy_type.tcp_transport:route
-- transport.tcp_utils:tcp_utils.module
 definitions:
   Route:
     type: legacy_type.builtin:attribute
@@ -115,7 +115,7 @@ definitions:
       file_name: tcp_transport.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        code.tcp_utils: transport.tcp_utils:tcp_utils.module
+        code.tcp_utils: base.transport.tcp_utils:tcp_utils.module
         htypes.tcp_transport.route: legacy_type.tcp_transport:route
         services.mosaic: builtins:mosaic.service
         services.unbundler: builtins:unbundler.service

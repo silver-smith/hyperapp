@@ -9,6 +9,22 @@ import:
 - base.mark:marker_ctl.service
 - base.ref_picker:pick_refs.service
 - base.ref_picker:ref_picker_cache.service
+- base.system.system_stop:stop_signal.service
+- base.system.system_stop:system_failed.service
+- base.transport.endpoint:endpoint_registry.service
+- base.transport.endpoint:endpoint_thread_pool.service
+- base.transport.identity:identity_registry.service
+- base.transport.identity:parcel_registry.service
+- base.transport.identity:peer_registry.service
+- base.transport.identity:signature_registry.service
+- base.transport.route_registry:route_registry.service
+- base.transport.rsa_identity:generate_rsa_identity.service
+- base.transport.rsa_identity:rsa_identity_rsa_identity.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+- base.transport.sync_route_table:route_table.service
+- base.transport.transport:transport.service
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
@@ -124,22 +140,6 @@ import:
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - subprocess.subprocess_transport:subprocess_transport.service
-- base.system.system_stop:stop_signal.service
-- base.system.system_stop:system_failed.service
-- transport.endpoint:endpoint_registry.service
-- transport.endpoint:endpoint_thread_pool.service
-- transport.identity:identity_registry.service
-- transport.identity:parcel_registry.service
-- transport.identity:peer_registry.service
-- transport.identity:signature_registry.service
-- transport.route_registry:route_registry.service
-- transport.rsa_identity:generate_rsa_identity.service
-- transport.rsa_identity:rsa_identity_rsa_identity.actor-template
-- transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
-- transport.rsa_identity:rsa_identity_rsa_peer.actor-template
-- transport.rsa_identity:rsa_identity_rsa_signature.actor-template
-- transport.sync_route_table:route_table.service
-- transport.transport:transport.service
 
 definitions:
 
@@ -154,6 +154,16 @@ definitions:
       - base.ref_picker:ref_picker_cache.service
       - base.system.system_stop:stop_signal.service
       - base.system.system_stop:system_failed.service
+      - base.transport.endpoint:endpoint_thread_pool.service
+      - base.transport.endpoint:endpoint_registry.service
+      - base.transport.identity:identity_registry.service
+      - base.transport.identity:parcel_registry.service
+      - base.transport.identity:peer_registry.service
+      - base.transport.identity:signature_registry.service
+      - base.transport.route_registry:route_registry.service
+      - base.transport.rsa_identity:generate_rsa_identity.service
+      - base.transport.sync_route_table:route_table.service
+      - base.transport.transport:transport.service
       - rc.ctr_collector:ctr_collector.service
       - rc.import_recorder:import_recorder_reg.service
       - rc.init_targets:ctr_from_template_creg.service
@@ -190,16 +200,6 @@ definitions:
       - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
       - subprocess.subprocess_rpc_server_main:rpc_server_main.service
       - subprocess.subprocess_transport:subprocess_transport.service
-      - transport.endpoint:endpoint_thread_pool.service
-      - transport.endpoint:endpoint_registry.service
-      - transport.identity:identity_registry.service
-      - transport.identity:parcel_registry.service
-      - transport.identity:peer_registry.service
-      - transport.identity:signature_registry.service
-      - transport.route_registry:route_registry.service
-      - transport.rsa_identity:generate_rsa_identity.service
-      - transport.sync_route_table:route_table.service
-      - transport.transport:transport.service
 
   cfg_item_creg:
     type: legacy_type.system:item_list_config
@@ -227,7 +227,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.rsa_identity:rsa_identity_rsa_identity.actor-template
+      - base.transport.rsa_identity:rsa_identity_rsa_identity.actor-template
 
   marker_registry:
     type: legacy_type.system:item_list_config
@@ -253,13 +253,13 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+      - base.transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
 
   peer_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+      - base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
 
   pyobj_creg:
     type: legacy_type.system:item_list_config
@@ -357,7 +357,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+      - base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 
   config:
     type: legacy_type.system:system_config

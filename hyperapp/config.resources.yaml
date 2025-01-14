@@ -8,6 +8,26 @@ import:
 - base.ref_picker:ref_picker_cache.service
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
+- base.transport.endpoint:endpoint_registry.service
+- base.transport.endpoint:endpoint_thread_pool.service
+- base.transport.identity:identity_registry.service
+- base.transport.identity:parcel_registry.service
+- base.transport.identity:peer_registry.service
+- base.transport.identity:signature_registry.service
+- base.transport.route_registry:route_registry.service
+- base.transport.rsa_identity:generate_rsa_identity.service
+- base.transport.rsa_identity:rsa_identity_rsa_identity.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+- base.transport.sync_route_table:route_table.service
+- base.transport.tcp_transport:_address_to_tcp_client.service
+- base.transport.tcp_transport:_tcp_selector.service
+- base.transport.tcp_transport:_tcp_services.service
+- base.transport.tcp_transport:tcp_client_factory.service
+- base.transport.tcp_transport:tcp_server_factory.service
+- base.transport.tcp_transport:tcp_transport_route.actor-template
+- base.transport.transport:transport.service
 - client.client:client_async_main.service
 - client.client:client_main.service
 - lcs.lcs_dirs_view:lcs_dirs_view_view.model-cfg-item
@@ -197,26 +217,6 @@ import:
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - subprocess.subprocess_transport:subprocess_transport.service
-- transport.endpoint:endpoint_registry.service
-- transport.endpoint:endpoint_thread_pool.service
-- transport.identity:identity_registry.service
-- transport.identity:parcel_registry.service
-- transport.identity:peer_registry.service
-- transport.identity:signature_registry.service
-- transport.route_registry:route_registry.service
-- transport.rsa_identity:generate_rsa_identity.service
-- transport.rsa_identity:rsa_identity_rsa_identity.actor-template
-- transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
-- transport.rsa_identity:rsa_identity_rsa_peer.actor-template
-- transport.rsa_identity:rsa_identity_rsa_signature.actor-template
-- transport.sync_route_table:route_table.service
-- transport.tcp_transport:_address_to_tcp_client.service
-- transport.tcp_transport:_tcp_selector.service
-- transport.tcp_transport:_tcp_services.service
-- transport.tcp_transport:tcp_client_factory.service
-- transport.tcp_transport:tcp_server_factory.service
-- transport.tcp_transport:tcp_transport_route.actor-template
-- transport.transport:transport.service
 - ui.command_cfg_item:command_cfg_item.actor-template
 - ui.command_cfg_item:command_model_command.actor-template
 - ui.command_cfg_item:command_ui_command.actor-template
@@ -453,7 +453,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.rsa_identity:rsa_identity_rsa_identity.actor-template
+      - base.transport.rsa_identity:rsa_identity_rsa_identity.actor-template
   marker_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -522,12 +522,12 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+      - base.transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
   peer_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+      - base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
   rc_constructor_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -597,7 +597,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.tcp_transport:tcp_transport_route.actor-template
+      - base.transport.tcp_transport:tcp_transport_route.actor-template
   rpc_message_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -621,7 +621,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+      - base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
   system:
     type: legacy_type.system:item_list_config
     value:
@@ -633,6 +633,21 @@ definitions:
       - base.ref_picker:ref_picker_cache.service
       - base.system.system_stop:stop_signal.service
       - base.system.system_stop:system_failed.service
+      - base.transport.endpoint:endpoint_registry.service
+      - base.transport.endpoint:endpoint_thread_pool.service
+      - base.transport.identity:identity_registry.service
+      - base.transport.identity:parcel_registry.service
+      - base.transport.identity:peer_registry.service
+      - base.transport.identity:signature_registry.service
+      - base.transport.route_registry:route_registry.service
+      - base.transport.rsa_identity:generate_rsa_identity.service
+      - base.transport.sync_route_table:route_table.service
+      - base.transport.tcp_transport:_address_to_tcp_client.service
+      - base.transport.tcp_transport:_tcp_selector.service
+      - base.transport.tcp_transport:_tcp_services.service
+      - base.transport.tcp_transport:tcp_client_factory.service
+      - base.transport.tcp_transport:tcp_server_factory.service
+      - base.transport.transport:transport.service
       - client.client:client_async_main.service
       - client.client:client_main.service
       - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
@@ -678,21 +693,6 @@ definitions:
       - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
       - subprocess.subprocess_rpc_server_main:rpc_server_main.service
       - subprocess.subprocess_transport:subprocess_transport.service
-      - transport.endpoint:endpoint_registry.service
-      - transport.endpoint:endpoint_thread_pool.service
-      - transport.identity:identity_registry.service
-      - transport.identity:parcel_registry.service
-      - transport.identity:peer_registry.service
-      - transport.identity:signature_registry.service
-      - transport.route_registry:route_registry.service
-      - transport.rsa_identity:generate_rsa_identity.service
-      - transport.sync_route_table:route_table.service
-      - transport.tcp_transport:_address_to_tcp_client.service
-      - transport.tcp_transport:_tcp_selector.service
-      - transport.tcp_transport:_tcp_services.service
-      - transport.tcp_transport:tcp_client_factory.service
-      - transport.tcp_transport:tcp_server_factory.service
-      - transport.transport:transport.service
       - ui.command_creg:command_creg.service
       - ui.controller:controller_running.service
       - ui.feed:feed_factory.service
