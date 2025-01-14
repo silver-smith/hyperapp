@@ -5,7 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
-- system.system:dict_config_ctl
+- base.system.system:dict_config_ctl
 
 definitions:
 
@@ -28,7 +28,7 @@ definitions:
     type: legacy_type.system:finalizer_gen_service_template
     value:
       name: endpoint_thread_pool
-      ctl: system.system:dict_config_ctl
+      ctl: base.system.system:dict_config_ctl
       function: endpoint_thread_pool
       free_params: []
       service_params: []
@@ -44,7 +44,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: endpoint_registry
-      ctl: system.system:dict_config_ctl
+      ctl: base.system.system:dict_config_ctl
       function: endpoint_registry
       free_params: []
       service_params:

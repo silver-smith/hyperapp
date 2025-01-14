@@ -5,7 +5,7 @@ import:
 - legacy_type.skip_probe_actor_template:skip_probe_actor_template
 - legacy_type.system:actor_template
 - rc.actor_probe:actor_probe.module
-- system.system:system.module
+- base.system.system:system.module
 
 definitions:
 
@@ -19,7 +19,7 @@ definitions:
         htypes.skip_probe_actor_template.skip_probe_actor_template: legacy_type.skip_probe_actor_template:skip_probe_actor_template
         services.pyobj_creg: builtins:pyobj_creg.service
         code.actor_probe: rc.actor_probe:actor_probe.module
-        code.system: system.system:system.module
+        code.system: base.system.system:system.module
 
   SkipProbeActorTemplate:
     type: legacy_type.builtin:attribute

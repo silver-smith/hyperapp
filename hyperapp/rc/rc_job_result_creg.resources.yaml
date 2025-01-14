@@ -3,7 +3,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:service_template
-- system.system:dict_config_ctl
+- base.system.system:dict_config_ctl
 
 definitions:
 
@@ -25,7 +25,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rc_job_result_creg
-      ctl: system.system:dict_config_ctl
+      ctl: base.system.system:dict_config_ctl
       function: rc_job_result_creg
       free_params: []
       service_params: []

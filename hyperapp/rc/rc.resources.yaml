@@ -13,7 +13,7 @@ import:
 - rc.init_targets:init_targets.module
 - rc.process_pool:process_pool.module
 - rc.target_set:target_set.module
-- system.system:dict_config_ctl
+- base.system.system:dict_config_ctl
 
 definitions:
 
@@ -44,7 +44,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: compile_resources
-      ctl: system.system:dict_config_ctl
+      ctl: base.system.system:dict_config_ctl
       function: compile_resources
       free_params:
       - project
@@ -69,7 +69,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rc_main
-      ctl: system.system:dict_config_ctl
+      ctl: base.system.system:dict_config_ctl
       function: rc_main
       free_params:
       - project

@@ -16,8 +16,8 @@ import:
 - rc.service_req:service_req.module
 - rc.skip_probe_actor_template:skip_probe_actor_template.module
 - rc.system_probe:system_probe.module
-- system.config_ctl:config_ctl.module
-- system.system:system.module
+- base.system.config_ctl:config_ctl.module
+- base.system.system:system.module
 
 definitions:
 
@@ -35,7 +35,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.cfg_item_req: rc.cfg_item_req:cfg_item_req.module
-        code.config_ctl: system.config_ctl:config_ctl.module
+        code.config_ctl: base.system.config_ctl:config_ctl.module
         code.config_item_resource: rc.config_item_resource:config_item_resource.module
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.job_result: rc.job_result:job_result.module
@@ -43,5 +43,5 @@ definitions:
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.service_req: rc.service_req:service_req.module
         code.skip_probe_actor_template: rc.skip_probe_actor_template:skip_probe_actor_template.module
-        code.system: system.system:system.module
+        code.system: base.system.system:system.module
         code.system_probe: rc.system_probe:system_probe.module

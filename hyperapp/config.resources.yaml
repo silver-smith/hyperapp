@@ -6,6 +6,8 @@ import:
 - base.mark:marker_ctl.service
 - base.ref_picker:pick_refs.service
 - base.ref_picker:ref_picker_cache.service
+- base.system.system_stop:stop_signal.service
+- base.system.system_stop:system_failed.service
 - client.client:client_async_main.service
 - client.client:client_main.service
 - lcs.lcs_dirs_view:lcs_dirs_view_view.model-cfg-item
@@ -195,8 +197,6 @@ import:
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - subprocess.subprocess_transport:subprocess_transport.service
-- system.system_stop:stop_signal.service
-- system.system_stop:system_failed.service
 - transport.endpoint:endpoint_registry.service
 - transport.endpoint:endpoint_thread_pool.service
 - transport.identity:identity_registry.service
@@ -631,6 +631,8 @@ definitions:
       - base.mark:marker_ctl.service
       - base.ref_picker:pick_refs.service
       - base.ref_picker:ref_picker_cache.service
+      - base.system.system_stop:stop_signal.service
+      - base.system.system_stop:system_failed.service
       - client.client:client_async_main.service
       - client.client:client_main.service
       - lcs.lcs_resource_storage:lcs_resource_storage_factory.service
@@ -676,8 +678,6 @@ definitions:
       - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
       - subprocess.subprocess_rpc_server_main:rpc_server_main.service
       - subprocess.subprocess_transport:subprocess_transport.service
-      - system.system_stop:stop_signal.service
-      - system.system_stop:system_failed.service
       - transport.endpoint:endpoint_registry.service
       - transport.endpoint:endpoint_thread_pool.service
       - transport.identity:identity_registry.service

@@ -20,9 +20,9 @@ import:
 - rc.rc_constants:rc_constants.module
 - rc.system_job:system_job.module
 - rc.system_probe:system_probe.module
-- system.config_ctl:config_ctl.module
-- system.system:dict_config_ctl
-- system.system:system.module
+- base.system.config_ctl:config_ctl.module
+- base.system.system:dict_config_ctl
+- base.system.system:system.module
 
 definitions:
 
@@ -43,12 +43,12 @@ definitions:
         htypes.test_job.used_imports: legacy_type.test_job:used_imports
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        code.config_ctl: system.config_ctl:config_ctl.module
+        code.config_ctl: base.system.config_ctl:config_ctl.module
         code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.rc_constants: rc.rc_constants:rc_constants.module
-        code.system: system.system:system.module
+        code.system: base.system.system:system.module
         code.system_probe: rc.system_probe:system_probe.module
         code.fixture_probe: rc.fixture_probe:fixture_probe.module
         code.system_job: rc.system_job:system_job.module
@@ -146,7 +146,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: test_job_rpc_service_wrapper
-      ctl: system.system:dict_config_ctl
+      ctl: base.system.system:dict_config_ctl
       function: rpc_service_wrapper
       free_params:
       - _real_service_name

@@ -1,7 +1,7 @@
 import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
-- system.system:system.module
+- base.system.system:system.module
 
 definitions:
 
@@ -12,4 +12,4 @@ definitions:
       file_name: system_probe.dyn.py
       import_list:
         services.pyobj_creg: builtins:pyobj_creg.service
-        code.system: system.system:system.module
+        code.system: base.system.system:system.module

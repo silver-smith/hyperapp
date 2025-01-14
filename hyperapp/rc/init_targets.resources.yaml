@@ -11,7 +11,7 @@ import:
 - rc.import_target:import_target.module
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.service_req:service_req.module
-- system.system:dict_config_ctl
+- base.system.system:dict_config_ctl
 
 definitions:
 
@@ -41,7 +41,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: ctr_from_template_creg
-      ctl: system.system:dict_config_ctl
+      ctl: base.system.system:dict_config_ctl
       function: ctr_from_template_creg
       free_params: []
       service_params: []

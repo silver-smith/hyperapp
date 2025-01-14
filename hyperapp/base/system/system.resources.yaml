@@ -8,7 +8,7 @@ import:
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
-- system.config_ctl:config_ctl.module
+- base.system.config_ctl:config_ctl.module
 
 definitions:
 
@@ -26,7 +26,7 @@ definitions:
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-        code.config_ctl: system.config_ctl:config_ctl.module
+        code.config_ctl: base.system.config_ctl:config_ctl.module
 
   dict_config_ctl:
     type: legacy_type.system:dict_config_ctl

@@ -28,7 +28,7 @@ def main():
         project.load(HYPERAPP_DIR)
 
         config = project[config_file, 'config']
-        module_piece = project['system.system', 'system.module']
+        module_piece = project['base.system.system', 'system.module']
         module = pyobj_creg.animate(module_piece)
 
         module.run_system(config, root_service, project, sys.argv[3:])

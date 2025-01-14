@@ -124,8 +124,8 @@ import:
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - subprocess.subprocess_transport:subprocess_transport.service
-- system.system_stop:stop_signal.service
-- system.system_stop:system_failed.service
+- base.system.system_stop:stop_signal.service
+- base.system.system_stop:system_failed.service
 - transport.endpoint:endpoint_registry.service
 - transport.endpoint:endpoint_thread_pool.service
 - transport.identity:identity_registry.service
@@ -152,8 +152,8 @@ definitions:
       - base.mark:marker_ctl.service
       - base.ref_picker:pick_refs.service
       - base.ref_picker:ref_picker_cache.service
-      - system.system_stop:stop_signal.service
-      - system.system_stop:system_failed.service
+      - base.system.system_stop:stop_signal.service
+      - base.system.system_stop:system_failed.service
       - rc.ctr_collector:ctr_collector.service
       - rc.import_recorder:import_recorder_reg.service
       - rc.init_targets:ctr_from_template_creg.service
