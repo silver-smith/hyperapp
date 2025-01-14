@@ -41,12 +41,7 @@ def add_base_items(config_ctl, ctr_from_template_creg, system_config_template, p
             _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
 
 
-def init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, root_dir, cache, cached_count, target_set, build):
-    custom_resource_registry = create_custom_resource_registry(build)
-    all_imports_known_tgt = AllImportsKnownTarget()
-    target_set.add(all_imports_known_tgt)
-    config_tgt = ConfigResourceTarget(custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
-    target_set.add(config_tgt)
+def create_python_modules(root_dir, cache, cached_count, target_set, build, custom_resource_registry, all_imports_known_tgt, config_tgt):
     import_target_list = []
     for src in build.python_modules:
         try:
@@ -63,6 +58,17 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, pro
         import_tgt = ImportTarget(cache, cached_count, target_set, custom_resource_registry, build.types, config_tgt, all_imports_known_tgt, src)
         target_set.add(import_tgt)
         import_target_list.append(import_tgt)
+    return import_target_list
+
+
+def init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, root_dir, cache, cached_count, target_set, build):
+    custom_resource_registry = create_custom_resource_registry(build)
+    all_imports_known_tgt = AllImportsKnownTarget()
+    target_set.add(all_imports_known_tgt)
+    config_tgt = ConfigResourceTarget(custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
+    target_set.add(config_tgt)
+    import_target_list = create_python_modules(
+        root_dir, cache, cached_count, target_set, build, custom_resource_registry, all_imports_known_tgt, config_tgt)
     add_base_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set)
     for import_tgt in import_target_list:
         import_tgt.create_job_target()
