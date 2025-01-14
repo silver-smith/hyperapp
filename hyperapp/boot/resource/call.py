@@ -1,6 +1,6 @@
-from ..boot.htypes.call import call_t, call_def_t
-from ..boot.dict_decoder import NamedPairsDictDecoder
-from ..boot.dict_encoder import NamedPairsDictEncoder
+from ..htypes.call import call_t, call_def_t
+from ..dict_decoder import NamedPairsDictDecoder
+from ..dict_encoder import NamedPairsDictEncoder
 
 
 class CallResourceType:

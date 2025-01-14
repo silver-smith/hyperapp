@@ -1,4 +1,4 @@
-from hyperapp.resource.legacy_type import add_legacy_types_to_cache
+from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache
 
 from .services import (
     builtin_service_resource_loader,

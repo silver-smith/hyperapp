@@ -1,6 +1,6 @@
-from ..boot.htypes.attribute import attribute_t, attribute_def_t
-from ..boot.dict_decoder import NamedPairsDictDecoder
-from ..boot.dict_encoder import NamedPairsDictEncoder
+from ..htypes.attribute import attribute_t, attribute_def_t
+from ..dict_decoder import NamedPairsDictDecoder
+from ..dict_encoder import NamedPairsDictEncoder
 
 
 class AttributeResourceType:

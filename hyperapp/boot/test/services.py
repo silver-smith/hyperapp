@@ -20,17 +20,17 @@ from hyperapp.boot.python_importer import PythonImporter
 from hyperapp.boot.type_module_loader import TypeModuleLoader
 from hyperapp.boot.resource_dir import ResourceDir
 from hyperapp.boot.test.hyper_types_namespace import HyperTypesNamespace
-from hyperapp.resource.resource_type import ResourceType
-from hyperapp.resource.resource_type_producer import resource_type_producer as resource_type_producer_fn
-from hyperapp.resource.resource_registry import ResourceRegistry
-from hyperapp.resource.resource_module import ResourceModule, load_resource_modules_list
-from hyperapp.resource.legacy_type import add_legacy_types_to_cache
-from hyperapp.resource.python_module import PythonModuleResourceType, python_module_pyobj
-from hyperapp.resource.attribute import AttributeResourceType, attribute_pyobj
-from hyperapp.resource.call import CallResourceType, call_pyobj
-from hyperapp.resource.partial import PartialResourceType, partial_pyobj
-from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources
-from hyperapp.resource.builtin_service import builtin_service_pyobj, make_builtin_service_resource_module
+from hyperapp.boot.resource.resource_type import ResourceType
+from hyperapp.boot.resource.resource_type_producer import resource_type_producer as resource_type_producer_fn
+from hyperapp.boot.resource.resource_registry import ResourceRegistry
+from hyperapp.boot.resource.resource_module import ResourceModule, load_resource_modules_list
+from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache
+from hyperapp.boot.resource.python_module import PythonModuleResourceType, python_module_pyobj
+from hyperapp.boot.resource.attribute import AttributeResourceType, attribute_pyobj
+from hyperapp.boot.resource.call import CallResourceType, call_pyobj
+from hyperapp.boot.resource.partial import PartialResourceType, partial_pyobj
+from hyperapp.boot.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources
+from hyperapp.boot.resource.builtin_service import builtin_service_pyobj, make_builtin_service_resource_module
 
 log = logging.getLogger(__name__)
 

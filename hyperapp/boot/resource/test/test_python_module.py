@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from hyperapp.boot.htypes.python_module import python_module_t, python_module_def_t, import_rec_t, import_rec_def_t
-from hyperapp.resource.python_module import PythonModuleResourceType
+from hyperapp.boot.resource.python_module import PythonModuleResourceType
 from hyperapp.boot import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)

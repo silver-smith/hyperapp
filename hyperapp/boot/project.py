@@ -1,5 +1,5 @@
-from hyperapp.resource.legacy_type import add_legacy_types_to_cache, load_legacy_type_resources
-from hyperapp.resource.resource_registry import ResourceRegistry
+from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache, load_legacy_type_resources
+from hyperapp.boot.resource.resource_registry import ResourceRegistry
 
 
 def load_texts(root_dir):

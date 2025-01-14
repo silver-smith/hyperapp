@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from hyperapp.resource.python_module import make_module_name
+from hyperapp.boot.resource.python_module import make_module_name
 
 from .services import (
     mosaic,

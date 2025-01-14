@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from hyperapp.resource.legacy_type import add_legacy_types_to_cache
+from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache
 
 from . import htypes
 from .services import (

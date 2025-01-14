@@ -18,33 +18,33 @@ from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
 from .resource_dir import ResourceDir
 from .unbundler import Unbundler
-from ..resource.resource_type import ResourceType
-from ..resource.resource_type_producer import resource_type_producer
-from ..resource.python_module import PythonModuleResourceType, python_module_pyobj
+from .resource.resource_type import ResourceType
+from .resource.resource_type_producer import resource_type_producer
+from .resource.python_module import PythonModuleResourceType, python_module_pyobj
 from .htypes.python_module import python_module_t
-from ..resource.resource_registry import ResourceRegistry
-from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
+from .resource.resource_registry import ResourceRegistry
+from .resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
 from .project import Project
-from ..resource.legacy_type import (
+from .resource.legacy_type import (
     add_builtin_types_to_pyobj_cache,
     add_legacy_types_to_cache,
     convert_builtin_types_to_dict,
     load_legacy_type_resources,
     )
 from .htypes.builtin_service import builtin_service_t
-from ..resource.builtin_service import (
+from .resource.builtin_service import (
     add_builtin_services_to_pyobj_cache,
     builtin_service_pyobj,
     make_builtin_service_resource_module,
     )
 from .htypes.attribute import attribute_t
-from ..resource.attribute import AttributeResourceType, attribute_pyobj
+from .resource.attribute import AttributeResourceType, attribute_pyobj
 from .htypes.call import call_t
-from ..resource.call import CallResourceType, call_pyobj
+from .resource.call import CallResourceType, call_pyobj
 from .htypes.partial import partial_t
-from ..resource.partial import PartialResourceType, partial_pyobj
+from .resource.partial import PartialResourceType, partial_pyobj
 from .htypes.raw import raw_t
-from ..resource.raw import RawResourceType, raw_pyobj
+from .resource.raw import RawResourceType, raw_pyobj
 
 log = logging.getLogger(__name__)
 

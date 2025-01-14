@@ -1,5 +1,5 @@
 from hyperapp.boot.htypes import Type
-from hyperapp.resource.resource_module import AUTO_GEN_LINE
+from hyperapp.boot.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (
     code_registry_ctr,

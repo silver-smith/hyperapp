@@ -5,7 +5,7 @@ from itertools import groupby
 
 from hyperapp.boot.htypes import HException
 from hyperapp.boot.config_item_missing import ConfigItemMissingError
-from hyperapp.resource.python_module import PythonModuleResourceImportError
+from hyperapp.boot.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
 from .services import (
