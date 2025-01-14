@@ -233,7 +233,7 @@ def _parse_args(sys_argv):
 def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg, job_cache, project, pool, targets, options):
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
-    build = load_build(hyperapp_dir, job_cache)
+    build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
 
@@ -255,7 +255,7 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
         else:
             raise
     finally:
-        build.job_cache.save()
+        job_cache.save()
 
 
 def rc_main(process_pool_running, compile_resources, project, sys_argv):

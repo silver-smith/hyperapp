@@ -61,10 +61,9 @@ class PythonModuleSrc:
 
 class Build:
 
-    def __init__(self, types, python_modules, job_cache):
+    def __init__(self, types, python_modules):
         self.types = types
         self.python_modules = python_modules
-        self.job_cache = job_cache
 
     @property
     def piece(self):
@@ -106,9 +105,8 @@ def _load_types(root_dir):
     return dict(name_to_module)
 
 
-def load_build(root_dir, job_cache):
+def load_build(root_dir):
     return Build(
         types=_load_types(root_dir),
         python_modules=list(_load_pyhon_modules(root_dir)),
-        job_cache=job_cache,
         )
