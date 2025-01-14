@@ -25,6 +25,7 @@ class Project(ResourceRegistry):
         self._name = name
         self._types = {}  # Module name -> name -> mt piece.
         self.update_modules(builtin_type_modules)
+        add_legacy_types_to_cache(self, builtin_type_modules)
         self.set_module('builtins', builtin_service_resource_loader(self))
 
     @property
