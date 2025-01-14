@@ -15,7 +15,6 @@ from .services import (
 from .code.config_ctl import (
     item_pieces_to_data,
     service_pieces_to_config,
-    merge_system_config_pieces,
     )
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.system import UnknownServiceError
@@ -110,9 +109,8 @@ class SystemJob:
             req_to_resources[req].add(resource)
         return dict(req_to_resources)
 
-    def __init__(self, python_module_src, system_config_piece, req_to_resources):
+    def __init__(self, python_module_src, req_to_resources):
         self._src = python_module_src
-        self._system_config_piece = system_config_piece  # Used only from 'run' method, inside job process.
         self._req_to_resources = req_to_resources
         self._tested_modules = []
 
@@ -176,8 +174,7 @@ class SystemJob:
         for res in resources:
             self._tested_modules += res.tested_modules
         system = SystemProbe()
-        resources_config = self._compose_resources_config(system, resources)
-        config = merge_system_config_pieces(self._system_config_piece, resources_config)
+        config = self._compose_resources_config(system, resources)
         system.load_config(config)
         self._configure_system(system, resources)
         system.migrate_globals()

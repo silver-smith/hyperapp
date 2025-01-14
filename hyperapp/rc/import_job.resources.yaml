@@ -124,4 +124,3 @@ definitions:
       service_params:
       - rc_requirement_creg
       - rc_resource_creg
-      - system_config_piece

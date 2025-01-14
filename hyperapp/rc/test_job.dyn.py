@@ -247,18 +247,17 @@ class _FailedError(_TestJobError):
 class TestJob(SystemJob):
 
     @classmethod
-    def from_piece(cls, piece, rc_requirement_creg, rc_resource_creg, system_config_piece):
+    def from_piece(cls, piece, rc_requirement_creg, rc_resource_creg):
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
             req_to_resources=cls.req_to_resources_from_pieces(
                 rc_requirement_creg, rc_resource_creg, piece.req_to_resource),
             test_fn_name=piece.test_fn_name,
-            system_config_piece=system_config_piece,
             )
 
-    def __init__(self, python_module_src, idx, req_to_resources, test_fn_name, system_config_piece=None):
-        super().__init__(python_module_src, system_config_piece, req_to_resources)
+    def __init__(self, python_module_src, idx, req_to_resources, test_fn_name):
+        super().__init__(python_module_src, req_to_resources)
         self._idx = idx
         self._test_fn_name = test_fn_name
 
