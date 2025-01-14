@@ -28,7 +28,7 @@ def subprocess_running(bundler):
     @contextmanager
     def _subprocess_running(name, main_fn_ref):
         # TODO: Move subprocess_mp_main.py to data resource.
-        source_dir = Path.cwd() / 'hyperapp/subprocess'
+        source_dir = Path.cwd() / 'hyperapp/base/subprocess'
         subprocess_mp_main = source_dir / 'subprocess_mp_main.py'
         sys.path.append(str(source_dir))
         module = __import__('subprocess_mp_main', level=0)

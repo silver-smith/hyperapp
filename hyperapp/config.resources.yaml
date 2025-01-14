@@ -6,6 +6,11 @@ import:
 - base.mark:marker_ctl.service
 - base.ref_picker:pick_refs.service
 - base.ref_picker:ref_picker_cache.service
+- base.subprocess.subprocess:subprocess_running.service
+- base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
+- base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+- base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
+- base.subprocess.subprocess_transport:subprocess_transport.service
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
 - base.transport.endpoint:endpoint_registry.service
@@ -212,11 +217,6 @@ import:
 - sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item
 - sample.sample_tree:sample_tree_sample_tree.model-cfg-item
 - server.server:server_main.service
-- subprocess.subprocess:subprocess_running.service
-- subprocess.subprocess_rpc_server:subprocess_rpc_main.service
-- subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-- subprocess.subprocess_rpc_server_main:rpc_server_main.service
-- subprocess.subprocess_transport:subprocess_transport.service
 - ui.command_cfg_item:command_cfg_item.actor-template
 - ui.command_cfg_item:command_model_command.actor-template
 - ui.command_cfg_item:command_ui_command.actor-template
@@ -631,6 +631,11 @@ definitions:
       - base.mark:marker_ctl.service
       - base.ref_picker:pick_refs.service
       - base.ref_picker:ref_picker_cache.service
+      - base.subprocess.subprocess:subprocess_running.service
+      - base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
+      - base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+      - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
+      - base.subprocess.subprocess_transport:subprocess_transport.service
       - base.system.system_stop:stop_signal.service
       - base.system.system_stop:system_failed.service
       - base.transport.endpoint:endpoint_registry.service
@@ -688,11 +693,6 @@ definitions:
       - rpc.rpc_endpoint:rpc_request_futures.service
       - rpc.rpc_endpoint:rpc_target_creg.service
       - server.server:server_main.service
-      - subprocess.subprocess:subprocess_running.service
-      - subprocess.subprocess_rpc_server:subprocess_rpc_main.service
-      - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-      - subprocess.subprocess_rpc_server_main:rpc_server_main.service
-      - subprocess.subprocess_transport:subprocess_transport.service
       - ui.command_creg:command_creg.service
       - ui.controller:controller_running.service
       - ui.feed:feed_factory.service

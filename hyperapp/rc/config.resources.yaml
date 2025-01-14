@@ -135,11 +135,11 @@ import:
 - rpc.rpc_call:rpc_wait_for_future.service
 - rpc.rpc_call:service_call_factory.service
 - rpc.rpc_call:service_submit_factory.service
-- subprocess.subprocess:subprocess_running.service
-- subprocess.subprocess_rpc_server:subprocess_rpc_main.service
-- subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-- subprocess.subprocess_rpc_server_main:rpc_server_main.service
-- subprocess.subprocess_transport:subprocess_transport.service
+- base.subprocess.subprocess:subprocess_running.service
+- base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
+- base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+- base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
+- base.subprocess.subprocess_transport:subprocess_transport.service
 
 definitions:
 
@@ -152,6 +152,11 @@ definitions:
       - base.mark:marker_ctl.service
       - base.ref_picker:pick_refs.service
       - base.ref_picker:ref_picker_cache.service
+      - base.subprocess.subprocess:subprocess_running.service
+      - base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
+      - base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+      - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
+      - base.subprocess.subprocess_transport:subprocess_transport.service
       - base.system.system_stop:stop_signal.service
       - base.system.system_stop:system_failed.service
       - base.transport.endpoint:endpoint_thread_pool.service
@@ -195,11 +200,6 @@ definitions:
       - rpc.rpc_call:rpc_wait_for_future.service
       - rpc.rpc_call:rpc_call_factory.service
       - rpc.rpc_call:service_call_factory.service
-      - subprocess.subprocess:subprocess_running.service
-      - subprocess.subprocess_rpc_server:subprocess_rpc_main.service
-      - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-      - subprocess.subprocess_rpc_server_main:rpc_server_main.service
-      - subprocess.subprocess_transport:subprocess_transport.service
 
   cfg_item_creg:
     type: legacy_type.system:item_list_config
