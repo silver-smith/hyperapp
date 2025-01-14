@@ -5,8 +5,11 @@ import:
 - legacy_type.system:system_config
 
 - base.bundler:bundler.service
+- base.data_to_pyobj:data_to_pyobj_ref.service
+- base.data_to_pyobj:data_to_pyobj.service
 - base.file_bundle:file_bundle.service
 - base.mark:marker_ctl.service
+- base.partial_ref:partial_ref.service
 - base.ref_picker:pick_refs.service
 - base.ref_picker:ref_picker_cache.service
 - base.rpc.rpc_endpoint:cancel_rpc_request_futures.service
@@ -137,9 +140,6 @@ import:
 - rc.view_factory_ctr:view_factory_ctr_ctr.actor-template
 - rc.view_factory_marker:view_factory.marker-template
 - rc.view_marker:view.marker-template
-- resource.data_to_pyobj:data_to_pyobj_ref.service
-- resource.data_to_pyobj:data_to_pyobj.service
-- resource.partial_ref:partial_ref.service
 
 definitions:
 
@@ -148,8 +148,11 @@ definitions:
     value:
       items:
       - base.bundler:bundler.service
+      - base.data_to_pyobj:data_to_pyobj_ref.service
+      - base.data_to_pyobj:data_to_pyobj.service
       - base.file_bundle:file_bundle.service
       - base.mark:marker_ctl.service
+      - base.partial_ref:partial_ref.service
       - base.ref_picker:pick_refs.service
       - base.ref_picker:ref_picker_cache.service
       - base.rpc.rpc_endpoint:cancel_rpc_request_futures.service
@@ -197,9 +200,6 @@ definitions:
       - rc.rc_resource_creg:rc_resource_creg.service
       - rc.process_pool:process_pool_running.service
       - rc.test_job:test_job_rpc_service_wrapper.service
-      - resource.data_to_pyobj:data_to_pyobj_ref.service
-      - resource.data_to_pyobj:data_to_pyobj.service
-      - resource.partial_ref:partial_ref.service
 
   cfg_item_creg:
     type: legacy_type.system:item_list_config
