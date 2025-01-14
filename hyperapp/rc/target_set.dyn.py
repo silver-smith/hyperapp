@@ -16,17 +16,11 @@ def _sorted_targets(targets):
 
 class TargetSet:
 
-    def __init__(self, resource_dir, types, python_module_src_list):
+    def __init__(self, resource_dir, types):
         self._resource_dir = resource_dir
         self._types = types
-        self._stem_to_python_module_src = {
-            src.stem: src
-            for src in python_module_src_list
-            }
-        self._name_to_python_module_src = {
-            src.name: src
-            for src in python_module_src_list
-            }
+        self._name_to_full_name = {}
+        self._full_name_to_name = {}
         self._name_to_target = {}
         self._prev_completed = set()
         self._prev_incomplete_deps_map = {}
@@ -51,12 +45,16 @@ class TargetSet:
             if target.completed:
                 yield target
 
+    def add_module_name(self, full_name, name):
+        self._full_name_to_name[full_name] = name
+        self._name_to_full_name[name] = full_name
+
     def add(self, target):
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
 
-    def full_module_name(self, code_name):
-        return self._stem_to_python_module_src[code_name].name
+    def full_module_name(self, name):
+        return self._name_to_full_name[name]
 
     @property
     def _completed_targets(self):
@@ -192,20 +190,16 @@ class TargetFactory:
         return target
 
     def python_module_resource_by_code_name(self, code_name):
-        src = self._target_set._stem_to_python_module_src[code_name]
-        return self.python_module_resource_by_src(src)
+        full_name = self._target_set._name_to_full_name[code_name]
+        return self.python_module_resource_by_module_name(full_name)
 
     def python_module_resource_by_module_name(self, module_name):
-        src = self._target_set._name_to_python_module_src[module_name]
-        return self.python_module_resource_by_src(src)
-
-    def python_module_resource_by_src(self, src):
-        target_name = PythonModuleResourceTarget.target_name_for_src(src)
+        target_name = PythonModuleResourceTarget.target_name_for_module_name(module_name)
         try:
             return self._target_set[target_name]
         except KeyError:
             pass
-        import_target = self.python_module_imported_by_src(src)
+        import_target = self.python_module_imported_by_module_name(module_name)
         target = import_target.create_resource_target(self._target_set._resource_dir)
         self._target_set.add(target)
         return target
@@ -217,13 +211,9 @@ class TargetFactory:
         target_name = ImportTarget.name_for_module_name(module_name)
         return self._target_set[target_name]
 
-    def python_module_imported_by_src(self, src):
-        target_name = ImportTarget.name_for_src(src)
-        return self._target_set[target_name]
-
     def python_module_imported_by_code_name(self, code_name):
-        src = self._target_set._stem_to_python_module_src[code_name]
-        return self.python_module_imported_by_src(src)
+        full_name = self._target_set._name_to_full_name[code_name]
+        return self.python_module_imported_by_module_name(full_name)
 
     def config_item_ready(self, service_name, key):
         target_name = ConfigItemReadyTarget.target_name(service_name, key)

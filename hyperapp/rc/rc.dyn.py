@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hyperapp.boot.htypes import HException
+from hyperapp.boot.project import load_texts
 
 from . import htypes
 from .services import (
@@ -14,9 +15,7 @@ from .services import (
     )
 from .code.reconstructors import register_reconstructors
 from .code.rc_constants import JobStatus
-from .code.build import load_build
 from .code.job_cache import JobCache
-from .code.target_set import TargetSet
 from .code.init_targets import init_targets
 from .code.rc_filter import Filter
 
@@ -233,12 +232,10 @@ def _parse_args(sys_argv):
 def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg, job_cache, project, pool, targets, options):
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
-    build = load_build(hyperapp_dir)
-    log.info("Loaded build:")
-    build.report()
+    path_to_text = load_texts(hyperapp_dir)
+    log.info("Loaded build: %s files", len(path_to_text))
 
-    target_set = TargetSet(hyperapp_dir, build.types, build.python_modules)
-    init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, hyperapp_dir, job_cache, cached_count, target_set, build)
+    target_set = init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, hyperapp_dir, job_cache, cached_count, path_to_text)
     target_set.update_statuses()
     if options.check:
         target_set.check_statuses()

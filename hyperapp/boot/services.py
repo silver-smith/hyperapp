@@ -86,6 +86,7 @@ class Services(object):
         'legacy_type_resource_loader',
         'builtin_service_resource_loader',
         'deduce_t',
+        'project_factory',
     ]
 
     def __init__(self):
@@ -157,9 +158,9 @@ class Services(object):
         self.pyobj_creg.register_actor(raw_t, raw_pyobj, web=self.web)
         self.code_registry_ctr = partial(CodeRegistry, self.web)
         self.cached_code_registry_ctr = partial(CachedCodeRegistry, self.mosaic, self.web)
-        add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
         self.project_factory = partial(
             Project, builtin_type_modules, self.builtin_service_resource_loader, self.type_module_loader, self.resource_module_factory)
+        add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
 
     def stop(self):
         log.info("Stop services.")

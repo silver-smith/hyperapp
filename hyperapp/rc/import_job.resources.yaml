@@ -11,10 +11,10 @@ import:
 - legacy_type.import_job:incomplete_result
 - legacy_type.import_job:succeeded_result
 - legacy_type.system:actor_template
-- rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
 - rc.config_item_resource:config_item_resource.module
 - rc.job_result:job_result.module
+- rc.python_src:python_src.module
 - rc.test_module_resources_req:test_module_resources_req.module
 - rc.rc_constants:rc_constants.module
 - rc.system_job:system_job.module
@@ -35,10 +35,10 @@ definitions:
         htypes.import_job.succeeded_result: legacy_type.import_job:succeeded_result
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.config_item_resource: rc.config_item_resource:config_item_resource.module
         code.job_result: rc.job_result:job_result.module
+        code.python_src: rc.python_src:python_src.module
         code.test_module_resources_req: rc.test_module_resources_req:test_module_resources_req.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.system_job: rc.system_job:system_job.module

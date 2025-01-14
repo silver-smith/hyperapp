@@ -1,4 +1,4 @@
-from build import python_module_src
+from python_src import python_module_src
 from system_job import req_to_resource
 
 

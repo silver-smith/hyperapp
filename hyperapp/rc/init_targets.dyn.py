@@ -3,9 +3,11 @@ from hyperapp.boot.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (
     code_registry_ctr,
+    project_factory,
     web,
     )
-from .code.custom_resource_registry import create_custom_resource_registry
+from .code.target_set import TargetSet
+from .code.python_src import PythonModuleSrc
 from .code.python_module_resource_target import ManualPythonModuleResourceTarget
 from .code.import_target import (
     AllImportsKnownTarget,
@@ -41,36 +43,50 @@ def add_base_items(config_ctl, ctr_from_template_creg, system_config_template, p
             _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
 
 
-def create_python_modules(root_dir, cache, cached_count, target_set, build, custom_resource_registry, all_imports_known_tgt, config_tgt):
+def create_python_modules(root_dir, cache, cached_count, target_set, path_to_text, target_project, all_imports_known_tgt, config_tgt):
     import_target_list = []
-    for src in build.python_modules:
+    for path, text in path_to_text.items():
+        ext = '.dyn.py'
+        if not path.endswith(ext):
+            continue
+        stem = path[:-len(ext)]
+        parts = stem.split('/')
+        name = parts[-1]
+        full_name = stem.replace('/', '.')
+        dir = '/'.join(parts[:-1])
+        resource_path = f'{dir}/{name}.resources.yaml'
+        target_set.add_module_name(full_name, name)
+        src = PythonModuleSrc(full_name, name, path, str(root_dir / path), resource_path, text)
         try:
-            resource_text = root_dir.joinpath(src.resource_path).read_text()
+            resource_text = root_dir.joinpath(resource_path).read_text()
         except FileNotFoundError:
             pass
         else:
             if not resource_text.startswith(AUTO_GEN_LINE):
-                resource_dir = root_dir / src.path.parent
+                resource_dir = root_dir / dir
                 resource_tgt = ManualPythonModuleResourceTarget(
-                    src, custom_resource_registry, resource_dir, resource_text)
+                    src, target_project, resource_dir, resource_text)
                 target_set.add(resource_tgt)
                 continue
-        import_tgt = ImportTarget(cache, cached_count, target_set, custom_resource_registry, build.types, config_tgt, all_imports_known_tgt, src)
+        import_tgt = ImportTarget(cache, cached_count, target_set, target_project, target_project.types, config_tgt, all_imports_known_tgt, src)
         target_set.add(import_tgt)
         import_target_list.append(import_tgt)
     return import_target_list
 
 
-def init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, root_dir, cache, cached_count, target_set, build):
-    custom_resource_registry = create_custom_resource_registry(build)
+def init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, root_dir, cache, cached_count, path_to_text):
+    target_project = project_factory('rc_target')
+    target_project.load_types(root_dir, path_to_text)
+    target_set = TargetSet(root_dir, target_project.types)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
-    config_tgt = ConfigResourceTarget(custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
+    config_tgt = ConfigResourceTarget(target_project, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
     target_set.add(config_tgt)
     import_target_list = create_python_modules(
-        root_dir, cache, cached_count, target_set, build, custom_resource_registry, all_imports_known_tgt, config_tgt)
+        root_dir, cache, cached_count, target_set, path_to_text, target_project, all_imports_known_tgt, config_tgt)
     add_base_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set)
     for import_tgt in import_target_list:
         import_tgt.create_job_target()
     all_imports_known_tgt.init_completed()
     target_set.init_all_statuses()
+    return target_set

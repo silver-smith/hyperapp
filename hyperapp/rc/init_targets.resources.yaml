@@ -1,17 +1,18 @@
 import:
+- base.system.system:dict_config_ctl
 - builtins:code_registry_ctr.service
-- builtins:resource_registry.service
+- builtins:project_factory.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:service_template
+- rc.python_src:python_src.module
 - rc.cfg_item_req:cfg_item_req.module
 - rc.config_resource_target:config_resource_target.module
-- rc.custom_resource_registry:custom_resource_registry.module
 - rc.import_target:import_target.module
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.service_req:service_req.module
-- base.system.system:dict_config_ctl
+- rc.target_set:target_set.module
 
 definitions:
 
@@ -22,14 +23,15 @@ definitions:
       file_name: init_targets.dyn.py
       import_list:
         services.code_registry_ctr: builtins:code_registry_ctr.service
-        services.resource_registry: builtins:resource_registry.service
+        services.project_factory: builtins:project_factory.service
         services.web: builtins:web.service
         code.cfg_item_req: rc.cfg_item_req:cfg_item_req.module
         code.config_resource_target: rc.config_resource_target:config_resource_target.module
-        code.custom_resource_registry: rc.custom_resource_registry:custom_resource_registry.module
         code.import_target: rc.import_target:import_target.module
+        code.python_src: rc.python_src:python_src.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
         code.service_req: rc.service_req:service_req.module
+        code.target_set: rc.target_set:target_set.module
 
   ctr_from_template_creg:
     type: legacy_type.builtin:attribute

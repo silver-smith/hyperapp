@@ -1,0 +1,7 @@
+python_module_src = record:
+  name: string
+  stem: string
+  path: string
+  full_path: string
+  resource_path: string
+  contents: string

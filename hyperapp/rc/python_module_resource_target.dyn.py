@@ -75,10 +75,6 @@ class PythonModuleReq(PythonModuleReqBase):
 
 class PythonModuleResourceTarget(Target):
 
-    @classmethod
-    def target_name_for_src(cls, python_module_src):
-        return cls.target_name_for_module_name(python_module_src.name)
-
     @staticmethod
     def target_name_for_module_name(module_name):
         return f'resource/{module_name}'
@@ -88,7 +84,7 @@ class PythonModuleResourceTarget(Target):
 
     @property
     def name(self):
-        return self.target_name_for_src(self._src)
+        return self.target_name_for_module_name(self._src.name)
 
     def get_resource_component(self, ctr):
         return ctr.get_component(self._resource_module)

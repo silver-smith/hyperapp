@@ -271,7 +271,7 @@ class ImportTarget(Target):
             self._src, self._custom_resource_registry, resource_dir, self._types, self._all_imports_known_tgt, self)
 
     def get_resource_target(self, target_factory):
-        return target_factory.python_module_resource_by_src(self._src)
+        return target_factory.python_module_resource_by_module_name(self.module_name)
 
     def create_next_job_target(self, req_to_target):
         job_tgt = self._current_job_target

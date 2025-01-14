@@ -5,7 +5,7 @@ from .services import (
     mosaic,
     web,
     )
-from .code.build import PythonModuleSrc
+from .code.python_src import PythonModuleSrc
 
 
 class CacheEntry:

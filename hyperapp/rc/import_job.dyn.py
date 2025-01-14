@@ -10,7 +10,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.rc_constants import JobStatus
-from .code.build import PythonModuleSrc
+from .code.python_src import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.config_item_resource import ConfigItemResource
 from .code.job_result import JobResult

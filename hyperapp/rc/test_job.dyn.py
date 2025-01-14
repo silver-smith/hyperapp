@@ -13,7 +13,7 @@ from .services import (
     )
 from .code.config_ctl import DictConfigCtl
 from .code.rc_constants import JobStatus
-from .code.build import PythonModuleSrc
+from .code.python_src import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.system import UnknownServiceError

@@ -6,13 +6,11 @@ import:
 - legacy_type.rpc:server_error
 - legacy_type.system:service_template
 - base.reconstructors:reconstructors.module
-- rc.build:build.module
 - rc.job_cache:job_cache.module
 - rc.rc_constants:rc_constants.module
 - rc.rc_filter:rc_filter.module
 - rc.init_targets:init_targets.module
 - rc.process_pool:process_pool.module
-- rc.target_set:target_set.module
 - base.system.system:dict_config_ctl
 
 definitions:
@@ -26,13 +24,11 @@ definitions:
         htypes.rpc.server_error: legacy_type.rpc:server_error
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.web: builtins:web.service
-        code.build: rc.build:build.module
         code.init_targets: rc.init_targets:init_targets.module
         code.job_cache: rc.job_cache:job_cache.module
         code.reconstructors: base.reconstructors:reconstructors.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.rc_filter: rc.rc_filter:rc_filter.module
-        code.target_set: rc.target_set:target_set.module
 
   compile_resources:
     type: legacy_type.builtin:attribute
