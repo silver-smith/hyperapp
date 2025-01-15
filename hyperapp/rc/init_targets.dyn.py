@@ -58,7 +58,7 @@ def create_python_modules(root_dir, cache, cached_count, target_set, path_to_tex
         dir = '/'.join(parts[:-1])
         resource_path = f'{dir}/{name}.resources.yaml'
         target_set.add_module_name(full_name, name)
-        src = PythonModuleSrc(full_name, name, Path(path), str(root_dir / path), Path(resource_path), text)
+        src = PythonModuleSrc(full_name, name, str(root_dir / path), Path(resource_path), text)
         try:
             resource_text = root_dir.joinpath(resource_path).read_text()
         except FileNotFoundError:

@@ -12,31 +12,29 @@ class PythonModuleSrc:
 
     name: str
     stem: str
-    path: Path
-    full_path: str
+    _full_path: str
     resource_path: Path
-    contents: str
+    _contents: str
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.name, piece.stem, Path(piece.path), piece.full_path, Path(piece.resource_path), piece.contents)
+        return cls(piece.name, piece.stem, piece.full_path, Path(piece.resource_path), piece.contents)
 
     @property
     def piece(self):
         return htypes.python_src.python_module_src(
             name=self.name,
             stem=self.stem,
-            path=str(self.path),
-            full_path=self.full_path,
+            full_path=self._full_path,
             resource_path=str(self.resource_path),
-            contents=self.contents,
+            contents=self._contents,
             )
 
     def python_module(self, import_list):
         return htypes.builtin.python_module(
             module_name=self.stem,
-            source=self.contents,
-            file_path=self.full_path,
+            source=self._contents,
+            file_path=self._full_path,
             import_list=tuple(import_list),
             )
 
