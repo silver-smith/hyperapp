@@ -1,7 +1,6 @@
 import logging
 import traceback
 from collections import defaultdict
-from functools import partial
 from itertools import groupby
 
 from hyperapp.boot.htypes import HException
@@ -183,8 +182,7 @@ class SystemJob:
         return system
 
     def _init_recorder(self, system, recorder_piece):
-        fn = partial(ImportRecorder.from_piece, system=system, import_recorder_reg=system['import_recorder_reg'])
-        pyobj_creg.update_config({recorder_piece._t: fn})
+        ImportRecorder.configure_pyobj_creg(system)
         return pyobj_creg.animate(recorder_piece)
 
     def _job_resources(self, module_piece):

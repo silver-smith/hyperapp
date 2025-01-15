@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 from hyperapp.boot.python_importer import Finder
 
@@ -77,6 +78,11 @@ class RecorderObject(_ImportsCollector):
 class ImportRecorder(Finder, _ImportsCollector):
 
     _is_package = True
+
+    @classmethod
+    def configure_pyobj_creg(cls, system):
+        fn = partial(cls.from_piece, system=system, import_recorder_reg=system['import_recorder_reg'])
+        pyobj_creg.update_config({htypes.import_recorder.import_recorder: fn})
 
     @classmethod
     def from_piece(cls, piece, system, import_recorder_reg):
