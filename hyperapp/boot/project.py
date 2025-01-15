@@ -18,12 +18,14 @@ def load_texts(root_dir):
 
 class Project(ResourceRegistry):
 
-    def __init__(self, builtin_type_modules, builtin_service_resource_loader, type_module_loader, resource_module_factory, name):
+    def __init__(self, builtin_types_dict, builtin_type_modules, builtin_service_resource_loader, type_module_loader, resource_module_factory, name):
         super().__init__()
         self._type_module_loader = type_module_loader
         self._resource_module_factory = resource_module_factory
         self._name = name
         self._types = {}  # Module name -> name -> mt piece.
+        # TODO: Move following to separate project:
+        self._types.update(builtin_types_dict)
         self.update_modules(builtin_type_modules)
         add_legacy_types_to_cache(self, builtin_type_modules)
         self.set_module('builtins', builtin_service_resource_loader(self))
