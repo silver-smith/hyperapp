@@ -80,7 +80,6 @@ class ImportRecorder(Finder, _ImportsCollector):
 
     @classmethod
     def from_piece(cls, piece, system, import_recorder_reg):
-        assert import_recorder_reg, import_recorder_reg
         return cls(piece.module_name, system, import_recorder_reg)
 
     def __init__(self, module_name, system_probe, config):
@@ -96,6 +95,7 @@ class ImportRecorder(Finder, _ImportsCollector):
 
     def migrate_to(self, system_probe):
         self._config = system_probe['import_recorder_reg']
+        assert self._config.items()
         self._missing_imports.clear()
         self._used_imports.clear()
 
@@ -114,6 +114,7 @@ class ImportRecorder(Finder, _ImportsCollector):
         self._base_module_name = name
 
     def create_module(self, spec):
+        assert self._config.items()
         assert spec.name.startswith(self._base_module_name + '.')
         rel_name = spec.name[len(self._base_module_name) + 1 :]
         resource_path = tuple(rel_name.split('.'))
