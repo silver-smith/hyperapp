@@ -19,27 +19,6 @@ definitions:
         htypes.import_recorder.config_ctl: legacy_type.import_recorder:config_ctl
         services.pyobj_creg: builtins:pyobj_creg.service
 
-  ImportRecorder:
-    type: legacy_type.builtin:attribute
-    value:
-      object: import_recorder.module
-      attr_name: ImportRecorder
-
-  ImportRecorder.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ImportRecorder
-      attr_name: from_piece
-
-  import_recorder_import_recorder.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.import_recorder:import_recorder
-      function: ImportRecorder.from_piece
-      service_params:
-      - system
-      - import_recorder_reg
-
   import_recorder_reg:
     type: legacy_type.builtin:attribute
     value:

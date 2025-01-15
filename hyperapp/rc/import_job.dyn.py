@@ -299,7 +299,7 @@ class ImportJob(SystemJob):
             system = self.convert_errors(self._prepare_system, system_resources)
             key_to_req = self._make_key_to_req_map(system['cfg_item_creg'])
             _ = system['ctr_collector']
-            recorder = pyobj_creg.animate(recorder_piece)
+            recorder = self._init_recorder(system, recorder_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
         except _ImportJobError as x:
             result = x

@@ -284,7 +284,7 @@ class TestJob(SystemJob):
             system = self.convert_errors(self._prepare_system, system_resources)
             key_to_req = self._make_key_to_req_map(system['cfg_item_creg'])
             ctr_collector = system['ctr_collector']
-            recorder = pyobj_creg.animate(recorder_piece)
+            recorder = self._init_recorder(system, recorder_piece)
             ctr_collector.ignore_module(module_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
             root_probe = self._make_root_fixture(system, module_piece, module)

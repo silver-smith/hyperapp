@@ -84,7 +84,6 @@ import:
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
-- rc.import_recorder:import_recorder_import_recorder.actor-template
 - rc.import_recorder:import_recorder_reg.service
 - rc.import_record_cfg_item:import_resource_import_resource.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
@@ -261,12 +260,6 @@ definitions:
       items:
       - base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
 
-  pyobj_creg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - rc.import_recorder:import_recorder_import_recorder.actor-template
-
   rpc_message_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -370,7 +363,6 @@ definitions:
         marker_registry: marker_registry
         parcel_registry: parcel_registry
         peer_registry: peer_registry
-        pyobj_creg: pyobj_creg
         rpc_message_creg: rpc_message_creg
         rpc_target_creg: rpc_target_creg
         rc_constructor_creg: rc_constructor_creg

@@ -1,6 +1,7 @@
 import logging
 import traceback
 from collections import defaultdict
+from functools import partial
 from itertools import groupby
 
 from hyperapp.boot.htypes import HException
@@ -16,7 +17,7 @@ from .code.config_ctl import (
     item_pieces_to_data,
     service_pieces_to_config,
     )
-from .code.import_recorder import IncompleteImportedObjectError
+from .code.import_recorder import IncompleteImportedObjectError, ImportRecorder
 from .code.system import UnknownServiceError
 from .code.config_item_resource import ConfigItemResource
 from .code.cfg_item_req import CfgItemReq
@@ -180,6 +181,11 @@ class SystemJob:
         system.migrate_globals()
         _ = system.resolve_service('marker_registry')  # Init markers.
         return system
+
+    def _init_recorder(self, system, recorder_piece):
+        fn = partial(ImportRecorder.from_piece, system=system, import_recorder_reg=system['import_recorder_reg'])
+        pyobj_creg.update_config({recorder_piece._t: fn})
+        return pyobj_creg.animate(recorder_piece)
 
     def _job_resources(self, module_piece):
         template = htypes.system.actor_template(
