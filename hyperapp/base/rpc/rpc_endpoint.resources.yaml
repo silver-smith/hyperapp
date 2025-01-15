@@ -154,6 +154,7 @@ definitions:
       t: legacy_type.rpc:request
       function: on_rpc_request
       service_params:
+      - system
       - transport
       - peer_registry
       - rpc_target_creg

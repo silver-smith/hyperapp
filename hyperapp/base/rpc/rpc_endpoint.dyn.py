@@ -18,7 +18,7 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-RpcRequest = namedtuple('RpcRequest', 'receiver_identity sender')
+RpcRequest = namedtuple('RpcRequest', 'system receiver_identity sender')
 
 
 class RpcEndpoint:
@@ -77,11 +77,11 @@ def rpc_target_creg(config):
     return code_registry_ctr('rpc_target_creg', config)
 
 
-def on_rpc_request(request, transport_request, transport, peer_registry, rpc_target_creg):
+def on_rpc_request(request, transport_request, system, transport, peer_registry, rpc_target_creg):
     log.info("Process rpc request: %s", request)
     receiver_identity = transport_request.receiver_identity
     sender = transport_request.sender
-    rpc_request = RpcRequest(receiver_identity, sender)
+    rpc_request = RpcRequest(system, receiver_identity, sender)
     try:
         result = rpc_target_creg.invite(request.target, rpc_request)
         if type(result) is list:
