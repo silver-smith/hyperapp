@@ -81,11 +81,6 @@ class ImportRecorder(Finder, _ImportsCollector):
     @classmethod
     def from_piece(cls, piece, system, import_recorder_reg):
         assert import_recorder_reg, import_recorder_reg
-        import_names = {
-            import_name
-            for (module_name, import_name) in import_recorder_reg
-            if not module_name or module_name == piece.module_name
-            }
         return cls(piece.module_name, system, import_recorder_reg)
 
     def __init__(self, module_name, system_probe, config):
