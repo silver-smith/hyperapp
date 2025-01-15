@@ -18,6 +18,7 @@ from .code.import_target import (
 from .code.config_resource_target import ConfigResourceTarget
 from .code.cfg_item_req import CfgItemReq
 from .code.service_req import ServiceReq
+from .code.marker_req import MarkerReq
 
 
 def ctr_from_template_creg(config):
@@ -32,6 +33,8 @@ def add_base_items(config_ctl, ctr_from_template_creg, system_config_template, p
                 req = ServiceReq(key)
             elif isinstance(key, Type):
                 req = CfgItemReq(service_name, key)
+            elif service_name == 'marker_registry':
+                req = MarkerReq(key)
             else:
                 req = None
             if type(key) is not str:

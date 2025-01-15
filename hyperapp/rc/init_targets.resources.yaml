@@ -10,6 +10,7 @@ import:
 - rc.cfg_item_req:cfg_item_req.module
 - rc.config_resource_target:config_resource_target.module
 - rc.import_target:import_target.module
+- rc.marker_req:marker_req.module
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.service_req:service_req.module
 - rc.target_set:target_set.module
@@ -28,6 +29,7 @@ definitions:
         code.cfg_item_req: rc.cfg_item_req:cfg_item_req.module
         code.config_resource_target: rc.config_resource_target:config_resource_target.module
         code.import_target: rc.import_target:import_target.module
+        code.marker_req: rc.marker_req:marker_req.module
         code.python_src: rc.python_src:python_src.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
         code.service_req: rc.service_req:service_req.module
