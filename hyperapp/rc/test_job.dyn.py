@@ -15,7 +15,7 @@ from .code.config_ctl import DictConfigCtl
 from .code.rc_constants import JobStatus
 from .code.python_src import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
-from .code.import_recorder import IncompleteImportedObjectError
+from .code.import_recorder import IncompleteImportedObjectError, ImportRecorder
 from .code.system import UnknownServiceError
 from .code.system_probe import SystemProbe
 from .code.fixture_probe import FixtureProbeTemplate
@@ -187,6 +187,7 @@ def rpc_service_wrapper(system, _real_service_name, **kw):
 def test_subprocess_rpc_main(connection, received_refs, system_config_piece, root_name, **kw):
     system = SystemProbe()
     system.load_config(system_config_piece)
+    ImportRecorder.configure_pyobj_creg(system)
     _ = system.resolve_service('marker_registry')  # Init markers.
     system.run(root_name, connection, received_refs, **kw)
 
