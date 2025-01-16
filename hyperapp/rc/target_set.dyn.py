@@ -135,6 +135,10 @@ class TargetSet:
         for target in [*self._name_to_target.values()]:
             self._update_target(target)
 
+    def post_init(self):
+        self.factory.all_imports_known().init_completed()
+        self.init_all_statuses()
+
     def check_statuses(self):
         for target in self._name_to_target.values():
             if target.completed:

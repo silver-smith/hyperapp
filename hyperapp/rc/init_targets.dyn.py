@@ -92,6 +92,5 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, pro
     for import_tgt in import_target_list:
         import_tgt.create_job_target()
     add_base_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set)
-    all_imports_known_tgt.init_completed()
-    target_set.init_all_statuses()
+    target_set.post_init()
     return target_set
