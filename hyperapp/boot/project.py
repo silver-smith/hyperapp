@@ -1,3 +1,5 @@
+import yaml
+
 from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache, load_legacy_type_resources
 from hyperapp.boot.resource.resource_registry import ResourceRegistry
 
@@ -29,6 +31,10 @@ class BuiltinsProject(ResourceRegistry):
         self.set_module('builtins', builtin_service_resource_loader(self))
 
     @property
+    def name(self):
+        return 'builtins'
+
+    @property
     def types(self):
         return self._types
 
@@ -42,12 +48,21 @@ class Project(ResourceRegistry):
         self._resource_module_factory = resource_module_factory
         self._name = name
         self._types = {}  # Module name -> name -> mt piece.
-        for project in self._imports:
-            self._types.update(project.types)
+
+    def __repr__(self):
+        return f"<Project {self._name!r}>"
+
+    @property
+    def name(self):
+        return self._name
 
     @property
     def types(self):
         return self._types
+
+    @property
+    def config(self):
+        return self.resolve((f'{self._name}.config', 'config'))
 
     def load(self, root_dir):
         path_to_text = load_texts(root_dir)
@@ -55,6 +70,8 @@ class Project(ResourceRegistry):
         self.load_resources(root_dir, path_to_text)
 
     def load_types(self, root_dir, path_to_text):
+        for project in self._imports:
+            self._types.update(project.types)
         path_to_type_text = self._filter_by_ext(path_to_text, '.types')
         self._type_module_loader.load_texts(root_dir, path_to_type_text, self._types)
         legacy_type_modules = load_legacy_type_resources(self._types)
@@ -65,7 +82,7 @@ class Project(ResourceRegistry):
         ext = '.resources.yaml'
         path_to_resource_text = self._filter_by_ext(path_to_text, ext)
         for path, text in path_to_resource_text.items():
-            module_name = path[:-len(ext)].replace('/', '.')
+            module_name = self._name + '.' + path[:-len(ext)].replace('/', '.')
             module = self._resource_module_factory(self, module_name, root_dir / path, text=text)
             self.set_module(module_name, module)
 
@@ -75,3 +92,19 @@ class Project(ResourceRegistry):
             in path_to_text.items()
             if path.endswith(ext)
             }
+
+
+def load_projects_from_file(project_factory, path):
+    config = yaml.safe_load(path.read_text())
+    name_to_project = {}
+    for name, info in config.items():
+        if info:
+            imports = {
+                name_to_project[import_name]
+                for import_name in info.get('imports', [])
+                }
+        else:
+            imports = set()
+        project = project_factory(name, imports)
+        name_to_project[name] = project
+    return name_to_project

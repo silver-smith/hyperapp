@@ -20,18 +20,19 @@ def main():
     try:
         pyobj_creg = services.pyobj_creg
         project_factory = services.project_factory
+        load_projects_from_file = services.load_projects_from_file
 
         config_file = sys.argv[1]
         root_service = sys.argv[2]
 
-        project = project_factory('everything')
-        project.load(HYPERAPP_DIR)
+        name_to_project = load_projects_from_file(HYPERAPP_DIR / 'projects.yaml')
+        for name, project in name_to_project.items():
+            project.load(HYPERAPP_DIR / name)
 
-        config = project[config_file, 'config']
-        module_piece = project['base.system.system', 'system.module']
+        module_piece = name_to_project['base']['base.system.system', 'system.module']
         module = pyobj_creg.animate(module_piece)
 
-        module.run_system(config, root_service, project, sys.argv[3:])
+        module.run_system(name_to_project.values(), root_service, project, sys.argv[3:])
 
     finally:
         log.info("Stopping.")

@@ -378,7 +378,8 @@ class System:
         raise UnknownServiceError(service_name)
 
 
-def run_system(config, root_name, *args, **kw):
+def run_system(projects, root_name, *args, **kw):
     system = System()
-    system.load_config(config)
+    for project in projects:
+        system.load_config(project.config)
     system.run(root_name, *args, **kw)

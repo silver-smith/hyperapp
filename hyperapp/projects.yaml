@@ -1,0 +1,17 @@
+base:
+rc:
+  imports: [base]
+common:
+  imports: [base]
+ui:
+  imports: [base, common]
+lcs:
+  imports: [base, common, ui]
+models:
+  imports: [base, common, ui]
+views:
+  imports: [base, common, ui]
+client:
+  imports: [base, common, ui]
+server:
+  imports: [base, common, ui]
