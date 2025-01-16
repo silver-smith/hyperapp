@@ -89,9 +89,9 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, pro
     target_set.add(config_tgt)
     import_target_list = create_python_modules(
         root_dir, cache, cached_count, target_set, path_to_text, target_project, all_imports_known_tgt, config_tgt)
-    add_base_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set)
     for import_tgt in import_target_list:
         import_tgt.create_job_target()
+    add_base_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set)
     all_imports_known_tgt.init_completed()
     target_set.init_all_statuses()
     return target_set
