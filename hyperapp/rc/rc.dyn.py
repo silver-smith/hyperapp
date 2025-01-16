@@ -16,7 +16,7 @@ from .services import (
 from .code.reconstructors import register_reconstructors
 from .code.rc_constants import JobStatus
 from .code.job_cache import JobCache
-from .code.init_targets import init_targets
+from .code.init_targets import add_base_target_items, create_target_set
 from .code.rc_filter import Filter
 
 log = logging.getLogger(__name__)
@@ -235,8 +235,9 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
     path_to_text = load_texts(hyperapp_dir)
     log.info("Loaded build: %s files", len(path_to_text))
 
-    target_set = init_targets(config_ctl, ctr_from_template_creg, system_config_template, project, hyperapp_dir, job_cache, cached_count, path_to_text)
-    target_set.update_statuses()
+    target_set = create_target_set(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, job_cache, cached_count, path_to_text)
+    add_base_target_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set)
+    target_set.post_init()
     if options.check:
         target_set.check_statuses()
     filter = Filter(target_set, targets)

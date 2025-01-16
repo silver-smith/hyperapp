@@ -138,6 +138,7 @@ class TargetSet:
     def post_init(self):
         self.factory.all_imports_known().init_completed()
         self.init_all_statuses()
+        self.update_statuses()
 
     def check_statuses(self):
         for target in self._name_to_target.values():
