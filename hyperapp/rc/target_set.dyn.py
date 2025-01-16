@@ -190,7 +190,7 @@ class TargetFactory:
         return target
 
     def python_module_resource_by_code_name(self, code_name):
-        full_name = self._target_set._name_to_full_name[code_name]
+        full_name = self._target_set.full_module_name(code_name)
         return self.python_module_resource_by_module_name(full_name)
 
     def python_module_resource_by_module_name(self, module_name):
@@ -212,7 +212,7 @@ class TargetFactory:
         return self._target_set[target_name]
 
     def python_module_imported_by_code_name(self, code_name):
-        full_name = self._target_set._name_to_full_name[code_name]
+        full_name = self._target_set.full_module_name(code_name)
         return self.python_module_imported_by_module_name(full_name)
 
     def config_item_ready(self, service_name, key):
