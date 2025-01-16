@@ -14,14 +14,11 @@ class ResourceRegistry:
         return self.resolve(name_pair)
 
     def __contains__(self, name_pair):
-        if name_pair in self._name_pair_to_piece:
-            return True
-        module_name, var_name = name_pair
         try:
-            module = self._module_registry[module_name]
+            is_cached, piece = self._resolve(name_pair)
         except KeyError:
-            raise RuntimeError(f"Error resolving {module_name}:{var_name}: Unknown module {module_name!r}")
-        return var_name in module
+            return False
+        return True
 
     # def __iter__(self):
     #     for module_name, module in self._module_registry.items():
@@ -62,30 +59,30 @@ class ResourceRegistry:
         del self._piece_to_name_pair[piece]
 
     def check_has_name(self, name_pair):
-        if name_pair in self._name_pair_to_piece:
-            return
-        module_name, var_name = name_pair
         try:
-            module = self._module_registry[module_name]
+            is_cached, piece = self._resolve(name_pair)
         except KeyError:
-            raise UnknownResourceName(f"Unknown module: {module_name!r}")
-        if var_name not in module:
-            raise UnknownResourceName(f"Module {module_name} does not have {var_name!r}")
+            raise UnknownResourceName(f"Unknown module or name: {name_pair[0]}.{name_pair[1]}")
 
     def resolve(self, name_pair):
         try:
-            return self._name_pair_to_piece[name_pair]
+            is_cached, piece = self._resolve(name_pair)
+        except KeyError:
+            raise RuntimeError(f"Error resolving {module_name}:{var_name}: Unknown module {module_name!r}")
+        if not is_cached:
+            self._name_pair_to_piece[name_pair] = piece
+            self._piece_to_name_pair[piece] = name_pair
+        return piece
+
+    # Returns (is_cached, piece)
+    def _resolve(self, name_pair):
+        try:
+            return (True, self._name_pair_to_piece[name_pair])
         except KeyError:
             pass
         module_name, var_name = name_pair
-        try:
-            module = self._module_registry[module_name]
-        except KeyError:
-            raise RuntimeError(f"Error resolving {module_name}:{var_name}: Unknown module {module_name!r}")
-        piece = module[var_name]  # KeyError propagates here.
-        self._name_pair_to_piece[name_pair] = piece
-        self._piece_to_name_pair[piece] = name_pair
-        return piece
+        module = self._module_registry[module_name]  # KeyError from here.
+        return (False, module[var_name])  # or here.
 
     def has_piece(self, piece):
         return piece in self._piece_to_name_pair
