@@ -16,19 +16,34 @@ def load_texts(root_dir):
     return path_to_text
 
 
-class Project(ResourceRegistry):
 
-    def __init__(self, builtin_types_dict, builtin_type_modules, builtin_service_resource_loader, type_module_loader, resource_module_factory, name):
+class BuiltinsProject(ResourceRegistry):
+
+    def __init__(self, builtin_types_dict, builtin_type_modules, builtin_service_resource_loader):
         super().__init__()
-        self._type_module_loader = type_module_loader
-        self._resource_module_factory = resource_module_factory
-        self._name = name
+        self._name = 'builtins'
         self._types = {}  # Module name -> name -> mt piece.
-        # TODO: Move following to separate project:
         self._types.update(builtin_types_dict)
         self.update_modules(builtin_type_modules)
         add_legacy_types_to_cache(self, builtin_type_modules)
         self.set_module('builtins', builtin_service_resource_loader(self))
+
+    @property
+    def types(self):
+        return self._types
+
+
+class Project(ResourceRegistry):
+
+    def __init__(self, builtins_project, type_module_loader, resource_module_factory, name, imports=None):
+        all_imports = {builtins_project, *(imports or [])}
+        super().__init__(all_imports)
+        self._type_module_loader = type_module_loader
+        self._resource_module_factory = resource_module_factory
+        self._name = name
+        self._types = {}  # Module name -> name -> mt piece.
+        for project in self._imports:
+            self._types.update(project.types)
 
     @property
     def types(self):

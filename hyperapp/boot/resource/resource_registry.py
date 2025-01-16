@@ -5,10 +5,11 @@ class UnknownResourceName(Exception):
 
 class ResourceRegistry:
 
-    def __init__(self):
+    def __init__(self, imports=None):
         self._name_pair_to_piece = {}
         self._piece_to_name_pair = {}
         self._module_registry = {}
+        self._imports = imports or set()
 
     def __getitem__(self, name_pair):
         return self.resolve(name_pair)
@@ -81,8 +82,18 @@ class ResourceRegistry:
         except KeyError:
             pass
         module_name, var_name = name_pair
-        module = self._module_registry[module_name]  # KeyError from here.
-        return (False, module[var_name])  # or here.
+        try:
+            module = self._module_registry[module_name]  # KeyError from here.
+            return (False, module[var_name])  # or here.
+        except KeyError:
+            pass
+        for project in self._imports:
+            try:
+                is_cached, piece = project._resolve(name_pair)
+                return (False, piece)
+            except KeyError:
+                pass
+        raise KeyError(name_pair)
 
     def has_piece(self, piece):
         return piece in self._piece_to_name_pair
@@ -91,4 +102,10 @@ class ResourceRegistry:
         try:
             return self._piece_to_name_pair[piece]
         except KeyError:
-            raise RuntimeError(f"Not a known resource: {piece!r}")
+            pass
+        for project in self._imports:
+            try:
+                return project.reverse_resolve(piece)
+            except KeyError:
+                pass
+        raise RuntimeError(f"Not a known resource: {piece!r}")
