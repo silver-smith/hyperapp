@@ -101,12 +101,18 @@ class ResourceRegistry:
 
     def reverse_resolve(self, piece):
         try:
+            return self.try_reverse_resolve(piece)
+        except KeyError:
+            raise RuntimeError(f"Not a known resource: {piece!r}")
+
+    def try_reverse_resolve(self, piece):
+        try:
             return self._piece_to_name_pair[piece]
         except KeyError:
             pass
         for project in self._imports:
             try:
-                return project.reverse_resolve(piece)
+                return project.try_reverse_resolve(piece)
             except KeyError:
                 pass
-        raise RuntimeError(f"Not a known resource: {piece!r}")
+        raise KeyError(piece)
