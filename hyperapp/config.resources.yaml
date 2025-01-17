@@ -46,6 +46,9 @@ import:
 - models.global_commands:global_commands_model.model-cfg-item
 - models.global_commands:global_commands_model_run_command.command-cfg-item
 - models.global_commands:open_global_commands.global-model-command
+- models.identity_command:identity_command_identity_command.actor-template
+- models.identity_command:model_commands_model.feed-template
+- models.identity_command:model_commands_model_add_identity_command.command-cfg-item
 - models.model_commands:model_commands_model.model-cfg-item
 - models.model_commands:model_commands_model_run_command.command-cfg-item
 - models.model_commands:open_model_commands.global-model-command
@@ -231,9 +234,6 @@ import:
 - ui.feed:feed_list_feed_type.actor-template
 - ui.feed_creg:feed_type_creg.service
 - ui.feed_type_template:feed_feed_template.actor-template
-- ui.identity_command:identity_command_identity_command.actor-template
-- ui.identity_command:model_commands_model.feed-template
-- ui.identity_command:model_commands_model_add_identity_command.command-cfg-item
 - ui.int_adapter:int_adapter_int_adapter.actor-template
 - ui.layout:layout_command_list.model-cfg-item
 - ui.layout:layout_command_list_add_view_command.command-cfg-item
@@ -353,7 +353,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.identity_command:identity_command_identity_command.actor-template
+      - models.identity_command:identity_command_identity_command.actor-template
       - ui.model_command:command_model_command.actor-template
       - ui.model_command:command_model_command_enumerator.actor-template
       - ui.ui_command:command_ui_command.actor-template
@@ -415,12 +415,12 @@ definitions:
       - lcs.lcs_view:lcs_view_view.feed-template
       - models.column_list:column_list_view.feed-template
       - models.command_list_model:global_commands_model.feed-template
+      - models.identity_command:model_commands_model.feed-template
       - sample.sample_feed:sample_feed_sample_list_feed.feed-template
       - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
       - sample.sample_list:sample_list_feed_sample_list.feed-template
       - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
       - ui.controller:layout_view.feed-template
-      - ui.identity_command:model_commands_model.feed-template
       - ui.list_as_tree:list_as_tree_opener_commands.feed-template
   feed_type_creg:
     type: legacy_type.system:item_list_config
@@ -499,11 +499,11 @@ definitions:
       - models.data_browser:data_browser_ref_list_view_ref_list_open.command-cfg-item
       - models.file_bundles:file_bundles_view_open.command-cfg-item
       - models.global_commands:global_commands_model_run_command.command-cfg-item
+      - models.identity_command:model_commands_model_add_identity_command.command-cfg-item
       - models.model_commands:model_commands_model_run_command.command-cfg-item
       - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
       - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
-      - ui.identity_command:model_commands_model_add_identity_command.command-cfg-item
       - ui.layout:layout_command_list_add_view_command.command-cfg-item
       - ui.layout:layout_command_list_set_escape_shortcut.command-cfg-item
       - ui.layout:layout_command_list_set_shortcut.command-cfg-item
