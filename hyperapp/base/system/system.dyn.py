@@ -13,7 +13,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.config_ctl import DictConfigCtl
+from .code.config_ctl import DictConfigCtl, merge_system_config_pieces
 
 log = logging.getLogger(__name__)
 
@@ -272,7 +272,7 @@ class System:
             self._config_ctl[service_name] = self._config_ctl_creg.invite(template.ctl_ref)
 
     def load_config(self, config_piece):
-        self.add_core_service('system_config_piece', config_piece)
+        self._update_system_config_piece(config_piece)
         service_to_config = {
             rec.service: web.summon(rec.config)
             for rec in config_piece.services
@@ -282,6 +282,14 @@ class System:
             config_piece = service_to_config.get(service_name)
             self._load_config_piece(service_name, config_piece)
         self.add_core_service('system_config_template', self._configs)
+
+    def _update_system_config_piece(self, config_piece):
+        service_name = 'system_config_piece'
+        if service_name in self._name_to_service:
+            complete_config_piece = merge_system_config_pieces(self._name_to_service[service_name], config_piece)
+        else:
+            complete_config_piece = config_piece
+        self.add_core_service('system_config_piece', complete_config_piece)
 
     def _service_config_order(self, service_name):
         order = {
