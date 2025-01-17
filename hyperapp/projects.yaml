@@ -10,8 +10,11 @@ models:
 lcs:
   imports: [base, common, ui, models]
 views:
-  imports: [base, common, ui]
-client:
+  # TODO: May be remove models, it is used by command_layout_context module.
+  imports: [base, common, ui, models]
+sample:
   imports: [base, common, ui]
 server:
   imports: [base, common, ui]
+client:
+  imports: [base, common, ui, lcs]
