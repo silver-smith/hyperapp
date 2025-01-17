@@ -1,0 +1,319 @@
+import:
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- ui.command_cfg_item:command_cfg_item.actor-template
+- ui.command_cfg_item:command_model_command.actor-template
+- ui.command_cfg_item:command_ui_command.actor-template
+- ui.command_config_ctl:command_typed_config_ctl.actor-template
+- ui.command_config_ctl:command_untyped_config_ctl.actor-template
+- ui.command_creg:command_creg.service
+- ui.controller:controller_running.service
+- ui.controller:layout_view.feed-template
+- ui.crud:crud_init_fn.actor-template
+- ui.crud:crud_model.actor-template
+- ui.crud:crud_model_crud_model_commands.command-cfg-item
+- ui.crud:crud_open_command_fn.actor-template
+- ui.feed:feed_factory.service
+- ui.feed:feed_index_tree_feed_type.actor-template
+- ui.feed:feed_list_feed_type.actor-template
+- ui.feed_creg:feed_type_creg.service
+- ui.feed_type_template:feed_feed_template.actor-template
+- ui.int_adapter:int_adapter_int_adapter.actor-template
+- ui.layout:layout_command_list.model-cfg-item
+- ui.layout:layout_command_list_add_view_command.command-cfg-item
+- ui.layout:layout_command_list_set_escape_shortcut.command-cfg-item
+- ui.layout:layout_command_list_set_shortcut.command-cfg-item
+- ui.layout:layout_view.model-cfg-item
+- ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
+- ui.layout:layout_view_open_view_item_commands.command-cfg-item
+- ui.layout:open_layout_tree.global-model-command
+- ui.list_as_tree:list_as_tree_opener_commands.feed-template
+- ui.list_as_tree:list_as_tree_opener_commands.model-cfg-item
+- ui.list_as_tree:list_as_tree_opener_commands_toggle_open_command.command-cfg-item
+- ui.list_as_tree:list_view_switch_list_to_tree.command-cfg-item
+- ui.list_as_tree:tree_view_open_opener_commands.command-cfg-item
+- ui.local_server:local_server_peer.service
+- ui.local_server:local_server_peer_path.service
+- ui.master_details:master_details.view-factory-template
+- ui.master_details:master_details_view.view-template
+- ui.master_details:master_details_view_unwrap_master_details.command-cfg-item
+- ui.model_cfg_item:model_cfg_item.actor-template
+- ui.model_command:command_model_command.actor-template
+- ui.model_command:command_model_command_enumerator.actor-template
+- ui.model_command:get_model_commands.service
+- ui.model_command:global_model_command_reg.service
+- ui.model_command:model_command_enumerator_reg.service
+- ui.model_command:model_command_reg.service
+- ui.navigator:navigator_view.view-template
+- ui.navigator:navigator_view_go_back.command-cfg-item
+- ui.navigator:navigator_view_go_forward.command-cfg-item
+- ui.qt.auto_tabs:auto_tabs_view.view-template
+- ui.qt.auto_tabs:auto_tabs_view_close_tab.command-cfg-item
+- ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.command-cfg-item
+- ui.qt.box_layout:box_layout_view.view-template
+- ui.qt.command_pane:command_pane_view.view-template
+- ui.qt.fn_index_tree_adapter:model_tree_ui_t.actor-template
+- ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
+- ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
+- ui.qt.fn_list_adapter:model_list_ui_t.actor-template
+- ui.qt.form:form_view.view-template
+- ui.qt.label:label_view.view-template
+- ui.qt.list:list_view.view-template
+- ui.qt.list_as_tree_adapter:list_as_tree_adapter_adapter.actor-template
+- ui.qt.menu_bar:menu_bar_view.view-template
+- ui.qt.record_adapter:model_record_ui_t.actor-template
+- ui.qt.record_adapter:record_adapter_fn_record_adapter.actor-template
+- ui.qt.remote_fn_index_tree_adapter:tree_adapter_remote_fn_index_tree_adapter.actor-template
+- ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
+- ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
+- ui.qt.tabs:tabs_view.view-template
+- ui.qt.tabs:tabs_view_open_tab_list.command-cfg-item
+- ui.qt.text:text_edit_view.view-template
+- ui.qt.text:text_readonly_view.view-template
+- ui.qt.tree:tree_view.view-template
+- ui.qt.window:window_view.view-template
+- ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
+- ui.qt.window_commands:window_view_quit.command-cfg-item
+- ui.selector:selector_reg.service
+- ui.selector:selector_template.actor-template
+- ui.str_adapter:str_adapter_static_str_adapter.actor-template
+- ui.system_fn:system_fn_ctx_fn.actor-template
+- ui.system_fn_creg:system_fn_creg.service
+- ui.tab_groups:tabs_view_move_tab_to_new_group.command-cfg-item
+- ui.text_toggle_editable:text_edit_view_toggle_editable.command-cfg-item
+- ui.text_toggle_editable:text_readonly_view_toggle_editable.command-cfg-item
+- ui.ui_adapter_creg:ui_adapter_creg.service
+- ui.ui_command:command_ui_command.actor-template
+- ui.ui_command:get_view_commands.service
+- ui.ui_command:universal_ui_command_reg.service
+- ui.ui_command:view_ui_command_reg.service
+- ui.ui_command:view_ui_model_command_reg.service
+- ui.ui_model_command:custom_ui_global_model_commands.service
+- ui.ui_model_command:custom_ui_model_commands.service
+- ui.ui_model_command:get_ui_model_commands.service
+- ui.ui_model_command:ui_global_command_items.service
+- ui.ui_model_command:ui_model_command_items.service
+- ui.view.view_cfg_item:view_template.actor-template
+- ui.view.view_factory:view_factory_reg.service
+- ui.view.view_factory_cfg_item:view_factory_template.actor-template
+- ui.view.view_factory_list:open_view_factory_list.global-model-command
+- ui.view.view_factory_list:view_factory_list_view.model-cfg-item
+- ui.view.view_registry:view_reg.service
+- ui.visualizer:builtin_int.actor-template
+- ui.visualizer:builtin_string.actor-template
+- ui.visualizer:get_custom_layout.service
+- ui.visualizer:model_layout_creg.service
+- ui.visualizer:set_custom_layout.service
+- ui.visualizer:ui_type_creg.service
+- ui.visualizer:visualizer.service
+- ui.visualizer:visualizer_reg.service
+
+definitions:
+  cfg_item_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.command_cfg_item:command_cfg_item.actor-template
+      - ui.command_cfg_item:command_model_command.actor-template
+      - ui.command_cfg_item:command_ui_command.actor-template
+      - ui.feed_type_template:feed_feed_template.actor-template
+      - ui.model_cfg_item:model_cfg_item.actor-template
+      - ui.selector:selector_template.actor-template
+      - ui.view.view_cfg_item:view_template.actor-template
+      - ui.view.view_factory_cfg_item:view_factory_template.actor-template
+
+  command_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.model_command:command_model_command.actor-template
+      - ui.model_command:command_model_command_enumerator.actor-template
+      - ui.ui_command:command_ui_command.actor-template
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        cfg_item_creg: cfg_item_creg
+        command_creg: command_creg
+        config_ctl_creg: config_ctl_creg
+        feed_factory: feed_factory
+        feed_type_creg: feed_type_creg
+        global_model_command_reg: global_model_command_reg
+        model_command_enumerator_reg: model_command_enumerator_reg
+        model_command_reg: model_command_reg
+        model_layout_creg: model_layout_creg
+        system: system
+        system_fn_creg: system_fn_creg
+        ui_adapter_creg: ui_adapter_creg
+        ui_type_creg: ui_type_creg
+        view_factory_reg: view_factory_reg
+        view_reg: view_reg
+        view_ui_command_reg: view_ui_command_reg
+        view_ui_model_command_reg: view_ui_model_command_reg
+        visualizer_reg: visualizer_reg
+  config_ctl_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.command_config_ctl:command_typed_config_ctl.actor-template
+      - ui.command_config_ctl:command_untyped_config_ctl.actor-template
+
+  feed_factory:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.controller:layout_view.feed-template
+      - ui.list_as_tree:list_as_tree_opener_commands.feed-template
+
+  feed_type_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.feed:feed_index_tree_feed_type.actor-template
+      - ui.feed:feed_list_feed_type.actor-template
+
+  global_model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.layout:open_layout_tree.global-model-command
+      - ui.view.view_factory_list:open_view_factory_list.global-model-command
+
+  model_command_enumerator_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.crud:crud_model_crud_model_commands.command-cfg-item
+      - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
+
+  model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.layout:layout_command_list_add_view_command.command-cfg-item
+      - ui.layout:layout_command_list_set_escape_shortcut.command-cfg-item
+      - ui.layout:layout_command_list_set_shortcut.command-cfg-item
+      - ui.layout:layout_view_open_view_item_commands.command-cfg-item
+      - ui.list_as_tree:list_as_tree_opener_commands_toggle_open_command.command-cfg-item
+
+  model_layout_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.crud:crud_model.actor-template
+      - ui.visualizer:builtin_int.actor-template
+      - ui.visualizer:builtin_string.actor-template
+  system:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.command_creg:command_creg.service
+      - ui.controller:controller_running.service
+      - ui.feed:feed_factory.service
+      - ui.feed_creg:feed_type_creg.service
+      - ui.local_server:local_server_peer.service
+      - ui.local_server:local_server_peer_path.service
+      - ui.model_command:get_model_commands.service
+      - ui.model_command:global_model_command_reg.service
+      - ui.model_command:model_command_enumerator_reg.service
+      - ui.model_command:model_command_reg.service
+      - ui.selector:selector_reg.service
+      - ui.system_fn_creg:system_fn_creg.service
+      - ui.ui_adapter_creg:ui_adapter_creg.service
+      - ui.ui_command:get_view_commands.service
+      - ui.ui_command:universal_ui_command_reg.service
+      - ui.ui_command:view_ui_command_reg.service
+      - ui.ui_command:view_ui_model_command_reg.service
+      - ui.ui_model_command:custom_ui_global_model_commands.service
+      - ui.ui_model_command:custom_ui_model_commands.service
+      - ui.ui_model_command:get_ui_model_commands.service
+      - ui.ui_model_command:ui_global_command_items.service
+      - ui.ui_model_command:ui_model_command_items.service
+      - ui.view.view_factory:view_factory_reg.service
+      - ui.view.view_registry:view_reg.service
+      - ui.visualizer:get_custom_layout.service
+      - ui.visualizer:model_layout_creg.service
+      - ui.visualizer:set_custom_layout.service
+      - ui.visualizer:ui_type_creg.service
+      - ui.visualizer:visualizer.service
+      - ui.visualizer:visualizer_reg.service
+  system_fn_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.crud:crud_init_fn.actor-template
+      - ui.crud:crud_open_command_fn.actor-template
+      - ui.system_fn:system_fn_ctx_fn.actor-template
+  ui_adapter_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.int_adapter:int_adapter_int_adapter.actor-template
+      - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
+      - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
+      - ui.qt.list_as_tree_adapter:list_as_tree_adapter_adapter.actor-template
+      - ui.qt.record_adapter:record_adapter_fn_record_adapter.actor-template
+      - ui.qt.remote_fn_index_tree_adapter:tree_adapter_remote_fn_index_tree_adapter.actor-template
+      - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
+      - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
+      - ui.str_adapter:str_adapter_static_str_adapter.actor-template
+  ui_type_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.qt.fn_index_tree_adapter:model_tree_ui_t.actor-template
+      - ui.qt.fn_list_adapter:model_list_ui_t.actor-template
+      - ui.qt.record_adapter:model_record_ui_t.actor-template
+  view_factory_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.master_details:master_details.view-factory-template
+  view_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.master_details:master_details_view.view-template
+      - ui.navigator:navigator_view.view-template
+      - ui.qt.auto_tabs:auto_tabs_view.view-template
+      - ui.qt.box_layout:box_layout_view.view-template
+      - ui.qt.command_pane:command_pane_view.view-template
+      - ui.qt.form:form_view.view-template
+      - ui.qt.label:label_view.view-template
+      - ui.qt.list:list_view.view-template
+      - ui.qt.menu_bar:menu_bar_view.view-template
+      - ui.qt.tabs:tabs_view.view-template
+      - ui.qt.text:text_edit_view.view-template
+      - ui.qt.text:text_readonly_view.view-template
+      - ui.qt.tree:tree_view.view-template
+      - ui.qt.window:window_view.view-template
+  view_ui_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.list_as_tree:list_view_switch_list_to_tree.command-cfg-item
+      - ui.master_details:master_details_view_unwrap_master_details.command-cfg-item
+      - ui.navigator:navigator_view_go_back.command-cfg-item
+      - ui.navigator:navigator_view_go_forward.command-cfg-item
+      - ui.qt.auto_tabs:auto_tabs_view_close_tab.command-cfg-item
+      - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.command-cfg-item
+      - ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
+      - ui.qt.window_commands:window_view_quit.command-cfg-item
+      - ui.tab_groups:tabs_view_move_tab_to_new_group.command-cfg-item
+      - ui.text_toggle_editable:text_edit_view_toggle_editable.command-cfg-item
+      - ui.text_toggle_editable:text_readonly_view_toggle_editable.command-cfg-item
+  view_ui_model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.list_as_tree:tree_view_open_opener_commands.command-cfg-item
+      - ui.qt.tabs:tabs_view_open_tab_list.command-cfg-item
+  visualizer_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.layout:layout_command_list.model-cfg-item
+      - ui.layout:layout_view.model-cfg-item
+      - ui.list_as_tree:list_as_tree_opener_commands.model-cfg-item
+      - ui.view.view_factory_list:view_factory_list_view.model-cfg-item
