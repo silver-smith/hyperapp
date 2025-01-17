@@ -5,10 +5,10 @@ common:
   imports: [base]
 ui:
   imports: [base, common]
-lcs:
-  imports: [base, common, ui]
 models:
   imports: [base, common, ui]
+lcs:
+  imports: [base, common, ui, models]
 views:
   imports: [base, common, ui]
 client:
