@@ -1,0 +1,107 @@
+import:
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- models.column_list:column_list_view.feed-template
+- models.column_list:column_list_view.model-cfg-item
+- models.column_list:column_list_view_toggle_visibility.command-cfg-item
+- models.column_list:list_view_open_column_list.command-cfg-item
+- models.command_list_model:global_commands-model.edit.command-cfg-item
+- models.command_list_model:global_commands_model.feed-template
+- models.command_list_model:global_commands_model_set_shortcut.command-cfg-item
+- models.command_list_model:model_commands-model.edit.command-cfg-item
+- models.command_list_model:model_commands_model_set_shortcut.command-cfg-item
+- models.data_browser:browse_current_model.global-model-command
+- models.data_browser:data_browser_list_view.model-cfg-item
+- models.data_browser:data_browser_list_view_list_open.command-cfg-item
+- models.data_browser:data_browser_primitive_view.model-cfg-item
+- models.data_browser:data_browser_record_view.model-cfg-item
+- models.data_browser:data_browser_record_view_record_open.command-cfg-item
+- models.data_browser:data_browser_ref_list_view.model-cfg-item
+- models.data_browser:data_browser_ref_list_view_ref_list_open.command-cfg-item
+- models.file_bundles:file_bundles_view.model-cfg-item
+- models.file_bundles:file_bundles_view_open.command-cfg-item
+- models.file_bundles:open_file_bundle_list.global-model-command
+- models.global_commands:global_commands_model.model-cfg-item
+- models.global_commands:global_commands_model_run_command.command-cfg-item
+- models.global_commands:open_global_commands.global-model-command
+- models.identity_command:identity_command_identity_command.actor-template
+- models.identity_command:model_commands_model.feed-template
+- models.identity_command:model_commands_model_add_identity_command.command-cfg-item
+- models.model_commands:model_commands_model.model-cfg-item
+- models.model_commands:model_commands_model_run_command.command-cfg-item
+- models.model_commands:open_model_commands.global-model-command
+- models.show_current_context:show_current_context.global-model-command
+- models.show_current_context:show_current_context_view.model-cfg-item
+
+definitions:
+  command_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.identity_command:identity_command_identity_command.actor-template
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        command_creg: command_creg
+        feed_factory: feed_factory
+        global_model_command_reg: global_model_command_reg
+        model_command_reg: model_command_reg
+        view_ui_model_command_reg: view_ui_model_command_reg
+        visualizer_reg: visualizer_reg
+
+  feed_factory:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.column_list:column_list_view.feed-template
+      - models.command_list_model:global_commands_model.feed-template
+      - models.identity_command:model_commands_model.feed-template
+
+  global_model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.data_browser:browse_current_model.global-model-command
+      - models.file_bundles:open_file_bundle_list.global-model-command
+      - models.global_commands:open_global_commands.global-model-command
+      - models.model_commands:open_model_commands.global-model-command
+      - models.show_current_context:show_current_context.global-model-command
+
+  model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.column_list:column_list_view_toggle_visibility.command-cfg-item
+      - models.command_list_model:global_commands-model.edit.command-cfg-item
+      - models.command_list_model:global_commands_model_set_shortcut.command-cfg-item
+      - models.command_list_model:model_commands-model.edit.command-cfg-item
+      - models.command_list_model:model_commands_model_set_shortcut.command-cfg-item
+      - models.data_browser:data_browser_list_view_list_open.command-cfg-item
+      - models.data_browser:data_browser_record_view_record_open.command-cfg-item
+      - models.data_browser:data_browser_ref_list_view_ref_list_open.command-cfg-item
+      - models.file_bundles:file_bundles_view_open.command-cfg-item
+      - models.global_commands:global_commands_model_run_command.command-cfg-item
+      - models.identity_command:model_commands_model_add_identity_command.command-cfg-item
+      - models.model_commands:model_commands_model_run_command.command-cfg-item
+
+  view_ui_model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.column_list:list_view_open_column_list.command-cfg-item
+
+  visualizer_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.column_list:column_list_view.model-cfg-item
+      - models.data_browser:data_browser_list_view.model-cfg-item
+      - models.data_browser:data_browser_primitive_view.model-cfg-item
+      - models.data_browser:data_browser_record_view.model-cfg-item
+      - models.data_browser:data_browser_ref_list_view.model-cfg-item
+      - models.file_bundles:file_bundles_view.model-cfg-item
+      - models.global_commands:global_commands_model.model-cfg-item
+      - models.model_commands:model_commands_model.model-cfg-item
+      - models.show_current_context:show_current_context_view.model-cfg-item
