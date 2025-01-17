@@ -49,6 +49,12 @@ import:
 - base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
 - base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 - base.transport.sync_route_table:route_table.service
+- base.transport.tcp_transport:_address_to_tcp_client.service
+- base.transport.tcp_transport:_tcp_selector.service
+- base.transport.tcp_transport:_tcp_services.service
+- base.transport.tcp_transport:tcp_client_factory.service
+- base.transport.tcp_transport:tcp_server_factory.service
+- base.transport.tcp_transport:tcp_transport_route.actor-template
 - base.transport.transport:transport.service
 
 definitions:
@@ -94,6 +100,11 @@ definitions:
       - base.transport.route_registry:route_registry.service
       - base.transport.rsa_identity:generate_rsa_identity.service
       - base.transport.sync_route_table:route_table.service
+      - base.transport.tcp_transport:_address_to_tcp_client.service
+      - base.transport.tcp_transport:_tcp_selector.service
+      - base.transport.tcp_transport:_tcp_services.service
+      - base.transport.tcp_transport:tcp_client_factory.service
+      - base.transport.tcp_transport:tcp_server_factory.service
       - base.transport.transport:transport.service
 
   identity_registry:
@@ -113,6 +124,12 @@ definitions:
     value:
       items:
       - base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+
+  route_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.transport.tcp_transport:tcp_transport_route.actor-template
 
   rpc_message_creg:
     type: legacy_type.system:item_list_config
@@ -143,6 +160,7 @@ definitions:
         identity_registry: identity_registry
         parcel_registry: parcel_registry
         peer_registry: peer_registry
+        route_registry: route_registry
         rpc_message_creg: rpc_message_creg
         rpc_target_creg: rpc_target_creg
         signature_registry: signature_registry
