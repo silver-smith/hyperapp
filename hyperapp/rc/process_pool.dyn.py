@@ -64,6 +64,7 @@ def process_pool_running(
                     f'rc-driver-{idx:02}',
                     identity,
                     timeout_sec=timeout,
+                    start_timeout_sec=timeout,
                     ))
 
             process_list = list(executor.map(start_process, range(process_count)))
