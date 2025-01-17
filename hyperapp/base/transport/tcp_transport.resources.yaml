@@ -1,5 +1,3 @@
-# Automatically generated file. Do not edit.
-
 import:
 - base.mark:mark.module
 - base.transport.tcp_utils:tcp_utils.module
