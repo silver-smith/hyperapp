@@ -1,0 +1,7 @@
+import:
+- legacy_type.system:system_config
+definitions:
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services: {}
