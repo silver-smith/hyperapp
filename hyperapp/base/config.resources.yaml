@@ -1,0 +1,148 @@
+import:
+
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+
+- base.bundler:bundler.service
+- base.data_to_pyobj:data_to_pyobj_ref.service
+- base.data_to_pyobj:data_to_pyobj.service
+- base.file_bundle:file_bundle.service
+- base.mark:marker_ctl.service
+- base.partial_ref:partial_ref.service
+- base.ref_picker:pick_refs.service
+- base.ref_picker:ref_picker_cache.service
+- base.rpc.rpc_endpoint:cancel_rpc_request_futures.service
+- base.rpc.rpc_endpoint:rpc_error_response.actor-template
+- base.rpc.rpc_endpoint:rpc_request.actor-template
+- base.rpc.rpc_endpoint:rpc_response.actor-template
+- base.rpc.rpc_endpoint:rpc_endpoint.service
+- base.rpc.rpc_endpoint:rpc_message_creg.service
+- base.rpc.rpc_endpoint:rpc_request_futures.service
+- base.rpc.rpc_endpoint:rpc_target_creg.service
+- base.rpc.rpc_endpoint:rpc_function_target.actor-template
+- base.rpc.rpc_endpoint:rpc_service_target.actor-template
+- base.rpc.rpc_call:rpc_call_factory.service
+- base.rpc.rpc_call:rpc_servant_wrapper.service
+- base.rpc.rpc_call:rpc_service_wrapper.service
+- base.rpc.rpc_call:rpc_submit_factory.service
+- base.rpc.rpc_call:rpc_submit_target_factory.service
+- base.rpc.rpc_call:rpc_wait_for_future.service
+- base.rpc.rpc_call:service_call_factory.service
+- base.rpc.rpc_call:service_submit_factory.service
+- base.subprocess.subprocess:subprocess_running.service
+- base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
+- base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+- base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
+- base.subprocess.subprocess_transport:subprocess_transport.service
+- base.system.system_stop:stop_signal.service
+- base.system.system_stop:system_failed.service
+- base.transport.endpoint:endpoint_registry.service
+- base.transport.endpoint:endpoint_thread_pool.service
+- base.transport.identity:identity_registry.service
+- base.transport.identity:parcel_registry.service
+- base.transport.identity:peer_registry.service
+- base.transport.identity:signature_registry.service
+- base.transport.route_registry:route_registry.service
+- base.transport.rsa_identity:generate_rsa_identity.service
+- base.transport.rsa_identity:rsa_identity_rsa_identity.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+- base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+- base.transport.sync_route_table:route_table.service
+- base.transport.transport:transport.service
+
+definitions:
+
+  system:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.bundler:bundler.service
+      - base.data_to_pyobj:data_to_pyobj_ref.service
+      - base.data_to_pyobj:data_to_pyobj.service
+      - base.file_bundle:file_bundle.service
+      - base.mark:marker_ctl.service
+      - base.partial_ref:partial_ref.service
+      - base.ref_picker:pick_refs.service
+      - base.ref_picker:ref_picker_cache.service
+      - base.rpc.rpc_endpoint:cancel_rpc_request_futures.service
+      - base.rpc.rpc_endpoint:rpc_target_creg.service
+      - base.rpc.rpc_endpoint:rpc_message_creg.service
+      - base.rpc.rpc_endpoint:rpc_endpoint.service
+      - base.rpc.rpc_endpoint:rpc_request_futures.service
+      - base.rpc.rpc_call:rpc_submit_target_factory.service
+      - base.rpc.rpc_call:rpc_servant_wrapper.service
+      - base.rpc.rpc_call:rpc_service_wrapper.service
+      - base.rpc.rpc_call:rpc_submit_factory.service
+      - base.rpc.rpc_call:service_submit_factory.service
+      - base.rpc.rpc_call:rpc_wait_for_future.service
+      - base.rpc.rpc_call:rpc_call_factory.service
+      - base.rpc.rpc_call:service_call_factory.service
+      - base.subprocess.subprocess:subprocess_running.service
+      - base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
+      - base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+      - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
+      - base.subprocess.subprocess_transport:subprocess_transport.service
+      - base.system.system_stop:stop_signal.service
+      - base.system.system_stop:system_failed.service
+      - base.transport.endpoint:endpoint_thread_pool.service
+      - base.transport.endpoint:endpoint_registry.service
+      - base.transport.identity:identity_registry.service
+      - base.transport.identity:parcel_registry.service
+      - base.transport.identity:peer_registry.service
+      - base.transport.identity:signature_registry.service
+      - base.transport.route_registry:route_registry.service
+      - base.transport.rsa_identity:generate_rsa_identity.service
+      - base.transport.sync_route_table:route_table.service
+      - base.transport.transport:transport.service
+
+  identity_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.transport.rsa_identity:rsa_identity_rsa_identity.actor-template
+
+  parcel_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+
+  peer_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+
+  rpc_message_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.rpc.rpc_endpoint:rpc_request.actor-template
+      - base.rpc.rpc_endpoint:rpc_response.actor-template
+      - base.rpc.rpc_endpoint:rpc_error_response.actor-template
+
+  rpc_target_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.rpc.rpc_endpoint:rpc_function_target.actor-template
+      - base.rpc.rpc_endpoint:rpc_service_target.actor-template
+
+  signature_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        system: system
+        identity_registry: identity_registry
+        parcel_registry: parcel_registry
+        peer_registry: peer_registry
+        rpc_message_creg: rpc_message_creg
+        rpc_target_creg: rpc_target_creg
+        signature_registry: signature_registry
