@@ -30,6 +30,9 @@ class BuiltinsProject(ResourceRegistry):
         add_legacy_types_to_cache(self, builtin_type_modules)
         self.set_module('builtins', builtin_service_resource_loader(self))
 
+    def __repr__(self):
+        return f"<BuiltinsProject>"
+
     @property
     def name(self):
         return 'builtins'
