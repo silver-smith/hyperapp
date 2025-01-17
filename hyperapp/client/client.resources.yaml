@@ -105,7 +105,7 @@ definitions:
       - client_async_main
       want_config: false
       free_params:
-      - project
+      - name_to_project
       - sys_argv
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl

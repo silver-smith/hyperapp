@@ -25,7 +25,7 @@ def ctr_from_template_creg(config):
     return code_registry_ctr('ctr_from_template_creg', config)
 
 
-def add_base_target_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set):
+def add_base_target_items(config_ctl, ctr_from_template_creg, system_config_template, target_set, project):
     for service_name, config in system_config_template.items():
         ctl = config_ctl[service_name]
         for key, value in config.items():
@@ -48,7 +48,7 @@ def add_base_target_items(config_ctl, ctr_from_template_creg, system_config_temp
             _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
 
 
-def create_python_modules(root_dir, cache, cached_count, target_set, path_to_text, target_project, all_imports_known_tgt, config_tgt):
+def create_python_modules(root_dir, cache, cached_count, target_set, prefix, path_to_text, target_project, all_imports_known_tgt, config_tgt):
     import_target_list = []
     for path, text in path_to_text.items():
         ext = '.dyn.py'
@@ -57,11 +57,11 @@ def create_python_modules(root_dir, cache, cached_count, target_set, path_to_tex
         stem = path[:-len(ext)]
         parts = stem.split('/')
         name = parts[-1]
-        full_name = stem.replace('/', '.')
+        full_name = prefix + '.' + stem.replace('/', '.')
         dir = '/'.join(parts[:-1])
-        resource_path = f'{dir}/{name}.resources.yaml'
+        resource_path = Path(dir) / f'{name}.resources.yaml'
         target_set.add_module_name(full_name, name)
-        src = PythonModuleSrc(full_name, name, str(root_dir / path), Path(resource_path), text)
+        src = PythonModuleSrc(full_name, name, str(root_dir / path), resource_path, text)
         try:
             resource_text = root_dir.joinpath(resource_path).read_text()
         except FileNotFoundError:
@@ -79,16 +79,16 @@ def create_python_modules(root_dir, cache, cached_count, target_set, path_to_tex
     return import_target_list
 
 
-def create_target_set(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, cached_count, path_to_text):
+def create_target_set(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, cached_count, prefix, path_to_text, imports):
     target_project = project_factory('rc_target')
     target_project.load_types(root_dir, path_to_text)
-    target_set = TargetSet(root_dir, target_project.types)
+    target_set = TargetSet(root_dir, target_project.types, imports)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
     config_tgt = ConfigResourceTarget(target_project, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
     target_set.add(config_tgt)
     import_target_list = create_python_modules(
-        root_dir, cache, cached_count, target_set, path_to_text, target_project, all_imports_known_tgt, config_tgt)
+        root_dir, cache, cached_count, target_set, prefix, path_to_text, target_project, all_imports_known_tgt, config_tgt)
     for import_tgt in import_target_list:
         import_tgt.create_job_target()
     return target_set

@@ -229,21 +229,35 @@ def _parse_args(sys_argv):
     )
 
 
-def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg, job_cache, project, pool, targets, options):
+def compile_resources(
+        system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg,
+        job_cache, name_to_project, pool, targets, options):
+
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
-    path_to_text = load_texts(hyperapp_dir)
-    log.info("Loaded build: %s files", len(path_to_text))
 
-    target_set = create_target_set(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, job_cache, cached_count, path_to_text)
-    add_base_target_items(config_ctl, ctr_from_template_creg, system_config_template, project, target_set)
-    target_set.post_init()
+    name_to_target_set = {}
+    for name, project in name_to_project.items():
+        imports = {
+            name_to_target_set[p.name]
+            for p in project.imports
+            }
+        path_to_text = load_texts(hyperapp_dir / project.name)
+        log.info("Loaded project %r: %s files", name, len(path_to_text))
+        target_set = create_target_set(
+            config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir / name, job_cache, cached_count,
+            name, path_to_text, imports)
+        if name == 'base':
+            add_base_target_items(config_ctl, ctr_from_template_creg, system_config_template, target_set, project)
+        target_set.post_init()
+        name_to_target_set[name] = target_set
+
     if options.check:
         target_set.check_statuses()
     filter = Filter(target_set, targets)
     runner = RcRunner(rc_job_result_creg, options, filter, pool, job_cache, cached_count)
     try:
-        runner.run(target_set)
+        runner.run(name_to_target_set)
     except HException as x:
         if isinstance(x, htypes.rpc.server_error):
             log.error("Server error: %s", x.message)
@@ -256,7 +270,7 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
         job_cache.save()
 
 
-def rc_main(process_pool_running, compile_resources, project, sys_argv):
+def rc_main(process_pool_running, compile_resources, name_to_project, sys_argv):
     args = _parse_args(sys_argv)
     rc_log.info("Compile resources: %s", ", ".join(args.targets) if args.targets else 'all')
 
@@ -266,4 +280,4 @@ def rc_main(process_pool_running, compile_resources, project, sys_argv):
     register_reconstructors()
 
     with process_pool_running(args.process_count, args.options.timeout) as pool:
-        compile_resources(project, pool, args.targets, args.options)
+        compile_resources(name_to_project, pool, args.targets, args.options)

@@ -45,10 +45,12 @@ class BuiltinsProject(ResourceRegistry):
 class Project(ResourceRegistry):
 
     def __init__(self, builtins_project, type_module_loader, resource_module_factory, name, imports=None):
-        all_imports = {builtins_project, *(imports or [])}
+        project_imports = imports or set()
+        all_imports = {builtins_project, *project_imports}
         super().__init__(all_imports)
         self._type_module_loader = type_module_loader
         self._resource_module_factory = resource_module_factory
+        self._project_imports = project_imports
         self._name = name
         self._types = {}  # Module name -> name -> mt piece.
 
@@ -58,6 +60,10 @@ class Project(ResourceRegistry):
     @property
     def name(self):
         return self._name
+
+    @property
+    def imports(self):
+        return self._project_imports
 
     @property
     def types(self):

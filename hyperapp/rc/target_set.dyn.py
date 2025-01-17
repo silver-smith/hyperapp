@@ -16,7 +16,7 @@ def _sorted_targets(targets):
 
 class TargetSet:
 
-    def __init__(self, resource_dir, types):
+    def __init__(self, resource_dir, types, imports):
         self._resource_dir = resource_dir
         self._types = types
         self._name_to_full_name = {}

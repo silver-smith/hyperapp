@@ -144,7 +144,7 @@ async def client_async_main(
 
 
 @mark.service
-def client_main(client_async_main, project, sys_argv):
+def client_main(client_async_main, name_to_project, sys_argv):
     args = _parse_args(sys_argv)
 
     register_reconstructors()
