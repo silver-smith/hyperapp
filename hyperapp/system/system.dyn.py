@@ -277,18 +277,26 @@ class System:
             rec.service: web.summon(rec.config)
             for rec in config_piece.services
             }
-        self._load_config_piece('cfg_item_creg', service_to_config.get('cfg_item_creg'))
-        self._load_config_piece('config_ctl_creg', service_to_config.get('config_ctl_creg'))
-        self._load_config_piece('system', service_to_config['system'])
-        for service_name, config_piece in service_to_config.items():
-            if service_name in {'system', 'cfg_item_creg', 'config_ctl_creg', 'pyobj_creg'}:
-                continue
+        ordered_services = sorted(service_to_config, key=self._service_config_order)
+        for service_name in ordered_services:
+            config_piece = service_to_config.get(service_name)
             self._load_config_piece(service_name, config_piece)
-        self._load_pyobj_creg(service_to_config.get('pyobj_creg'))
         self.add_core_service('system_config_template', self._configs)
+
+    def _service_config_order(self, service_name):
+        order = {
+            'cfg_item_creg': 1,
+            'config_ctl_creg': 2,
+            'system': 3,
+            'pyobj_creg': 21,
+            }
+        return order.get(service_name, 10)
 
     def _load_config_piece(self, service_name, config_piece):
         if not config_piece:
+            return
+        if service_name == 'pyobj_creg':
+            self._load_pyobj_creg(config_piece)
             return
         ctl = self._config_ctl[service_name]
         config = ctl.from_data(config_piece)
