@@ -89,15 +89,20 @@ class RcRunner:
             self._job_cache.put(cache_target_name, target.src, deps, result)
         return result
 
-    def run(self, target_set):
-        rc_log.info("%d targets", target_set.count)
-        self._run_target_set_jobs(target_set)
+    def run(self, name_to_target_set):
+        total_count = sum(ts.count for ts in name_to_target_set.values())
+        ts_count = ", ".join(f"{name}: {ts.count}" for name, ts in name_to_target_set.items())
+        rc_log.info("%d targets: %s", total_count, ts_count)
+        for target_set in name_to_target_set.values():
+            self._run_target_set_jobs(target_set)
         self._report_traces()
         self._report_deps(target_set)
         rc_log.info("Diffs:\n")
-        with_output, changed_count = self._collect_output(target_set)
-        completed_count = len(list(target_set.iter_completed()))
-        self._report_stats(target_set.count, completed_count, with_output, changed_count)
+        name_to_output_stats = {}
+        for name, target_set in name_to_target_set.items():
+            with_output, changed_count = self._collect_output(target_set)
+            name_to_output_stats[name] = with_output, changed_count
+        self._report_all_stats(name_to_target_set, name_to_output_stats)
 
     def _run_target_set_jobs(self, target_set):
         while True:
@@ -141,10 +146,26 @@ class RcRunner:
                     ", ".join(dep.name for dep in target.deps),
                     )
 
-    def _report_stats(self, total_count, completed_count, with_output, changed_count):
+    def _report_all_stats(self, name_to_target_set, name_to_output_stats):
+        total_count = 0
+        total_completed_count = 0
+        total_with_output = 0
+        total_changed_count = 0
+        for name, target_set in name_to_target_set.items():
+            completed_count = len(list(target_set.iter_completed()))
+            with_output, changed_count = name_to_output_stats[name]
+            self._report_stats(name, target_set.count, completed_count, with_output, changed_count)
+            total_count += target_set.count
+            total_completed_count += completed_count
+            total_with_output += with_output
+            total_changed_count += changed_count
+        self._report_stats("Total", total_count, total_completed_count, total_with_output, total_changed_count)
+
+    def _report_stats(self, name, total_count, completed_count, with_output, changed_count):
         job_count = len(self._job_id_to_target)
         rc_log.info(
-            "Total: %d, completed: %d; not completed: %d, jobs: %d, cached: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
+            "%s: %d, completed: %d; not completed: %d, jobs: %d, cached: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
+            name,
             total_count,
             completed_count,
             total_count - completed_count,
