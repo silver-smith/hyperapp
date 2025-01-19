@@ -280,8 +280,6 @@ class System:
         self._load_config_piece('cfg_item_creg', service_to_config.get('cfg_item_creg'))
         self._load_config_piece('config_ctl_creg', service_to_config.get('config_ctl_creg'))
         self._load_config_piece('system', service_to_config['system'])
-        # Subsequent update_config calls may already use it.
-        self._update_config_ctl(self._configs.get('system', {}))
         for service_name, config_piece in service_to_config.items():
             if service_name in {'system', 'cfg_item_creg', 'config_ctl_creg', 'pyobj_creg'}:
                 continue
