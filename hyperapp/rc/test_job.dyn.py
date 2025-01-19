@@ -289,7 +289,7 @@ class TestJob(SystemJob):
             ctr_collector.ignore_module(module_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
             root_probe = self._make_root_fixture(system, module_piece, module)
-            system.update_config('system', {self._root_name: root_probe})
+            system.update_config('rc-test-job', 'system', {self._root_name: root_probe})
             self.convert_errors(self._run_system, system)
         except _TestJobError as x:
             result = x

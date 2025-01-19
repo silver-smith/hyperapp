@@ -198,8 +198,8 @@ class System:
     _system_name = "System"
 
     def __init__(self):
-        self._name_to_template = {}
-        self._configs = {'system': self._name_to_template}  # service name -> service config
+        self._layer_to_configs = {}  # layer_name -> service name -> service config
+        self._configs_cache = None
         self._name_to_service = {}
         self._resolve_stack = {}  # service name -> requester
         self._finalizers = {}  # service name -> fn
@@ -243,11 +243,13 @@ class System:
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
 
-    def update_config(self, service_name, config):
+    def update_config(self, layer_name, service_name, config):
+        self._configs_cache = None
+        service_to_config = self._layer_to_configs.setdefault(layer_name, {})
         try:
-            dest = self._configs[service_name]
+            dest = service_to_config[service_name]
         except KeyError:
-            self._configs[service_name] = config
+            service_to_config[service_name] = config
         else:
             try:
                 ctl = self._config_ctl[service_name]
@@ -272,6 +274,9 @@ class System:
             self._config_ctl[service_name] = self._config_ctl_creg.invite(template.ctl_ref)
 
     def load_config(self, config_piece):
+        self.load_config_layer('single', config_piece)
+
+    def load_config_layer(self, layer_name, config_piece):
         self._update_system_config_piece(config_piece)
         service_to_config = {
             rec.service: web.summon(rec.config)
@@ -280,8 +285,8 @@ class System:
         ordered_services = sorted(service_to_config, key=self._service_config_order)
         for service_name in ordered_services:
             config_piece = service_to_config.get(service_name)
-            self._load_config_piece(service_name, config_piece)
-        self.add_core_service('system_config_template', self._configs)
+            self._load_config_piece(layer_name, service_name, config_piece)
+        self.add_core_service('layer_config_templates', self._layer_to_configs)
 
     def _update_system_config_piece(self, config_piece):
         service_name = 'system_config_piece'
@@ -300,7 +305,7 @@ class System:
             }
         return order.get(service_name, 10)
 
-    def _load_config_piece(self, service_name, config_piece):
+    def _load_config_piece(self, layer_name, service_name, config_piece):
         if not config_piece:
             return
         if service_name == 'pyobj_creg':
@@ -308,7 +313,7 @@ class System:
             return
         ctl = self._config_ctl[service_name]
         config = ctl.from_data(config_piece)
-        self.update_config(service_name, config)
+        self.update_config(layer_name, service_name, config)
 
     # TODO: Think how to load pyobj_creg config not by system. It is a global registry.
     def _load_pyobj_creg(self, config_piece):
@@ -318,6 +323,27 @@ class System:
         config_template = ctl.from_data(config_piece)
         config = ctl.resolve(self, 'pyobj_creg', config_template)
         pyobj_creg.update_config(config)
+
+    @property
+    def _configs(self):
+        if self._configs_cache is not None:
+            return self._configs_cache
+        result = dict()
+        for service_to_config in self._layer_to_configs.values():
+            for service_name, config in service_to_config.items():
+                ctl = self._config_ctl[service_name]
+                try:
+                    dest = result[service_name]
+                except KeyError:
+                    dest = ctl.empty_config_template()
+                    result[service_name] = dest
+                ctl.merge(dest, config)
+        self._configs_cache = result
+        return result
+
+    @property
+    def _name_to_template(self):
+        return self._configs.get('system', {})
 
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)
@@ -395,5 +421,5 @@ def run_config(config, root_name, *args, **kw):
 def run_projects(projects, root_name, *args, **kw):
     system = System()
     for project in projects:
-        system.load_config(project.config)
+        system.load_config_layer(project.name, project.config)
     system.run(root_name, *args, **kw)
