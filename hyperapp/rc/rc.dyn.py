@@ -11,6 +11,7 @@ from hyperapp.boot.project import load_texts
 from . import htypes
 from .services import (
     hyperapp_dir,
+    project_factory,
     web,
     )
 from .code.reconstructors import register_reconstructors
@@ -230,27 +231,36 @@ def _parse_args(sys_argv):
 
 
 def compile_resources(
-        system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg,
+        layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
         job_cache, name_to_project, pool, targets, options):
 
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
 
+    name_to_target_project = {}
     name_to_target_set = {}
     for name, project in name_to_project.items():
-        imports = {
+        target_set_imports = {
             name_to_target_set[p.name]
             for p in project.imports
             }
-        path_to_text = load_texts(hyperapp_dir / project.name)
+        project_imports = {
+            name_to_target_project[p.name]
+            for p in project.imports
+            }
+        root_dir = hyperapp_dir / name
+        path_to_text = load_texts(root_dir)
         log.info("Loaded project %r: %s files", name, len(path_to_text))
+        target_project = project_factory(name, imports=project_imports)
+        target_project.load_types(root_dir, path_to_text)
         target_set = create_target_set(
-            config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir / name, job_cache, cached_count,
-            name, path_to_text, imports)
+            config_ctl, ctr_from_template_creg, layer_config_templates, root_dir, job_cache, cached_count,
+            target_project, path_to_text, target_set_imports)
         if name == 'base':
-            add_base_target_items(config_ctl, ctr_from_template_creg, system_config_template, target_set, project)
+            add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, project)
         target_set.post_init()
         name_to_target_set[name] = target_set
+        name_to_target_project[name] = target_project
 
     if options.check:
         target_set.check_statuses()

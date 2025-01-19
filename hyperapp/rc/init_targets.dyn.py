@@ -5,7 +5,6 @@ from hyperapp.boot.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (
     code_registry_ctr,
-    project_factory,
     web,
     )
 from .code.target_set import TargetSet
@@ -25,8 +24,9 @@ def ctr_from_template_creg(config):
     return code_registry_ctr('ctr_from_template_creg', config)
 
 
-def add_base_target_items(config_ctl, ctr_from_template_creg, system_config_template, target_set, project):
-    for service_name, config in system_config_template.items():
+def add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, project):
+    service_to_config = layer_config_templates['base']
+    for service_name, config in service_to_config.items():
         ctl = config_ctl[service_name]
         for key, value in config.items():
             if service_name == 'system':
@@ -79,16 +79,16 @@ def create_python_modules(root_dir, cache, cached_count, target_set, prefix, pat
     return import_target_list
 
 
-def create_target_set(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, cached_count, prefix, path_to_text, imports):
-    target_project = project_factory('rc_target')
-    target_project.load_types(root_dir, path_to_text)
+def create_target_set(
+        config_ctl, ctr_from_template_creg, layer_config_templates,
+        root_dir, cache, cached_count, target_project, path_to_text, imports):
     target_set = TargetSet(root_dir, target_project.types, imports)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
     config_tgt = ConfigResourceTarget(target_project, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
     target_set.add(config_tgt)
     import_target_list = create_python_modules(
-        root_dir, cache, cached_count, target_set, prefix, path_to_text, target_project, all_imports_known_tgt, config_tgt)
+        root_dir, cache, cached_count, target_set, target_project.name, path_to_text, target_project, all_imports_known_tgt, config_tgt)
     for import_tgt in import_target_list:
         import_tgt.create_job_target()
     return target_set
