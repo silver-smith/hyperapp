@@ -22,10 +22,16 @@ def main():
         project_factory = services.project_factory
         load_projects_from_file = services.load_projects_from_file
 
-        config_file = sys.argv[1]
+        use_projects = sys.argv[1].split(',')
         root_service = sys.argv[2]
 
         name_to_project = load_projects_from_file(HYPERAPP_DIR / 'projects.yaml')
+        name_to_project = {
+            name: project
+            for name, project
+            in name_to_project.items()
+            if name in use_projects
+            }
         for name, project in name_to_project.items():
             project.load(HYPERAPP_DIR / name)
 
