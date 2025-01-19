@@ -39,82 +39,46 @@ class Counter:
         self.value += 1
 
 
-def _collect_output(target_set, failures, options):
+class RcRunner:
 
-    def write(path, text):
-        if options.write:
-            rc_log.info("Write: %s", path)
-            path.write_text(text)
+    def __init__(self, rc_job_result_creg, options, filter, pool, job_cache, cached_count):
+        self._rc_job_result_creg = rc_job_result_creg
+        self._options = options
+        self._filter = filter
+        self._pool = pool
+        self._job_cache = job_cache
+        self._cached_count = cached_count
+        self._target_to_job = {}  # Jobs are never removed.
+        self._job_id_to_target = {}
+        self._failures = {}
+        self._incomplete = {}
 
-    total = 0
-    changed = 0
-    for target in target_set:
-        if not target.completed or not target.has_output or target in failures:
-            continue
-        resource_path, text = target.get_output()
-        path = hyperapp_dir / resource_path
-        if path.exists():
-            p = subprocess.run(
-                ['diff', '-u', str(path), '-'],
-                input=text.encode(),
-                stdout=subprocess.PIPE,
-                )
-            if p.returncode == 0:
-                rc_log.debug("%s: No diffs", target.name)
-            else:
-                diffs = p.stdout.decode()
-                line_count = len(diffs.splitlines())
-                if options.show_diffs:
-                    rc_log.info("%s: Diff %d lines\n%s", target.name, line_count, diffs)
-                else:
-                    rc_log.info("%s: Diff %d lines", target.name, line_count)
-                write(path, text)
-                changed += 1
-        else:
-            if options.show_diffs:
-                rc_log.info("%s: New file, %d lines\n%s", target.name, len(text.splitlines()), text)
-            else:
-                rc_log.info("%s: New file, %d lines", target.name, len(text.splitlines()))
-            write(path, text)
-            changed += 1
-        total += 1
-    return (total, changed)
+    def _submit_jobs(self, target_set):
+        for target in target_set.iter_ready():
+            if target in self._target_to_job:
+                continue  # Already submitted.
+            if not self._filter.included(target):
+                rc_log.debug("%s: not requested", target.name)
+                continue
+            try:
+                job = target.make_job()
+            except Exception as x:
+                raise RuntimeError(f"For {target.name}: {x}") from x
+            self._target_to_job[target] = job
+            self._job_id_to_target[id(job)] = target
+            rc_log.debug("Submit %s (in queue: %d)", target.name, self._pool.queue_size)
+            self._pool.submit(job)
 
-
-def _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter):
-    for target in target_set.iter_ready():
-        if target in target_to_job:
-            continue  # Already submitted.
-        if not filter.included(target):
-            rc_log.debug("%s: not requested", target.name)
-            continue
-        try:
-            job = target.make_job()
-        except Exception as x:
-            raise RuntimeError(f"For {target.name}: {x}") from x
-        target_to_job[target] = job
-        job_id_to_target[id(job)] = target
-        rc_log.debug("Submit %s (in queue: %d)", target.name, pool.queue_size)
-        pool.submit(job)
-
-
-def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, options):
-    rc_log.info("%d targets", target_set.count)
-    target_to_job = {}  # Jobs are never removed.
-    job_id_to_target = {}
-    failures = {}
-    incomplete = {}
-
-    def _handle_result(job, result_piece):
-        target = job_id_to_target[id(job)]
-        result = rc_job_result_creg.animate(result_piece)
+    def _handle_result(self, target_set, job, result_piece):
+        target = self._job_id_to_target[id(job)]
+        result = self._rc_job_result_creg.animate(result_piece)
         rc_log.info("%s: %s", target.name, result.desc)
         if result.status == JobStatus.failed:
-            failures[target] = result
+            self._failures[target] = result
         else:
             target.handle_job_result(target_set, result)
         if result.status == JobStatus.incomplete:
-            incomplete[target] = result
+            self._incomplete[target] = result
         cache_target_name = result.cache_target_name(target)
         if cache_target_name:
             req_to_resources = job.req_to_resources
@@ -122,64 +86,116 @@ def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, 
                 req: req_to_resources[req]
                 for req in result.used_reqs
                 }
-            job_cache.put(cache_target_name, target.src, deps, result)
+            self._job_cache.put(cache_target_name, target.src, deps, result)
         return result
 
-    should_run = True
-    while should_run:
-        _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter)
-        if target_set.all_completed:
-            rc_log.info("All targets are completed\n")
-            break
-        if pool.job_count == 0:
-            rc_log.info("Not all targets are completed, but there are no jobs\n")
-            break
-        for job, result_piece in pool.iter_completed(options.timeout):
-            result = _handle_result(job, result_piece)
-            if result.status == JobStatus.failed and options.fail_fast:
-                should_run = False
-        target_set.update_statuses()
-        if options.check:
-            target_set.check_statuses()
-        filter.update_deps()
-    if failures:
-        rc_log.info("%d failures:\n", len(failures))
-        for target in failures:
-            rc_log.info("Failed: %s", target.name)
-        rc_log.info("\n")
-        for target, result in failures.items():
-            rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
-    if incomplete and options.show_incomplete_traces:
-        rc_log.info("%d incomplete:\n", len(incomplete))
-        for target, result in incomplete.items():
-            rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
-    for target in target_set:
-        if options.verbose or not target.completed and target not in failures:
-            rc_log.info(
-                "%s: %s, missing: %s, wants: %s",
-                "Failed" if target in failures else "Completed" if target.completed else "Not completed",
-                target.name,
-                ", ".join(dep.name for dep in target.deps if not dep.completed),
-                ", ".join(dep.name for dep in target.deps),
-                )
-    rc_log.info("Diffs:\n")
-    with_output, changed_count = _collect_output(target_set, failures, options)
-    job_count = len(job_id_to_target)
-    completed_count = len(list(target_set.iter_completed()))
-    rc_log.info(
-        "Total: %d, completed: %d; not completed: %d, jobs: %d, cached: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
-        target_set.count,
-        completed_count,
-        target_set.count - completed_count,
-        job_count,
-        cached_count.value,
-        (job_count - len(failures)),
-        len(failures),
-        len(incomplete),
-        with_output,
-        changed_count,
-        )
+    def run(self, target_set):
+        rc_log.info("%d targets", target_set.count)
+        self._run_target_set_jobs(target_set)
+        self._report_traces()
+        self._report_deps(target_set)
+        rc_log.info("Diffs:\n")
+        with_output, changed_count = self._collect_output(target_set)
+        completed_count = len(list(target_set.iter_completed()))
+        self._report_stats(target_set.count, completed_count, with_output, changed_count)
 
+    def _run_target_set_jobs(self, target_set):
+        while True:
+            self._submit_jobs(target_set)
+            if target_set.all_completed:
+                rc_log.info("All targets are completed\n")
+                return
+            if self._pool.job_count == 0:
+                rc_log.info("Not all targets are completed, but there are no jobs\n")
+                return
+            for job, result_piece in self._pool.iter_completed(self._options.timeout):
+                result = self._handle_result(target_set, job, result_piece)
+                if result.status == JobStatus.failed and self._options.fail_fast:
+                    return
+            target_set.update_statuses()
+            if self._options.check:
+                target_set.check_statuses()
+            self._filter.update_deps()
+
+    def _report_traces(self):
+        if self._failures:
+            rc_log.info("%d failures:\n", len(self._failures))
+            for target in self._failures:
+                rc_log.info("Failed: %s", target.name)
+            rc_log.info("\n")
+            for target, result in self._failures.items():
+                rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
+        if self._incomplete and self._options.show_incomplete_traces:
+            rc_log.info("%d incomplete:\n", len(self._incomplete))
+            for target, result in self._incomplete.items():
+                rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
+
+    def _report_deps(self, target_set):
+        for target in target_set:
+            if self._options.verbose or not target.completed and target not in self._failures:
+                rc_log.info(
+                    "%s: %s, missing: %s, wants: %s",
+                    "Failed" if target in self._failures else "Completed" if target.completed else "Not completed",
+                    target.name,
+                    ", ".join(dep.name for dep in target.deps if not dep.completed),
+                    ", ".join(dep.name for dep in target.deps),
+                    )
+
+    def _report_stats(self, total_count, completed_count, with_output, changed_count):
+        job_count = len(self._job_id_to_target)
+        rc_log.info(
+            "Total: %d, completed: %d; not completed: %d, jobs: %d, cached: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
+            total_count,
+            completed_count,
+            total_count - completed_count,
+            job_count,
+            self._cached_count.value,
+            (job_count - len(self._failures)),
+            len(self._failures),
+            len(self._incomplete),
+            with_output,
+            changed_count,
+            )
+
+    def _write(self, path, text):
+        if self._options.write:
+            rc_log.info("Write: %s", path)
+            path.write_text(text)
+
+    def _collect_output(self, target_set):
+        total = 0
+        changed = 0
+        for target in target_set:
+            if not target.completed or not target.has_output or target in self._failures:
+                continue
+            resource_path, text = target.get_output()
+            path = hyperapp_dir / resource_path
+            if path.exists():
+                p = subprocess.run(
+                    ['diff', '-u', str(path), '-'],
+                    input=text.encode(),
+                    stdout=subprocess.PIPE,
+                    )
+                if p.returncode == 0:
+                    rc_log.debug("%s: No diffs", target.name)
+                else:
+                    diffs = p.stdout.decode()
+                    line_count = len(diffs.splitlines())
+                    if self._options.show_diffs:
+                        rc_log.info("%s: Diff %d lines\n%s", target.name, line_count, diffs)
+                    else:
+                        rc_log.info("%s: Diff %d lines", target.name, line_count)
+                    self._write(path, text)
+                    changed += 1
+            else:
+                if self._options.show_diffs:
+                    rc_log.info("%s: New file, %d lines\n%s", target.name, len(text.splitlines()), text)
+                else:
+                    rc_log.info("%s: New file, %d lines", target.name, len(text.splitlines()))
+                self._write(path, text)
+                changed += 1
+            total += 1
+        return (total, changed)
 
 
 def _parse_args(sys_argv):
@@ -227,8 +243,9 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
     if options.check:
         target_set.check_statuses()
     filter = Filter(target_set, targets)
+    runner = RcRunner(rc_job_result_creg, options, filter, pool, job_cache, cached_count)
     try:
-        _run(rc_job_result_creg, pool, build.job_cache, cached_count, target_set, filter, options)
+        runner.run(target_set)
     except HException as x:
         if isinstance(x, htypes.rpc.server_error):
             log.error("Server error: %s", x.message)
