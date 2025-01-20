@@ -97,7 +97,8 @@ class RcRunner:
         for target_set in name_to_target_set.values():
             self._run_target_set_jobs(target_set)
         self._report_traces()
-        self._report_deps(target_set)
+        for name, target_set in name_to_target_set.items():
+            self._report_deps(name, target_set)
         rc_log.info("Diffs:\n")
         name_to_output_stats = {}
         for name, target_set in name_to_target_set.items():
@@ -136,12 +137,13 @@ class RcRunner:
             for target, result in self._incomplete.items():
                 rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
 
-    def _report_deps(self, target_set):
+    def _report_deps(self, name, target_set):
         for target in target_set:
             if self._options.verbose or not target.completed and target not in self._failures:
                 rc_log.info(
-                    "%s: %s, missing: %s, wants: %s",
+                    "%s: %s:%s, missing: %s, wants: %s",
                     "Failed" if target in self._failures else "Completed" if target.completed else "Not completed",
+                    name,
                     target.name,
                     ", ".join(dep.name for dep in target.deps if not dep.completed),
                     ", ".join(dep.name for dep in target.deps),
