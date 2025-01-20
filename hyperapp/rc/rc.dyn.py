@@ -251,15 +251,9 @@ def _parse_args(sys_argv):
     )
 
 
-def compile_resources(
-        system, layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
-        job_cache, name_to_project, pool, targets, options):
-
-    rc_config = system.config_to_data(layer_config_templates['rc'])
-
-    job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
-    cached_count = Counter()
-
+def build_target_sets(
+        layer_config_templates, config_ctl, ctr_from_template_creg,
+        rc_config, job_cache, cached_count, name_to_project):
     name_to_target_project = {}
     name_to_target_set = {}
     for name, project in name_to_project.items():
@@ -284,9 +278,23 @@ def compile_resources(
         target_set.post_init()
         name_to_target_set[name] = target_set
         name_to_target_project[name] = target_project
+    return name_to_target_set
 
+
+def compile_resources(
+        system, layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
+        job_cache, name_to_project, pool, targets, options):
+    rc_config = system.config_to_data(layer_config_templates['rc'])
+    job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
+    cached_count = Counter()
+
+    name_to_target_set = build_target_sets(
+        layer_config_templates, config_ctl, ctr_from_template_creg,
+        rc_config, job_cache, cached_count, name_to_project)
     if options.check:
-        target_set.check_statuses()
+        for target_set in name_to_target_set.values():
+            target_set.check_statuses()
+
     filter = Filter(target_set, targets)
     runner = RcRunner(rc_job_result_creg, options, filter, pool, job_cache, cached_count)
     try:
