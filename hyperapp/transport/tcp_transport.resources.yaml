@@ -124,5 +124,4 @@ definitions:
     value:
       t: legacy_type.tcp_transport:route
       function: Route.from_piece
-      service_params:
-      - tcp_client_factory
+      service_params: []

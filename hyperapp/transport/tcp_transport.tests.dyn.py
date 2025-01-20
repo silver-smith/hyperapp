@@ -13,9 +13,9 @@ from .tested.code import tcp_transport
 log = logging.getLogger(__name__)
 
 
-def test_route_from_piece():
+def test_route_from_piece(tcp_client_factory):
     piece = htypes.tcp_transport.route(host='', port=0)
-    route = tcp_transport.Route.from_piece(piece)
+    route = tcp_transport.Route.from_piece(piece, tcp_client_factory)
     assert isinstance(route, tcp_transport.Route)
 
 
