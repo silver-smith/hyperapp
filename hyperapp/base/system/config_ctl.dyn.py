@@ -14,6 +14,10 @@ class ConfigCtl(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def to_data(self, config):
+        pass
+
+    @abstractmethod
     def merge(self, dest, src):
         pass
 
@@ -37,6 +41,12 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
             item = self._cfg_item_creg.invite(item_ref)
             self.update_config(config_template, item)
         return config_template
+
+    def to_data(self, config):
+        return self.item_pieces_to_data([
+            self.item_piece(value)
+            for value in config.values()
+            ])
 
     @abstractmethod
     def empty_config_template(self):

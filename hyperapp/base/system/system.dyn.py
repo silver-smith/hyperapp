@@ -13,7 +13,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.config_ctl import DictConfigCtl, merge_system_config_pieces
+from .code.config_ctl import DictConfigCtl, merge_system_config_pieces, service_pieces_to_config
 
 log = logging.getLogger(__name__)
 
@@ -324,6 +324,13 @@ class System:
         config = ctl.resolve(self, 'pyobj_creg', config_template)
         pyobj_creg.update_config(config)
 
+    def config_to_data(self, service_to_config):
+        service_to_config_piece = {}
+        for service_name, config in service_to_config.items():
+            ctl = self._config_ctl[service_name]
+            service_to_config_piece[service_name] = ctl.to_data(config)
+        return service_pieces_to_config(service_to_config_piece)
+        
     @property
     def _configs(self):
         if self._configs_cache is not None:
