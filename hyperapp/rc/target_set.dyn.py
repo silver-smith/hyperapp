@@ -55,13 +55,6 @@ class TargetSet:
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
 
-    def add_or_get(self, target):
-        try:
-            return self._name_to_target[target.name]
-        except KeyError:
-            self.add(target)
-            return target
-
     def full_module_name(self, code_name):
         return self._stem_to_python_module_src[code_name].name
 
@@ -214,7 +207,8 @@ class TargetFactory:
             pass
         import_target = self.python_module_imported_by_src(src)
         target = import_target.create_resource_target(self._target_set._resource_dir)
-        return self._target_set.add_or_get(target)
+        self._target_set.add(target)
+        return target
 
     def all_imports_known(self):
         return self._target_set[AllImportsKnownTarget.name]
