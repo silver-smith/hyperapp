@@ -18,6 +18,7 @@ class TargetSet:
 
     def __init__(self, resource_dir, types, imports):
         self._resource_dir = resource_dir
+        self._imports = imports  # TargetSet set.
         self._types = types
         self._name_to_full_name = {}
         self._full_name_to_name = {}
@@ -163,6 +164,14 @@ class TargetSet:
     @property
     def count(self):
         return len(self._name_to_target)
+
+    @property
+    def ready_req_to_resources(self):
+        req_to_resources = {}
+        for target_set in self._imports:
+            req_to_resources.update(target_set.ready_req_to_resources)
+        req_to_resources.update(self.factory.config_resource().ready_req_to_resources)
+        return req_to_resources
 
     @property
     def factory(self):

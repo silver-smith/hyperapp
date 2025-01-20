@@ -87,12 +87,11 @@ class TestCachedTarget(Target):
 
 class TestJobTarget(Target):
 
-    def __init__(self, rc_config, target_set, types, config_tgt, import_tgt, test_target, src, function, req_to_target,
+    def __init__(self, rc_config, target_set, types, import_tgt, test_target, src, function, req_to_target,
                  tested_imports, fixtures_deps, tested_deps, idx):
         self._rc_config = rc_config
         self._target_set = target_set
         self._types = types
-        self._config_tgt = config_tgt
         self._import_tgt = import_tgt
         self._test_target = test_target
         self._src = src
@@ -187,7 +186,7 @@ class TestJobTarget(Target):
         for target in self._target_set.completed_python_module_resources:
             req = PythonModuleReq(self._src.name, target.code_name)
             result[req] = {ImportResource(self._src.name, ['code', target.code_name], target.python_module_piece)}
-        for req, resource_set in self._config_tgt.ready_req_to_resources().items():
+        for req, resource_set in self._target_set.ready_req_to_resources.items():
             result[req] |= resource_set
         return dict(result)
 
@@ -209,13 +208,12 @@ class TestJobTarget(Target):
 
 class TestTarget(Target):
 
-    def __init__(self, rc_config, cache, cached_count, target_set, types, config_tgt, import_tgt, python_module_src, function, req_to_target):
+    def __init__(self, rc_config, cache, cached_count, target_set, types, import_tgt, python_module_src, function, req_to_target):
         self._rc_config = rc_config
         self._cache = cache
         self._cached_count = cached_count
         self._target_set = target_set
         self._types = types
-        self._config_tgt = config_tgt
         self._import_tgt = import_tgt
         self._src = python_module_src
         self._function = function
@@ -274,7 +272,6 @@ class TestTarget(Target):
             rc_config=self._rc_config,
             target_set=self._target_set,
             types=self._types,
-            config_tgt=self._config_tgt,
             import_tgt=self._import_tgt,
             test_target=self,
             src=self._src,

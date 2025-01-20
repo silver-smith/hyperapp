@@ -41,6 +41,7 @@ class ConfigResourceTarget(Target):
         if req:
             self._req_to_service_target[req] = (service, item_tgt)
 
+    @property
     def ready_req_to_resources(self):
         req_to_resources = defaultdict(set)
         for req, (service_name, target) in self._req_to_service_target.items():
