@@ -1,3 +1,11 @@
+from python_src import python_module_src
+
+
 req_to_resource = record:
   requirement: ref
   resource: ref
+
+job_base = record:
+  python_module: python_module_src
+  idx: int
+  req_to_resource: req_to_resource list

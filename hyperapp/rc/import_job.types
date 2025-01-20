@@ -1,11 +1,7 @@
-from python_src import python_module_src
-from system_job import req_to_resource
+from system_job import req_to_resource, job_base
 
 
-job = record:
-  python_module: python_module_src
-  idx: int
-  req_to_resource: req_to_resource list
+job = record(job_base)
 
 function = record:
   name: string
