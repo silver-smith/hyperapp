@@ -50,6 +50,7 @@ definitions:
       - targets
       - options
       service_params:
+      - system
       - layer_config_templates
       - config_ctl
       - ctr_from_template_creg

@@ -266,14 +266,15 @@ class ImportJob(SystemJob):
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg, rc_resource_creg):
         return cls(
+            rc_config=piece.rc_config,
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
             req_to_resources=cls.req_to_resources_from_pieces(
                 rc_requirement_creg, rc_resource_creg, piece.req_to_resource),
             )
 
-    def __init__(self, python_module_src, idx, req_to_resources):
-        super().__init__(python_module_src, req_to_resources)
+    def __init__(self, rc_config, python_module_src, idx, req_to_resources):
+        super().__init__(rc_config, python_module_src, req_to_resources)
         self._idx = idx
 
     def __repr__(self):
@@ -282,6 +283,7 @@ class ImportJob(SystemJob):
     @cached_property
     def piece(self):
         return htypes.import_job.job(
+            rc_config=self._rc_config,
             python_module=self._src.piece,
             idx=self._idx,
             req_to_resource=self._req_to_resource_pieces,

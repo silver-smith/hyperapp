@@ -252,8 +252,10 @@ def _parse_args(sys_argv):
 
 
 def compile_resources(
-        layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
+        system, layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
         job_cache, name_to_project, pool, targets, options):
+
+    rc_config = system.config_to_data(layer_config_templates['rc'])
 
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
@@ -275,8 +277,8 @@ def compile_resources(
         target_project = project_factory(name, imports=project_imports)
         target_project.load_types(root_dir, path_to_text)
         target_set = create_target_set(
-            config_ctl, ctr_from_template_creg, layer_config_templates, root_dir, job_cache, cached_count,
-            target_project, path_to_text, target_set_imports)
+            config_ctl, ctr_from_template_creg, layer_config_templates, rc_config,
+            root_dir, job_cache, cached_count, target_project, path_to_text, target_set_imports)
         if name == 'base':
             add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, project)
         target_set.post_init()

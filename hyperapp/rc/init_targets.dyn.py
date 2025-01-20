@@ -48,7 +48,7 @@ def add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templ
             _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
 
 
-def create_python_modules(root_dir, cache, cached_count, target_set, prefix, path_to_text, target_project, all_imports_known_tgt, config_tgt):
+def create_python_modules(rc_config, root_dir, cache, cached_count, target_set, prefix, path_to_text, target_project, all_imports_known_tgt, config_tgt):
     import_target_list = []
     for path, text in path_to_text.items():
         ext = '.dyn.py'
@@ -73,14 +73,14 @@ def create_python_modules(root_dir, cache, cached_count, target_set, prefix, pat
                     src, target_project, resource_dir, resource_text)
                 target_set.add(resource_tgt)
                 continue
-        import_tgt = ImportTarget(cache, cached_count, target_set, target_project, target_project.types, config_tgt, all_imports_known_tgt, src)
+        import_tgt = ImportTarget(rc_config, cache, cached_count, target_set, target_project, target_project.types, config_tgt, all_imports_known_tgt, src)
         target_set.add(import_tgt)
         import_target_list.append(import_tgt)
     return import_target_list
 
 
 def create_target_set(
-        config_ctl, ctr_from_template_creg, layer_config_templates,
+        config_ctl, ctr_from_template_creg, layer_config_templates, rc_config,
         root_dir, cache, cached_count, target_project, path_to_text, imports):
     target_set = TargetSet(root_dir, target_project.types, imports)
     all_imports_known_tgt = AllImportsKnownTarget()
@@ -88,7 +88,7 @@ def create_target_set(
     config_tgt = ConfigResourceTarget(target_project, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
     target_set.add(config_tgt)
     import_target_list = create_python_modules(
-        root_dir, cache, cached_count, target_set, target_project.name, path_to_text, target_project, all_imports_known_tgt, config_tgt)
+        rc_config, root_dir, cache, cached_count, target_set, target_project.name, path_to_text, target_project, all_imports_known_tgt, config_tgt)
     for import_tgt in import_target_list:
         import_tgt.create_job_target()
     return target_set

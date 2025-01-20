@@ -87,8 +87,9 @@ class TestCachedTarget(Target):
 
 class TestJobTarget(Target):
 
-    def __init__(self, target_set, types, config_tgt, import_tgt, test_target, src, function, req_to_target,
+    def __init__(self, rc_config, target_set, types, config_tgt, import_tgt, test_target, src, function, req_to_target,
                  tested_imports, fixtures_deps, tested_deps, idx):
+        self._rc_config = rc_config
         self._target_set = target_set
         self._types = types
         self._config_tgt = config_tgt
@@ -167,7 +168,7 @@ class TestJobTarget(Target):
         self._picked_import_from_import_tgt.add(fixtures_import_tgt)
 
     def make_job(self):
-        return TestJob(self._src, self._idx, self._req_to_resources, self._function.name)
+        return TestJob(self._rc_config, self._src, self._idx, self._req_to_resources, self._function.name)
 
     @property
     def _req_to_resources(self):
@@ -208,7 +209,8 @@ class TestJobTarget(Target):
 
 class TestTarget(Target):
 
-    def __init__(self, cache, cached_count, target_set, types, config_tgt, import_tgt, python_module_src, function, req_to_target):
+    def __init__(self, rc_config, cache, cached_count, target_set, types, config_tgt, import_tgt, python_module_src, function, req_to_target):
+        self._rc_config = rc_config
         self._cache = cache
         self._cached_count = cached_count
         self._target_set = target_set
@@ -269,6 +271,7 @@ class TestTarget(Target):
         if req_to_target is None:
             req_to_target = self._req_to_target
         target = TestJobTarget(
+            rc_config=self._rc_config,
             target_set=self._target_set,
             types=self._types,
             config_tgt=self._config_tgt,
