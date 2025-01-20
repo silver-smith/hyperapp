@@ -1,12 +1,11 @@
 from collections import defaultdict
 from operator import attrgetter
 
-from . import htypes
 from .services import (
     mosaic,
     resource_module_factory,
     )
-from .code.config_ctl import service_pieces_to_config
+from .code.config_ctl import item_pieces_to_data, service_pieces_to_config
 from .code.config_item_resource import ConfigItemResource
 from .code.rc_target import Target
 
@@ -67,21 +66,12 @@ class ConfigResourceTarget(Target):
             if not item_list:
                 continue
             sorted_item_list = sorted(item_list, key=self._sort_key)
-            service_config = self._items_to_data(sorted_item_list)
+            service_config = item_pieces_to_data(sorted_item_list)
             resource_module[service_name] = service_config
             service_to_config_piece[service_name] = service_config
         config = service_pieces_to_config(service_to_config_piece)
         resource_module['config'] = config
         return (self._path, resource_module.as_text)
-
-    @staticmethod
-    def _items_to_data(item_list):
-        return htypes.system.item_list_config(
-            items=tuple(
-                mosaic.put(item)
-                for item in item_list
-                ),
-            )
 
     def _sort_key(self, resource):
         return self._custom_resource_registry.reverse_resolve(resource)
