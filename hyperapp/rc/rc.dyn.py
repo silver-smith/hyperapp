@@ -11,6 +11,7 @@ from hyperapp.boot.project import load_texts
 from . import htypes
 from .services import (
     hyperapp_dir,
+    load_projects_from_file,
     project_factory,
     web,
     )
@@ -28,7 +29,7 @@ JOB_CACHE_PATH = Path.home() / '.local/share/hyperapp/rc-job-cache.cdr'
 
 
 Options = namedtuple('Options', 'clean timeout verbose fail_fast write show_diffs show_incomplete_traces check')
-RcArgs = namedtuple('RcArgs', 'targets process_count options')
+RcArgs = namedtuple('RcArgs', 'projects targets process_count options')
 
 
 @dataclass
@@ -222,6 +223,7 @@ class RcRunner:
 def _parse_args(sys_argv):
     parser = argparse.ArgumentParser(description='Compile resources')
     parser.add_argument('--root-dir', type=Path, nargs='*', help="Additional resource root dirs")
+    parser.add_argument('--projects', '-p', nargs='*', help="Select projects to build. By default, build all")
     parser.add_argument('--clean', '-c', action='store_true', help="Clean build: do not use cached job results")
     parser.add_argument('--workers', type=int, default=1, help="Worker process count to start and use")
     parser.add_argument('--timeout', type=int, help="Base timeout for RPC calls and everything (seconds). Default is none")
@@ -245,6 +247,7 @@ def _parse_args(sys_argv):
         check=args.check,
         )
     return RcArgs(
+        projects=args.projects,
         targets=args.targets,
         process_count=args.workers,
         options=options,
@@ -253,10 +256,19 @@ def _parse_args(sys_argv):
 
 def build_target_sets(
         layer_config_templates, config_ctl, ctr_from_template_creg,
-        rc_config, job_cache, cached_count, name_to_project):
-    name_to_target_project = {}
+        rc_config, job_cache, cached_count, only_target_projects, name_to_project):
+    base_project = name_to_project['base']
+
+    name_to_target_project = load_projects_from_file(hyperapp_dir / 'projects.yaml')
+    name_to_target_project = {
+        name: project
+        for name, project
+        in name_to_target_project.items()
+        if not only_target_projects or name in only_target_projects
+        }
+
     name_to_target_set = {}
-    for name, project in name_to_project.items():
+    for name, project in name_to_target_project.items():
         target_set_imports = {
             name_to_target_set[p.name]
             for p in project.imports
@@ -274,7 +286,7 @@ def build_target_sets(
             config_ctl, ctr_from_template_creg, layer_config_templates, rc_config,
             root_dir, job_cache, cached_count, target_project, path_to_text, target_set_imports)
         if name == 'base':
-            add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, project)
+            add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, base_project)
         target_set.post_init()
         name_to_target_set[name] = target_set
         name_to_target_project[name] = target_project
@@ -283,14 +295,14 @@ def build_target_sets(
 
 def compile_resources(
         system, layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
-        job_cache, name_to_project, pool, targets, options):
+        job_cache, name_to_project, pool, only_target_projects, targets, options):
     rc_config = system.config_to_data(layer_config_templates['rc'])
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
 
     name_to_target_set = build_target_sets(
         layer_config_templates, config_ctl, ctr_from_template_creg,
-        rc_config, job_cache, cached_count, name_to_project)
+        rc_config, job_cache, cached_count, only_target_projects, name_to_project)
     if options.check:
         for target_set in name_to_target_set.values():
             target_set.check_statuses()
@@ -321,4 +333,4 @@ def rc_main(process_pool_running, compile_resources, name_to_project, sys_argv):
     register_reconstructors()
 
     with process_pool_running(args.process_count, args.options.timeout) as pool:
-        compile_resources(name_to_project, pool, args.targets, args.options)
+        compile_resources(name_to_project, pool, args.projects, args.targets, args.options)

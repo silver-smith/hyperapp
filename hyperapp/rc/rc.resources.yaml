@@ -1,5 +1,6 @@
 import:
 - builtins:hyperapp_dir.service
+- builtins:load_projects_from_file.service
 - builtins:project_factory.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -24,6 +25,7 @@ definitions:
       import_list:
         htypes.rpc.server_error: legacy_type.rpc:server_error
         services.hyperapp_dir: builtins:hyperapp_dir.service
+        services.load_projects_from_file: builtins:load_projects_from_file.service
         services.project_factory: builtins:project_factory.service
         services.web: builtins:web.service
         code.init_targets: rc.init_targets:init_targets.module
