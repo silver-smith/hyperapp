@@ -14,9 +14,23 @@ def _sorted_targets(targets):
     return sorted(targets, key=attrgetter('name'))
 
 
+class GlobalTargets:
+
+    def __init__(self):
+        self._name_to_target = {}
+
+    def __getitem__(self, name):
+        return self._name_to_target[name]
+
+    def add(self, target):
+        assert target.name not in self._name_to_target
+        self._name_to_target[target.name] = target
+
+
 class TargetSet:
 
-    def __init__(self, resource_dir, types, imports):
+    def __init__(self, globals_targets, resource_dir, types, imports):
+        self._globals_targets = globals_targets
         self._resource_dir = resource_dir
         self._imports = imports  # TargetSet set.
         self._types = types
@@ -31,6 +45,10 @@ class TargetSet:
 
     def __getitem__(self, name):
         return self._name_to_target[name]
+
+    @property
+    def globals(self):
+        return self._globals_targets
 
     @property
     def count(self):
@@ -232,29 +250,29 @@ class TargetFactory:
     def config_item_ready(self, service_name, key):
         target_name = ConfigItemReadyTarget.target_name(service_name, key)
         try:
-            return self._target_set[target_name]
+            return self._target_set.globals[target_name]
         except KeyError:
             pass
         all_imports_known_tgt = self.all_imports_known()
         target = ConfigItemReadyTarget(self._target_set, service_name, key, all_imports_known_tgt)
-        self._target_set.add(target)
+        self._target_set.globals.add(target)
         return target
 
     def config_item_resolved(self, service_name, key):
         target_name = ConfigItemResolvedTarget.target_name(service_name, key)
         try:
-            return self._target_set[target_name]
+            return self._target_set.globals[target_name]
         except KeyError:
             pass
         ready_tgt = self.config_item_ready(service_name, key)
         target = ConfigItemResolvedTarget(self._target_set, service_name, key, ready_tgt)
-        self._target_set.add(target)
+        self._target_set.globals.add(target)
         return target
 
     def config_item_complete(self, service_name, key, req=None):
         target_name = ConfigItemCompleteTarget.target_name(service_name, key)
         try:
-            return self._target_set[target_name]
+            return self._target_set.globals[target_name]
         except KeyError:
             pass
         if service_name == 'system':
@@ -267,7 +285,7 @@ class TargetFactory:
             service_cfg_item_complete_tgt = self.config_item_complete('system', service_name, ServiceReq(service_name))
         resolved_tgt = self.config_item_resolved(service_name, key)
         target = ConfigItemCompleteTarget(self._target_set, service_name, key, resolved_tgt, service_cfg_item_complete_tgt)
-        self._target_set.add(target)
+        self._target_set.globals.add(target)
         config_tgt = self.config_resource()
         config_tgt.add_item(service_name, target, req)
         return target

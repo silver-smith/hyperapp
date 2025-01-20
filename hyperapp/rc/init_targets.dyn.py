@@ -81,8 +81,8 @@ def create_python_modules(rc_config, root_dir, cache, cached_count, target_set, 
 
 def create_target_set(
         config_ctl, ctr_from_template_creg, layer_config_templates, rc_config,
-        root_dir, cache, cached_count, target_project, path_to_text, imports):
-    target_set = TargetSet(root_dir, target_project.types, imports)
+        root_dir, cache, cached_count, globals_targets, target_project, path_to_text, imports):
+    target_set = TargetSet(globals_targets, root_dir, target_project.types, imports)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
     config_tgt = ConfigResourceTarget(target_project, resource_dir=root_dir, module_name='config', path='config.resources.yaml')

@@ -18,6 +18,7 @@ from .services import (
 from .code.reconstructors import register_reconstructors
 from .code.rc_constants import JobStatus
 from .code.job_cache import JobCache
+from .code.target_set import GlobalTargets
 from .code.init_targets import add_base_target_items, create_target_set
 from .code.rc_filter import Filter
 
@@ -269,6 +270,7 @@ def build_target_sets(
         if not only_target_projects or name in only_target_projects
         }
 
+    globals_targets = GlobalTargets()
     name_to_target_set = {}
     for name, project in name_to_target_project.items():
         target_set_imports = {
@@ -286,7 +288,7 @@ def build_target_sets(
         target_project.load_types(root_dir, path_to_text)
         target_set = create_target_set(
             config_ctl, ctr_from_template_creg, layer_config_templates, rc_config,
-            root_dir, job_cache, cached_count, target_project, path_to_text, target_set_imports)
+            root_dir, job_cache, cached_count, globals_targets, target_project, path_to_text, target_set_imports)
         if name == 'base':
             add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, base_project)
         target_set.post_init()
