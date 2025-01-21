@@ -80,6 +80,12 @@ class TargetSet:
 
     def find_by_name(self, name):
         try:
+            return self.try_find_by_name(name)
+        except KeyError:
+            raise RuntimeError(f"Unknown module: {name!r}")
+
+    def try_find_by_name(self, name):
+        try:
             return (self, self._name_to_full_name[name])
         except KeyError:
             for target_set in self._imports:
