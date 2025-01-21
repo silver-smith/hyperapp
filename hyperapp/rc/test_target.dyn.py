@@ -142,8 +142,7 @@ class TestJobTarget(Target):
             return
         self._tested_deps |= tested_import_tgt.deps
         for import_req in tested_import_tgt.import_requirements:
-            if (isinstance(import_req, ImportPythonModuleReq)
-                    and self._target_set.full_module_name(import_req.code_name) in self._tested_modules):
+            if self._is_my_tested_module_req(import_req):
                 # Tested module imported from another tested module.
                 req = import_req
             else:
@@ -157,14 +156,18 @@ class TestJobTarget(Target):
         if fixtures_import_tgt in self._picked_import_from_import_tgt:
             return
         for import_req in fixtures_import_tgt.import_requirements:
-            if (isinstance(import_req, ImportPythonModuleReq)
-                    and self._target_set.full_module_name(import_req.code_name) in self._tested_modules):
+            if self._is_my_tested_module_req(import_req):
                 # Tested module imported from another tested module.
                 req = import_req
             else:
                 req = import_req.to_test_req()
             self._req_to_target[req] = req.get_target(self._target_set.factory)
         self._picked_import_from_import_tgt.add(fixtures_import_tgt)
+
+    def _is_my_tested_module_req(self, req):
+        if not isinstance(req, ImportPythonModuleReq):
+            return False
+        return self._target_set.full_module_name(req.code_name) in self._tested_modules
 
     def make_job(self):
         return TestJob(self._rc_config, self._src, self._idx, self._req_to_resources, self._function.name)
