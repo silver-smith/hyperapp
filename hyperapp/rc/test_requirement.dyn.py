@@ -41,9 +41,9 @@ class TestedCodeReq(Requirement):
 
     def get_target(self, target_factory):
         try:
-            return target_factory.python_module_imported_by_code_name(self.code_name)
+            return target_factory.pick_module_imported_by_code_name(self.code_name)
         except KeyError:
-            target = target_factory.python_module_resource_by_code_name(self.code_name)
+            target = target_factory.pick_python_module_resource_by_code_name(self.code_name)
             assert target.is_manual
             return target
 
@@ -52,12 +52,12 @@ class TestedCodeReq(Requirement):
         return True
 
     def apply_tests_import(self, import_tgt, target_set):
-        tested_resource_tgt = target_set.factory.python_module_resource_by_code_name(self.code_name)
+        tested_resource_tgt = target_set.factory.pick_python_module_resource_by_code_name(self.code_name)
         if not tested_resource_tgt.is_manual:
             tested_resource_tgt.add_tests_import(import_tgt, target_set)
 
     def apply_test_target(self, target, test_target, target_set):
-        tested_resource_tgt = target_set.factory.python_module_resource_by_code_name(self.code_name)
+        tested_resource_tgt = target_set.factory.pick_python_module_resource_by_code_name(self.code_name)
         if not tested_resource_tgt.is_manual:
             tested_resource_tgt.add_test(test_target, target_set)
 
@@ -108,7 +108,7 @@ class FixturesModuleReq(Requirement):
         return htypes.test_target.fixtures_module_req(self.import_path, self.code_name)
 
     def get_target(self, target_factory):
-        return target_factory.python_module_imported_by_code_name(self.code_name)
+        return target_factory.pick_module_imported_by_code_name(self.code_name)
 
     @property
     def is_test_requirement(self):

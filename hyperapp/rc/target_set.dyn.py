@@ -78,6 +78,17 @@ class TargetSet:
     def full_module_name(self, name):
         return self._name_to_full_name[name]
 
+    def find_by_name(self, name):
+        try:
+            return (self, self._name_to_full_name[name])
+        except KeyError:
+            for target_set in self._imports:
+                try:
+                    return target_set.find_by_name(name)
+                except KeyError:
+                    pass
+        raise RuntimeError(f"No module {name!r} is found")
+
     @property
     def _completed_targets(self):
         return set(self.iter_completed())
@@ -224,9 +235,9 @@ class TargetFactory:
         self._target_set.add(target)
         return target
 
-    def python_module_resource_by_code_name(self, code_name):
-        full_name = self._target_set.full_module_name(code_name)
-        return self.python_module_resource_by_module_name(full_name)
+    def pick_python_module_resource_by_code_name(self, code_name):
+        target_set, full_name = self._target_set.find_by_name(code_name)
+        return target_set.factory.python_module_resource_by_module_name(full_name)
 
     def python_module_resource_by_module_name(self, module_name):
         target_name = PythonModuleResourceTarget.target_name_for_module_name(module_name)
@@ -246,9 +257,9 @@ class TargetFactory:
         target_name = ImportTarget.name_for_module_name(module_name)
         return self._target_set[target_name]
 
-    def python_module_imported_by_code_name(self, code_name):
-        full_name = self._target_set.full_module_name(code_name)
-        return self.python_module_imported_by_module_name(full_name)
+    def pick_module_imported_by_code_name(self, code_name):
+        target_set, full_name = self._target_set.find_by_name(code_name)
+        return target_set.factory.python_module_imported_by_module_name(full_name)
 
     def config_item_ready(self, service_name, key):
         target_name = ConfigItemReadyTarget.target_name(service_name, key)

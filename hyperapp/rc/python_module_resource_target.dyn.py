@@ -47,9 +47,9 @@ class ImportPythonModuleReq(PythonModuleReqBase):
 
     def get_target(self, target_factory):
         try:
-            return target_factory.python_module_imported_by_code_name(self.code_name)
+            return target_factory.pick_module_imported_by_code_name(self.code_name)
         except KeyError:
-            target = target_factory.python_module_resource_by_code_name(self.code_name)
+            target = target_factory.pick_python_module_resource_by_code_name(self.code_name)
             assert target.is_manual
             return target
 
@@ -67,7 +67,7 @@ class PythonModuleReq(PythonModuleReqBase):
             )
 
     def get_target(self, target_factory):
-        return target_factory.python_module_resource_by_code_name(self.code_name)
+        return target_factory.pick_python_module_resource_by_code_name(self.code_name)
 
     def to_import_req(self):
         return ImportPythonModuleReq(self.required_by_module_name, self.code_name)
