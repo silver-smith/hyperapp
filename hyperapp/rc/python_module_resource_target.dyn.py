@@ -67,7 +67,10 @@ class PythonModuleReq(PythonModuleReqBase):
             )
 
     def get_target(self, target_factory):
-        return target_factory.pick_python_module_resource_by_code_name(self.code_name)
+        try:
+            return target_factory.pick_python_module_resource_by_code_name(self.code_name)
+        except KeyError as x:
+            raise RuntimeError(f"{self.required_by_module_name}: Attempt to import unknown code module: {self.code_name!r}")
 
     def to_import_req(self):
         return ImportPythonModuleReq(self.required_by_module_name, self.code_name)
