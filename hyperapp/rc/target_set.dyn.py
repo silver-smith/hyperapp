@@ -188,7 +188,10 @@ class TargetSet:
 
     @property
     def completed_python_module_resources(self):
-        return [
+        resources = []
+        for target_set in self._imports:
+            resources += target_set.completed_python_module_resources
+        return resources + [
             tgt for tgt in self._name_to_target.values()
             if isinstance(tgt, PythonModuleResourceTarget) and tgt.completed
             ]
