@@ -202,21 +202,21 @@ class RcRunner:
                     stdout=subprocess.PIPE,
                     )
                 if p.returncode == 0:
-                    rc_log.debug("%s: No diffs", target.name)
+                    rc_log.debug("%s: No diffs", resource_path)
                 else:
                     diffs = p.stdout.decode()
                     line_count = len(diffs.splitlines())
                     if self._options.show_diffs:
-                        rc_log.info("%s: Diff %d lines\n%s", target.name, line_count, diffs)
+                        rc_log.info("%s: Diff %d lines\n%s", resource_path, line_count, diffs)
                     else:
-                        rc_log.info("%s: Diff %d lines", target.name, line_count)
+                        rc_log.info("%s: Diff %d lines", resource_path, line_count)
                     self._write(path, text)
                     changed += 1
             else:
                 if self._options.show_diffs:
-                    rc_log.info("%s: New file, %d lines\n%s", target.name, len(text.splitlines()), text)
+                    rc_log.info("%s: New file, %d lines\n%s", resource_path, len(text.splitlines()), text)
                 else:
-                    rc_log.info("%s: New file, %d lines", target.name, len(text.splitlines()))
+                    rc_log.info("%s: New file, %d lines", resource_path, len(text.splitlines()))
                 self._write(path, text)
                 changed += 1
             total += 1
