@@ -87,7 +87,7 @@ class TargetSet:
                     return target_set.find_by_name(name)
                 except KeyError:
                     pass
-        raise RuntimeError(f"No module {name!r} is found")
+        raise KeyError(name)
 
     @property
     def _completed_targets(self):
