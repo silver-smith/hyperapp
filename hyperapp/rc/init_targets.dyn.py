@@ -5,6 +5,7 @@ from hyperapp.boot.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (
     code_registry_ctr,
+    hyperapp_dir,
     web,
     )
 from .code.target_set import TargetSet
@@ -59,11 +60,11 @@ def create_python_modules(rc_config, root_dir, cache, cached_count, target_set, 
         name = parts[-1]
         full_name = prefix + '.' + stem.replace('/', '.')
         dir = '/'.join(parts[:-1])
-        resource_path = Path(dir) / f'{name}.resources.yaml'
+        resource_path = root_dir.joinpath(dir, f'{name}.resources.yaml').relative_to(hyperapp_dir)
         target_set.add_module_name(full_name, name)
         src = PythonModuleSrc(full_name, name, str(root_dir / path), resource_path, text)
         try:
-            resource_text = root_dir.joinpath(resource_path).read_text()
+            resource_text = hyperapp_dir.joinpath(resource_path).read_text()
         except FileNotFoundError:
             pass
         else:
@@ -85,7 +86,8 @@ def create_target_set(
     target_set = TargetSet(globals_targets, root_dir, target_project.types, imports)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
-    config_tgt = ConfigResourceTarget(target_project, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
+    path = root_dir.joinpath('config.resources.yaml').relative_to(hyperapp_dir)
+    config_tgt = ConfigResourceTarget(target_project, resource_dir=root_dir, module_name='config', path=path)
     target_set.add(config_tgt)
     import_target_list = create_python_modules(
         rc_config, root_dir, cache, cached_count, target_set, target_project.name, path_to_text, target_project, all_imports_known_tgt)
