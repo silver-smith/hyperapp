@@ -72,6 +72,9 @@ class TargetSet:
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
 
+    def adopt(self, target):
+        self.add(target)
+
     def full_module_name(self, name):
         return self._name_to_full_name[name]
 

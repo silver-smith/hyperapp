@@ -268,7 +268,7 @@ class ImportTarget(Target):
 
     def create_resource_target(self, resource_dir):
         return CompiledPythonModuleResourceTarget(
-            self._src, self._custom_resource_registry, resource_dir, self._types, self._all_imports_known_tgt, self)
+            self._target_set, self._src, self._custom_resource_registry, resource_dir, self._types, self._all_imports_known_tgt, self)
 
     def get_resource_target(self, target_factory):
         return target_factory.python_module_resource_by_module_name(self.module_name)

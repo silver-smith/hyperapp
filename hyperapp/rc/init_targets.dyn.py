@@ -70,7 +70,7 @@ def create_python_modules(rc_config, root_dir, cache, cached_count, target_set, 
             if not resource_text.startswith(AUTO_GEN_LINE):
                 resource_dir = root_dir / dir
                 resource_tgt = ManualPythonModuleResourceTarget(
-                    src, target_project, resource_dir, resource_text)
+                    target_set, src, target_project, resource_dir, resource_text)
                 target_set.add(resource_tgt)
                 continue
         import_tgt = ImportTarget(rc_config, cache, cached_count, target_set, target_project, target_project.types, all_imports_known_tgt, src)

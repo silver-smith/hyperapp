@@ -79,7 +79,8 @@ class PythonModuleResourceTarget(Target):
     def target_name_for_module_name(module_name):
         return f'resource/{module_name}'
 
-    def __init__(self, python_module_src):
+    def __init__(self, target_set, python_module_src):
+        self._target_set = target_set
         self._src = python_module_src
 
     @property
@@ -97,11 +98,15 @@ class PythonModuleResourceTarget(Target):
     def code_name(self):
         return self._src.stem
 
+    @property
+    def target_set(self):
+        return self._target_set
+
 
 class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
-    def __init__(self, python_module_src, custom_resource_registry, resource_dir, resource_text):
-        super().__init__(python_module_src)
+    def __init__(self, target_set, python_module_src, custom_resource_registry, resource_dir, resource_text):
+        super().__init__(target_set, python_module_src)
         self._resource_module = resource_module_factory(
             custom_resource_registry, self._src.name, resource_dir=resource_dir, text=resource_text)
         custom_resource_registry.set_module(self._src.name, self._resource_module)
@@ -126,8 +131,8 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
 class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
-    def __init__(self, python_module_src, custom_resource_registry, resource_dir, types, all_imports_known_tgt, import_tgt):
-        super().__init__(python_module_src)
+    def __init__(self, target_set, python_module_src, custom_resource_registry, resource_dir, types, all_imports_known_tgt, import_tgt):
+        super().__init__(target_set, python_module_src)
         self._types = types
         self._all_imports_known_tgt = all_imports_known_tgt
         self._import_tgt = import_tgt

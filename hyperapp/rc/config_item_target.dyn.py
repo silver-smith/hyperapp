@@ -47,6 +47,12 @@ class ConfigItemReadyTarget(Target):
     def set_provider(self, resource_tgt):
         self._provider_resource_tgt = resource_tgt
         self._import_tgt = resource_tgt.import_tgt
+        target_set = resource_tgt.target_set
+        resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._key)
+        complete_tgt = target_set.factory.config_item_complete(self._service_name, self._key)
+        target_set.adopt(self)
+        target_set.adopt(resolved_tgt)
+        target_set.adopt(complete_tgt)
         # for test_target in self._unresolved_in_tests:
         #     resource_tgt.add_test(test_target, target_set)
 
