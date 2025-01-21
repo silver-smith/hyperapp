@@ -219,6 +219,7 @@ class TestTarget(Target):
         self._function = function
         self._req_to_target = req_to_target
         self._current_job_target = None
+        self._test_target = None
         self._tested_imports = set()  # import targets being tested.
         self._fixtures_deps = set()  # import targets with fixtures.
         self._tested_deps = set()  # targets required by tested code targets.
