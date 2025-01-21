@@ -167,7 +167,12 @@ class TestJobTarget(Target):
     def _is_my_tested_module_req(self, req):
         if not isinstance(req, ImportPythonModuleReq):
             return False
-        return self._target_set.full_module_name(req.code_name) in self._tested_modules
+        target_set, module_name = self._target_set.find_by_name(req.code_name)
+        if module_name not in self._tested_modules:
+            return False
+        if target_set is not self._target_set:
+            raise RuntimeError(f"Test {self._src.name} attempts to test module {req.code_name} from another project")
+        return True
 
     def make_job(self):
         return TestJob(self._rc_config, self._src, self._idx, self._req_to_resources, self._function.name)
