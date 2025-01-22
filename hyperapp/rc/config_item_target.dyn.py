@@ -46,7 +46,11 @@ class ConfigItemReadyTarget(Target):
 
     def set_provider(self, resource_tgt):
         if self._provider_resource_tgt:
-            assert self._provider_resource_tgt is resource_tgt
+            if self._provider_resource_tgt is not resource_tgt:
+                raise RuntimeError(
+                    f"Configuration item {self._service_name}/{self._key} is provided by two different modules:"
+                    f" {self._provider_resource_tgt.module_name} and {resource_tgt.module_name}"
+                    )
             return
         self._provider_resource_tgt = resource_tgt
         self._import_tgt = resource_tgt.import_tgt
