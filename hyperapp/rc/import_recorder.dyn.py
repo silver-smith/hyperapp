@@ -64,6 +64,8 @@ class RecorderObject(_ImportsCollector):
 
     def __call__(self, *args, **kw):
         path = '.'.join(self._prefix)
+        if self._prefix and self._prefix[0] == 'htypes':
+            raise RuntimeError(f"Unknown type: {path}")
         raise IncompleteImportedObjectError(self._prefix, f"Attempt to use not-ready object {path} with: *{args}, **{kw}")
 
     def __mro_entries__(self, base):
