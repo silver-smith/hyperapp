@@ -6,7 +6,7 @@ from .tested.code import client
 
 
 def test_client(client_main):
-    project = None
+    name_to_project = None
     sys_argv = [
         '--clean',
         '--lcs-layers-path=/tmp/client-test-lcs-layers.yaml',
@@ -14,7 +14,7 @@ def test_client(client_main):
         '--test-mode',
         ]
     try:
-        client_main(project, sys_argv)
+        client_main(name_to_project, sys_argv)
     finally:
         app = QtWidgets.QApplication.instance()
         if app:
