@@ -34,7 +34,7 @@ definitions:
       object: BuiltinServiceReq
       attr_name: from_piece
 
-  builtin_service_builtin_service_req.actor-template:
+  builtin_service-builtin_service_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.builtin_service:builtin_service_req

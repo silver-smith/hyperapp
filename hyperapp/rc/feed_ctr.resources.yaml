@@ -42,7 +42,7 @@ definitions:
       object: ListFeedCtr
       attr_name: from_piece
 
-  feed_list_feed_ctr.actor-template:
+  feed-list_feed_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.feed:list_feed_ctr
@@ -61,7 +61,7 @@ definitions:
       object: IndexTreeFeedCtr
       attr_name: from_piece
 
-  feed_index_tree_feed_ctr.actor-template:
+  feed-index_tree_feed_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.feed:index_tree_feed_ctr

@@ -50,6 +50,16 @@ definitions:
     value:
       object: master_details.module
       attr_name: master_details
+  master_details-view-unwrap_master_details.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.master_details:view
+      command: unwrap_master_details.ui-command
+  master_details-view.view-template:
+    type: legacy_type.view:template
+    value:
+      t: legacy_type.master_details:view
+      system_fn: MasterDetailsView_from_piece.system-fn
   master_details.d:
     type: master_details_d
     value: {}
@@ -101,16 +111,6 @@ definitions:
       name: master_details_d
       base: null
       fields: {}
-  master_details_view.view-template:
-    type: legacy_type.view:template
-    value:
-      t: legacy_type.master_details:view
-      system_fn: MasterDetailsView_from_piece.system-fn
-  master_details_view_unwrap_master_details.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.master_details:view
-      command: unwrap_master_details.ui-command
   unwrap_master_details:
     type: legacy_type.builtin:attribute
     value:

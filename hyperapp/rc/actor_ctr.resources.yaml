@@ -42,7 +42,7 @@ definitions:
       object: ActorProbeCtr
       attr_name: from_piece
 
-  actor_resource_actor_probe_ctr.actor-template:
+  actor_resource-actor_probe_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.actor_resource:actor_probe_ctr
@@ -61,7 +61,7 @@ definitions:
       object: CoreActorTemplateCtr
       attr_name: from_template_piece
 
-  system_actor_template.actor-template:
+  system-actor_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.system:actor_template
@@ -80,7 +80,7 @@ definitions:
       object: ActorTemplateCtr
       attr_name: from_piece
 
-  actor_resource_actor_template_ctr.actor-template:
+  actor_resource-actor_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.actor_resource:actor_template_ctr

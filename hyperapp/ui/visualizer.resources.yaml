@@ -21,13 +21,13 @@ import:
 - legacy_type.text:edit_view
 - legacy_type.ui:model_view_layout_d
 definitions:
-  builtin_int.actor-template:
+  builtin-int.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.builtin:int
       function: int_layout
       service_params: []
-  builtin_string.actor-template:
+  builtin-string.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.builtin:string

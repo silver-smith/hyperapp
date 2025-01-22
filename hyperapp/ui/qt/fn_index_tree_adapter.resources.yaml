@@ -34,13 +34,13 @@ definitions:
         htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-  model_tree_ui_t.actor-template:
+  model-tree_ui_t.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.model:tree_ui_t
       function: tree_ui_type_layout
       service_params: []
-  tree_adapter_fn_index_tree_adapter.actor-template:
+  tree_adapter-fn_index_tree_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.tree_adapter:fn_index_tree_adapter

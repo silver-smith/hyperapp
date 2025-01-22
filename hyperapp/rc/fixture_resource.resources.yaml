@@ -34,7 +34,7 @@ definitions:
       object: ConfigFixtureResource
       attr_name: from_piece
 
-  fixture_resource_config_fixture_resource.actor-template:
+  fixture_resource-config_fixture_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.fixture_resource:config_fixture_resource

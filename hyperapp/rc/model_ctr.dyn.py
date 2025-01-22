@@ -82,7 +82,7 @@ class ModelCtr(ModuleCtr):
 
     @property
     def _resource_name(self):
-        return f'{self._model_t.module_name}_{self._model_t.name}'
+        return f'{self._model_t.module_name}-{self._model_t.name}'
 
     @property
     def _ui_t_name(self):

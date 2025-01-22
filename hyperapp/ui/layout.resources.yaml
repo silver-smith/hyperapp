@@ -72,6 +72,78 @@ definitions:
       - current_item
       - controller
       service_params: []
+  layout-command_list-add_view_command.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      command: add_view_command.model-command
+  layout-command_list-set_escape_shortcut.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      command: set_escape_shortcut.model-command
+  layout-command_list-set_shortcut.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      command: set_shortcut.model-command
+  layout-command_list.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.layout:command_item
+  layout-command_list.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: layout-command_list.list-ui-t
+      system_fn: layout-command_list.system-fn
+  layout-command_list.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      model: layout-command_list.model
+  layout-command_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: view_item_commands
+      ctx_params:
+      - piece
+      - controller
+      - lcs
+      - ctx
+      service_params: []
+  layout-view-enum_layout_tree_commands.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:view
+      command: enum_layout_tree_commands.model-command-enumerator
+  layout-view-open_view_item_commands.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:view
+      command: open_view_item_commands.model-command
+  layout-view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: layout-view.tree-ui-t
+      system_fn: layout-view.system-fn
+  layout-view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.layout:view
+      model: layout-view.model
+  layout-view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: layout_tree
+      ctx_params:
+      - piece
+      - parent
+      - controller
+      service_params: []
+  layout-view.tree-ui-t:
+    type: legacy_type.model:tree_ui_t
+    value:
+      item_t: legacy_type.layout:item
   layout.module:
     type: legacy_type.builtin:python_module
     value:
@@ -89,83 +161,11 @@ definitions:
         htypes.layout.view: legacy_type.layout:view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  layout_command_list.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.layout:command_item
-  layout_command_list.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: layout_command_list.list-ui-t
-      system_fn: layout_command_list.system-fn
-  layout_command_list.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.layout:command_list
-      model: layout_command_list.model
-  layout_command_list.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: view_item_commands
-      ctx_params:
-      - piece
-      - controller
-      - lcs
-      - ctx
-      service_params: []
-  layout_command_list_add_view_command.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.layout:command_list
-      command: add_view_command.model-command
-  layout_command_list_set_escape_shortcut.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.layout:command_list
-      command: set_escape_shortcut.model-command
-  layout_command_list_set_shortcut.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.layout:command_list
-      command: set_shortcut.model-command
   layout_tree:
     type: legacy_type.builtin:attribute
     value:
       object: layout.module
       attr_name: layout_tree
-  layout_view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: layout_view.tree-ui-t
-      system_fn: layout_view.system-fn
-  layout_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.layout:view
-      model: layout_view.model
-  layout_view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: layout_tree
-      ctx_params:
-      - piece
-      - parent
-      - controller
-      service_params: []
-  layout_view.tree-ui-t:
-    type: legacy_type.model:tree_ui_t
-    value:
-      item_t: legacy_type.layout:item
-  layout_view_enum_layout_tree_commands.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.layout:view
-      command: enum_layout_tree_commands.model-command-enumerator
-  layout_view_open_view_item_commands.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.layout:view
-      command: open_view_item_commands.model-command
   open_layout_tree:
     type: legacy_type.builtin:attribute
     value:

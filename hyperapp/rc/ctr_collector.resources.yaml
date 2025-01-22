@@ -49,7 +49,7 @@ definitions:
       object: MarkModuleCfgItem
       attr_name: from_piece
 
-  ctr_collector_mark_module_cfg_item.actor-template:
+  ctr_collector-mark_module_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.ctr_collector:mark_module_cfg_item
@@ -68,7 +68,7 @@ definitions:
       object: IgnoreModuleCfgItem
       attr_name: from_piece
 
-  ctr_collector_ignore_module_cfg_item.actor-template:
+  ctr_collector-ignore_module_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.ctr_collector:ignore_module_cfg_item

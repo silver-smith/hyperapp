@@ -39,7 +39,7 @@ definitions:
       object: ViewFactoryTemplateCtr
       attr_name: from_piece
 
-  view_factory_ctr_ctr.actor-template:
+  view_factory_ctr-ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.view_factory_ctr:ctr

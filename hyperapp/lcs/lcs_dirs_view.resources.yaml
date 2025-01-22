@@ -48,6 +48,33 @@ definitions:
     value:
       object: lcs_dirs_view.module
       attr_name: lcs_dirs_view
+  lcs_dirs_view-view-lcs_dirs_items.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_dirs_view:view
+      command: lcs_dirs_items.model-command
+  lcs_dirs_view-view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.lcs_dirs_view:item
+  lcs_dirs_view-view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: lcs_dirs_view-view.list-ui-t
+      system_fn: lcs_dirs_view-view.system-fn
+  lcs_dirs_view-view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.lcs_dirs_view:view
+      model: lcs_dirs_view-view.model
+  lcs_dirs_view-view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_dirs_view
+      ctx_params:
+      - piece
+      - lcs
+      service_params: []
   lcs_dirs_view.module:
     type: legacy_type.builtin:python_module
     value:
@@ -60,33 +87,6 @@ definitions:
         htypes.lcs_dirs_view.view: legacy_type.lcs_dirs_view:view
         htypes.lcs_view.view: legacy_type.lcs_view:view
         services.mosaic: builtins:mosaic.service
-  lcs_dirs_view_view.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.lcs_dirs_view:item
-  lcs_dirs_view_view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: lcs_dirs_view_view.list-ui-t
-      system_fn: lcs_dirs_view_view.system-fn
-  lcs_dirs_view_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.lcs_dirs_view:view
-      model: lcs_dirs_view_view.model
-  lcs_dirs_view_view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: lcs_dirs_view
-      ctx_params:
-      - piece
-      - lcs
-      service_params: []
-  lcs_dirs_view_view_lcs_dirs_items.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.lcs_dirs_view:view
-      command: lcs_dirs_items.model-command
   lcs_open_dirs:
     type: legacy_type.builtin:attribute
     value:
@@ -111,7 +111,7 @@ definitions:
       ctx_params:
       - piece
       service_params: []
-  lcs_view_view_lcs_open_dirs.command-cfg-item:
+  lcs_view-view-lcs_open_dirs.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.lcs_view:view

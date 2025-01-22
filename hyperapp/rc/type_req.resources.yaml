@@ -28,7 +28,7 @@ definitions:
       object: TypeReq
       attr_name: from_piece
 
-  type_resource_type_req.actor-template:
+  type_resource-type_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.type_resource:type_req

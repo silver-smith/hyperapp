@@ -47,7 +47,7 @@ definitions:
       object: ServiceProbeTemplate
       attr_name: from_piece
 
-  service_resource_service_probe_template.actor-template:
+  service_resource-service_probe_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:service_probe_template
@@ -66,7 +66,7 @@ definitions:
       object: ServiceProbeCtr
       attr_name: from_piece
 
-  service_resource_service_probe_ctr.actor-template:
+  service_resource-service_probe_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:service_probe_ctr

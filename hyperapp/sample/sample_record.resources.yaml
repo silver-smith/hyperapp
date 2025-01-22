@@ -41,6 +41,27 @@ definitions:
     value:
       object: sample_record.module
       attr_name: sample_record
+  sample_record-sample_record.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: sample_record-sample_record.record-ui-t
+      system_fn: sample_record-sample_record.system-fn
+  sample_record-sample_record.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.sample_record:sample_record
+      model: sample_record-sample_record.model
+  sample_record-sample_record.record-ui-t:
+    type: legacy_type.model:record_ui_t
+    value:
+      record_t: legacy_type.sample_record:item
+  sample_record-sample_record.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: sample_record
+      ctx_params:
+      - piece
+      service_params: []
   sample_record.module:
     type: legacy_type.builtin:python_module
     value:
@@ -50,24 +71,3 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.sample_record.item: legacy_type.sample_record:item
         htypes.sample_record.sample_record: legacy_type.sample_record:sample_record
-  sample_record_sample_record.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: sample_record_sample_record.record-ui-t
-      system_fn: sample_record_sample_record.system-fn
-  sample_record_sample_record.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.sample_record:sample_record
-      model: sample_record_sample_record.model
-  sample_record_sample_record.record-ui-t:
-    type: legacy_type.model:record_ui_t
-    value:
-      record_t: legacy_type.sample_record:item
-  sample_record_sample_record.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: sample_record
-      ctx_params:
-      - piece
-      service_params: []

@@ -62,6 +62,12 @@ definitions:
       service_params:
       - feed_factory
       - ui_model_command_items
+  identity_command-identity_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.identity_command:identity_command
+      function: UnboundIdentityModelCommand.from_piece
+      service_params: []
   identity_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -79,12 +85,11 @@ definitions:
         htypes.identity_command.identity_command: legacy_type.identity_command:identity_command
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  identity_command_identity_command.actor-template:
-    type: legacy_type.system:actor_template
+  model_commands-model-add_identity_command.command-cfg-item:
+    type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.identity_command:identity_command
-      function: UnboundIdentityModelCommand.from_piece
-      service_params: []
+      t: legacy_type.model_commands:model
+      command: add_identity_command.model-command
   model_commands-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -94,8 +99,3 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.command_list_model:item
-  model_commands_model_add_identity_command.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.model_commands:model
-      command: add_identity_command.model-command

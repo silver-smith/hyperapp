@@ -30,11 +30,23 @@ definitions:
     value:
       object: UntypedCommandCfgItem
       attr_name: from_piece
-  command_cfg_item.actor-template:
+  command-cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:cfg_item
       function: TypedCommandCfgItem.from_piece
+      service_params: []
+  command-model_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:model_command
+      function: UntypedCommandCfgItem.from_piece
+      service_params: []
+  command-ui_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:ui_command
+      function: UntypedCommandCfgItem.from_piece
       service_params: []
   command_cfg_item.module:
     type: legacy_type.builtin:python_module
@@ -45,15 +57,3 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.command.cfg_item: legacy_type.command:cfg_item
         services.pyobj_creg: builtins:pyobj_creg.service
-  command_model_command.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.command:model_command
-      function: UntypedCommandCfgItem.from_piece
-      service_params: []
-  command_ui_command.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.command:ui_command
-      function: UntypedCommandCfgItem.from_piece
-      service_params: []

@@ -18,14 +18,14 @@ import:
 - base.rpc.rpc_call:service_call_factory.service
 - base.rpc.rpc_call:service_submit_factory.service
 - base.rpc.rpc_endpoint:cancel_rpc_request_futures.service
+- base.rpc.rpc_endpoint:rpc-error_response.actor-template
+- base.rpc.rpc_endpoint:rpc-function_target.actor-template
+- base.rpc.rpc_endpoint:rpc-request.actor-template
+- base.rpc.rpc_endpoint:rpc-response.actor-template
+- base.rpc.rpc_endpoint:rpc-service_target.actor-template
 - base.rpc.rpc_endpoint:rpc_endpoint.service
-- base.rpc.rpc_endpoint:rpc_error_response.actor-template
-- base.rpc.rpc_endpoint:rpc_function_target.actor-template
 - base.rpc.rpc_endpoint:rpc_message_creg.service
-- base.rpc.rpc_endpoint:rpc_request.actor-template
 - base.rpc.rpc_endpoint:rpc_request_futures.service
-- base.rpc.rpc_endpoint:rpc_response.actor-template
-- base.rpc.rpc_endpoint:rpc_service_target.actor-template
 - base.rpc.rpc_endpoint:rpc_target_creg.service
 - base.subprocess.subprocess:subprocess_running.service
 - base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
@@ -42,17 +42,17 @@ import:
 - base.transport.identity:signature_registry.service
 - base.transport.route_registry:route_registry.service
 - base.transport.rsa_identity:generate_rsa_identity.service
-- base.transport.rsa_identity:rsa_identity_rsa_identity.actor-template
-- base.transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
-- base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
-- base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+- base.transport.rsa_identity:rsa_identity-rsa_identity.actor-template
+- base.transport.rsa_identity:rsa_identity-rsa_parcel.actor-template
+- base.transport.rsa_identity:rsa_identity-rsa_peer.actor-template
+- base.transport.rsa_identity:rsa_identity-rsa_signature.actor-template
 - base.transport.sync_route_table:route_table.service
 - base.transport.tcp_transport:_address_to_tcp_client.service
 - base.transport.tcp_transport:_tcp_selector.service
 - base.transport.tcp_transport:_tcp_services.service
 - base.transport.tcp_transport:tcp_client_factory.service
 - base.transport.tcp_transport:tcp_server_factory.service
-- base.transport.tcp_transport:tcp_transport_route.actor-template
+- base.transport.tcp_transport:tcp_transport-route.actor-template
 - base.transport.transport:transport.service
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
@@ -73,40 +73,40 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:rsa_identity_rsa_identity.actor-template
+      - base.transport.rsa_identity:rsa_identity-rsa_identity.actor-template
   parcel_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+      - base.transport.rsa_identity:rsa_identity-rsa_parcel.actor-template
   peer_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+      - base.transport.rsa_identity:rsa_identity-rsa_peer.actor-template
   route_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.tcp_transport:tcp_transport_route.actor-template
+      - base.transport.tcp_transport:tcp_transport-route.actor-template
   rpc_message_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.rpc.rpc_endpoint:rpc_error_response.actor-template
-      - base.rpc.rpc_endpoint:rpc_request.actor-template
-      - base.rpc.rpc_endpoint:rpc_response.actor-template
+      - base.rpc.rpc_endpoint:rpc-error_response.actor-template
+      - base.rpc.rpc_endpoint:rpc-request.actor-template
+      - base.rpc.rpc_endpoint:rpc-response.actor-template
   rpc_target_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.rpc.rpc_endpoint:rpc_function_target.actor-template
-      - base.rpc.rpc_endpoint:rpc_service_target.actor-template
+      - base.rpc.rpc_endpoint:rpc-function_target.actor-template
+      - base.rpc.rpc_endpoint:rpc-service_target.actor-template
   signature_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+      - base.transport.rsa_identity:rsa_identity-rsa_signature.actor-template
   system:
     type: legacy_type.system:item_list_config
     value:

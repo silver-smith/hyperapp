@@ -20,7 +20,7 @@ definitions:
     value:
       object: ModelCfgItem
       attr_name: from_piece
-  model_cfg_item.actor-template:
+  model-cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.model:cfg_item

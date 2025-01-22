@@ -32,7 +32,7 @@ definitions:
       object: ServiceReq
       attr_name: from_piece
 
-  service_resource_service_req.actor-template:
+  service_resource-service_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:service_req

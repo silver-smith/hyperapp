@@ -51,6 +51,28 @@ definitions:
       - piece
       - current_item
       service_params: []
+  lcs_layer-model.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.lcs_layer:item
+  lcs_layer-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: lcs_layer-model.list-ui-t
+      system_fn: lcs_layer-model.system-fn
+  lcs_layer-model.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.lcs_layer:model
+      model: lcs_layer-model.model
+  lcs_layer-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_layers_model
+      ctx_params:
+      - piece
+      - lcs
+      service_params: []
   lcs_layer.module:
     type: legacy_type.builtin:python_module
     value:
@@ -64,28 +86,6 @@ definitions:
         htypes.lcs_layer.model: legacy_type.lcs_layer:model
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  lcs_layer_model.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.lcs_layer:item
-  lcs_layer_model.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: lcs_layer_model.list-ui-t
-      system_fn: lcs_layer_model.system-fn
-  lcs_layer_model.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.lcs_layer:model
-      model: lcs_layer_model.model
-  lcs_layer_model.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: lcs_layers_model
-      ctx_params:
-      - piece
-      - lcs
-      service_params: []
   lcs_layers_model:
     type: legacy_type.builtin:attribute
     value:
@@ -122,7 +122,7 @@ definitions:
       name: lcs_open_layers_d
       base: null
       fields: {}
-  lcs_view_view_lcs_open_layers.command-cfg-item:
+  lcs_view-view-lcs_open_layers.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.lcs_view:view

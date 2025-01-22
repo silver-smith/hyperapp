@@ -47,7 +47,7 @@ definitions:
       object: CrudInitTemplateCtr
       attr_name: from_piece
 
-  crud_ctr_init_ctr.actor-template:
+  crud_ctr-init_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.crud_ctr:init_ctr
@@ -66,7 +66,7 @@ definitions:
       object: CrudCommitTemplateCtr
       attr_name: from_piece
 
-  crud_ctr_commit_ctr.actor-template:
+  crud_ctr-commit_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.crud_ctr:commit_ctr

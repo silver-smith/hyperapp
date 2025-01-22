@@ -90,4 +90,4 @@ class ViewFactoryTemplateCtr(Constructor):
 
     @property
     def _view_type_name(self):
-        return f'{self._view_t.module_name}_{self._view_t.name}'
+        return f'{self._view_t.module_name}-{self._view_t.name}'

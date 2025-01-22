@@ -62,6 +62,16 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: quit.system-fn
+  window-view-duplicate_window.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.window:view
+      command: duplicate_window.ui-command
+  window-view-quit.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.window:view
+      command: quit.ui-command
   window_commands.module:
     type: legacy_type.builtin:python_module
     value:
@@ -72,13 +82,3 @@ definitions:
         htypes.window.pos: legacy_type.window:pos
         htypes.window.state: legacy_type.window:state
         htypes.window.view: legacy_type.window:view
-  window_view_duplicate_window.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.window:view
-      command: duplicate_window.ui-command
-  window_view_quit.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.window:view
-      command: quit.ui-command

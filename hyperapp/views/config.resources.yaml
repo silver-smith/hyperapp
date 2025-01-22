@@ -3,11 +3,11 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
-- views.command_layout_context:command_layout_context_view.view-template
-- views.command_layout_context:global_commands_model_open_command_layout_context.command-cfg-item
-- views.command_layout_context:model_commands_model_open_command_layout_context.command-cfg-item
-- views.local_server_context:local_server_context_view.view-template
-- views.local_server_context:navigator_view_open_local_server_context.command-cfg-item
+- views.command_layout_context:command_layout_context-view.view-template
+- views.command_layout_context:global_commands-model-open_command_layout_context.command-cfg-item
+- views.command_layout_context:model_commands-model-open_command_layout_context.command-cfg-item
+- views.local_server_context:local_server_context-view.view-template
+- views.local_server_context:navigator-view-open_local_server_context.command-cfg-item
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -20,16 +20,16 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - views.command_layout_context:global_commands_model_open_command_layout_context.command-cfg-item
-      - views.command_layout_context:model_commands_model_open_command_layout_context.command-cfg-item
+      - views.command_layout_context:global_commands-model-open_command_layout_context.command-cfg-item
+      - views.command_layout_context:model_commands-model-open_command_layout_context.command-cfg-item
   view_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - views.command_layout_context:command_layout_context_view.view-template
-      - views.local_server_context:local_server_context_view.view-template
+      - views.command_layout_context:command_layout_context-view.view-template
+      - views.local_server_context:local_server_context-view.view-template
   view_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - views.local_server_context:navigator_view_open_local_server_context.command-cfg-item
+      - views.local_server_context:navigator-view-open_local_server_context.command-cfg-item

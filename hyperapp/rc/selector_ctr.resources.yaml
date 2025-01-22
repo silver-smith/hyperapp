@@ -41,7 +41,7 @@ definitions:
       object: SelectorGetTemplateCtr
       attr_name: from_piece
 
-  selector_ctr_get_ctr.actor-template:
+  selector_ctr-get_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.selector_ctr:get_ctr
@@ -60,7 +60,7 @@ definitions:
       object: SelectorPickTemplateCtr
       attr_name: from_piece
 
-  selector_ctr_pick_ctr.actor-template:
+  selector_ctr-pick_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.selector_ctr:pick_ctr

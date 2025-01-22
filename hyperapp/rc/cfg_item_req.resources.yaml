@@ -34,7 +34,7 @@ definitions:
       object: CfgItemReq
       attr_name: from_piece
 
-  actor_resource_cfg_item_req.actor-template:
+  actor_resource-cfg_item_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.actor_resource:cfg_item_req

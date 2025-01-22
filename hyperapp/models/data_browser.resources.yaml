@@ -71,6 +71,105 @@ definitions:
     value:
       object: data_browser.module
       attr_name: browse_ref_list
+  data_browser-list_view-list_open.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.data_browser:list_view
+      command: list_open.model-command
+  data_browser-list_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.data_browser:list_item
+  data_browser-list_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: data_browser-list_view.list-ui-t
+      system_fn: data_browser-list_view.system-fn
+  data_browser-list_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.data_browser:list_view
+      model: data_browser-list_view.model
+  data_browser-list_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_list
+      ctx_params:
+      - piece
+      service_params: []
+  data_browser-primitive_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: data_browser-primitive_view.record-ui-t
+      system_fn: data_browser-primitive_view.system-fn
+  data_browser-primitive_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.data_browser:primitive_view
+      model: data_browser-primitive_view.model
+  data_browser-primitive_view.record-ui-t:
+    type: legacy_type.model:record_ui_t
+    value:
+      record_t: legacy_type.data_browser:primitive_item
+  data_browser-primitive_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_primitive
+      ctx_params:
+      - piece
+      service_params: []
+  data_browser-record_view-record_open.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.data_browser:record_view
+      command: record_open.model-command
+  data_browser-record_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.data_browser:record_item
+  data_browser-record_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: data_browser-record_view.list-ui-t
+      system_fn: data_browser-record_view.system-fn
+  data_browser-record_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.data_browser:record_view
+      model: data_browser-record_view.model
+  data_browser-record_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_record
+      ctx_params:
+      - piece
+      service_params: []
+  data_browser-ref_list_view-ref_list_open.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.data_browser:ref_list_view
+      command: ref_list_open.model-command
+  data_browser-ref_list_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.data_browser:ref_list_item
+  data_browser-ref_list_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: data_browser-ref_list_view.list-ui-t
+      system_fn: data_browser-ref_list_view.system-fn
+  data_browser-ref_list_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.data_browser:ref_list_view
+      model: data_browser-ref_list_view.model
+  data_browser-ref_list_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_ref_list
+      ctx_params:
+      - piece
+      service_params: []
   data_browser.module:
     type: legacy_type.builtin:python_module
     value:
@@ -89,105 +188,6 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  data_browser_list_view.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.data_browser:list_item
-  data_browser_list_view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: data_browser_list_view.list-ui-t
-      system_fn: data_browser_list_view.system-fn
-  data_browser_list_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.data_browser:list_view
-      model: data_browser_list_view.model
-  data_browser_list_view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: browse_list
-      ctx_params:
-      - piece
-      service_params: []
-  data_browser_list_view_list_open.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.data_browser:list_view
-      command: list_open.model-command
-  data_browser_primitive_view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: data_browser_primitive_view.record-ui-t
-      system_fn: data_browser_primitive_view.system-fn
-  data_browser_primitive_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.data_browser:primitive_view
-      model: data_browser_primitive_view.model
-  data_browser_primitive_view.record-ui-t:
-    type: legacy_type.model:record_ui_t
-    value:
-      record_t: legacy_type.data_browser:primitive_item
-  data_browser_primitive_view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: browse_primitive
-      ctx_params:
-      - piece
-      service_params: []
-  data_browser_record_view.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.data_browser:record_item
-  data_browser_record_view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: data_browser_record_view.list-ui-t
-      system_fn: data_browser_record_view.system-fn
-  data_browser_record_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.data_browser:record_view
-      model: data_browser_record_view.model
-  data_browser_record_view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: browse_record
-      ctx_params:
-      - piece
-      service_params: []
-  data_browser_record_view_record_open.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.data_browser:record_view
-      command: record_open.model-command
-  data_browser_ref_list_view.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.data_browser:ref_list_item
-  data_browser_ref_list_view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: data_browser_ref_list_view.list-ui-t
-      system_fn: data_browser_ref_list_view.system-fn
-  data_browser_ref_list_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.data_browser:ref_list_view
-      model: data_browser_ref_list_view.model
-  data_browser_ref_list_view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: browse_ref_list
-      ctx_params:
-      - piece
-      service_params: []
-  data_browser_ref_list_view_ref_list_open.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.data_browser:ref_list_view
-      command: ref_list_open.model-command
   list_open:
     type: legacy_type.builtin:attribute
     value:

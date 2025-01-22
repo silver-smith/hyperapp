@@ -55,7 +55,7 @@ definitions:
       object: SucceededImportResult
       attr_name: from_piece
 
-  import_job_succeeded_result.actor-template:
+  import_job-succeeded_result.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.import_job:succeeded_result
@@ -76,7 +76,7 @@ definitions:
       object: IncompleteImportResult
       attr_name: from_piece
 
-  import_job_incomplete_result.actor-template:
+  import_job-incomplete_result.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.import_job:incomplete_result
@@ -96,7 +96,7 @@ definitions:
       object: FailedImportResult
       attr_name: from_piece
 
-  import_job_failed_result.actor-template:
+  import_job-failed_result.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.import_job:failed_result
@@ -116,7 +116,7 @@ definitions:
       object: ImportJob
       attr_name: from_piece
 
-  import_job_job.actor-template:
+  import_job-job.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.import_job:job

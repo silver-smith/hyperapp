@@ -31,6 +31,11 @@ definitions:
       - ctx
       service_params:
       - ui_adapter_creg
+  tree-view.view-template:
+    type: legacy_type.view:template
+    value:
+      t: legacy_type.tree:view
+      system_fn: TreeView_from_piece.system-fn
   tree.module:
     type: legacy_type.builtin:python_module
     value:
@@ -42,8 +47,3 @@ definitions:
         code.view: ui.view.view:view.module
         htypes.tree.state: legacy_type.tree:state
         htypes.tree.view: legacy_type.tree:view
-  tree_view.view-template:
-    type: legacy_type.view:template
-    value:
-      t: legacy_type.tree:view
-      system_fn: TreeView_from_piece.system-fn

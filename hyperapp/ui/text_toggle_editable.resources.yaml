@@ -11,12 +11,12 @@ import:
 - legacy_type.text:readonly_view
 - legacy_type.text_toggle_editable:toggle_editable_d
 definitions:
-  text_edit_view_toggle_editable.command-cfg-item:
+  text-edit_view-toggle_editable.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.text:edit_view
       command: toggle_editable.ui-command
-  text_readonly_view_toggle_editable.command-cfg-item:
+  text-readonly_view-toggle_editable.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.text:readonly_view

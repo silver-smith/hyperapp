@@ -16,26 +16,26 @@ import:
 - ui.command:command.module
 - ui.command_config_ctl:command_config_ctl.module
 definitions:
-  command-typed_config_ctl.ctl:
-    type: legacy_type.command:typed_config_ctl
-    value: {}
-  command-untyped_config_ctl.ctl:
-    type: legacy_type.command:untyped_config_ctl
-    value: {}
-  command_model_command.actor-template:
+  command-model_command.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:model_command
       function: model_command_from_piece
       service_params:
       - system_fn_creg
-  command_model_command_enumerator.actor-template:
+  command-model_command_enumerator.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:model_command_enumerator
       function: model_command_enumerator_from_piece
       service_params:
       - system_fn_creg
+  command-typed_config_ctl.ctl:
+    type: legacy_type.command:typed_config_ctl
+    value: {}
+  command-untyped_config_ctl.ctl:
+    type: legacy_type.command:untyped_config_ctl
+    value: {}
   get_model_commands:
     type: legacy_type.builtin:attribute
     value:

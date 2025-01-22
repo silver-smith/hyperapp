@@ -43,7 +43,7 @@ definitions:
       object: ModelCtr
       attr_name: from_piece
 
-  model_resource_model_ctr.actor-template:
+  model_resource-model_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.model_resource:model_ctr

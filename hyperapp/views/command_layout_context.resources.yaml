@@ -40,6 +40,11 @@ definitions:
       - view_reg
       - ui_model_command_items
       - ui_global_command_items
+  command_layout_context-view.view-template:
+    type: legacy_type.view:template
+    value:
+      t: legacy_type.command_layout_context:view
+      system_fn: CommandLayoutContextView_from_piece.system-fn
   command_layout_context.module:
     type: legacy_type.builtin:python_module
     value:
@@ -56,17 +61,12 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  command_layout_context_view.view-template:
-    type: legacy_type.view:template
-    value:
-      t: legacy_type.command_layout_context:view
-      system_fn: CommandLayoutContextView_from_piece.system-fn
-  global_commands_model_open_command_layout_context.command-cfg-item:
+  global_commands-model-open_command_layout_context.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.global_commands:model
       command: open_command_layout_context.model-command
-  model_commands_model_open_command_layout_context.command-cfg-item:
+  model_commands-model-open_command_layout_context.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.model_commands:model

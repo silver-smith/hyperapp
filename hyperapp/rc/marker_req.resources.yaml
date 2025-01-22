@@ -28,7 +28,7 @@ definitions:
       object: MarkerReq
       attr_name: from_piece
 
-  marker_req_marker_req.actor-template:
+  marker_req-marker_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.marker_req:marker_req

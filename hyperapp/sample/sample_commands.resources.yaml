@@ -119,11 +119,16 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         htypes.sample_list.item: legacy_type.sample_list:item
-  sample_list_sample_list_details.command-cfg-item:
+  sample_list-sample_list-details.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.sample_list:sample_list
       command: details.model-command
+  sample_tree-sample_tree-sample_tree_info.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.sample_tree:sample_tree
+      command: sample_tree_info.model-command
   sample_tree_info:
     type: legacy_type.builtin:attribute
     value:
@@ -148,11 +153,6 @@ definitions:
       ctx_params:
       - piece
       service_params: []
-  sample_tree_sample_tree_sample_tree_info.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.sample_tree:sample_tree
-      command: sample_tree_info.model-command
   show_state:
     type: legacy_type.builtin:attribute
     value:

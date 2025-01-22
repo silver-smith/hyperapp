@@ -28,7 +28,7 @@ definitions:
       object: TestModuleResourcesReq
       attr_name: from_piece
 
-  test_module_resources_req_test_module_resources_req.actor-template:
+  test_module_resources_req-test_module_resources_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_module_resources_req:test_module_resources_req

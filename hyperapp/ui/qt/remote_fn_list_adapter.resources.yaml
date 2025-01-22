@@ -19,7 +19,7 @@ definitions:
     value:
       object: RemoteFnListAdapter
       attr_name: from_piece
-  list_adapter_remote_fn_list_adapter.actor-template:
+  list_adapter-remote_fn_list_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.list_adapter:remote_fn_list_adapter

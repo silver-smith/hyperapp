@@ -94,6 +94,16 @@ definitions:
     value:
       object: lcs_view.module
       attr_name: lcs_view
+  lcs_view-view-lcs_open_piece.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      command: lcs_open_piece.model-command
+  lcs_view-view-lcs_remove.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      command: lcs_remove.model-command
   lcs_view-view.crud.get_layer.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -122,6 +132,20 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: null
+  lcs_view-view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.lcs_view:item
+  lcs_view-view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: lcs_view-view.list-ui-t
+      system_fn: lcs_view-view.system-fn
+  lcs_view-view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.lcs_view:view
+      model: lcs_view-view.model
   lcs_view-view.open_move.command:
     type: legacy_type.command:model_command
     value:
@@ -153,6 +177,14 @@ definitions:
   lcs_view-view.open_move.open-command.d:
     type: open_move_d
     value: {}
+  lcs_view-view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_view
+      ctx_params:
+      - piece
+      - lcs
+      service_params: []
   lcs_view.module:
     type: legacy_type.builtin:python_module
     value:
@@ -170,38 +202,6 @@ definitions:
         htypes.lcs_view.view: legacy_type.lcs_view:view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  lcs_view_view.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.lcs_view:item
-  lcs_view_view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: lcs_view_view.list-ui-t
-      system_fn: lcs_view_view.system-fn
-  lcs_view_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.lcs_view:view
-      model: lcs_view_view.model
-  lcs_view_view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: lcs_view
-      ctx_params:
-      - piece
-      - lcs
-      service_params: []
-  lcs_view_view_lcs_open_piece.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.lcs_view:view
-      command: lcs_open_piece.model-command
-  lcs_view_view_lcs_remove.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.lcs_view:view
-      command: lcs_remove.model-command
   move_d:
     type: legacy_type.builtin:record_mt
     value:

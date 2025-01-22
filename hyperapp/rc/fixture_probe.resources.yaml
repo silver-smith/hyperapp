@@ -33,7 +33,7 @@ definitions:
       object: FixtureObjTemplate
       attr_name: from_piece
 
-  fixture_resource_fixture_obj_template.actor-template:
+  fixture_resource-fixture_obj_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.fixture_resource:fixture_obj_template
@@ -52,7 +52,7 @@ definitions:
       object: FixtureProbeTemplate
       attr_name: from_piece
 
-  fixture_resource_fixture_probe_template.actor-template:
+  fixture_resource-fixture_probe_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.fixture_resource:fixture_probe_template

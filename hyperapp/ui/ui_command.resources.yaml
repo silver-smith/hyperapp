@@ -20,16 +20,16 @@ definitions:
   command-typed_config_ctl.ctl:
     type: legacy_type.command:typed_config_ctl
     value: {}
-  command-untyped_config_ctl.ctl:
-    type: legacy_type.command:untyped_config_ctl
-    value: {}
-  command_ui_command.actor-template:
+  command-ui_command.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:ui_command
       function: ui_command_from_piece
       service_params:
       - system_fn_creg
+  command-untyped_config_ctl.ctl:
+    type: legacy_type.command:untyped_config_ctl
+    value: {}
   get_view_commands:
     type: legacy_type.builtin:attribute
     value:

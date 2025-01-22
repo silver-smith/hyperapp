@@ -49,6 +49,11 @@ definitions:
     value:
       object: command_list_model.module
       attr_name: command_update
+  global_commands-model-set_shortcut.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.global_commands:model
+      command: set_shortcut.model-command
   global_commands-model.crud.get.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -107,10 +112,10 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.command_list_model:item
-  global_commands_model_set_shortcut.command-cfg-item:
+  model_commands-model-set_shortcut.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.global_commands:model
+      t: legacy_type.model_commands:model
       command: set_shortcut.model-command
   model_commands-model.crud.get.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -170,11 +175,6 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.command_list_model:item
-  model_commands_model_set_shortcut.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.model_commands:model
-      command: set_shortcut.model-command
   set_shortcut:
     type: legacy_type.builtin:attribute
     value:

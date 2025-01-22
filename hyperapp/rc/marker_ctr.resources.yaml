@@ -27,7 +27,7 @@ definitions:
       object: MarkerCtr
       attr_name: from_template_piece
 
-  marker_marker_template.actor-template:
+  marker-marker_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.marker:marker_template

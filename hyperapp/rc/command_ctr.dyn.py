@@ -152,7 +152,7 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
 
     @property
     def _resource_name(self):
-        return f'{self._t.module_name}_{self._t.name}_{self._fn_name}'
+        return f'{self._t.module_name}-{self._t.name}-{self._fn_name}'
 
 
 class UiCommandTemplateCtr(TypedCommandTemplateCtr):

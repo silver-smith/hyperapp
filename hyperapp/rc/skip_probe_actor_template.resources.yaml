@@ -33,7 +33,7 @@ definitions:
       object: SkipProbeActorTemplate
       attr_name: from_piece
 
-  skip_probe_actor_template_skip_probe_actor_template.actor-template:
+  skip_probe_actor_template-skip_probe_actor_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.skip_probe_actor_template:skip_probe_actor_template

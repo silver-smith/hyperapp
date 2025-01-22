@@ -55,7 +55,7 @@ definitions:
       object: UiCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource_ui_command_template_ctr.actor-template:
+  command_resource-ui_command_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command_resource:ui_command_template_ctr
@@ -74,7 +74,7 @@ definitions:
       object: UniversalUiCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource_universal_ui_command_template_ctr.actor-template:
+  command_resource-universal_ui_command_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command_resource:universal_ui_command_template_ctr
@@ -93,7 +93,7 @@ definitions:
       object: ModelCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource_model_command_template_ctr.actor-template:
+  command_resource-model_command_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command_resource:model_command_template_ctr
@@ -112,7 +112,7 @@ definitions:
       object: ModelCommandEnumeratorTemplateCtr
       attr_name: from_piece
 
-  command_resource_model_command_enumerator_template_ctr.actor-template:
+  command_resource-model_command_enumerator_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command_resource:model_command_enumerator_template_ctr
@@ -131,7 +131,7 @@ definitions:
       object: GlobalModelCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource_global_model_command_template_ctr.actor-template:
+  command_resource-global_model_command_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command_resource:global_model_command_template_ctr

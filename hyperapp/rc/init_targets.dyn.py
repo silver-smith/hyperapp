@@ -40,7 +40,7 @@ def add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templ
                 req = None
             if type(key) is not str:
                 assert isinstance(key, Type)
-                key = f'{key.module_name}_{key.name}'
+                key = f'{key.module_name}-{key.name}'
             item_piece = ctl.item_piece(value)
             ctr = ctr_from_template_creg.animate(item_piece)
             module_name, var_name = project.reverse_resolve(item_piece)

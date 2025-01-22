@@ -21,6 +21,12 @@ definitions:
     value:
       object: SelectorTemplate
       attr_name: from_piece
+  selector-template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.selector:template
+      function: SelectorTemplate.from_piece
+      service_params: []
   selector.module:
     type: legacy_type.builtin:python_module
     value:
@@ -44,12 +50,6 @@ definitions:
       service_params: []
       want_config: true
       free_params: []
-  selector_template.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.selector:template
-      function: SelectorTemplate.from_piece
-      service_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

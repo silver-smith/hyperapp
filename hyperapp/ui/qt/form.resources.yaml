@@ -35,6 +35,11 @@ definitions:
       - visualizer
       - ui_adapter_creg
       - view_reg
+  form-view.view-template:
+    type: legacy_type.view:template
+    value:
+      t: legacy_type.form:view
+      system_fn: FormView_from_piece.system-fn
   form.module:
     type: legacy_type.builtin:python_module
     value:
@@ -48,8 +53,3 @@ definitions:
         htypes.form.view: legacy_type.form:view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  form_view.view-template:
-    type: legacy_type.view:template
-    value:
-      t: legacy_type.form:view
-      system_fn: FormView_from_piece.system-fn

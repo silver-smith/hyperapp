@@ -29,6 +29,20 @@ definitions:
     value:
       object: UntypedCommandConfigCtl
       attr_name: from_piece
+  command-typed_config_ctl.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:typed_config_ctl
+      function: TypedCommandConfigCtl.from_piece
+      service_params:
+      - cfg_item_creg
+  command-untyped_config_ctl.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:untyped_config_ctl
+      function: UntypedCommandConfigCtl.from_piece
+      service_params:
+      - cfg_item_creg
   command_config_ctl.module:
     type: legacy_type.builtin:python_module
     value:
@@ -39,17 +53,3 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.command.typed_config_ctl: legacy_type.command:typed_config_ctl
         htypes.command.untyped_config_ctl: legacy_type.command:untyped_config_ctl
-  command_typed_config_ctl.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.command:typed_config_ctl
-      function: TypedCommandConfigCtl.from_piece
-      service_params:
-      - cfg_item_creg
-  command_untyped_config_ctl.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.command:untyped_config_ctl
-      function: UntypedCommandConfigCtl.from_piece
-      service_params:
-      - cfg_item_creg

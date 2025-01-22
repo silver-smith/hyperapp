@@ -47,14 +47,14 @@ definitions:
       object: CoreServiceTemplateCtr
       attr_name: from_template_piece
 
-  system_service_template.actor-template:
+  system-service_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.system:service_template
       function: CoreServiceTemplateCtr.from_template_piece
       service_params: []
 
-  system_finalizer_gen_service_template.actor-template:
+  system-finalizer_gen_service_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.system:finalizer_gen_service_template
@@ -73,7 +73,7 @@ definitions:
       object: ServiceTemplateCtr
       attr_name: from_piece
 
-  service_resource_service_template_ctr.actor-template:
+  service_resource-service_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:service_template_ctr
@@ -93,7 +93,7 @@ definitions:
       object: FinalizerGenServiceTemplateCtr
       attr_name: from_piece
 
-  service_resource_finalizer_gen_service_template_ctr.actor-template:
+  service_resource-finalizer_gen_service_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:finalizer_gen_service_template_ctr

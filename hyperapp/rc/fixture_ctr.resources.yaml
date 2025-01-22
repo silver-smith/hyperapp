@@ -45,7 +45,7 @@ definitions:
       object: FixtureObjCtr
       attr_name: from_piece
 
-  fixture_resource_fixture_obj_ctr.actor-template:
+  fixture_resource-fixture_obj_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.fixture_resource:fixture_obj_ctr
@@ -64,7 +64,7 @@ definitions:
       object: FixtureProbeCtr
       attr_name: from_piece
 
-  fixture_resource_fixture_probe_ctr.actor-template:
+  fixture_resource-fixture_probe_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.fixture_resource:fixture_probe_ctr
@@ -83,7 +83,7 @@ definitions:
       object: ConfigFixtureCtr
       attr_name: from_piece
 
-  fixture_resource_config_fixture_ctr.actor-template:
+  fixture_resource-config_fixture_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.fixture_resource:config_fixture_ctr

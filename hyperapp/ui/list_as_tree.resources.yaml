@@ -32,6 +32,16 @@ import:
 - ui.qt.fn_list_adapter:fn_list_adapter.module
 - ui.qt.list_as_tree_adapter:list_as_tree_adapter.module
 definitions:
+  list-view-switch_list_to_tree.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.list:view
+      command: switch_list_to_tree.ui-command
+  list_as_tree-opener_commands-toggle_open_command.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.list_as_tree:opener_commands
+      command: toggle_open_command.model-command
   list_as_tree-opener_commands.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -41,6 +51,31 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.list_as_tree:opener_command_item
+  list_as_tree-opener_commands.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.list_as_tree:opener_command_item
+  list_as_tree-opener_commands.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: list_as_tree-opener_commands.list-ui-t
+      system_fn: list_as_tree-opener_commands.system-fn
+  list_as_tree-opener_commands.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.list_as_tree:opener_commands
+      model: list_as_tree-opener_commands.model
+  list_as_tree-opener_commands.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: opener_command_list
+      ctx_params:
+      - piece
+      - lcs
+      - ctx
+      service_params:
+      - get_model_commands
+      - get_custom_layout
   list_as_tree.module:
     type: legacy_type.builtin:python_module
     value:
@@ -63,41 +98,6 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  list_as_tree_opener_commands.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.list_as_tree:opener_command_item
-  list_as_tree_opener_commands.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: list_as_tree_opener_commands.list-ui-t
-      system_fn: list_as_tree_opener_commands.system-fn
-  list_as_tree_opener_commands.model-cfg-item:
-    type: legacy_type.model:cfg_item
-    value:
-      t: legacy_type.list_as_tree:opener_commands
-      model: list_as_tree_opener_commands.model
-  list_as_tree_opener_commands.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: opener_command_list
-      ctx_params:
-      - piece
-      - lcs
-      - ctx
-      service_params:
-      - get_model_commands
-      - get_custom_layout
-  list_as_tree_opener_commands_toggle_open_command.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.list_as_tree:opener_commands
-      command: toggle_open_command.model-command
-  list_view_switch_list_to_tree.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.list:view
-      command: switch_list_to_tree.ui-command
   open_opener_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -188,7 +188,7 @@ definitions:
       - get_model_commands
       - get_custom_layout
       - set_custom_layout
-  tree_view_open_opener_commands.command-cfg-item:
+  tree-view-open_opener_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.tree:view
