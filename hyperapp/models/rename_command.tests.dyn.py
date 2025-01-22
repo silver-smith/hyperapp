@@ -49,8 +49,8 @@ def d_ref():
     return mosaic.put(d)
 
 
-def test_get(piece, d_ref):
-    form = rename_command.model_command_get(piece, d_ref)
+def test_rename_to(piece, d_ref):
+    form = rename_command.model_command_rename_to(piece, d_ref)
     assert form.name == 'sample_command'
 
 
@@ -61,10 +61,10 @@ def lcs():
     return lcs
 
 
-def test_update(lcs, piece, d_ref):
+def test_rename(lcs, piece, d_ref):
     ctx = Context()
     form = htypes.rename_command.form(
         name='new_name',
         )
-    rename_command.model_command_update(piece, d_ref, form, lcs, ctx)
+    rename_command.model_command_rename(piece, d_ref, form, lcs, ctx)
     lcs.set.assert_called_once()
