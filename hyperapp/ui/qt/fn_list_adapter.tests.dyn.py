@@ -80,7 +80,7 @@ class Subscriber:
 
 
 async def _send_diff(feed):
-    item = htypes.sample_list.item(44, "Forth diff", "Sample item #4")
+    item = htypes.list_adapter_tests.item(44, "Forth diff", "Sample item #4")
     await feed.send(ListDiff.Append(item))
 
 
