@@ -67,7 +67,7 @@ class FeedCtr(ModuleCtr):
 
     @property
     def _type_name(self):
-        return f'{self._t.module_name}_{self._t.name}'
+        return f'{self._t.module_name}-{self._t.name}'
 
 
 class ListFeedCtr(FeedCtr):
