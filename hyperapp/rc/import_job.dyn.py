@@ -94,7 +94,10 @@ class SucceededImportResult(_SucceededImportResultBase):
             self._add_tests_import(import_tgt, target_set)
 
     def update_targets(self, import_tgt, target_set):
-        req_to_target = self._resolve_requirements(target_set.factory, self._all_reqs)
+        try:
+            req_to_target = self._resolve_requirements(target_set.factory, self._all_reqs)
+        except KeyError as x:
+            raise RuntimeError(f"{import_tgt.module_name}: Attempt to import unknown code module: {x}")
         import_tgt.set_requirements(req_to_target)
         if self._is_tests or self._is_fixtures:
             self._update_fixtures_targets(import_tgt, target_set)
