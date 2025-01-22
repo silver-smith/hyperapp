@@ -85,12 +85,12 @@ definitions:
       t: legacy_type.identity_command:identity_command
       function: UnboundIdentityModelCommand.from_piece
       service_params: []
-  model_commands_model.feed-template:
+  model_commands-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
       t: legacy_type.model_commands:model
-      feed_type: model_commands_model.feed-type
-  model_commands_model.feed-type:
+      feed_type: model_commands-model.feed-type
+  model_commands-model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.command_list_model:item

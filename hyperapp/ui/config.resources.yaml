@@ -10,7 +10,7 @@ import:
 - ui.command_config_ctl:command_untyped_config_ctl.actor-template
 - ui.command_creg:command_creg.service
 - ui.controller:controller_running.service
-- ui.controller:layout_view.feed-template
+- ui.controller:layout-view.feed-template
 - ui.crud:crud_init_fn.actor-template
 - ui.crud:crud_model.actor-template
 - ui.crud:crud_model_crud_model_commands.command-cfg-item
@@ -29,7 +29,7 @@ import:
 - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout_view_open_view_item_commands.command-cfg-item
 - ui.layout:open_layout_tree.global-model-command
-- ui.list_as_tree:list_as_tree_opener_commands.feed-template
+- ui.list_as_tree:list_as_tree-opener_commands.feed-template
 - ui.list_as_tree:list_as_tree_opener_commands.model-cfg-item
 - ui.list_as_tree:list_as_tree_opener_commands_toggle_open_command.command-cfg-item
 - ui.list_as_tree:list_view_switch_list_to_tree.command-cfg-item
@@ -161,8 +161,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.controller:layout_view.feed-template
-      - ui.list_as_tree:list_as_tree_opener_commands.feed-template
+      - ui.controller:layout-view.feed-template
+      - ui.list_as_tree:list_as_tree-opener_commands.feed-template
   feed_type_creg:
     type: legacy_type.system:item_list_config
     value:

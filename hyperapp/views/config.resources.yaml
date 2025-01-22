@@ -1,3 +1,4 @@
+# Automatically generated file. Do not edit.
 
 import:
 - legacy_type.system:item_list_config
@@ -7,9 +8,7 @@ import:
 - views.command_layout_context:model_commands_model_open_command_layout_context.command-cfg-item
 - views.local_server_context:local_server_context_view.view-template
 - views.local_server_context:navigator_view_open_local_server_context.command-cfg-item
-
 definitions:
-
   config:
     type: legacy_type.system:system_config
     value:
@@ -17,21 +16,18 @@ definitions:
         model_command_reg: model_command_reg
         view_reg: view_reg
         view_ui_command_reg: view_ui_command_reg
-
   model_command_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - views.command_layout_context:global_commands_model_open_command_layout_context.command-cfg-item
       - views.command_layout_context:model_commands_model_open_command_layout_context.command-cfg-item
-
   view_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - views.command_layout_context:command_layout_context_view.view-template
       - views.local_server_context:local_server_context_view.view-template
-
   view_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:

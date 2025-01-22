@@ -61,12 +61,12 @@ definitions:
       - ctx
       - show
       - load_state
-  layout_view.feed-template:
+  layout-view.feed-template:
     type: legacy_type.feed:feed_template
     value:
       t: legacy_type.layout:view
-      feed_type: layout_view.feed-type
-  layout_view.feed-type:
+      feed_type: layout-view.feed-type
+  layout-view.feed-type:
     type: legacy_type.feed:index_tree_feed_type
     value:
       item_t: legacy_type.layout:item

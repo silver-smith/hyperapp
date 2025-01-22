@@ -5,39 +5,30 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
-- legacy_type.crud:edit_d
 - legacy_type.crud:open_command_fn
-- legacy_type.crud:save_d
 - legacy_type.model_commands:model
 - legacy_type.rename_command:form
 - legacy_type.system_fn:ctx_fn
 - ui.directory:directory.module
 - ui.model_command:model_command.module
 definitions:
-  model_command_get:
+  model_command_rename:
     type: legacy_type.builtin:attribute
     value:
       object: rename_command.module
-      attr_name: model_command_get
-  model_command_update:
+      attr_name: model_command_rename
+  model_command_rename_to:
     type: legacy_type.builtin:attribute
     value:
       object: rename_command.module
-      attr_name: model_command_update
-  model_commands-model.crud.get.system-fn:
+      attr_name: model_command_rename_to
+  model_commands-model.crud.rename.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: model_command_get
-      ctx_params:
-      - piece
-      - ui_command_d
-      service_params: []
-  model_commands-model.crud.update.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: model_command_update
+      function: model_command_rename
       ctx_params:
       - piece
       - ui_command_d
@@ -46,36 +37,51 @@ definitions:
       - ctx
       service_params:
       - ui_model_command_items
-  model_commands-model.edit.command:
+  model_commands-model.crud.rename_to.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: model_command_rename_to
+      ctx_params:
+      - piece
+      - ui_command_d
+      service_params: []
+  model_commands-model.open_rename.command:
     type: legacy_type.command:model_command
     value:
-      d: model_commands-model.edit.open-command.d
+      d: model_commands-model.open_rename.open-command.d
       properties:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: model_commands-model.edit.command-fn
-  model_commands-model.edit.command-cfg-item:
+      system_fn: model_commands-model.open_rename.command-fn
+  model_commands-model.open_rename.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.model_commands:model
-      command: model_commands-model.edit.command
-  model_commands-model.edit.command-fn:
+      command: model_commands-model.open_rename.command
+  model_commands-model.open_rename.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
-      name: edit
+      name: open_rename
       value_t: legacy_type.rename_command:form
       key_fields:
       - ui_command_d
-      init_action_fn: model_commands-model.crud.get.system-fn
-      commit_command_d: model_commands-model.edit.commit-command.d
-      commit_action_fn: model_commands-model.crud.update.system-fn
-  model_commands-model.edit.commit-command.d:
-    type: legacy_type.crud:save_d
+      init_action_fn: model_commands-model.crud.rename_to.system-fn
+      commit_command_d: model_commands-model.open_rename.commit-command.d
+      commit_action_fn: model_commands-model.crud.rename.system-fn
+  model_commands-model.open_rename.commit-command.d:
+    type: rename_d
     value: {}
-  model_commands-model.edit.open-command.d:
-    type: legacy_type.crud:edit_d
+  model_commands-model.open_rename.open-command.d:
+    type: open_rename_d
     value: {}
+  open_rename_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: crud
+      name: open_rename_d
+      base: null
+      fields: {}
   rename_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -87,3 +93,10 @@ definitions:
         code.model_command: ui.model_command:model_command.module
         htypes.rename_command.form: legacy_type.rename_command:form
         services.web: builtins:web.service
+  rename_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: crud
+      name: rename_d
+      base: null
+      fields: {}
