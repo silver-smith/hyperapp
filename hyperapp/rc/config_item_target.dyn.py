@@ -45,6 +45,9 @@ class ConfigItemReadyTarget(Target):
         return self._provider_resource_tgt
 
     def set_provider(self, resource_tgt):
+        if self._provider_resource_tgt:
+            assert self._provider_resource_tgt is resource_tgt
+            return
         self._provider_resource_tgt = resource_tgt
         self._import_tgt = resource_tgt.import_tgt
         target_set = resource_tgt.target_set
