@@ -194,6 +194,9 @@ class RcRunner:
             if not target.completed or not target.has_output or target in self._failures:
                 continue
             resource_path, text = target.get_output()
+            if str(resource_path) == 'rc/config.resources.yaml':
+                # RC project targets are not loaded; Applied to system directly as layer config.
+                continue
             path = hyperapp_dir / resource_path
             if path.exists():
                 p = subprocess.run(
