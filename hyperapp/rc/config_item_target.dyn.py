@@ -46,7 +46,9 @@ class ConfigItemReadyTarget(Target):
 
     def set_provider(self, resource_tgt):
         if self._provider_resource_tgt:
-            if self._provider_resource_tgt is not resource_tgt:
+            # TODO: Add special case for feed factory:
+            # method like set_provider_multi and multiple constructors with comparison and merge methods.
+            if self._provider_resource_tgt is not resource_tgt and self._service_name != 'feed_factory':
                 raise RuntimeError(
                     f"Configuration item {self._service_name}/{self._key} is provided by two different modules:"
                     f" {self._provider_resource_tgt.module_name} and {resource_tgt.module_name}"
