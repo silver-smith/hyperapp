@@ -1,3 +1,4 @@
+# Automatically generated file. Do not edit.
 
 import:
 - legacy_type.system:item_list_config
@@ -8,11 +9,11 @@ import:
 - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
 - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
 - sample.sample_commands:show_state.global-model-command
-- sample.sample_feed:sample_feed_sample_list_feed.feed-template
-- sample.sample_feed:sample_feed_sample_tree_feed.feed-template
+- sample.sample_feed:sample_feed-sample_list_feed.feed-template
+- sample.sample_feed:sample_feed-sample_tree_feed.feed-template
 - sample.sample_list:open_feed_sample_fn_list.global-model-command
 - sample.sample_list:open_sample_fn_list.global-model-command
-- sample.sample_list:sample_list_feed_sample_list.feed-template
+- sample.sample_list:sample_list-feed_sample_list.feed-template
 - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
 - sample.sample_list:sample_list_sample_list.model-cfg-item
 - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
@@ -20,12 +21,10 @@ import:
 - sample.sample_record:sample_record_sample_record.model-cfg-item
 - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
 - sample.sample_tree:open_sample_fn_tree.global-model-command
-- sample.sample_tree:sample_tree_feed_sample_tree.feed-template
+- sample.sample_tree:sample_tree-feed_sample_tree.feed-template
 - sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item
 - sample.sample_tree:sample_tree_sample_tree.model-cfg-item
-
 definitions:
-
   config:
     type: legacy_type.system:system_config
     value:
@@ -34,16 +33,14 @@ definitions:
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
         visualizer_reg: visualizer_reg
-
   feed_factory:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - sample.sample_feed:sample_feed_sample_list_feed.feed-template
-      - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
-      - sample.sample_list:sample_list_feed_sample_list.feed-template
-      - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
-
+      - sample.sample_feed:sample_feed-sample_list_feed.feed-template
+      - sample.sample_feed:sample_feed-sample_tree_feed.feed-template
+      - sample.sample_list:sample_list-feed_sample_list.feed-template
+      - sample.sample_tree:sample_tree-feed_sample_tree.feed-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -57,7 +54,6 @@ definitions:
       - sample.sample_record:open_sample_fn_record.global-model-command
       - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
       - sample.sample_tree:open_sample_fn_tree.global-model-command
-
   model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -65,7 +61,6 @@ definitions:
       - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
       - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
-
   visualizer_reg:
     type: legacy_type.system:item_list_config
     value:

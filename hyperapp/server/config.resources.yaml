@@ -1,17 +1,15 @@
+# Automatically generated file. Do not edit.
 
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - server.server:server_main.service
-
 definitions:
-
   config:
     type: legacy_type.system:system_config
     value:
       services:
         system: system
-
   system:
     type: legacy_type.system:item_list_config
     value:

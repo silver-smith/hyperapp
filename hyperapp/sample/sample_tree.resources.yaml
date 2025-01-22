@@ -74,6 +74,15 @@ definitions:
     value:
       object: sample_tree.module
       attr_name: sample_tree
+  sample_tree-feed_sample_tree.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.sample_tree:feed_sample_tree
+      feed_type: sample_tree-feed_sample_tree.feed-type
+  sample_tree-feed_sample_tree.feed-type:
+    type: legacy_type.feed:index_tree_feed_type
+    value:
+      item_t: legacy_type.sample_tree:item
   sample_tree.module:
     type: legacy_type.builtin:python_module
     value:
@@ -85,15 +94,6 @@ definitions:
         htypes.sample_tree.feed_sample_tree: legacy_type.sample_tree:feed_sample_tree
         htypes.sample_tree.item: legacy_type.sample_tree:item
         htypes.sample_tree.sample_tree: legacy_type.sample_tree:sample_tree
-  sample_tree_feed_sample_tree.feed-template:
-    type: legacy_type.feed:feed_template
-    value:
-      t: legacy_type.sample_tree:feed_sample_tree
-      feed_type: sample_tree_feed_sample_tree.feed-type
-  sample_tree_feed_sample_tree.feed-type:
-    type: legacy_type.feed:index_tree_feed_type
-    value:
-      item_t: legacy_type.sample_tree:item
   sample_tree_feed_sample_tree.model:
     type: legacy_type.model:model
     value:

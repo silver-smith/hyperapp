@@ -12,6 +12,24 @@ import:
 - legacy_type.sample_list:item
 - legacy_type.sample_tree:item
 definitions:
+  sample_feed-sample_list_feed.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.sample_feed:sample_list_feed
+      feed_type: sample_feed-sample_list_feed.feed-type
+  sample_feed-sample_list_feed.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.sample_list:item
+  sample_feed-sample_tree_feed.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.sample_feed:sample_tree_feed
+      feed_type: sample_feed-sample_tree_feed.feed-type
+  sample_feed-sample_tree_feed.feed-type:
+    type: legacy_type.feed:index_tree_feed_type
+    value:
+      item_t: legacy_type.sample_tree:item
   sample_feed.module:
     type: legacy_type.builtin:python_module
     value:
@@ -22,21 +40,3 @@ definitions:
         code.tree_diff: common.tree_diff:tree_diff.module
         htypes.sample_list.item: legacy_type.sample_list:item
         htypes.sample_tree.item: legacy_type.sample_tree:item
-  sample_feed_sample_list_feed.feed-template:
-    type: legacy_type.feed:feed_template
-    value:
-      t: legacy_type.sample_feed:sample_list_feed
-      feed_type: sample_feed_sample_list_feed.feed-type
-  sample_feed_sample_list_feed.feed-type:
-    type: legacy_type.feed:list_feed_type
-    value:
-      item_t: legacy_type.sample_list:item
-  sample_feed_sample_tree_feed.feed-template:
-    type: legacy_type.feed:feed_template
-    value:
-      t: legacy_type.sample_feed:sample_tree_feed
-      feed_type: sample_feed_sample_tree_feed.feed-type
-  sample_feed_sample_tree_feed.feed-type:
-    type: legacy_type.feed:index_tree_feed_type
-    value:
-      item_t: legacy_type.sample_tree:item
