@@ -122,10 +122,12 @@ async def client_async_main(
         visualizer,
         controller_running,
         args,
+        client_project,
         app,
         stop_event,
         ):
-    lcs = LCSheet.from_layer_list_path(args.lcs_layers_path, lcs_resource_storage_factory)
+    project_imports = {client_project}
+    lcs = LCSheet.from_layer_list_path(args.lcs_layers_path, lcs_resource_storage_factory, project_imports)
 
     identity = generate_rsa_identity()
     endpoint_registry.register(identity, rpc_endpoint)
@@ -146,6 +148,7 @@ async def client_async_main(
 @mark.service
 def client_main(client_async_main, name_to_project, sys_argv):
     args = _parse_args(sys_argv)
+    client_project = name_to_project['client']
 
     register_reconstructors()
 
@@ -156,4 +159,4 @@ def client_main(client_async_main, name_to_project, sys_argv):
     with event_loop:
         stop_event = asyncio.Event()
         app.aboutToQuit.connect(stop_event.set)
-        event_loop.run_until_complete(client_async_main(args, app, stop_event))
+        event_loop.run_until_complete(client_async_main(args, client_project, app, stop_event))

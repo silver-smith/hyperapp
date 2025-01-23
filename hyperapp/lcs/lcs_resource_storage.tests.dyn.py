@@ -9,7 +9,6 @@ from .services import (
     local_types,
     mosaic,
     pyobj_creg,
-    resource_registry,
     )
 from .code.mark import mark
 from .tested.code import lcs_resource_storage
@@ -46,29 +45,38 @@ def piece():
         )
 
 
-def test_persistence(lcs_resource_storage_factory, path, key, piece):
-    storage_1 = lcs_resource_storage_factory('test.lcs_storage', path)
+@mark.fixture.obj
+def storage_factory(lcs_resource_storage_factory, path):
+    def factory():
+        return lcs_resource_storage_factory('test.lcs_storage', path, project_imports={})
+    return factory
+
+
+@mark.fixture
+def storage(storage_factory):
+    return storage_factory()
+
+
+def test_persistence(storage_factory, path, key, piece):
+    storage_1 = storage_factory()
     storage_1.set(key, piece)
     assert storage_1.get(key) == piece
-    storage_2 = lcs_resource_storage_factory('test.lcs_storage', path)
+    storage_2 = storage_factory()
     assert storage_2.get(key) == piece
 
 
-def test_primitive(lcs_resource_storage_factory, path, key):
-    storage = lcs_resource_storage_factory('test.lcs_storage', path)
+def test_primitive(storage, path, key):
     storage.set(key, "Sample string")
     assert storage.get(key) == "Sample string"
 
 
-def test_replace(lcs_resource_storage_factory, path, key, piece):
-    storage = lcs_resource_storage_factory('test.lcs_storage', path)
+def test_replace(storage, path, key, piece):
     storage.set(key, piece)
     storage.set(key, "Sample string")
     assert storage.get(key) == "Sample string"
 
 
-def test_remove(lcs_resource_storage_factory, path, key, piece):
-    storage = lcs_resource_storage_factory('test.lcs_storage', path)
+def test_remove(storage, path, key, piece):
     storage.set(key, piece)
     storage.remove(key)
     assert storage.get(key) is None

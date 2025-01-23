@@ -16,20 +16,20 @@ log = logging.getLogger(__name__)
 class LCSheet:
 
     @classmethod
-    def from_layer_list_path(cls, path, lcs_resource_storage_factory):
+    def from_layer_list_path(cls, path, lcs_resource_storage_factory, project_imports):
         try:
             data = yaml.safe_load(path.read_text())
         except FileNotFoundError:
             data = None
-        return cls(data, lcs_resource_storage_factory)
+        return cls(data, lcs_resource_storage_factory, project_imports)
 
-    def __init__(self, layers_data, lcs_resource_storage_factory):
+    def __init__(self, layers_data, lcs_resource_storage_factory, project_imports):
         self._name_to_storage = {}
         self._d_to_storage = {}
         self._default_layer_name = None
         self._default_storage = None
         self._d_to_w_to_ap = defaultdict(weakref.WeakKeyDictionary)
-        self._load(layers_data, lcs_resource_storage_factory)
+        self._load(layers_data, lcs_resource_storage_factory, project_imports)
 
     def get(self, dir, default=None):
         for storage in self._d_to_storage.values():
@@ -84,7 +84,7 @@ class LCSheet:
         source_storage.remove(dir)
         target_storage.set(dir, piece)
 
-    def _load(self, data, lcs_resource_storage_factory):
+    def _load(self, data, lcs_resource_storage_factory, project_imports):
         if not data:
             return
         for layer in data['layers']:
@@ -94,7 +94,7 @@ class LCSheet:
             resource_path = full_path.with_suffix(full_path.suffix + '.resources.yaml')
             resource_name = path.replace('/', '.')
             d = name_to_d('lcs_layer', name)
-            storage = lcs_resource_storage_factory(resource_name, resource_path)
+            storage = lcs_resource_storage_factory(resource_name, resource_path, project_imports)
             self._name_to_storage[name] = storage
             self._d_to_storage[d] = storage
         self._default_layer_name = data['default_layer']

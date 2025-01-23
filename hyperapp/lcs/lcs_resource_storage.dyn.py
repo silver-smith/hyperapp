@@ -9,8 +9,8 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
+    project_factory,
     resource_module_factory,
-    resource_registry,
     web,
     )
 from .code.mark import mark
@@ -21,11 +21,12 @@ class LcsResourceStorage:
     _mapping_name = 'lcs_storage_mapping'
     _shortcut_re = re.compile(r'([A-Z][A-Za-z]*\+)*[A-Z][A-Za-z0-9]*$')
 
-    def __init__(self, pick_refs, name, path):
+    def __init__(self, pick_refs, name, path, project_imports):
         self._pick_refs = pick_refs
         self._path = path
-        self._res_module = resource_module_factory(
-            resource_registry, name, path, load_from_file=path.exists())
+        self._project = project_factory(name, project_imports)
+        self._res_module = resource_module_factory(self._project, name, path, load_from_file=path.exists())
+        self._project.set_module(self._res_module, name)
         self._mapping = self._load_mapping()
 
     def set(self, dir, piece):
@@ -65,7 +66,7 @@ class LcsResourceStorage:
         self._store_if_missing(piece, t)
 
     def _store_if_missing(self, piece, t):
-        if resource_registry.has_piece(piece):
+        if self._project.has_piece(piece):
             return
         for ref in self._pick_refs(piece):
             elt_piece, elt_t = web.summon_with_t(ref)
@@ -146,5 +147,5 @@ class LcsResourceStorage:
 
 
 @mark.service
-def lcs_resource_storage_factory(pick_refs, name, path):
-    return LcsResourceStorage(pick_refs, name, path)
+def lcs_resource_storage_factory(pick_refs, name, path, project_imports):
+    return LcsResourceStorage(pick_refs, name, path, project_imports)

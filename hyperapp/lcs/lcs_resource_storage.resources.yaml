@@ -4,8 +4,8 @@ import:
 - base.mark:mark.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
+- builtins:project_factory.service
 - builtins:resource_module_factory.service
-- builtins:resource_registry.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -29,8 +29,8 @@ definitions:
         htypes.lcs_resource_storage.mapping: legacy_type.lcs_resource_storage:mapping
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
+        services.project_factory: builtins:project_factory.service
         services.resource_module_factory: builtins:resource_module_factory.service
-        services.resource_registry: builtins:resource_registry.service
         services.web: builtins:web.service
   lcs_resource_storage_factory:
     type: legacy_type.builtin:attribute
@@ -49,6 +49,7 @@ definitions:
       free_params:
       - name
       - path
+      - project_imports
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

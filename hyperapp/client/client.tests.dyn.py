@@ -2,11 +2,17 @@ import asyncio
 
 from PySide6 import QtWidgets
 
+from .services import (
+    project_factory,
+    )
 from .tested.code import client
 
 
 def test_client(client_main):
-    name_to_project = None
+    client_project = project_factory('mock-client')
+    name_to_project = {
+        'client': client_project,
+        }
     sys_argv = [
         '--clean',
         '--lcs-layers-path=/tmp/client-test-lcs-layers.yaml',
