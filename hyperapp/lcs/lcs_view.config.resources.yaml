@@ -1,6 +1,4 @@
 import:
-- client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-- client.lcs_storage_shortcuts:shortcut_Return
 - lcs.lcs_dirs_view:lcs_dirs_items.d
 - lcs.lcs_dirs_view:lcs_open_dirs.d
 - lcs.lcs_layer:lcs_open_layers.d
@@ -63,30 +61,6 @@ definitions:
         - legacy_type.lcs_dirs_view:view
         - column_d_4
         value: bool_1
-      - key:
-        - lcs.lcs_view:open_lcs_view.d
-        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: shortcut_Alt_L
-      - key:
-        - lcs.lcs_dirs_view:lcs_open_dirs.d
-        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: shortcut_D
-      - key:
-        - lcs.lcs_layer:lcs_open_layers.d
-        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: shortcut_L
-      - key:
-        - lcs.lcs_view:lcs_remove.d
-        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: shortcut_Del
-      - key:
-        - lcs.lcs_view:lcs_open_piece.d
-        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: client.lcs_storage_shortcuts:shortcut_Return
-      - key:
-        - lcs.lcs_dirs_view:lcs_dirs_items.d
-        - client.lcs_storage_shortcuts:command_shortcut_lcs_d_1
-        value: client.lcs_storage_shortcuts:shortcut_Return
   list_d_1:
     type: legacy_type.column:list_d
     value: {}
