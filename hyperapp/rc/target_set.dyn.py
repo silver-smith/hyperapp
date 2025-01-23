@@ -14,10 +14,13 @@ def _sorted_targets(targets):
     return sorted(targets, key=attrgetter('name'))
 
 
-class GlobalTargets:
+class TargetSetBase:
 
     def __init__(self):
         self._name_to_target = {}
+
+    def __iter__(self):
+        return iter(_sorted_targets(self._name_to_target.values()))
 
     def __getitem__(self, name):
         return self._name_to_target[name]
@@ -26,25 +29,28 @@ class GlobalTargets:
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
 
+    def iter_completed(self):
+        for target in self:
+            if target.completed:
+                yield target
 
-class TargetSet:
+
+class GlobalTargets(TargetSetBase):
+    pass
+
+
+class TargetSet(TargetSetBase):
 
     def __init__(self, globals_targets, resource_dir, types, imports):
+        super().__init__()
         self._globals_targets = globals_targets
         self._resource_dir = resource_dir
         self._imports = imports  # TargetSet set.
         self._types = types
         self._name_to_full_name = {}
         self._full_name_to_name = {}
-        self._name_to_target = {}
         self._prev_completed = set()
         self._prev_incomplete_deps_map = {}
-
-    def __iter__(self):
-        return iter(_sorted_targets(self._name_to_target.values()))
-
-    def __getitem__(self, name):
-        return self._name_to_target[name]
 
     @property
     def globals(self):
@@ -59,18 +65,9 @@ class TargetSet:
             if target.ready:
                 yield target
 
-    def iter_completed(self):
-        for target in self:
-            if target.completed:
-                yield target
-
     def add_module_name(self, full_name, name):
         self._full_name_to_name[full_name] = name
         self._name_to_full_name[name] = full_name
-
-    def add(self, target):
-        assert target.name not in self._name_to_target
-        self._name_to_target[target.name] = target
 
     def adopt(self, target):
         self.add(target)
@@ -91,13 +88,16 @@ class TargetSet:
 
     @property
     def _completed_targets(self):
-        return set(self.iter_completed())
+        return {*self._globals_targets.iter_completed(), *self.iter_completed()}
 
     @property
-    @staticmethod
+    def _my_and_global_targets(self):
+        return [*self._globals_targets, *self._name_to_target.values()]
+
+    @property
     def _reverse_deps_map(self):
         dep_to_targets = defaultdict(set)  # target -> target set
-        for target in self._name_to_target.values():
+        for target in self._my_and_global_targets:
             for dep in target.deps:
                 dep_to_targets[dep].add(target)
         return dict(dep_to_targets)
@@ -108,7 +108,7 @@ class TargetSet:
     def _incomplete_deps_map(self):
         return {
             target: target.deps
-            for target in self._name_to_target.values()
+            for target in self._my_and_global_targets
             if not target.completed
             }
 
@@ -165,7 +165,7 @@ class TargetSet:
 
     def init_all_statuses(self):
         self._prev_incomplete_deps_map = self._incomplete_deps_map
-        for target in [*self._name_to_target.values()]:
+        for target in self._my_and_global_targets:
             self._update_target(target)
 
     def post_init(self):
@@ -174,7 +174,7 @@ class TargetSet:
         self.update_statuses()
 
     def check_statuses(self):
-        for target in self._name_to_target.values():
+        for target in self._my_and_global_targets:
             if target.completed:
                 continue
             deps = target.deps
