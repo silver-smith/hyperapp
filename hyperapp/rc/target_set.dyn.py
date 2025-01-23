@@ -271,7 +271,7 @@ class TargetFactory:
         except KeyError:
             pass
         all_imports_known_tgt = self.all_imports_known()
-        target = ConfigItemReadyTarget(self._target_set, service_name, key, all_imports_known_tgt)
+        target = ConfigItemReadyTarget(service_name, key, all_imports_known_tgt)
         self._target_set.globals.add(target)
         return target
 
@@ -282,7 +282,7 @@ class TargetFactory:
         except KeyError:
             pass
         ready_tgt = self.config_item_ready(service_name, key)
-        target = ConfigItemResolvedTarget(self._target_set, service_name, key, ready_tgt)
+        target = ConfigItemResolvedTarget(service_name, key, ready_tgt)
         self._target_set.globals.add(target)
         return target
 
@@ -301,7 +301,7 @@ class TargetFactory:
             # Configuration item requires it's service to be complete because it uses it's config_ctl.
             service_cfg_item_complete_tgt = self.config_item_complete('system', service_name, ServiceReq(service_name))
         resolved_tgt = self.config_item_resolved(service_name, key)
-        target = ConfigItemCompleteTarget(self._target_set, service_name, key, resolved_tgt, service_cfg_item_complete_tgt)
+        target = ConfigItemCompleteTarget(service_name, key, resolved_tgt, service_cfg_item_complete_tgt)
         self._target_set.globals.add(target)
         config_tgt = self.config_resource()
         config_tgt.add_item(service_name, target, req)

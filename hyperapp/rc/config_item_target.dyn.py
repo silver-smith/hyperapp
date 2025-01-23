@@ -8,11 +8,11 @@ class ConfigItemReadyTarget(Target):
     def target_name(service_name, key):
         return f'item-ready/{service_name}/{key}'
 
-    def __init__(self, target_set, service_name, key, all_imports_known_tgt):
-        self._target_set = target_set
+    def __init__(self, service_name, key, all_imports_known_tgt):
         self._service_name = service_name
         self._key = key
         self._all_imports_known_tgt = all_imports_known_tgt
+        self._target_set = None
         self._completed = False
         self._provider_resource_tgt = None
         self._import_tgt = None
@@ -27,7 +27,7 @@ class ConfigItemReadyTarget(Target):
 
     @property
     def deps(self):
-        if self._import_tgt:
+        if self._provider_resource_tgt:
             return {self._import_tgt}
         else:
             return {self._all_imports_known_tgt}
@@ -39,6 +39,10 @@ class ConfigItemReadyTarget(Target):
             self._completed = True
         elif self._import_tgt and self._import_tgt.completed:
             self._completed = True
+
+    @property
+    def adopted_by(self):
+        return self._target_set
 
     @property
     def provider_resource_tgt(self):
@@ -55,13 +59,9 @@ class ConfigItemReadyTarget(Target):
                     )
             return
         self._provider_resource_tgt = resource_tgt
-        self._import_tgt = resource_tgt.import_tgt
-        target_set = resource_tgt.target_set
-        resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._key)
-        complete_tgt = target_set.factory.config_item_complete(self._service_name, self._key)
-        target_set.adopt(self)
-        target_set.adopt(resolved_tgt)
-        target_set.adopt(complete_tgt)
+        self._import_tgt = resource_tgt.import_tgt  # None for manual python module provider resource.
+        self._target_set = resource_tgt.target_set
+        self._target_set.adopt(self)
         # for test_target in self._unresolved_in_tests:
         #     resource_tgt.add_test(test_target, target_set)
 
@@ -73,11 +73,11 @@ class ConfigItemResolvedTarget(Target):
     def target_name(service_name, key):
         return f'item-resolved/{service_name}/{key}'
 
-    def __init__(self, target_set, service_name, key, ready_tgt):
-        self._target_set = target_set
+    def __init__(self, service_name, key, ready_tgt):
         self._service_name = service_name
         self._key = key
         self._ready_tgt = ready_tgt
+        self._target_set = None
         self._completed = False
         self._provider_resource_tgt = None
         self._ctr = None
@@ -98,10 +98,17 @@ class ConfigItemResolvedTarget(Target):
     def update_status(self):
         if not self._ctr:
             return
+        if not self._target_set:
+            self._target_set = self._ready_tgt.adopted_by
+            self._target_set.adopt(self)
         self._completed = all(target.completed for target in self.deps)
 
     def add_dep(self, target):
         self._custom_deps.add(target)
+
+    @property
+    def adopted_by(self):
+        return self._target_set
 
     @property
     def provider_resource_tgt(self):
@@ -125,12 +132,12 @@ class ConfigItemCompleteTarget(Target):
     def target_name(service_name, key):
         return f'item-complete/{service_name}/{key}'
 
-    def __init__(self, target_set, service_name, key, resolved_tgt, service_cfg_item_complete_tgt):
-        self._target_set = target_set
+    def __init__(self, service_name, key, resolved_tgt, service_cfg_item_complete_tgt):
         self._service_name = service_name
         self._key = key
         self._resolved_tgt = resolved_tgt
         self._service_cfg_item_complete_tgt = service_cfg_item_complete_tgt
+        self._target_set = None
         self._completed = False
         self._provider_resource_tgt = None
         self._ctr = None
@@ -155,13 +162,20 @@ class ConfigItemCompleteTarget(Target):
     def update_status(self):
         if self._completed:
             return
-        if not self._provider_resource_tgt and self._resolved_tgt.completed:
-            self._provider_resource_tgt = self._resolved_tgt.provider_resource_tgt
-            self._ctr = self._resolved_tgt.constructor
-        if not self._provider_resource_tgt or not self._provider_resource_tgt.completed:
+        if not self._provider_resource_tgt:
+            if self._resolved_tgt.completed:
+                self._provider_resource_tgt = self._resolved_tgt.provider_resource_tgt
+                self._ctr = self._resolved_tgt.constructor
+                assert self._provider_resource_tgt
+            else:
+                return
+        if not self._provider_resource_tgt.completed:
             return
         if self._service_cfg_item_complete_tgt and not self._service_cfg_item_complete_tgt.completed:
             return
+        if not self._target_set:
+            self._target_set = self._resolved_tgt.adopted_by
+            self._target_set.adopt(self)
         self._completed = True
 
     @property
