@@ -97,7 +97,11 @@ class ResourceRegistry:
         raise KeyError(name_pair)
 
     def has_piece(self, piece):
-        return piece in self._piece_to_name_pair
+        try:
+            self.try_reverse_resolve(piece)
+        except KeyError:
+            return False
+        return True
 
     def reverse_resolve(self, piece):
         try:
