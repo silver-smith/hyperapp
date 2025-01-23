@@ -17,4 +17,4 @@ sample:
 server:
   imports: [base, common, ui]
 client:
-  imports: [base, common, ui, lcs]
+  imports: [base, common, ui, sample, lcs]
