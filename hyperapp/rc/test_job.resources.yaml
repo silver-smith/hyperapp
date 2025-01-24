@@ -7,6 +7,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.fixture_resource:fixture_probe_template
 - legacy_type.system:actor_template
 - legacy_type.system:service_template
 - legacy_type.rc_job:config_item_missing_error
@@ -17,7 +18,6 @@ import:
 - legacy_type.test_job:succeeded_result
 - legacy_type.test_job:used_imports
 - rc.builtin_resources:builtin_resources.module
-- rc.fixture_probe:fixture_probe.module
 - rc.import_recorder:import_recorder.module
 - rc.python_src:python_src.module
 - rc.rc_constants:rc_constants.module
@@ -34,6 +34,7 @@ definitions:
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.builtin.python_module: legacy_type.builtin:python_module
+        htypes.fixture_resource.fixture_probe_template: legacy_type.fixture_resource:fixture_probe_template
         htypes.rc_job.config_item_missing_error: legacy_type.rc_job:config_item_missing_error
         htypes.rc_job.unknown_service_error: legacy_type.rc_job:unknown_service_error
         htypes.test_job.failed_result: legacy_type.test_job:failed_result
@@ -50,7 +51,6 @@ definitions:
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.system: base.system.system:system.module
         code.system_probe: rc.system_probe:system_probe.module
-        code.fixture_probe: rc.fixture_probe:fixture_probe.module
         code.system_job: rc.system_job:system_job.module
 
   SucceededTestResult:

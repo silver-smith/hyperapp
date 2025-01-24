@@ -11,14 +11,17 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
-from .code.config_ctl import DictConfigCtl
+from .code.config_ctl import (
+    DictConfigCtl,
+    item_pieces_to_data,
+    service_pieces_to_config,
+    )
 from .code.rc_constants import JobStatus
 from .code.python_src import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError, ImportRecorder
 from .code.system import UnknownServiceError
 from .code.system_probe import SystemProbe
-from .code.fixture_probe import FixtureProbeTemplate
 from .code.system_job import Result, SystemJob, SystemJobResult
 
 log  = logging.getLogger(__name__)
@@ -285,13 +288,14 @@ class TestJob(SystemJob):
         recorder = None
         try:
             system = self.convert_errors(self._prepare_system, system_resources)
-            key_to_req = self._make_key_to_req_map(system['cfg_item_creg'])
+            cfg_item_creg = system['cfg_item_creg']
+            key_to_req = self._make_key_to_req_map(cfg_item_creg)
             ctr_collector = system['ctr_collector']
             recorder = self._init_recorder(system, recorder_piece)
             ctr_collector.ignore_module(module_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
-            root_probe = self._make_root_fixture(system, module_piece, module)
-            system.update_config('rc-test-job', 'system', {self._root_name: root_probe})
+            root_fixture_config = self._root_fixture_config_layer(cfg_item_creg, module_piece, module)
+            system.load_config_layer('rc-test-root', root_fixture_config)
             self.convert_errors(self._run_system, system)
         except _TestJobError as x:
             result = x
@@ -317,16 +321,23 @@ class TestJob(SystemJob):
     def _root_name(self):
         return self._test_fn_name
 
-    def _make_root_fixture(self, system, module_piece, module):
-        ctl = DictConfigCtl(system['cfg_item_creg'])
-        ctl_ref = mosaic.put(ctl.piece)
+    def _root_fixture_config_layer(self, cfg_item_creg, module_piece, module):
+        ctl = DictConfigCtl(cfg_item_creg)
         test_fn = getattr(module, self._test_fn_name)
-        params = tuple(inspect.signature(test_fn).parameters)
-        test_fn_piece = htypes.builtin.attribute(
+        fn_piece = htypes.builtin.attribute(
             object=mosaic.put(module_piece),
             attr_name=self._test_fn_name,
             )
-        return FixtureProbeTemplate(self._test_fn_name, ctl_ref, test_fn_piece, params)
+        template = htypes.fixture_resource.fixture_probe_template(
+            service_name=self._test_fn_name,
+            ctl=mosaic.put(ctl.piece),
+            function=mosaic.put(fn_piece),
+            params=tuple(inspect.signature(test_fn).parameters),
+            )
+        service_to_config_piece = {
+            'system': item_pieces_to_data([template])
+            }
+        return service_pieces_to_config(service_to_config_piece)
 
     def incomplete_error(self, module_name, error_msg, traceback=None, missing_reqs=None):
         raise _IncompleteError(module_name, error_msg, traceback[:-1] if traceback else None, missing_reqs)
