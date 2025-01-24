@@ -54,7 +54,6 @@ def tcp_test_callback(
 
 
 def test_tcp_call(
-        system_config_piece,
         route_table,
         generate_rsa_identity,
         endpoint_registry,
