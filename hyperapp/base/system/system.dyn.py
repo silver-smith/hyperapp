@@ -13,7 +13,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.config_ctl import DictConfigCtl, merge_system_config_pieces, service_pieces_to_config
+from .code.config_ctl import DictConfigCtl, service_pieces_to_config
 
 log = logging.getLogger(__name__)
 
@@ -244,6 +244,10 @@ class System:
         self._name_to_service[name] = service
 
     def update_config(self, layer_name, service_name, config):
+        self._update_config(layer_name, service_name, config)
+        self._update_system_config_piece()
+
+    def _update_config(self, layer_name, service_name, config):
         self._configs_cache = None
         service_to_config = self._layer_to_configs.setdefault(layer_name, {})
         try:
@@ -277,7 +281,6 @@ class System:
         self.load_config_layer('single', config_piece)
 
     def load_config_layer(self, layer_name, config_piece):
-        self._update_system_config_piece(config_piece)
         service_to_config = {
             rec.service: web.summon(rec.config)
             for rec in config_piece.services
@@ -287,14 +290,11 @@ class System:
             config_piece = service_to_config.get(service_name)
             self._load_config_piece(layer_name, service_name, config_piece)
         self.add_core_service('layer_config_templates', self._layer_to_configs)
+        self._update_system_config_piece()
 
-    def _update_system_config_piece(self, config_piece):
-        service_name = 'system_config_piece'
-        if service_name in self._name_to_service:
-            complete_config_piece = merge_system_config_pieces(self._name_to_service[service_name], config_piece)
-        else:
-            complete_config_piece = config_piece
-        self.add_core_service('system_config_piece', complete_config_piece)
+    def _update_system_config_piece(self):
+        config_piece = self.config_to_data(self._configs)
+        self.add_core_service('system_config_piece', config_piece)
 
     def _service_config_order(self, service_name):
         order = {
@@ -313,7 +313,7 @@ class System:
             return
         ctl = self._config_ctl[service_name]
         config = ctl.from_data(config_piece)
-        self.update_config(layer_name, service_name, config)
+        self._update_config(layer_name, service_name, config)
 
     # TODO: Think how to load pyobj_creg config not by system. It is a global registry.
     def _load_pyobj_creg(self, config_piece):
