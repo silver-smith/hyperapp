@@ -166,11 +166,6 @@ def deduce_t(mosaic, pyobj_creg):
 
 
 @pytest.fixture
-def resource_registry_factory(mosaic):
-    return ResourceRegistry
-
-
-@pytest.fixture
 def resource_module_factory(mosaic, resource_type_producer, pyobj_creg):
     return partial(ResourceModule, mosaic, resource_type_producer, pyobj_creg)
 
@@ -213,8 +208,6 @@ def builtin_services(
         pyobj_creg,
         deduce_t,
         resource_type_producer,
-        resource_registry_factory,
-        # resource_registry,
         resource_module_factory,
         # resource_loader,
         resource_list_loader,
@@ -239,8 +232,6 @@ def builtin_services(
         'pyobj_creg': pyobj_creg,
         'deduce_t': deduce_t,
         'resource_type_producer': resource_type_producer,
-        'resource_registry_factory': resource_registry_factory,
-        # 'resource_registry': resource_registry,
         'resource_module_factory': resource_module_factory,
         # 'resource_loader': resource_loader,
         'resource_list_loader': resource_list_loader,
@@ -257,7 +248,6 @@ def builtin_service_resource_loader(mosaic, builtin_services):
 
 @pytest.fixture
 def resource_registry(
-        resource_registry_factory,
         resource_list_loader,
         legacy_type_resource_loader,
         builtin_types_as_dict,
@@ -265,7 +255,7 @@ def resource_registry(
         builtin_service_resource_loader,
         resource_dir_list,
         ):
-    registry = resource_registry_factory()
+    registry = ResourceRegistry()
     resource_list_loader(resource_dir_list, registry)
     legacy_type_modules = legacy_type_resource_loader({**builtin_types_as_dict(), **local_types})
     registry.update_modules(legacy_type_modules)
