@@ -4,8 +4,8 @@ import:
 - legacy_type.builtin:string
 - legacy_type.command:command_shortcut_lcs_d
 - legacy_type.lcs_resource_storage:mapping
-- legacy_type.navigator:go_back_d
 - models.column_list:open_column_list.d
+- models.column_list:toggle_visibility.d
 - models.command_list_model:set_shortcut.d
 - models.file_bundles:open.d
 - models.global_commands:open_global_commands.d
@@ -18,7 +18,9 @@ import:
 - sample.sample_tree:open_feed_sample_fn_tree.d
 - sample.sample_tree:open_sample_fn_tree.d
 - ui.layout:open_layout_tree.d
+- ui.layout:open_view_item_commands.d
 - ui.layout:set_shortcut.d
+- ui.navigator:go_back.d
 - ui.navigator:go_forward.d
 - ui.qt.auto_tabs:close_tab.d
 - ui.qt.auto_tabs:duplicate_tab.d
@@ -28,15 +30,12 @@ definitions:
   command_shortcut_lcs_d_1:
     type: legacy_type.command:command_shortcut_lcs_d
     value: {}
-  go_back_d_1:
-    type: legacy_type.navigator:go_back_d
-    value: {}
   lcs_storage_mapping:
     type: legacy_type.lcs_resource_storage:mapping
     value:
       elements:
       - key:
-        - go_back_d_1
+        - ui.navigator:go_back.d
         - command_shortcut_lcs_d_1
         value: shortcut_Esc
       - key:
@@ -123,6 +122,14 @@ definitions:
         - sample.sample_tree:open_feed_sample_fn_tree.d
         - command_shortcut_lcs_d_1
         value: shortcut_Shift_F6
+      - key:
+        - models.column_list:toggle_visibility.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Space
+      - key:
+        - command_shortcut_lcs_d_1
+        - ui.layout:open_view_item_commands.d
+        value: shortcut_C
   shortcut_Alt_F1:
     type: legacy_type.builtin:string
     value: Alt+F1
@@ -144,6 +151,9 @@ definitions:
   shortcut_Alt_W:
     type: legacy_type.builtin:string
     value: Alt+W
+  shortcut_C:
+    type: legacy_type.builtin:string
+    value: C
   shortcut_Ctrl_F4:
     type: legacy_type.builtin:string
     value: Ctrl+F4

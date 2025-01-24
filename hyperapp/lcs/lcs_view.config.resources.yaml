@@ -10,6 +10,7 @@ import:
 - legacy_type.column:column_d
 - legacy_type.column:list_d
 - legacy_type.column:show_d
+- legacy_type.command:command_shortcut_lcs_d
 - legacy_type.lcs_dirs_view:view
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.lcs_view:view
@@ -33,6 +34,9 @@ definitions:
     type: legacy_type.column:column_d
     value:
       name: d
+  command_shortcut_lcs_d_1:
+    type: legacy_type.command:command_shortcut_lcs_d
+    value: {}
   lcs_storage_mapping:
     type: legacy_type.lcs_resource_storage:mapping
     value:
@@ -61,6 +65,30 @@ definitions:
         - legacy_type.lcs_dirs_view:view
         - column_d_4
         value: bool_1
+      - key:
+        - lcs.lcs_view:open_lcs_view.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Alt_L
+      - key:
+        - lcs.lcs_dirs_view:lcs_open_dirs.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_D
+      - key:
+        - lcs.lcs_layer:lcs_open_layers.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_L
+      - key:
+        - lcs.lcs_view:lcs_open_piece.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Return
+      - key:
+        - lcs.lcs_view:lcs_remove.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Del
+      - key:
+        - lcs.lcs_dirs_view:lcs_dirs_items.d
+        - command_shortcut_lcs_d_1
+        value: shortcut_Return
   list_d_1:
     type: legacy_type.column:list_d
     value: {}
@@ -76,6 +104,9 @@ definitions:
   shortcut_L:
     type: legacy_type.builtin:string
     value: L
+  shortcut_Return:
+    type: legacy_type.builtin:string
+    value: Return
   show_d_1:
     type: legacy_type.column:show_d
     value: {}
