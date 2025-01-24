@@ -198,8 +198,8 @@ class System:
     _system_name = "System"
 
     def __init__(self):
-        self._layer_to_configs = {}  # layer_name -> service name -> service config
-        self._configs_cache = None
+        self._layer_to_configs = {}  # layer_name -> service name -> service config templates.
+        self._config_templates_cache = None
         self._name_to_service = {}
         self._resolve_stack = {}  # service name -> requester
         self._finalizers = {}  # service name -> fn
@@ -248,7 +248,7 @@ class System:
         self._update_system_config_piece()
 
     def _update_config(self, layer_name, service_name, config):
-        self._configs_cache = None
+        self._config_templates_cache = None
         service_to_config = self._layer_to_configs.setdefault(layer_name, {})
         try:
             dest = service_to_config[service_name]
@@ -293,7 +293,7 @@ class System:
         self._update_system_config_piece()
 
     def _update_system_config_piece(self):
-        config_piece = self.config_to_data(self._configs)
+        config_piece = self.config_to_data(self._config_templates)
         self.add_core_service('system_config_piece', config_piece)
 
     def _service_config_order(self, service_name):
@@ -332,9 +332,9 @@ class System:
         return service_pieces_to_config(service_to_config_piece)
         
     @property
-    def _configs(self):
-        if self._configs_cache is not None:
-            return self._configs_cache
+    def _config_templates(self):
+        if self._config_templates_cache is not None:
+            return self._config_templates_cache
         result = dict()
         for service_to_config in self._layer_to_configs.values():
             for service_name, config in service_to_config.items():
@@ -345,12 +345,12 @@ class System:
                     dest = ctl.empty_config_template()
                     result[service_name] = dest
                 ctl.merge(dest, config)
-        self._configs_cache = result
+        self._config_templates_cache = result
         return result
 
     @property
     def _name_to_template(self):
-        return self._configs.get('system', {})
+        return self._config_templates.get('system', {})
 
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)
@@ -367,7 +367,7 @@ class System:
     def resolve_config(self, service_name):
         ctl = self._config_ctl[service_name]
         try:
-            config_template = self._configs[service_name]
+            config_template = self._config_templates[service_name]
         except KeyError:
             config_template = ctl.empty_config_template()
         try:
