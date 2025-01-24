@@ -176,11 +176,6 @@ def resource_list_loader(resource_module_factory):
 
 
 @pytest.fixture
-def legacy_type_resource_loader():
-    return load_legacy_type_resources
-
-
-@pytest.fixture
 def builtin_types_as_dict(pyobj_creg, builtin_types):
     return partial(convert_builtin_types_to_dict, pyobj_creg, builtin_types)
 
@@ -212,7 +207,6 @@ def builtin_services(
         # resource_loader,
         resource_list_loader,
         builtin_types_as_dict,
-        legacy_type_resource_loader,
         # builtin_service_resource_loader,
         ):
     return {
@@ -236,7 +230,6 @@ def builtin_services(
         # 'resource_loader': resource_loader,
         'resource_list_loader': resource_list_loader,
         'builtin_types_as_dict': builtin_types_as_dict,
-        'legacy_type_resource_loader': legacy_type_resource_loader,
         # 'builtin_service_resource_loader': builtin_service_resource_loader,
     }
 
@@ -249,7 +242,6 @@ def builtin_service_resource_loader(mosaic, builtin_services):
 @pytest.fixture
 def resource_registry(
         resource_list_loader,
-        legacy_type_resource_loader,
         builtin_types_as_dict,
         local_types,
         builtin_service_resource_loader,
@@ -257,7 +249,7 @@ def resource_registry(
         ):
     registry = ResourceRegistry()
     resource_list_loader(resource_dir_list, registry)
-    legacy_type_modules = legacy_type_resource_loader({**builtin_types_as_dict(), **local_types})
+    legacy_type_modules = load_legacy_type_resources({**builtin_types_as_dict(), **local_types})
     registry.update_modules(legacy_type_modules)
     add_legacy_types_to_cache(registry, legacy_type_modules)  # Also adds builtin types, again.
     registry.set_module('builtins', builtin_service_resource_loader(registry))

@@ -47,9 +47,9 @@ def add_legacy_types_to_cache(res_reg, legacy_type_modules):
             res_reg.add_to_cache((module_name, var_name), module[var_name])
 
 
-def load_legacy_type_resources(local_types):
+def load_legacy_type_resources(types):
     name_to_module = defaultdict(LegacyTypeResourceModule)
-    for module_name, local_type_module in local_types.items():
+    for module_name, local_type_module in types.items():
         for name, type_piece in local_type_module.items():
             name_to_module[f'legacy_type.{module_name}'][name] = type_piece
             log.debug("Legacy type resource %s.%s: %s", module_name, name, type_piece)

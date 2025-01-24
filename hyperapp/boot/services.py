@@ -80,7 +80,6 @@ class Services(object):
         'resource_loader',
         'resource_list_loader',
         'builtin_types_as_dict',
-        'legacy_type_resource_loader',
         'builtin_service_resource_loader',
         'deduce_t',
         'project_factory',
@@ -134,7 +133,6 @@ class Services(object):
             self.resource_module_factory,
             )
         self.builtin_types_as_dict = partial(convert_builtin_types_to_dict, self.pyobj_creg, self.builtin_types)
-        self.legacy_type_resource_loader = load_legacy_type_resources
         add_builtin_types_to_pyobj_cache(self.pyobj_creg, self.builtin_types)
         self.builtin_service_resource_loader = partial(
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
@@ -149,7 +147,7 @@ class Services(object):
         self.pyobj_creg.register_actor(raw_t, raw_pyobj, web=self.web)
         self.code_registry_ctr = partial(CodeRegistry, self.web)
         self.cached_code_registry_ctr = partial(CachedCodeRegistry, self.mosaic, self.web)
-        builtin_type_modules = self.legacy_type_resource_loader(self.builtin_types_as_dict())
+        builtin_type_modules = load_legacy_type_resources(self.builtin_types_as_dict())
         builtins_project = BuiltinsProject(
             self.builtin_types_as_dict(), builtin_type_modules, self.builtin_service_resource_loader)
         self.project_factory = partial(Project, builtins_project, self.type_module_loader, self.resource_module_factory)
