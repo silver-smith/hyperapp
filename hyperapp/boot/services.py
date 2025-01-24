@@ -16,7 +16,6 @@ from .cached_code_registry import CachedCodeRegistry
 from .pyobj_registry import PyObjRegistry
 from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
-from .resource_dir import ResourceDir
 from .unbundler import Unbundler
 from .resource.resource_type import ResourceType
 from .resource.resource_type_producer import resource_type_producer
