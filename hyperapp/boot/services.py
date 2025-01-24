@@ -68,7 +68,6 @@ class Services(object):
         'hyperapp_dir',
         'mosaic',
         'web',
-        'local_types',
         'type_module_loader',
         'on_stop',
         'unbundler',
@@ -102,7 +101,6 @@ class Services(object):
         self.web = Web(self.mosaic, self.pyobj_creg)
         self.pyobj_creg.init(self.builtin_types, self.mosaic, self.web)
         register_builtin_types(self.builtin_types, self.pyobj_creg)
-        self.local_types = {}  # module name -> name -> type piece.
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.pyobj_creg)
         self.python_importer = PythonImporter()
         self.python_importer.register_meta_hook()

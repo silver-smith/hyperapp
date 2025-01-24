@@ -217,7 +217,6 @@ def builtin_services(
         'module_dir_list': module_dir_list,
         'mosaic': mosaic,
         'web': web,
-        'local_types': local_types,
         'type_module_loader': type_module_loader,
         # 'on_stop': on_stop,
         # 'unbundler': unbundler,
