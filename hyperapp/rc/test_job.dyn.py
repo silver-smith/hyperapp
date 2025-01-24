@@ -299,6 +299,20 @@ class TestJob(SystemJob):
             result = _Succeeded(self._src.name)
         return result.make_result(system_resources, recorder, key_to_req, system)
 
+    def _run_system(self, system):
+        rpc_servant_wrapper = system['rpc_servant_wrapper']
+        rpc_service_wrapper = system['rpc_service_wrapper']
+        subprocess_rpc_main = system['subprocess_rpc_main']
+        rpc_servant_wrapper.set(self._wrap_rpc_servant)
+        rpc_service_wrapper.set(self._wrap_rpc_service)
+        subprocess_rpc_main.set(test_subprocess_rpc_main)
+        try:
+            return system.run(self._root_name)
+        finally:
+            subprocess_rpc_main.reset()
+            rpc_service_wrapper.reset()
+            rpc_servant_wrapper.reset()
+
     @property
     def _root_name(self):
         return self._test_fn_name
@@ -313,20 +327,6 @@ class TestJob(SystemJob):
             attr_name=self._test_fn_name,
             )
         return FixtureProbeTemplate(self._test_fn_name, ctl_ref, test_fn_piece, params)
-
-    def _run_system(self, system):
-        rpc_servant_wrapper = system['rpc_servant_wrapper']
-        rpc_service_wrapper = system['rpc_service_wrapper']
-        subprocess_rpc_main = system['subprocess_rpc_main']
-        rpc_servant_wrapper.set(self._wrap_rpc_servant)
-        rpc_service_wrapper.set(self._wrap_rpc_service)
-        subprocess_rpc_main.set(test_subprocess_rpc_main)
-        try:
-            return system.run(self._root_name)
-        finally:
-            subprocess_rpc_main.reset()
-            rpc_service_wrapper.reset()
-            rpc_servant_wrapper.reset()
 
     def incomplete_error(self, module_name, error_msg, traceback=None, missing_reqs=None):
         raise _IncompleteError(module_name, error_msg, traceback[:-1] if traceback else None, missing_reqs)
