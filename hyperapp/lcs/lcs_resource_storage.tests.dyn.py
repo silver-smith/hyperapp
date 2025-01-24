@@ -5,8 +5,6 @@ from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache
 
 from . import htypes
 from .services import (
-    legacy_type_resource_loader,
-    local_types,
     mosaic,
     pyobj_creg,
     )
