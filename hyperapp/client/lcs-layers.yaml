@@ -1,11 +1,11 @@
 default_layer: default
 layers:
-- name: custom
-  path: client/lcs_storage_custom
 - name: default
-  path: client/lcs_storage
+  path: client/default.config
+- name: custom
+  path: client/custom.config
 - name: shortcuts
-  path: client/lcs_storage_shortcuts
+  path: client/shortcuts.config
 - name: model_commands
   path: models/model_commands.config
 - name: global_commands
