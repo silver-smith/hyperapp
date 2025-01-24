@@ -91,7 +91,11 @@ class Project(ResourceRegistry):
         ext = '.resources.yaml'
         path_to_resource_text = self._filter_by_ext(path_to_text, ext)
         for path, text in path_to_resource_text.items():
-            module_name = self._name + '.' + path[:-len(ext)].replace('/', '.')
+            stem = path[:-len(ext)].replace('/', '.')
+            module_name = self._name + '.' + stem
+            if 'config' in stem.split('.')[1:]:
+                # Configs are loaded to separate projects as lcs layers.
+                continue
             module = self._resource_module_factory(self, module_name, root_dir / path, text=text)
             self.set_module(module_name, module)
 
