@@ -366,7 +366,10 @@ class System:
 
     def resolve_config(self, service_name):
         ctl = self._config_ctl[service_name]
-        config_template = self._configs.get(service_name, {})
+        try:
+            config_template = self._configs[service_name]
+        except KeyError:
+            config_template = ctl.empty_config_template()
         try:
             return ctl.resolve(self, service_name, config_template)
         except ServiceDepLoopError:

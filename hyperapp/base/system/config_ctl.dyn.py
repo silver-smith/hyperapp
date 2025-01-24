@@ -45,8 +45,11 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
     def to_data(self, config):
         return self.item_pieces_to_data([
             self.item_piece(value)
-            for value in config.values()
+            for value in self.config_to_items(config)
             ])
+
+    def config_to_items(self, config):
+        return config.values()
 
     @abstractmethod
     def empty_config_template(self):

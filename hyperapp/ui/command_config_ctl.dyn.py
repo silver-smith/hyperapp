@@ -14,6 +14,12 @@ class TypedCommandConfigCtl(DictConfigCtl):
     def piece(self):
         return htypes.command.typed_config_ctl()
 
+    def config_to_items(self, config):
+        items = []
+        for key, values in config.items():
+            items += values
+        return items
+
     def merge(self, dest, src):
         for key, value_list in src.items():
             dest.setdefault(key, []).extend(value_list)
@@ -38,6 +44,9 @@ class UntypedCommandConfigCtl(MultiItemConfigCtl):
     @property
     def piece(self):
         return htypes.command.untyped_config_ctl()
+
+    def config_to_items(self, config):
+        return config
 
     def empty_config_template(self):
         return []
