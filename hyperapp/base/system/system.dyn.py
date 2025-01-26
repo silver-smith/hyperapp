@@ -221,6 +221,7 @@ class System:
         self.add_core_service('config_ctl_creg', self._config_ctl_creg)
         self.add_core_service('config_ctl', self._config_ctl)
         self.add_core_service('layer_config_templates', self._layer_to_configs)
+        self.add_core_service('get_system_config_piece', self.get_config_piece)
         self.add_core_service('system', self)
 
     def _make_config_ctl_creg_config(self):
@@ -244,10 +245,6 @@ class System:
         self._name_to_service[name] = service
 
     def update_config(self, layer_name, service_name, config):
-        self._update_config(layer_name, service_name, config)
-        self._update_system_config_piece()
-
-    def _update_config(self, layer_name, service_name, config):
         self._config_templates_cache = None
         service_to_config = self._layer_to_configs.setdefault(layer_name, {})
         try:
@@ -289,11 +286,6 @@ class System:
         for service_name in ordered_services:
             config_piece = service_to_config.get(service_name)
             self._load_config_piece(layer_name, service_name, config_piece)
-        self._update_system_config_piece()
-
-    def _update_system_config_piece(self):
-        config_piece = self.config_to_data(self._config_templates)
-        self.add_core_service('system_config_piece', config_piece)
 
     def _service_config_order(self, service_name):
         order = {
@@ -308,7 +300,10 @@ class System:
             return
         ctl = self._config_ctl[service_name]
         config = ctl.from_data(config_piece)
-        self._update_config(layer_name, service_name, config)
+        self.update_config(layer_name, service_name, config)
+
+    def get_config_piece(self):
+        return self.config_to_data(self._config_templates)
 
     def config_to_data(self, service_to_config):
         service_to_config_piece = {}

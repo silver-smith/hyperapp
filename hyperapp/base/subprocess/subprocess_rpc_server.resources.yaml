@@ -51,7 +51,7 @@ definitions:
       function: subprocess_rpc_server_running
       free_params: []
       service_params:
-      - system_config_piece
+      - get_system_config_piece
       - partial_ref
       - peer_registry
       - rpc_submit_factory

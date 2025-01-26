@@ -71,7 +71,7 @@ def _rpc_subprocess_callback(request, subprocess_name, subprocess_id, subprocess
 
 
 def subprocess_rpc_server_running(
-        system_config_piece,
+        get_system_config_piece,
         partial_ref,
         peer_registry,
         rpc_submit_factory,
@@ -88,7 +88,7 @@ def subprocess_rpc_server_running(
         _callback_signals[subprocess_id] = event = threading.Event()
         main_ref = partial_ref(
             subprocess_rpc_main.get(),
-            system_config_piece=system_config_piece,
+            system_config_piece=get_system_config_piece(),
             root_name='rpc_server_main',
             name=name,
             master_peer_piece=identity.peer.piece,
