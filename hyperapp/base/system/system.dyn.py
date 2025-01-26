@@ -216,7 +216,6 @@ class System:
             'system': dict_config_ctl,
             'config_ctl_creg': dict_config_ctl,
             'cfg_item_creg': dict_config_ctl,
-            'pyobj_creg': dict_config_ctl,
             })
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
         self.add_core_service('config_ctl_creg', self._config_ctl_creg)
@@ -301,28 +300,15 @@ class System:
             'cfg_item_creg': 1,
             'config_ctl_creg': 2,
             'system': 3,
-            'pyobj_creg': 21,
             }
         return order.get(service_name, 10)
 
     def _load_config_piece(self, layer_name, service_name, config_piece):
         if not config_piece:
             return
-        if service_name == 'pyobj_creg':
-            self._load_pyobj_creg(config_piece)
-            return
         ctl = self._config_ctl[service_name]
         config = ctl.from_data(config_piece)
         self._update_config(layer_name, service_name, config)
-
-    # TODO: Think how to load pyobj_creg config not by system. It is a global registry.
-    def _load_pyobj_creg(self, config_piece):
-        if not config_piece:
-            return
-        ctl = self._config_ctl['pyobj_creg']
-        config_template = ctl.from_data(config_piece)
-        config = ctl.resolve(self, 'pyobj_creg', config_template)
-        pyobj_creg.update_config(config)
 
     def config_to_data(self, service_to_config):
         service_to_config_piece = {}
