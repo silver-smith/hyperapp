@@ -1,0 +1,13 @@
+import:
+- builtins:web.service
+- legacy_type.builtin:python_module
+
+definitions:
+
+  config_layer.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: config_layer
+      file_name: config_layer.dyn.py
+      import_list:
+        services.web: builtins:web.service

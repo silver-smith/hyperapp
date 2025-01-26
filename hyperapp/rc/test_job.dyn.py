@@ -20,6 +20,7 @@ from .code.rc_constants import JobStatus
 from .code.python_src import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError, ImportRecorder
+from .code.config_layer import StaticConfigLayer
 from .code.system import UnknownServiceError
 from .code.system_probe import SystemProbe
 from .code.system_job import Result, SystemJob, SystemJobResult
@@ -294,7 +295,7 @@ class TestJob(SystemJob):
             recorder = self._init_recorder(system, recorder_piece)
             ctr_collector.ignore_module(module_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
-            root_fixture_config = self._root_fixture_config_layer(cfg_item_creg, module_piece, module)
+            root_fixture_config = self._root_fixture_config_layer(system, cfg_item_creg, module_piece, module)
             system.load_config_layer('rc-test-root', root_fixture_config)
             self.convert_errors(self._run_system, system)
         except _TestJobError as x:
@@ -321,7 +322,7 @@ class TestJob(SystemJob):
     def _root_name(self):
         return self._test_fn_name
 
-    def _root_fixture_config_layer(self, cfg_item_creg, module_piece, module):
+    def _root_fixture_config_layer(self, system, cfg_item_creg, module_piece, module):
         ctl = DictConfigCtl(cfg_item_creg)
         test_fn = getattr(module, self._test_fn_name)
         fn_piece = htypes.builtin.attribute(
@@ -337,7 +338,8 @@ class TestJob(SystemJob):
         service_to_config_piece = {
             'system': item_pieces_to_data([template])
             }
-        return service_pieces_to_config(service_to_config_piece)
+        config_piece = service_pieces_to_config(service_to_config_piece)
+        return StaticConfigLayer(system, system['config_ctl'], config_piece)
 
     def incomplete_error(self, module_name, error_msg, traceback=None, missing_reqs=None):
         raise _IncompleteError(module_name, error_msg, traceback[:-1] if traceback else None, missing_reqs)

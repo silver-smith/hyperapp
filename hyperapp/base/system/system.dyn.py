@@ -14,6 +14,7 @@ from .services import (
     web,
     )
 from .code.config_ctl import DictConfigCtl, service_pieces_to_config
+from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
 
 log = logging.getLogger(__name__)
 
@@ -259,48 +260,37 @@ class System:
             ctl.merge(dest, config)
         if service_name in {'config_ctl_creg', 'cfg_item_creg'}:
             # Subsequent update_config calls may already use it.
-            self._update_service_config(service_name, config)
+            self.update_service_config(service_name, config)
         if service_name == 'system':
             # Subsequent update_config calls may already use it.
-            self._update_config_ctl(config)
+            self.update_config_ctl(config)
 
-    def _update_service_config(self, service_name, config):
+    def update_service_config(self, service_name, config):
         service = self._name_to_service[service_name]
         for key, template in config.items():
             value = template.resolve(self, service_name)
             service.update_config({key: value})
 
-    def _update_config_ctl(self, config):
+    def update_config_ctl(self, config):
         for service_name, template in config.items():
             self._config_ctl[service_name] = self._config_ctl_creg.invite(template.ctl_ref)
 
     def load_config(self, config_piece):
-        self.load_config_layer('single', config_piece)
+        layer = StaticConfigLayer(self, self['config_ctl'], config_piece)
+        self.load_config_layer('full', layer)
 
-    def load_config_layer(self, layer_name, config_piece):
-        service_to_config = {
-            rec.service: web.summon(rec.config)
-            for rec in config_piece.services
-            }
-        ordered_services = sorted(service_to_config, key=self._service_config_order)
-        for service_name in ordered_services:
-            config_piece = service_to_config.get(service_name)
-            self._load_config_piece(layer_name, service_name, config_piece)
+    def load_config_layer(self, layer_name, layer):
+        # layer.config is expected to be ordered with service_config_order.
+        for service_name, config in layer.config.items():
+            self.update_config(layer_name, service_name, config)
 
-    def _service_config_order(self, service_name):
+    def service_config_order(self, service_name):
         order = {
             'cfg_item_creg': 1,
             'config_ctl_creg': 2,
             'system': 3,
             }
         return order.get(service_name, 10)
-
-    def _load_config_piece(self, layer_name, service_name, config_piece):
-        if not config_piece:
-            return
-        ctl = self._config_ctl[service_name]
-        config = ctl.from_data(config_piece)
-        self.update_config(layer_name, service_name, config)
 
     def get_config_piece(self):
         return self.config_to_data(self._config_templates)
@@ -412,5 +402,6 @@ def run_config(config, root_name, *args, **kw):
 def run_projects(projects, root_name, *args, **kw):
     system = System()
     for project in projects:
-        system.load_config_layer(project.name, project.config)
+        layer = ProjectConfigLayer(system, system['config_ctl'], project)
+        system.load_config_layer(project.name, layer)
     system.run(root_name, *args, **kw)

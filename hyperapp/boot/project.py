@@ -69,10 +69,6 @@ class Project(ResourceRegistry):
     def types(self):
         return self._types
 
-    @property
-    def config(self):
-        return self.resolve((f'{self._name}.config', 'config'))
-
     def load(self, root_dir):
         path_to_text = load_texts(root_dir)
         self.load_types(root_dir, path_to_text)

@@ -1,6 +1,7 @@
 import:
 
 - base.system.config_ctl:config_ctl.module
+- base.system.config_layer:config_layer.module
 - base.system.system:dict_config_ctl
 - base.system.system:system.module
 - builtins:mosaic.service
@@ -45,6 +46,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.config_ctl: base.system.config_ctl:config_ctl.module
+        code.config_layer: base.system.config_layer:config_layer.module
         code.python_src: rc.python_src:python_src.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.import_recorder: rc.import_recorder:import_recorder.module
