@@ -220,6 +220,7 @@ class System:
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
         self.add_core_service('config_ctl_creg', self._config_ctl_creg)
         self.add_core_service('config_ctl', self._config_ctl)
+        self.add_core_service('layer_config_templates', self._layer_to_configs)
         self.add_core_service('system', self)
 
     def _make_config_ctl_creg_config(self):
@@ -288,7 +289,6 @@ class System:
         for service_name in ordered_services:
             config_piece = service_to_config.get(service_name)
             self._load_config_piece(layer_name, service_name, config_piece)
-        self.add_core_service('layer_config_templates', self._layer_to_configs)
         self._update_system_config_piece()
 
     def _update_system_config_piece(self):
