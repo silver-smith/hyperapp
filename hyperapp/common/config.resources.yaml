@@ -1,9 +1,17 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.data_service:data_service-config_ctl.actor-template
+- legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
   config:
     type: legacy_type.system:system_config
     value:
-      services: {}
+      services:
+        config_ctl_creg: config_ctl_creg
+  config_ctl_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - common.data_service:data_service-config_ctl.actor-template

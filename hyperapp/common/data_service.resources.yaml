@@ -1,0 +1,40 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- base.system.config_ctl:config_ctl.module
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.data_service:config_ctl
+- legacy_type.data_service:config_item
+- legacy_type.system:actor_template
+definitions:
+  DataServiceConfigCtl:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_service.module
+      attr_name: DataServiceConfigCtl
+  DataServiceConfigCtl.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: DataServiceConfigCtl
+      attr_name: from_piece
+  data_service-config_ctl.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.data_service:config_ctl
+      function: DataServiceConfigCtl.from_piece
+      service_params: []
+  data_service.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: data_service
+      file_name: data_service.dyn.py
+      import_list:
+        code.config_ctl: base.system.config_ctl:config_ctl.module
+        code.mark: base.mark:mark.module
+        htypes.data_service.config_item: legacy_type.data_service:config_item
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service

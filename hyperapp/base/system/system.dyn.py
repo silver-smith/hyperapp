@@ -298,6 +298,13 @@ class System:
             service_to_config_piece[service_name] = ctl.to_data(config)
         return service_pieces_to_config(service_to_config_piece)
         
+    def get_config_template(self, service_name):
+        try:
+            return self._config_templates[service_name]
+        except KeyError:
+            ctl = self._config_ctl[service_name]
+            return ctl.empty_config_template()
+
     @property
     def _config_templates(self):
         if self._config_templates_cache is not None:
@@ -332,11 +339,8 @@ class System:
         return service(*args, **kw)
 
     def resolve_config(self, service_name):
+        config_template = self.get_config_template(service_name)
         ctl = self._config_ctl[service_name]
-        try:
-            config_template = self._config_templates[service_name]
-        except KeyError:
-            config_template = ctl.empty_config_template()
         return ctl.resolve(self, service_name, config_template)
 
     def __getitem__(self, service_name):

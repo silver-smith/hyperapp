@@ -52,6 +52,9 @@ class StaticConfigLayer(ConfigLayer):
     def config(self):
         return self._data_to_config(self._config_piece)
 
+    def set(self, service_name, key, value):
+        raise NotImplementedError()
+
 
 class ProjectConfigLayer(ConfigLayer):
 
@@ -64,3 +67,6 @@ class ProjectConfigLayer(ConfigLayer):
         config_module_name = f'{self._project.name}.config'
         config_piece = self._project[config_module_name, 'config']
         return self._data_to_config(config_piece)
+
+    def set(self, service_name, key, value):
+        assert 0, 'TODO'
