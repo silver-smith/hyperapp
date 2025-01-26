@@ -14,7 +14,7 @@ class TypedCommandConfigCtl(DictConfigCtl):
     def piece(self):
         return htypes.command.typed_config_ctl()
 
-    def config_to_items(self, config):
+    def _config_to_items(self, config):
         items = []
         for key, values in config.items():
             items += values
@@ -24,7 +24,7 @@ class TypedCommandConfigCtl(DictConfigCtl):
         for key, value_list in src.items():
             dest.setdefault(key, []).extend(value_list)
 
-    def update_config(self, config_template, item):
+    def _update_config(self, config_template, item):
         config_template.setdefault(item.key, []).append(item)
 
     def resolve_item(self, system, service_name, item):
@@ -45,19 +45,19 @@ class UntypedCommandConfigCtl(MultiItemConfigCtl):
     def piece(self):
         return htypes.command.untyped_config_ctl()
 
-    def config_to_items(self, config):
+    def _config_to_items(self, config):
         return config
 
     def empty_config_template(self):
         return []
 
-    def update_config(self, config_template, item):
+    def _update_config(self, config_template, item):
         config_template.append(item)
 
     def merge(self, dest, src):
         dest.extend(src)
 
-    def lazy_config(self, system, service_name, config_template):
+    def _lazy_config(self, system, service_name, config_template):
         assert False, "TODO"
 
     def resolve(self, system, service_name, config_template):

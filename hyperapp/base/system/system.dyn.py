@@ -13,7 +13,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.config_ctl import DictConfigCtl, service_pieces_to_config
+from .code.config_ctl import DictConfigCtl, ServiceDepLoopError, service_pieces_to_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
 
 log = logging.getLogger(__name__)
@@ -24,10 +24,6 @@ class UnknownServiceError(Exception):
     def __init__(self, service_name):
         super().__init__(f"Unknown service: {service_name!r}")
         self.service_name = service_name
-
-
-class ServiceDepLoopError(Exception):
-    pass
 
 
 @dataclass
@@ -341,10 +337,7 @@ class System:
             config_template = self._config_templates[service_name]
         except KeyError:
             config_template = ctl.empty_config_template()
-        try:
-            return ctl.resolve(self, service_name, config_template)
-        except ServiceDepLoopError:
-            return ctl.lazy_config(self, service_name, config_template)
+        return ctl.resolve(self, service_name, config_template)
 
     def __getitem__(self, service_name):
         return self.resolve_service(service_name)

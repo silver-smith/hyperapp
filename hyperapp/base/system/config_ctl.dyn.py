@@ -7,6 +7,10 @@ from .services import (
     )
 
 
+class ServiceDepLoopError(Exception):
+    pass
+
+
 class ConfigCtl(metaclass=ABCMeta):
 
     @abstractmethod
@@ -18,11 +22,11 @@ class ConfigCtl(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def merge(self, dest, src):
+    def empty_config_template(self):
         pass
 
     @abstractmethod
-    def lazy_config(self, system, service_name, config_template):
+    def merge(self, dest, src):
         pass
 
     @abstractmethod
@@ -39,30 +43,26 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
         config_template = self.empty_config_template()
         for item_ref in piece.items:
             item = self._cfg_item_creg.invite(item_ref)
-            self.update_config(config_template, item)
+            self._update_config(config_template, item)
         return config_template
 
     def to_data(self, config):
-        return self.item_pieces_to_data([
+        return self._item_pieces_to_data([
             self.item_piece(value)
-            for value in self.config_to_items(config)
+            for value in self._config_to_items(config)
             ])
 
-    def config_to_items(self, config):
+    def _config_to_items(self, config):
         return config.values()
 
     @abstractmethod
-    def empty_config_template(self):
-        pass
-
-    @abstractmethod
-    def update_config(self, config_template, item):
+    def _update_config(self, config_template, item):
         pass
 
     def item_piece(self, item):
         return self._cfg_item_creg.actor_to_piece(item)
 
-    def item_pieces_to_data(self, item_list):
+    def _item_pieces_to_data(self, item_list):
         return item_pieces_to_data(item_list)
 
 
@@ -113,10 +113,16 @@ class DictConfigCtl(MultiItemConfigCtl):
     def merge(self, dest, src):
         dest.update(src)
 
-    def lazy_config(self, system, service_name, config_template):
+    def _lazy_config(self, system, service_name, config_template):
         return LazyDictConfig(self, system, service_name, config_template)
 
     def resolve(self, system, service_name, config_template):
+        try:
+            return self._resolve(system, service_name, config_template)
+        except ServiceDepLoopError:
+            return self._lazy_config(system, service_name, config_template)
+
+    def _resolve(self, system, service_name, config_template):
         config = {}
         for key, item in config_template.items():
             config[key] = self.resolve_item(system, service_name, item)
@@ -128,7 +134,7 @@ class DictConfigCtl(MultiItemConfigCtl):
     def empty_config_template(self):
         return {}
 
-    def update_config(self, config_template, item):
+    def _update_config(self, config_template, item):
         config_template[item.key] = item
 
 
