@@ -24,7 +24,7 @@ class LcsResourceStorage:
     def __init__(self, pick_refs, name, path, project_imports):
         self._pick_refs = pick_refs
         self._path = path
-        self._project = project_factory(name, project_imports)
+        self._project = project_factory(path.parent, name, project_imports)
         self._res_module = resource_module_factory(self._project, name, path, load_from_file=path.exists())
         self._project.set_module(name, self._res_module)
         self._mapping = self._load_mapping()

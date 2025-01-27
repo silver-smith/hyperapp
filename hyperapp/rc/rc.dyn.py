@@ -284,14 +284,14 @@ def build_target_sets(
             name_to_target_project[p.name]
             for p in project.imports
             }
-        root_dir = hyperapp_dir / name
-        path_to_text = load_texts(root_dir)
+        project_dir = hyperapp_dir / name
+        path_to_text = load_texts(project_dir)
         log.info("Loaded project %r: %s files", name, len(path_to_text))
-        target_project = project_factory(name, imports=project_imports)
-        target_project.load_types(root_dir, path_to_text)
+        target_project = project_factory(project_dir, name, imports=project_imports)
+        target_project.load_types(path_to_text)
         target_set = create_target_set(
             config_ctl, ctr_from_template_creg, layer_config_templates, rc_config,
-            root_dir, job_cache, cached_count, globals_targets, target_project, path_to_text, target_set_imports)
+            project_dir, job_cache, cached_count, globals_targets, target_project, path_to_text, target_set_imports)
         if name == 'base':
             add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, base_project)
         target_set.post_init()

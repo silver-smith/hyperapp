@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 
 from PySide6 import QtWidgets
 
@@ -9,7 +10,7 @@ from .tested.code import client
 
 
 def test_client(client_main):
-    client_project = project_factory('mock-client')
+    client_project = project_factory(Path('/tmp/client-test'), 'mock-client')
     name_to_project = {
         'client': client_project,
         }

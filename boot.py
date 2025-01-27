@@ -19,7 +19,6 @@ def main():
 
     try:
         pyobj_creg = services.pyobj_creg
-        project_factory = services.project_factory
         load_projects_from_file = services.load_projects_from_file
 
         use_projects = sys.argv[1].split(',')
@@ -33,7 +32,7 @@ def main():
             if name in use_projects
             }
         for name, project in name_to_project.items():
-            project.load(HYPERAPP_DIR / name)
+            project.load()
 
         module_piece = name_to_project['base']['base.system.system', 'system.module']
         module = pyobj_creg.animate(module_piece)
