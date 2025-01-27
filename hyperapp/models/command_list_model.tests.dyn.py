@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 from . import htypes
 from .services import (
@@ -73,16 +73,21 @@ def mock_run_input_key_dialog():
     return 'Space'
 
 
-async def test_global_set_shortcut(feed_factory, lcs, current_item):
+@mark.fixture.obj
+def shortcut_reg():
+    return MagicMock()
+
+
+async def test_global_set_shortcut(feed_factory, shortcut_reg, current_item):
     piece = htypes.global_commands.model()
     feed = feed_factory(piece)
     command_list_model.run_key_input_dialog = mock_run_input_key_dialog
-    await command_list_model.set_shortcut(piece, 0, current_item, lcs)
-    lcs.set.assert_called_once()
+    await command_list_model.set_shortcut(piece, 0, current_item)
+    shortcut_reg.__setitem__.assert_called_once()
     await feed.wait_for_diffs(count=1)
 
 
-async def test_model_set_shortcut(feed_factory, lcs, current_item):
+async def test_model_set_shortcut(feed_factory, shortcut_reg, current_item):
     model = htypes.command_list_model_tests.sample_model()
     model_state = htypes.command_list_model_tests.sample_model_state()
     piece = htypes.model_commands.model(
@@ -91,8 +96,8 @@ async def test_model_set_shortcut(feed_factory, lcs, current_item):
         )
     feed = feed_factory(piece)
     command_list_model.run_key_input_dialog = mock_run_input_key_dialog
-    await command_list_model.set_shortcut(piece, 0, current_item, lcs)
-    lcs.set.assert_called_once()
+    await command_list_model.set_shortcut(piece, 0, current_item)
+    shortcut_reg.__setitem__.assert_called_once()
     await feed.wait_for_diffs(count=1)
 
 

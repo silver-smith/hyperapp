@@ -190,7 +190,7 @@ definitions:
       properties:
         is_global: false
         uses_state: true
-        remotable: false
+        remotable: true
       system_fn: set_shortcut.system-fn
   set_shortcut.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -200,6 +200,6 @@ definitions:
       - piece
       - current_idx
       - current_item
-      - lcs
       service_params:
+      - shortcut_reg
       - feed_factory
