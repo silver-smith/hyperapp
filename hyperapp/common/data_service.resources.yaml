@@ -35,6 +35,7 @@ definitions:
       import_list:
         code.config_ctl: base.system.config_ctl:config_ctl.module
         code.mark: base.mark:mark.module
+        htypes.data_service.config_ctl: legacy_type.data_service:config_ctl
         htypes.data_service.config_item: legacy_type.data_service:config_item
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service

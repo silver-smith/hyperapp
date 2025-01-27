@@ -14,6 +14,10 @@ class DataServiceConfigCtl(ConfigCtl):
     def from_piece(cls, piece):
         return cls()
 
+    @property
+    def piece(self):
+        return htypes.data_service.config_ctl()
+
     def from_data(self, piece):
         config_template = self.empty_config_template()
         for item_ref in piece.items:
