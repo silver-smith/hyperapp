@@ -199,6 +199,7 @@ class System:
     _system_name = "System"
 
     def __init__(self):
+        self._layers = {}  # layer name -> layer.
         self._layer_to_configs = {}  # layer_name -> service name -> service config templates.
         self._config_templates_cache = None
         self._name_to_service = {}
@@ -282,6 +283,7 @@ class System:
     def load_config_layer(self, layer_name, layer):
         # layer.config is expected to be ordered with service_config_order.
         for service_name, config in layer.config.items():
+            self._layers[layer_name] = layer
             self.update_config(layer_name, service_name, config)
 
     def service_config_order(self, service_name):
@@ -291,6 +293,10 @@ class System:
             'system': 3,
             }
         return order.get(service_name, 10)
+
+    @property
+    def default_layer(self):
+        return list(self._layers.values())[-1]
 
     def get_config_piece(self):
         return self.config_to_data(self._config_templates)
