@@ -13,10 +13,14 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.config_ctl import DictConfigCtl, ServiceDepLoopError, service_pieces_to_config
+from .code.config_ctl import DictConfigCtl, service_pieces_to_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
 
 log = logging.getLogger(__name__)
+
+
+class ServiceDepLoopError(Exception):
+    pass
 
 
 class UnknownServiceError(Exception):

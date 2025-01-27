@@ -7,10 +7,6 @@ from .services import (
     )
 
 
-class ServiceDepLoopError(Exception):
-    pass
-
-
 class ConfigCtl(metaclass=ABCMeta):
 
     @abstractmethod
@@ -76,11 +72,49 @@ class LazyDictConfig:
         self._resolved_config = {}
 
     def __getitem__(self, key):
+        return self._resolve_key(key)
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def items(self):
+        return self._items.items()
+
+    def values(self):
+        return self._items.values()
+
+    @property
+    def _items(self):
+        items = {**self._resolved_config}
+        for key, value_template in self._config_template.items():
+            if key in items:
+                continue
+            value = self._resolve_template(key, value_template)
+            items[key] = value
+        return items
+
+    def setdefault(self, key, default):
+        try:
+            return self._resolve_key(key)
+        except KeyError:
+            self._resolved_config[key] = default
+            return default
+
+    def update(self, config):
+        self._resolved_config.update(config)
+
+    def _resolve_key(self, key):
         try:
             return self._resolved_config[key]
         except KeyError:
             pass
         value_template = self._config_template[key]  # KeyError is raised from here.
+        return self._resolve_template(key, value_template)
+
+    def _resolve_template(self, key, value_template):
         try:
             value = self._ctl.resolve_item(self._system, self._service_name, value_template)
         except KeyError as x:
@@ -89,15 +123,6 @@ class LazyDictConfig:
                 f"Error resolving {self._service_name} config tempate for {key!r}: {x.__class__.__name__}: {x}") from x
         self._resolved_config[key] = value
         return value
-
-    def get(self, key, default=None):
-        try:
-            return self[key]
-        except KeyError:
-            return default
-
-    def update(self, config):
-        self._resolved_config.update(config)
 
 
 class DictConfigCtl(MultiItemConfigCtl):
@@ -117,10 +142,7 @@ class DictConfigCtl(MultiItemConfigCtl):
         return LazyDictConfig(self, system, service_name, config_template)
 
     def resolve(self, system, service_name, config_template):
-        try:
-            return self._resolve(system, service_name, config_template)
-        except ServiceDepLoopError:
-            return self._lazy_config(system, service_name, config_template)
+        return self._lazy_config(system, service_name, config_template)
 
     def _resolve(self, system, service_name, config_template):
         config = {}
