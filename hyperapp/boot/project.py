@@ -1,9 +1,14 @@
-import yaml
+import logging
 from collections import namedtuple
+
+import yaml
 
 from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache, load_legacy_type_resources
 from hyperapp.boot.resource.resource_registry import ResourceRegistry
 
+log = logging.getLogger(__name__)
+
+RESOURCE_EXT = '.resources.yaml'
 
 ProjectRec = namedtuple('ProjectRec', 'name imports')
 
@@ -21,6 +26,31 @@ def load_texts(root_dir):
         path_to_text[str(rel_path)] = path.read_text()
     return path_to_text
 
+
+def _config_project_name(path):
+    name = path.split('/')[-1]
+    if not name.endswith(RESOURCE_EXT):
+        return None
+    stem = path[:-len(RESOURCE_EXT)]
+    parts = stem.split('.')
+    if len(parts) > 1 and parts[-1] == 'config':
+        dir = '.'.join(path.split('/')[:-1])
+        if dir:
+            return f'{dir}.{stem}'
+        else:
+            return stem
+    return None
+            
+
+def separate_configs(path_to_text):
+    project_path_to_text = {}
+    config_path_to_text = {}
+    for path, text in path_to_text.items():
+        if _config_project_name(path):
+            config_path_to_text[path] = text
+        else:
+            project_path_to_text[path] = text
+    return (project_path_to_text, config_path_to_text)
 
 
 class BuiltinsProject(ResourceRegistry):
@@ -78,8 +108,8 @@ class Project(ResourceRegistry):
     def types(self):
         return self._types
 
-    def load(self):
-        path_to_text = load_texts(self._dir)
+    def load(self, path_to_text):
+        log.info("Project %s: loading %d files", self._name, len(path_to_text))
         self.load_types(path_to_text)
         self.load_resources(path_to_text)
 
@@ -93,14 +123,10 @@ class Project(ResourceRegistry):
         add_legacy_types_to_cache(self, legacy_type_modules)
 
     def load_resources(self, path_to_text):
-        ext = '.resources.yaml'
-        path_to_resource_text = self._filter_by_ext(path_to_text, ext)
+        path_to_resource_text = self._filter_by_ext(path_to_text, RESOURCE_EXT)
         for path, text in path_to_resource_text.items():
-            stem = path[:-len(ext)].replace('/', '.')
+            stem = path[:-len(RESOURCE_EXT)].replace('/', '.')
             module_name = self._name + '.' + stem
-            if 'config' in stem.split('.')[1:]:
-                # Configs are loaded to separate projects as lcs layers.
-                continue
             module = self._resource_module_factory(self, module_name, self._dir / path, text=text)
             self.set_module(module_name, module)
 
@@ -124,15 +150,28 @@ def load_projects_file(path):
     return name_to_rec
 
 
-def load_projects_from_file(project_factory, path):
+def load_projects_from_file(project_factory, path, filter):
     name_to_rec = load_projects_file(path)
     root_dir = path.parent
     name_to_project = {}
     for rec in name_to_rec.values():
+        if rec.name not in filter:
+            continue
         imports = {
             name_to_project[import_name]
             for import_name in rec.imports
             }
-        project = project_factory(root_dir / rec.name, rec.name, imports)
+        project_dir = root_dir / rec.name
+        path_to_text = load_texts(project_dir)
+        project_path_to_text, config_path_to_text = separate_configs(path_to_text)
+        project = project_factory(project_dir, rec.name, imports)
+        project.load(project_path_to_text)
         name_to_project[rec.name] = project
+        for path, text in config_path_to_text.items():
+            config_name = _config_project_name(path)
+            project_name = f'{rec.name}.{config_name}'
+            project = project_factory(project_dir, project_name, imports)
+            project.load({path: text})
+            name_to_project[project_name] = project
+            
     return name_to_project

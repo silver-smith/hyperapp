@@ -12,6 +12,6 @@ cd "$( dirname "$0" )"
 
 set -x
 
-time ./boot.py base,common,ui,models,views,sample,lcs,client client_main "$@"
+time ./boot.py base,rc,common,ui,models,views,sample,lcs,client client_main "$@"
 
 # tail -n500 /tmp/client-info.log
