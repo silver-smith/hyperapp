@@ -72,9 +72,6 @@ class TargetSet(TargetSetBase):
     def adopt(self, target):
         self.add(target)
 
-    def full_module_name(self, name):
-        return self._name_to_full_name[name]
-
     def find_by_name(self, name):
         try:
             return (self, self._name_to_full_name[name])
