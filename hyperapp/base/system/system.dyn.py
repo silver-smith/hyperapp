@@ -282,8 +282,8 @@ class System:
 
     def load_config_layer(self, layer_name, layer):
         # layer.config is expected to be ordered with service_config_order.
+        self._layers[layer_name] = layer
         for service_name, config in layer.config.items():
-            self._layers[layer_name] = layer
             self.update_config(layer_name, service_name, config)
 
     def service_config_order(self, service_name):
