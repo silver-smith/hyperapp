@@ -222,6 +222,9 @@ class ResourceModule:
             ]
         return '\n'.join(lines)
 
+    def save(self):
+        self._path.write_text(self.as_text)
+
     def _resolve_resource_type(self, resource_type):
         piece = self._pyobj_creg.actor_to_piece(resource_type.resource_t)
         return self._reverse_resolve(piece)

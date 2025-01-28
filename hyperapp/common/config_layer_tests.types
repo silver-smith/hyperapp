@@ -1,0 +1,10 @@
+sample_key = record:
+  id: int
+
+inner = record:
+  value: int list
+
+sample_value = record:
+  direction: string
+  stretch: int
+  inner: ref
