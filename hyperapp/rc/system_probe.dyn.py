@@ -208,6 +208,10 @@ class Probe:
         service = self._apply_obj(self._params)
         return iter(service)
 
+    def __truediv__(self, other):
+        service = self._apply_obj(self._params)
+        return service / other
+
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
             return self._service
