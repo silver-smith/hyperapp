@@ -90,7 +90,9 @@ class TestedCodeReq(Requirement):
         return [*resources, tested_code_res]
 
     def tested_modules(self, target_set):
-        return {target_set.full_module_name(self.code_name)}
+        tested_target_set, module_name = target_set.find_by_name(self.code_name)
+        # TODO: Include tested target set (project).
+        return {module_name}
 
 
 @dataclass(frozen=True)
