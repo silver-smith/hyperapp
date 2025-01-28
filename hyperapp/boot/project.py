@@ -1,7 +1,11 @@
 import yaml
+from collections import namedtuple
 
 from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache, load_legacy_type_resources
 from hyperapp.boot.resource.resource_registry import ResourceRegistry
+
+
+ProjectRec = namedtuple('ProjectRec', 'name imports')
 
 
 def load_texts(root_dir):
@@ -108,18 +112,27 @@ class Project(ResourceRegistry):
             }
 
 
-def load_projects_from_file(project_factory, path):
+def load_projects_file(path):
     config = yaml.safe_load(path.read_text())
-    root_dir = path.parent
-    name_to_project = {}
+    name_to_rec = {}
     for name, info in config.items():
         if info:
-            imports = {
-                name_to_project[import_name]
-                for import_name in info.get('imports', [])
-                }
+            imports = info.get('imports', [])
         else:
-            imports = set()
-        project = project_factory(root_dir / name, name, imports)
-        name_to_project[name] = project
+            imports = []
+        name_to_rec[name] = ProjectRec(name, imports)
+    return name_to_rec
+
+
+def load_projects_from_file(project_factory, path):
+    name_to_rec = load_projects_file(path)
+    root_dir = path.parent
+    name_to_project = {}
+    for rec in name_to_rec.values():
+        imports = {
+            name_to_project[import_name]
+            for import_name in rec.imports
+            }
+        project = project_factory(root_dir / rec.name, rec.name, imports)
+        name_to_project[rec.name] = project
     return name_to_project

@@ -6,12 +6,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hyperapp.boot.htypes import HException
-from hyperapp.boot.project import load_texts
+from hyperapp.boot.project import load_texts, load_projects_file
 
 from . import htypes
 from .services import (
     hyperapp_dir,
-    load_projects_from_file,
     project_factory,
     web,
     )
@@ -265,24 +264,25 @@ def build_target_sets(
         rc_config, job_cache, cached_count, only_target_projects, name_to_project):
     base_project = name_to_project['base']
 
-    name_to_target_project = load_projects_from_file(hyperapp_dir / 'projects.yaml')
-    name_to_target_project = {
-        name: project
-        for name, project
-        in name_to_target_project.items()
+    name_to_target_rec = load_projects_file(hyperapp_dir / 'projects.yaml')
+    name_to_target_rec = {
+        name: rec
+        for name, rec
+        in name_to_target_rec.items()
         if not only_target_projects or name in only_target_projects
         }
 
     globals_targets = GlobalTargets()
+    name_to_target_project = {}
     name_to_target_set = {}
-    for name, project in name_to_target_project.items():
-        target_set_imports = {
-            name_to_target_set[p.name]
-            for p in project.imports
-            }
+    for name, rec in name_to_target_rec.items():
         project_imports = {
-            name_to_target_project[p.name]
-            for p in project.imports
+            name_to_target_project[import_name]
+            for import_name in rec.imports
+            }
+        target_set_imports = {
+            name_to_target_set[import_name]
+            for import_name in rec.imports
             }
         project_dir = hyperapp_dir / name
         path_to_text = load_texts(project_dir)
@@ -295,8 +295,8 @@ def build_target_sets(
         if name == 'base':
             add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, base_project)
         target_set.post_init()
-        name_to_target_set[name] = target_set
         name_to_target_project[name] = target_project
+        name_to_target_set[name] = target_set
     return name_to_target_set
 
 
