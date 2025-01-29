@@ -6,7 +6,6 @@ from PySide6 import QtCore, QtWidgets
 from . import htypes
 from .code.mark import mark
 from .code.view import Item, View
-from .code.command_ap import ButtonShortcutAp
 
 log = logging.getLogger(__name__)
 
@@ -23,12 +22,12 @@ class CommandPaneView(View):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx):
-        return cls(ctx.lcs)
+    def from_piece(cls, piece, ctx, shortcut_reg):
+        return cls(shortcut_reg)
 
-    def __init__(self, lcs):
+    def __init__(self, shortcut_reg):
         super().__init__()
-        self._lcs = lcs
+        self._shortcut_reg = shortcut_reg
 
     @property
     def piece(self):
@@ -83,11 +82,15 @@ class CommandPaneView(View):
 
     def _make_button(self, cmd, used_shortcuts):
         text = cmd.name
+        shortcut = self._shortcut_reg.get(cmd.d)
+        if shortcut:
+            text += f' ({shortcut})'
         button = QtWidgets.QPushButton(
             text, focusPolicy=QtCore.Qt.NoFocus, enabled=cmd.enabled)
         button.pressed.connect(cmd.start)
-        key = {cmd.d, htypes.command.command_shortcut_lcs_d()}
-        self._lcs.apply(key, button, ButtonShortcutAp(used_shortcuts))
+        if shortcut and shortcut not in used_shortcuts:
+            button.setShortcut(shortcut)
+            used_shortcuts.add(shortcut)
         if not cmd.enabled:
             button.setToolTip(cmd.disabled_reason)
         return button

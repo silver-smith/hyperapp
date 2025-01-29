@@ -4,14 +4,12 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.command:command_shortcut_lcs_d
 - legacy_type.command_groups:pane_1_d
 - legacy_type.command_groups:pane_2_d
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view:template
-- ui.qt.command_ap:command_ap.module
 - ui.view.view:view.module
 definitions:
   CommandPaneView:
@@ -31,7 +29,8 @@ definitions:
       ctx_params:
       - piece
       - ctx
-      service_params: []
+      service_params:
+      - shortcut_reg
   command_pane-view.view-template:
     type: legacy_type.view:template
     value:
@@ -43,10 +42,8 @@ definitions:
       module_name: command_pane
       file_name: command_pane.dyn.py
       import_list:
-        code.command_ap: ui.qt.command_ap:command_ap.module
         code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
-        htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
         htypes.command_groups.pane_1_d: legacy_type.command_groups:pane_1_d
         htypes.command_groups.pane_2_d: legacy_type.command_groups:pane_2_d
         htypes.command_pane.state: legacy_type.command_pane:state

@@ -7,7 +7,6 @@ log = logging.getLogger(__name__)
 from . import htypes
 from .code.mark import mark
 from .code.view import View
-from .code.command_ap import ShortcutAp
 
 
 class MenuBar(QtWidgets.QMenuBar):
@@ -21,12 +20,12 @@ class MenuBarView(View):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx):
-        return cls(ctx.lcs)
+    def from_piece(cls, piece, ctx, shortcut_reg):
+        return cls(shortcut_reg)
 
-    def __init__(self, lcs):
+    def __init__(self, shortcut_reg):
         super().__init__()
-        self._lcs = lcs
+        self._shortcut_reg = shortcut_reg
 
     @property
     def piece(self):
@@ -71,8 +70,10 @@ class MenuBarView(View):
     def _make_action(self, cmd, used_shortcuts):
         action = QtGui.QAction(cmd.name, enabled=cmd.enabled)
         action.triggered.connect(cmd.start)
-        key = {cmd.d, htypes.command.command_shortcut_lcs_d()}
-        self._lcs.apply(key, action, ShortcutAp(used_shortcuts))
+        shortcut = self._shortcut_reg.get(cmd.d)
+        if shortcut and shortcut not in used_shortcuts:
+            action.setShortcut(shortcut)
+            used_shortcuts.add(shortcut)
         if not cmd.enabled:
             action.setToolTip(cmd.disabled_reason)
         return action
