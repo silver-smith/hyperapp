@@ -5,7 +5,13 @@ import:
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- models.command_list_model:set_shortcut.d
+- models.global_commands:open_global_commands.d
 - models.model_commands:open_model_commands.d
+- ui.layout:open_layout_tree.d
+- ui.layout:set_shortcut.d
+- ui.navigator:go_back.d
+- ui.navigator:go_forward.d
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -17,11 +23,62 @@ definitions:
     value:
       key: models.model_commands:open_model_commands.d
       value: shortcut_F1
+  config_item_2:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.global_commands:open_global_commands.d
+      value: shortcut_Alt_F1
+  config_item_3:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.navigator:go_back.d
+      value: shortcut_Esc
+  config_item_4:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.layout:set_shortcut.d
+      value: shortcut_Space
+  config_item_5:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.navigator:go_forward.d
+      value: shortcut_Alt_Right
+  config_item_6:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.layout:open_layout_tree.d
+      value: shortcut_Alt_Shift_L
+  config_item_7:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.command_list_model:set_shortcut.d
+      value: shortcut_Space
+  shortcut_Alt_F1:
+    type: legacy_type.builtin:string
+    value: Alt+F1
+  shortcut_Alt_Right:
+    type: legacy_type.builtin:string
+    value: Alt+Right
+  shortcut_Alt_Shift_L:
+    type: legacy_type.builtin:string
+    value: Alt+Shift+L
+  shortcut_Esc:
+    type: legacy_type.builtin:string
+    value: Esc
   shortcut_F1:
     type: legacy_type.builtin:string
     value: F1
+  shortcut_Space:
+    type: legacy_type.builtin:string
+    value: Space
   shortcut_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item_1
+      - config_item_2
+      - config_item_7
+      - config_item_6
+      - config_item_4
+      - config_item_3
+      - config_item_5
