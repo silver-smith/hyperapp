@@ -74,7 +74,7 @@ class TypeModuleLoader(object):
         return name_to_source
 
     # registry: module name -> name -> mt piece.
-    def load_texts(self, root_dir, path_to_text, registry):
+    def load_texts(self, path_to_text, registry):
         name_to_source = {}
         for path, text in path_to_text.items():
             fname = path.split('/')[-1]

@@ -118,7 +118,7 @@ class Project(ResourceRegistry):
         for project in self._imports:
             self._types.update(project.types)
         path_to_type_text = self._filter_by_ext(path_to_text, '.types')
-        self._type_module_loader.load_texts(self._path, path_to_type_text, self._types)
+        self._type_module_loader.load_texts(path_to_type_text, self._types)
         legacy_type_modules = load_legacy_type_resources(self._types)
         self.update_modules(legacy_type_modules)
         add_legacy_types_to_cache(self, legacy_type_modules)
