@@ -1,12 +1,19 @@
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 from . import htypes
 from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .fixtures import feed_fixtures, lcs_fixtures
+from .fixtures import feed_fixtures
 from .tested.code import column_list
+
+
+@mark.fixture.obj
+def column_visible_reg():
+    reg = MagicMock()
+    reg.get.return_value = True
+    return reg
 
 
 @mark.fixture
@@ -17,21 +24,21 @@ def piece():
         )
 
 
-def test_column_list(lcs, piece):
-    items = column_list.column_list(piece, lcs)
+def test_column_list(piece):
+    items = column_list.column_list(piece)
     assert len(items) == 3
 
 
-async def test_toggle_visibility(feed_factory, lcs, piece):
+async def test_toggle_visibility(feed_factory, column_visible_reg, piece):
     feed = feed_factory(piece)
     current_idx = 0
     current_item = htypes.column_list.item(
         name='id',
         show=False,  # Should not be used.
         )
-    await column_list.toggle_visibility(piece, current_idx, current_item, lcs)
-    lcs.set.assert_called_once()
-    assert lcs.set.call_args.args[1] == False
+    await column_list.toggle_visibility(piece, current_idx, current_item)
+    column_visible_reg.__setitem__.assert_called_once()
+    assert column_visible_reg.__setitem__.call_args.args[1] == False
     await feed.wait_for_diffs(count=1)
 
 

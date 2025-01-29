@@ -7,9 +7,7 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.column:column_d
-- legacy_type.column:list_d
-- legacy_type.column:show_d
+- legacy_type.column:column_k
 - legacy_type.column_list:item
 - legacy_type.column_list:open_column_list_d
 - legacy_type.column_list:toggle_visibility_d
@@ -64,8 +62,8 @@ definitions:
       function: column_list
       ctx_params:
       - piece
-      - lcs
-      service_params: []
+      service_params:
+      - column_visible_reg
   column_list.module:
     type: legacy_type.builtin:python_module
     value:
@@ -74,9 +72,7 @@ definitions:
       import_list:
         code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
-        htypes.column.column_d: legacy_type.column:column_d
-        htypes.column.list_d: legacy_type.column:list_d
-        htypes.column.show_d: legacy_type.column:show_d
+        htypes.column.column_k: legacy_type.column:column_k
         htypes.column_list.item: legacy_type.column_list:item
         htypes.column_list.view: legacy_type.column_list:view
         htypes.list.view: legacy_type.list:view
@@ -126,7 +122,7 @@ definitions:
       properties:
         is_global: false
         uses_state: true
-        remotable: false
+        remotable: true
       system_fn: toggle_visibility.system-fn
   toggle_visibility.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -136,6 +132,6 @@ definitions:
       - piece
       - current_idx
       - current_item
-      - lcs
       service_params:
       - feed_factory
+      - column_visible_reg
