@@ -1,0 +1,35 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- common.data_service:data_service.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.data_service:config_ctl
+- legacy_type.system:service_template
+definitions:
+  column_visible_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: column_visible_reg.module
+      attr_name: column_visible_reg
+  column_visible_reg.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: column_visible_reg
+      file_name: column_visible_reg.dyn.py
+      import_list:
+        code.data_service: common.data_service:data_service.module
+        code.mark: base.mark:mark.module
+  column_visible_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: column_visible_reg
+      ctl: data_service-config_ctl.ctl
+      function: column_visible_reg
+      service_params: []
+      want_config: true
+      free_params: []
+  data_service-config_ctl.ctl:
+    type: legacy_type.data_service:config_ctl
+    value: {}
