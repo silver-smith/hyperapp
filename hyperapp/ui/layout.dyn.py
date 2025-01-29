@@ -97,9 +97,9 @@ async def open_view_item_commands(piece, current_item):
         return htypes.layout.command_list(item_id=current_item.id)
 
 
-def _command_to_item(controller, lcs, ctx, ui_command, item_id):
+def _command_to_item(controller, shortcut_reg, ctx, ui_command, item_id):
     layout_command = UnboundLayoutCommand(ui_command)
-    shortcut = lcs.get({htypes.command.command_shortcut_lcs_d(), layout_command.d}) or ""
+    shortcut = shortcut_reg.get(layout_command.d) or ""
     return htypes.layout.command_item(
         name=layout_command.name,
         shortcut=shortcut,
@@ -110,9 +110,9 @@ def _command_to_item(controller, lcs, ctx, ui_command, item_id):
 
 
 @mark.model
-def view_item_commands(piece, controller, lcs, ctx):
+def view_item_commands(piece, controller, ctx, shortcut_reg):
     command_list = [
-        _command_to_item(controller, lcs, ctx, command, piece.item_id)
+        _command_to_item(controller, shortcut_reg, ctx, command, piece.item_id)
         for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)
@@ -120,21 +120,19 @@ def view_item_commands(piece, controller, lcs, ctx):
 
 
 @mark.command
-def set_shortcut(piece, current_item, lcs):
+def set_shortcut(piece, current_item, shortcut_reg):
     command_d = web.summon(current_item.command_d)
     shortcut = run_key_input_dialog()
     log.info("Set shortcut for %s: %r", command_d, shortcut)
-    key = {htypes.command.command_shortcut_lcs_d(), command_d}
-    lcs.set(key, shortcut)
+    shortcut_reg[command_d] = shortcut
 
 
 @mark.command
-def set_escape_shortcut(piece, current_item, lcs):
+def set_escape_shortcut(piece, current_item, shortcut_reg):
     command_d = web.summon(current_item.command_d)
     shortcut = 'Esc'
     log.info("Set shortcut for %s: %r", command_d, shortcut)
-    key = {htypes.command.command_shortcut_lcs_d(), command_d}
-    lcs.set(key, shortcut)
+    shortcut_reg[command_d] = shortcut
 
 
 @mark.command

@@ -7,7 +7,6 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
-- legacy_type.command:command_shortcut_lcs_d
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
 - legacy_type.command_groups:pane_2_d
@@ -108,9 +107,9 @@ definitions:
       ctx_params:
       - piece
       - controller
-      - lcs
       - ctx
-      service_params: []
+      service_params:
+      - shortcut_reg
   layout-view-enum_layout_tree_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -154,7 +153,6 @@ definitions:
         code.directory: ui.directory:directory.module
         code.key_input_dialog: ui.qt.key_input_dialog:key_input_dialog.module
         code.mark: base.mark:mark.module
-        htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
         htypes.command_groups.pane_2_d: legacy_type.command_groups:pane_2_d
         htypes.layout.command_item: legacy_type.layout:command_item
         htypes.layout.command_list: legacy_type.layout:command_list
@@ -229,7 +227,7 @@ definitions:
       properties:
         is_global: false
         uses_state: true
-        remotable: false
+        remotable: true
       system_fn: set_escape_shortcut.system-fn
   set_escape_shortcut.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -238,8 +236,8 @@ definitions:
       ctx_params:
       - piece
       - current_item
-      - lcs
-      service_params: []
+      service_params:
+      - shortcut_reg
   set_shortcut:
     type: legacy_type.builtin:attribute
     value:
@@ -255,7 +253,7 @@ definitions:
       properties:
         is_global: false
         uses_state: true
-        remotable: false
+        remotable: true
       system_fn: set_shortcut.system-fn
   set_shortcut.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -264,8 +262,8 @@ definitions:
       ctx_params:
       - piece
       - current_item
-      - lcs
-      service_params: []
+      service_params:
+      - shortcut_reg
   view_item_commands:
     type: legacy_type.builtin:attribute
     value:

@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 from . import htypes
 from .services import (
@@ -138,14 +138,21 @@ async def test_open_view_item_commands():
     assert result
 
 
-async def test_view_item_commands(qapp, lcs, ctx, ctl):
+@mark.fixture.obj
+def shortcut_reg():
+    reg = MagicMock()
+    reg.get.return_value = None
+    return reg
+
+
+async def test_view_item_commands(qapp, ctx, ctl):
     ctx = ctx.clone_with(controller=ctl)
     layout_piece = htypes.layout.view()
     windows = layout.layout_tree(layout_piece, None, ctl)
     window_items = layout.layout_tree(layout_piece, windows[0], ctl)
     item_id = window_items[1].id
     command_list_piece = htypes.layout.command_list(item_id)
-    commands = layout.view_item_commands(command_list_piece, ctl, lcs, ctx)
+    commands = layout.view_item_commands(command_list_piece, ctl, ctx)
     assert commands
 
 
@@ -164,17 +171,17 @@ def current_item():
         )
 
 
-def test_set_shortcut(lcs, current_item):
+def test_set_shortcut(shortcut_reg, current_item):
     piece = htypes.layout.command_list(item_id=0)
     layout.run_key_input_dialog = mock_run_input_key_dialog
-    layout.set_shortcut(piece, current_item, lcs)
-    lcs.set.assert_called_once()
+    layout.set_shortcut(piece, current_item)
+    shortcut_reg.__setitem__.assert_called_once()
 
 
-def test_set_escape_shortcut(lcs, current_item):
+def test_set_escape_shortcut(shortcut_reg, current_item):
     piece = htypes.layout.command_list(item_id=0)
-    layout.set_escape_shortcut(piece, current_item, lcs)
-    lcs.set.assert_called_once()
+    layout.set_escape_shortcut(piece, current_item)
+    shortcut_reg.__setitem__.assert_called_once()
 
 
 async def test_add_view_command():
