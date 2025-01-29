@@ -1,7 +1,0 @@
-import:
-- legacy_type.lcs_resource_storage:mapping
-definitions:
-  lcs_storage_mapping:
-    type: legacy_type.lcs_resource_storage:mapping
-    value:
-      elements: []
