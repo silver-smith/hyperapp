@@ -8,7 +8,6 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
-- legacy_type.command:command_shortcut_lcs_d
 - legacy_type.command:model_command
 - legacy_type.command_list_model:form
 - legacy_type.command_list_model:item
@@ -39,7 +38,6 @@ definitions:
         code.key_input_dialog: ui.qt.key_input_dialog:key_input_dialog.module
         code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
-        htypes.command.command_shortcut_lcs_d: legacy_type.command:command_shortcut_lcs_d
         htypes.command_list_model.form: legacy_type.command_list_model:form
         htypes.command_list_model.item: legacy_type.command_list_model:item
         services.mosaic: builtins:mosaic.service

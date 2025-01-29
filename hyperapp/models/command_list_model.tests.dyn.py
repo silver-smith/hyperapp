@@ -16,6 +16,13 @@ def _sample_fn(model, state):
     return f'sample-fn: {state}'
 
 
+@mark.fixture.obj
+def shortcut_reg():
+    reg = MagicMock()
+    reg.get.return_value = None
+    return reg
+
+
 @mark.fixture
 def lcs():
     lcs = Mock()
@@ -23,7 +30,7 @@ def lcs():
     return lcs
 
 
-def test_command_item_to_item(partial_ref, view_reg, visualizer, lcs):
+def test_command_item_to_item(partial_ref, view_reg, visualizer, shortcut_reg, lcs):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
@@ -49,7 +56,7 @@ def test_command_item_to_item(partial_ref, view_reg, visualizer, lcs):
         model_command_d=htypes.command_list_model_tests.sample_model_command_d(),
         command=command,
         )
-    view_item = command_list_model.command_item_to_model_item(lcs, command_item)
+    view_item = command_list_model.command_item_to_model_item(shortcut_reg, lcs, command_item)
     assert view_item
 
 
@@ -71,11 +78,6 @@ def current_item():
 
 def mock_run_input_key_dialog():
     return 'Space'
-
-
-@mark.fixture.obj
-def shortcut_reg():
-    return MagicMock()
 
 
 async def test_global_set_shortcut(feed_factory, shortcut_reg, current_item):

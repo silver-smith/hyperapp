@@ -14,10 +14,10 @@ log = logging.getLogger(__name__)
 
 
 @mark.model
-def list_global_commands(piece, lcs, ui_global_command_items):
+def list_global_commands(piece, lcs, ui_global_command_items, shortcut_reg):
     command_item_list = ui_global_command_items(lcs)
     return [
-        command_item_to_model_item(lcs, item)
+        command_item_to_model_item(shortcut_reg, lcs, item)
         for item in command_item_list.items()
         if item.is_global
         ]

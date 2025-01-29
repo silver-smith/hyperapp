@@ -46,6 +46,7 @@ definitions:
       - lcs
       service_params:
       - ui_global_command_items
+      - shortcut_reg
   global_commands.module:
     type: legacy_type.builtin:python_module
     value:

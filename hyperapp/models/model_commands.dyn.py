@@ -15,13 +15,13 @@ log = logging.getLogger(__name__)
 
 
 @mark.model
-def list_model_commands(piece, ctx, lcs, ui_model_command_items):
+def list_model_commands(piece, ctx, lcs, ui_model_command_items, shortcut_reg):
     model, model_t = web.summon_with_t(piece.model)
     model_state = web.summon(piece.model_state)
     command_ctx = model_command_ctx(ctx, model, model_state)
     command_item_list = ui_model_command_items(lcs, model_t, command_ctx)
     return [
-        command_item_to_model_item(lcs, item)
+        command_item_to_model_item(shortcut_reg, lcs, item)
         for item in command_item_list.items()
         if not item.is_pure_global
         ]

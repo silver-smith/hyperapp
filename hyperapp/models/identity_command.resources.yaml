@@ -62,6 +62,7 @@ definitions:
       service_params:
       - feed_factory
       - ui_model_command_items
+      - shortcut_reg
   identity_command-identity_command.actor-template:
     type: legacy_type.system:actor_template
     value:

@@ -61,6 +61,10 @@ class DataServiceConfig:
         self._target_layer = target_layer
         self._service_name = service_name
 
+    def get(self, key, default=None):
+        config = self._system.get_config_template(self._service_name)
+        return config.get(key, default)
+        
     def __getitem__(self, key):
         config = self._system.get_config_template(self._service_name)
         return config[key]
