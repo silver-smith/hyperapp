@@ -176,8 +176,8 @@ def load_projects_from_file(project_factory, path, filter):
         for path, text in config_path_to_text.items():
             config_name = _config_project_name(path)
             project_name = f'{rec.name}.{config_name}'
-            project = project_factory(project_dir / path, project_name, imports)
-            project.load({path: text})
-            name_to_project[project_name] = project
+            config_project = project_factory(project_dir / path, project_name, imports={project})
+            config_project.load({path: text})
+            name_to_project[project_name] = config_project
             
     return name_to_project
