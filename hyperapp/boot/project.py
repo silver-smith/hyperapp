@@ -78,14 +78,14 @@ class BuiltinsProject(ResourceRegistry):
 
 class Project(ResourceRegistry):
 
-    def __init__(self, builtins_project, type_module_loader, resource_module_factory, dir, name, imports=None):
+    def __init__(self, builtins_project, type_module_loader, resource_module_factory, path, name, imports=None):
         project_imports = imports or set()
         all_imports = {builtins_project, *project_imports}
         super().__init__(all_imports)
         self._type_module_loader = type_module_loader
         self._resource_module_factory = resource_module_factory
         self._project_imports = project_imports
-        self._dir = dir
+        self._path = path
         self._name = name
         self._types = {}  # Module name -> name -> mt piece.
 
@@ -96,9 +96,10 @@ class Project(ResourceRegistry):
     def name(self):
         return self._name
 
+    # Root directory or resource path.
     @property
-    def dir(self):
-        return self._dir
+    def path(self):
+        return self._path
 
     @property
     def imports(self):
@@ -117,7 +118,7 @@ class Project(ResourceRegistry):
         for project in self._imports:
             self._types.update(project.types)
         path_to_type_text = self._filter_by_ext(path_to_text, '.types')
-        self._type_module_loader.load_texts(self._dir, path_to_type_text, self._types)
+        self._type_module_loader.load_texts(self._path, path_to_type_text, self._types)
         legacy_type_modules = load_legacy_type_resources(self._types)
         self.update_modules(legacy_type_modules)
         add_legacy_types_to_cache(self, legacy_type_modules)
@@ -125,9 +126,14 @@ class Project(ResourceRegistry):
     def load_resources(self, path_to_text):
         path_to_resource_text = self._filter_by_ext(path_to_text, RESOURCE_EXT)
         for path, text in path_to_resource_text.items():
-            stem = path[:-len(RESOURCE_EXT)].replace('/', '.')
-            module_name = self._name + '.' + stem
-            module = self._resource_module_factory(self, module_name, self._dir / path, text=text)
+            if self._path.is_dir():
+                stem = path[:-len(RESOURCE_EXT)].replace('/', '.')
+                module_name = self._name + '.' + stem
+                module_path = self._path / path
+            else:
+                module_name = self._name
+                module_path = self._path.parent / path
+            module = self._resource_module_factory(self, module_name, module_path, text=text)
             self.set_module(module_name, module)
 
     def _filter_by_ext(self, path_to_text, ext):
@@ -170,7 +176,7 @@ def load_projects_from_file(project_factory, path, filter):
         for path, text in config_path_to_text.items():
             config_name = _config_project_name(path)
             project_name = f'{rec.name}.{config_name}'
-            project = project_factory(project_dir, project_name, imports)
+            project = project_factory(project_dir / path, project_name, imports)
             project.load({path: text})
             name_to_project[project_name] = project
             

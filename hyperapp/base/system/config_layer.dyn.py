@@ -3,6 +3,7 @@ import re
 from functools import cached_property
 
 from hyperapp.boot.htypes import TPrimitive, TRecord, tString
+from hyperapp.boot.project import RESOURCE_EXT
 
 from . import htypes
 from .services import (
@@ -73,7 +74,14 @@ class ProjectConfigLayer(ConfigLayer):
     def __init__(self, system, config_ctl, project):
         super().__init__(system, config_ctl)
         self._project = project
-        self._config_module_name = f'{self._project.name}.config'
+        if project.path.is_dir():
+            self._config_module_name = f'{project.name}.config'
+            self._module_path = project.path / f'config{RESOURCE_EXT}'
+            self._resource_dir = project.path
+        else:
+            self._config_module_name = self._project.name
+            self._module_path = project.path
+            self._resource_dir = project.path.parent
         self._module = self._project.get_module(self._config_module_name)
 
     @cached_property
@@ -100,9 +108,8 @@ class ProjectConfigLayer(ConfigLayer):
         if self._module:
             self._module.clear()
         else:
-            path = self._project.dir / self._config_module_name
             self._module = resource_module_factory(
-                self._project, self._config_module_name, path, resource_dir=self._project.dir, load_from_file=False)
+                self._project, self._config_module_name, self._module_path, resource_dir=self._resource_dir, load_from_file=False)
         service_to_piece = {}
         for service_name, config in self.config.items():
             ctl = self._config_ctl[service_name]
