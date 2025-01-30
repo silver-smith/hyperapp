@@ -168,16 +168,19 @@ class Probe:
             return
         self._apply_obj(service_params=[])
 
+    def apply_obj(self):
+        return self._apply_obj(self._params)
+
     def __eq__(self, rhs):
-        service = self._apply_obj(self._params)
+        service = self.apply_obj()
         return service == rhs
 
     def __hash__(self):
-        service = self._apply_obj(self._params)
+        service = self.apply_obj()
         return hash(service)
 
     def __bool__(self):
-        service = self._apply_obj(self._params)
+        service = self.apply_obj()
         return bool(service)
 
     def __call__(self, *args, **kw):
@@ -190,26 +193,26 @@ class Probe:
 
     def __getattr__(self, name):
         try:
-            service = self._apply_obj(self._params)
+            service = self.apply_obj()
         except AttributeError as x:
             # Do not let it out - caller will treat this as just a missing attribute.
             raise RuntimeError(f"Error resolving service or fixture: {x}") from x
         return getattr(service, name)
 
     def __getitem__(self, key):
-        service = self._apply_obj(self._params)
+        service = self.apply_obj()
         return service[key]
 
     def __setitem__(self, key, value):
-        service = self._apply_obj(self._params)
+        service = self.apply_obj()
         service[key] = value
 
     def __iter__(self):
-        service = self._apply_obj(self._params)
+        service = self.apply_obj()
         return iter(service)
 
     def __truediv__(self, other):
-        service = self._apply_obj(self._params)
+        service = self.apply_obj()
         return service / other
 
     def _apply(self, service_params, *args, **kw):
