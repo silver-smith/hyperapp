@@ -222,7 +222,7 @@ class System:
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
         self.add_core_service('config_ctl_creg', self._config_ctl_creg)
         self.add_core_service('config_ctl', self._config_ctl)
-        self.add_core_service('layer_config_templates', self._layer_to_configs)
+        self.add_core_service('get_layer_config_templates', self.get_layer_config_templates)
         self.add_core_service('get_system_config_piece', self.get_config_piece)
         self.add_core_service('system', self)
 
@@ -297,6 +297,9 @@ class System:
     @property
     def default_layer(self):
         return list(self._layers.values())[-1]
+
+    def get_layer_config_templates(self, layer_name):
+        return self._layer_to_configs[layer_name]
 
     def get_config_piece(self):
         return self.config_to_data(self._config_templates)

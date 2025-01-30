@@ -53,7 +53,7 @@ definitions:
       - options
       service_params:
       - system
-      - layer_config_templates
+      - get_layer_config_templates
       - config_ctl
       - ctr_from_template_creg
       - rc_job_result_creg

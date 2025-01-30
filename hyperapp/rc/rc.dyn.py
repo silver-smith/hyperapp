@@ -260,7 +260,7 @@ def _parse_args(sys_argv):
 
 
 def build_target_sets(
-        layer_config_templates, config_ctl, ctr_from_template_creg,
+        base_config_templates, config_ctl, ctr_from_template_creg,
         rc_config, job_cache, cached_count, only_target_projects, name_to_project):
     base_project = name_to_project['base']
 
@@ -290,10 +290,10 @@ def build_target_sets(
         target_project = project_factory(project_dir, name, imports=project_imports)
         target_project.load_types(path_to_text)
         target_set = create_target_set(
-            config_ctl, ctr_from_template_creg, layer_config_templates, rc_config,
+            config_ctl, ctr_from_template_creg, rc_config,
             project_dir, job_cache, cached_count, globals_targets, target_project, path_to_text, target_set_imports)
         if name == 'base':
-            add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, base_project)
+            add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templates, target_set, base_project)
         target_set.post_init()
         name_to_target_project[name] = target_project
         name_to_target_set[name] = target_set
@@ -301,14 +301,15 @@ def build_target_sets(
 
 
 def compile_resources(
-        system, layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
+        system, get_layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
         job_cache, name_to_project, pool, only_target_projects, targets, options):
-    rc_config = system.config_to_data(layer_config_templates['rc'])
+    rc_config = system.config_to_data(get_layer_config_templates('rc'))
+    base_config_templates = get_layer_config_templates('base')
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
 
     name_to_target_set = build_target_sets(
-        layer_config_templates, config_ctl, ctr_from_template_creg,
+        base_config_templates, config_ctl, ctr_from_template_creg,
         rc_config, job_cache, cached_count, only_target_projects, name_to_project)
     if options.check:
         for target_set in name_to_target_set.values():

@@ -25,9 +25,8 @@ def ctr_from_template_creg(config):
     return code_registry_ctr('ctr_from_template_creg', config)
 
 
-def add_base_target_items(config_ctl, ctr_from_template_creg, layer_config_templates, target_set, project):
-    service_to_config = layer_config_templates['base']
-    for service_name, config in service_to_config.items():
+def add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templates, target_set, project):
+    for service_name, config in base_config_templates.items():
         ctl = config_ctl[service_name]
         for key, value in config.items():
             if service_name == 'system':
@@ -81,7 +80,7 @@ def create_python_modules(rc_config, root_dir, cache, cached_count, target_set, 
 
 
 def create_target_set(
-        config_ctl, ctr_from_template_creg, layer_config_templates, rc_config,
+        config_ctl, ctr_from_template_creg, rc_config,
         root_dir, cache, cached_count, globals_targets, target_project, path_to_text, imports):
     target_set = TargetSet(globals_targets, root_dir, target_project.types, imports)
     all_imports_known_tgt = AllImportsKnownTarget()
