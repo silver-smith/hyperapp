@@ -1,10 +1,14 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_type.builtin:bool
 - legacy_type.builtin:string
+- legacy_type.column:column_k
 - legacy_type.data_service:config_item
+- legacy_type.model_commands:model
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- models.column_list:toggle_visibility.d
 - models.command_list_model:set_shortcut.d
 - models.global_commands:open_global_commands.d
 - models.model_commands:open_model_commands.d
@@ -13,26 +17,40 @@ import:
 - ui.navigator:go_back.d
 - ui.navigator:go_forward.d
 definitions:
+  bool_1:
+    type: legacy_type.builtin:bool
+    value: false
+  column_k_1:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.model_commands:model
+      column_name: ui_command_d
+  column_visible_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item_9
   config:
     type: legacy_type.system:system_config
     value:
       services:
         shortcut_reg: shortcut_reg.config
+        column_visible_reg: column_visible_reg.config
   config_item_1:
     type: legacy_type.data_service:config_item
     value:
-      key: models.model_commands:open_model_commands.d
-      value: shortcut_F1
+      key: ui.layout:open_layout_tree.d
+      value: shortcut_Alt_Shift_L
   config_item_2:
     type: legacy_type.data_service:config_item
     value:
-      key: models.global_commands:open_global_commands.d
-      value: shortcut_Alt_F1
+      key: ui.navigator:go_forward.d
+      value: shortcut_Alt_Right
   config_item_3:
     type: legacy_type.data_service:config_item
     value:
-      key: ui.navigator:go_back.d
-      value: shortcut_Esc
+      key: models.command_list_model:set_shortcut.d
+      value: shortcut_Space
   config_item_4:
     type: legacy_type.data_service:config_item
     value:
@@ -41,18 +59,28 @@ definitions:
   config_item_5:
     type: legacy_type.data_service:config_item
     value:
-      key: ui.navigator:go_forward.d
-      value: shortcut_Alt_Right
+      key: ui.navigator:go_back.d
+      value: shortcut_Esc
   config_item_6:
     type: legacy_type.data_service:config_item
     value:
-      key: ui.layout:open_layout_tree.d
-      value: shortcut_Alt_Shift_L
+      key: models.column_list:toggle_visibility.d
+      value: shortcut_Space
   config_item_7:
     type: legacy_type.data_service:config_item
     value:
-      key: models.command_list_model:set_shortcut.d
-      value: shortcut_Space
+      key: models.global_commands:open_global_commands.d
+      value: shortcut_Alt_F1
+  config_item_8:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.model_commands:open_model_commands.d
+      value: shortcut_F1
+  config_item_9:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k_1
+      value: bool_1
   shortcut_Alt_F1:
     type: legacy_type.builtin:string
     value: Alt+F1
@@ -75,10 +103,11 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - config_item_1
-      - config_item_2
+      - config_item_8
       - config_item_7
-      - config_item_6
-      - config_item_4
       - config_item_3
+      - config_item_1
+      - config_item_4
       - config_item_5
+      - config_item_2
+      - config_item_6
