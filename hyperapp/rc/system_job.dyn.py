@@ -23,7 +23,7 @@ from .code.config_item_resource import ConfigItemResource
 from .code.cfg_item_req import CfgItemReq
 from .code.service_req import ServiceReq
 from .code.service_ctr import ServiceTemplateCtr
-from .code.system_probe import Probe, SystemProbe
+from .code.system_probe import SystemProbe
 from .code.requirement_factory import RequirementFactory
 from .code.skip_probe_actor_template import SkipProbeActorTemplate
 from .code.job_result import JobResult
@@ -271,11 +271,7 @@ class SystemJob:
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(module_name, error_msg, missing_reqs={req})
         except ConfigItemMissingError as x:
-            if isinstance(x.key, Probe):
-                key = x.key.apply_obj()
-            else:
-                key = x.key
-            req = CfgItemReq(x.service_name, key, self._tested_modules)
+            req = CfgItemReq(x.service_name, x.key, self._tested_modules)
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(module_name, error_msg, missing_reqs={req})
         except IncompleteImportedObjectError as x:

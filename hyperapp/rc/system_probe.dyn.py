@@ -110,6 +110,8 @@ class ConfigProbe:
         try:
             value = self._config[key]
         except KeyError:
+            if isinstance(key, Probe):
+                key = key.apply_obj()
             raise ConfigItemMissingError(self._service_name, key)
         self._used_keys.add((self._service_name, key))
         return value
