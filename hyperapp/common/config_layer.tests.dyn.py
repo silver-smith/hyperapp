@@ -34,7 +34,7 @@ def layer_factory(system, config_ctl, project):
     return config_layer.ProjectConfigLayer(system, config_ctl, project)
 
 
-@mark.fixture
+@mark.fixture.obj
 def layer(layer_factory):
     return layer_factory()
 
@@ -78,3 +78,10 @@ def test_persistence(layer_factory, key, value):
 
     layer_2 = layer_factory()
     assert layer_2.config['sample_service'][key] == value
+
+
+def test_invalidation(system, layer, sample_service, key, value):
+    system.load_config_layer('config-layer-test', layer)
+    assert sample_service.get(key) is None
+    sample_service[key] = value
+    assert sample_service[key] == value

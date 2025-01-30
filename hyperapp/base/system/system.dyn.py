@@ -199,8 +199,7 @@ class System:
     _system_name = "System"
 
     def __init__(self):
-        self._layers = {}  # layer name -> layer.
-        self._layer_to_configs = {}  # layer_name -> service name -> service config templates.
+        self._name_to_layer = {}  # layer name -> layer.
         self._config_templates_cache = None
         self._name_to_service = {}
         self._resolve_stack = {}  # service name -> requester
@@ -246,26 +245,6 @@ class System:
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
 
-    def update_config(self, layer_name, service_name, config):
-        self._config_templates_cache = None
-        service_to_config = self._layer_to_configs.setdefault(layer_name, {})
-        try:
-            dest = service_to_config[service_name]
-        except KeyError:
-            service_to_config[service_name] = config
-        else:
-            try:
-                ctl = self._config_ctl[service_name]
-            except KeyError:
-                self._raise_missing_service(service_name)
-            ctl.merge(dest, config)
-        if service_name in {'config_ctl_creg', 'cfg_item_creg'}:
-            # Subsequent update_config calls may already use it.
-            self.update_service_config(service_name, config)
-        if service_name == 'system':
-            # Subsequent update_config calls may already use it.
-            self.update_config_ctl(config)
-
     def update_service_config(self, service_name, config):
         service = self._name_to_service[service_name]
         for key, template in config.items():
@@ -282,9 +261,8 @@ class System:
 
     def load_config_layer(self, layer_name, layer):
         # layer.config is expected to be ordered with service_config_order.
-        self._layers[layer_name] = layer
-        for service_name, config in layer.config.items():
-            self.update_config(layer_name, service_name, config)
+        self._name_to_layer[layer_name] = layer
+        self.invalidate_config_cache()
 
     def service_config_order(self, service_name):
         order = {
@@ -296,10 +274,11 @@ class System:
 
     @property
     def default_layer(self):
-        return list(self._layers.values())[-1]
+        return list(self._name_to_layer.values())[-1]
 
     def get_layer_config_templates(self, layer_name):
-        return self._layer_to_configs[layer_name]
+        layer = self._name_to_layer[layer_name]
+        return self._collect_layers_configs([layer])
 
     def get_config_piece(self):
         return self.config_to_data(self._config_templates)
@@ -318,22 +297,29 @@ class System:
             ctl = self._config_ctl[service_name]
             return ctl.empty_config_template()
 
+    def invalidate_config_cache(self):
+        self._config_templates_cache = None
+
+    def _collect_layers_configs(self, layer_list):
+        service_to_config = dict()
+        for layer in layer_list:
+            for service_name, config in layer.config.items():
+                ctl = self._config_ctl[service_name]
+                try:
+                    dest = service_to_config[service_name]
+                except KeyError:
+                    dest = ctl.empty_config_template()
+                    service_to_config[service_name] = dest
+                ctl.merge(dest, config)
+        return service_to_config
+
     @property
     def _config_templates(self):
         if self._config_templates_cache is not None:
             return self._config_templates_cache
-        result = dict()
-        for service_to_config in self._layer_to_configs.values():
-            for service_name, config in service_to_config.items():
-                ctl = self._config_ctl[service_name]
-                try:
-                    dest = result[service_name]
-                except KeyError:
-                    dest = ctl.empty_config_template()
-                    result[service_name] = dest
-                ctl.merge(dest, config)
-        self._config_templates_cache = result
-        return result
+        service_to_config = self._collect_layers_configs(self._name_to_layer.values())
+        self._config_templates_cache = service_to_config
+        return service_to_config
 
     @property
     def _name_to_template(self):

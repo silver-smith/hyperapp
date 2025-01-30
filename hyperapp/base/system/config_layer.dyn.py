@@ -99,6 +99,7 @@ class ProjectConfigLayer(ConfigLayer):
             self.config[service_name] = service_config
         service_config[key] = value
         self._save()
+        self._system.invalidate_config_cache()
 
     def _save(self):
         pick_refs = self._system['pick_refs']
