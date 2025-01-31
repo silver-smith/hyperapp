@@ -1,12 +1,16 @@
 import:
+- builtins:code_registry_ctr.service
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:resource_module_factory.service
 - builtins:web.service
+- legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_config
+- legacy_type.system:service_template
 - legacy_type.system:system_config
 
 definitions:
@@ -17,6 +21,7 @@ definitions:
       module_name: config_layer
       file_name: config_layer.dyn.py
       import_list:
+        services.code_registry_ctr: builtins:code_registry_ctr.service
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.resource_module_factory: builtins:resource_module_factory.service
@@ -25,3 +30,23 @@ definitions:
         htypes.builtin.record_mt: legacy_type.builtin:record_mt
         htypes.system.service_config: legacy_type.system:service_config
         htypes.system.system_config: legacy_type.system:system_config
+
+  dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}
+
+  resource_name_creg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_layer.module
+      attr_name: resource_name_creg
+
+  resource_name_creg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: resource_name_creg
+      ctl: dict_config_ctl.ctl
+      function: resource_name_creg
+      service_params: []
+      want_config: true
+      free_params: []

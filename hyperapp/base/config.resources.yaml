@@ -32,6 +32,10 @@ import:
 - base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - base.subprocess.subprocess_transport:subprocess_transport.service
+- base.system.builtin_resource_name:builtin-call.actor-template
+- base.system.builtin_resource_name:builtin-record_mt.actor-template
+- base.system.builtin_resource_name:builtin-string.actor-template
+- base.system.config_layer:resource_name_creg.service
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
 - base.transport.endpoint:endpoint_registry.service
@@ -64,6 +68,7 @@ definitions:
         identity_registry: identity_registry
         parcel_registry: parcel_registry
         peer_registry: peer_registry
+        resource_name_creg: resource_name_creg
         route_registry: route_registry
         rpc_message_creg: rpc_message_creg
         rpc_target_creg: rpc_target_creg
@@ -84,6 +89,13 @@ definitions:
     value:
       items:
       - base.transport.rsa_identity:rsa_identity-rsa_peer.actor-template
+  resource_name_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.system.builtin_resource_name:builtin-call.actor-template
+      - base.system.builtin_resource_name:builtin-record_mt.actor-template
+      - base.system.builtin_resource_name:builtin-string.actor-template
   route_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -137,6 +149,7 @@ definitions:
       - base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
       - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
       - base.subprocess.subprocess_transport:subprocess_transport.service
+      - base.system.config_layer:resource_name_creg.service
       - base.system.system_stop:stop_signal.service
       - base.system.system_stop:system_failed.service
       - base.transport.endpoint:endpoint_registry.service

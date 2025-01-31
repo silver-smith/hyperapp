@@ -1,0 +1,57 @@
+import:
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.builtin:string
+- legacy_type.system:actor_template
+
+definitions:
+
+  builtin_resource_name.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: builtin_resource_name
+      file_name: builtin_resource_name.dyn.py
+      import_list:
+        services.web: builtins:web.service
+
+  string_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: builtin_resource_name.module
+      attr_name: string_name
+
+  builtin-string.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.builtin:string
+      function: string_name
+      service_params: []
+
+  record_mt_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: builtin_resource_name.module
+      attr_name: record_mt_name
+
+  builtin-record_mt.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.builtin:record_mt
+      function: record_mt_name
+      service_params: []
+
+  call_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: builtin_resource_name.module
+      attr_name: call_name
+
+  builtin-call.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.builtin:call
+      function: call_name
+      service_params: []
