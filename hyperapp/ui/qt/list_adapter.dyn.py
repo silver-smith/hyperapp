@@ -31,8 +31,8 @@ class ListAdapterBase:
 
 class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
 
-    def __init__(self, feed_factory, lcs, model, item_t):
-        self._lcs = lcs
+    def __init__(self, feed_factory, column_visible_reg, model, item_t):
+        self._column_visible_reg = column_visible_reg
         self._model = model
         self._model_t = deduce_t(model)
         self._item_t = item_t
@@ -46,16 +46,15 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
         else:
             self._feed.subscribe(self)
 
-    def _column_d(self, name):
-        return {
-            htypes.column.list_d(),
-            pyobj_creg.actor_to_piece(self._model_t),
-            htypes.column.column_d(name),
-            }
+    def _column_k(self, name):
+        return htypes.column.column_k(
+            model_t=pyobj_creg.actor_to_ref(self._model_t),
+            column_name=name,
+            )
 
     def _column_visible(self, name):
-        key = self._column_d(name) | {htypes.column.show_d()}
-        return self._lcs.get(key, True)
+        key = self._column_k(name)
+        return self._column_visible_reg.get(key, True)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)

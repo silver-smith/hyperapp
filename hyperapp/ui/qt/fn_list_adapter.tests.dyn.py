@@ -11,7 +11,7 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.list_diff import ListDiff
-from .fixtures import feed_fixtures, lcs_fixtures
+from .fixtures import feed_fixtures
 from .tested.code import fn_list_adapter
 
 log = logging.getLogger(__name__)
@@ -27,26 +27,28 @@ def sample_list_fn(piece):
         ]
 
 
-@mark.fixture
-def model():
-    return htypes.list_adapter_tests.sample_list()
+@mark.fixture.obj
+def model_t():
+    return htypes.list_adapter_tests.sample_list
 
 
 @mark.fixture
-def lcs():
-    def mock_get(key, default=None):
-        if htypes.column.column_d('xdesc') in key:
-            return False
-        return default
-    lcs = Mock()
-    lcs.get = mock_get
-    return lcs
+def model(model_t):
+    return model_t()
+
+
+@mark.config_fixture('column_visible_reg')
+def column_visible_reg_config(model_t):
+    key = htypes.column.column_k(
+        model_t=pyobj_creg.actor_to_ref(model_t),
+        column_name='xdesc',
+        )
+    return {key: False}
 
 
 @mark.fixture
-def ctx(lcs, model):
+def ctx(model):
     return Context(
-        lcs=lcs,
         piece=model,
         )
 
@@ -145,7 +147,6 @@ def test_fn_adapter_with_remote_context(
         rpc_call_factory,
         subprocess_rpc_server_running,
         ui_adapter_creg,
-        lcs,
         ):
 
     identity = generate_rsa_identity(fast=True)
@@ -157,7 +158,6 @@ def test_fn_adapter_with_remote_context(
 
         model = htypes.list_adapter_tests.sample_list()
         ctx = Context(
-            lcs=lcs,
             piece=model,
             identity=identity,
             remote_peer=process.peer,

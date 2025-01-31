@@ -13,9 +13,9 @@ class ListAdapterStub(FnListAdapterBase):
 def test_colunn_types():
     adapter = ListAdapterStub(
         feed_factory=Mock(),
-        lcs=Mock(),
+        column_visible_reg=Mock(),
         model=htypes.list_adapter_tests.sample_list(),
         item_t=htypes.list_adapter_tests.item,
         )
-    key = adapter._column_d('id')
+    key = adapter._column_k('id')
     assert key
