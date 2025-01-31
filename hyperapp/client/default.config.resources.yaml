@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.column:column_k
 - legacy_type.data_service:config_item
+- legacy_type.global_commands:model
 - legacy_type.model_commands:model
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
@@ -26,19 +27,34 @@ definitions:
   column_k_1:
     type: legacy_type.column:column_k
     value:
-      model_t: legacy_type.model_commands:model
-      column_name: repr
+      model_t: legacy_type.global_commands:model
+      column_name: ui_command_d
   column_k_2:
     type: legacy_type.column:column_k
     value:
-      model_t: legacy_type.model_commands:model
-      column_name: model_command_d
+      model_t: legacy_type.global_commands:model
+      column_name: repr
   column_k_3:
     type: legacy_type.column:column_k
     value:
       model_t: legacy_type.model_commands:model
-      column_name: shortcut
+      column_name: repr
   column_k_4:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.model_commands:model
+      column_name: model_command_d
+  column_k_5:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.global_commands:model
+      column_name: model_command_d
+  column_k_6:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.model_commands:model
+      column_name: shortcut
+  column_k_7:
     type: legacy_type.column:column_k
     value:
       model_t: legacy_type.model_commands:model
@@ -47,9 +63,12 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - config_item_15
       - config_item_12
-      - config_item_10
+      - config_item_14
       - config_item_11
+      - config_item_13
+      - config_item_10
       - config_item_9
   config:
     type: legacy_type.system:system_config
@@ -60,7 +79,7 @@ definitions:
   config_item_1:
     type: legacy_type.data_service:config_item
     value:
-      key: models.column_list:toggle_visibility.d
+      key: ui.layout:set_shortcut.d
       value: shortcut_Space
   config_item_10:
     type: legacy_type.data_service:config_item
@@ -71,17 +90,32 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: column_k_3
-      value: bool_2
+      value: bool_1
   config_item_12:
     type: legacy_type.data_service:config_item
     value:
       key: column_k_4
       value: bool_1
+  config_item_13:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k_5
+      value: bool_1
+  config_item_14:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k_6
+      value: bool_2
+  config_item_15:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k_7
+      value: bool_1
   config_item_2:
     type: legacy_type.data_service:config_item
     value:
-      key: ui.layout:set_shortcut.d
-      value: shortcut_Space
+      key: models.global_commands:open_global_commands.d
+      value: shortcut_Alt_F1
   config_item_3:
     type: legacy_type.data_service:config_item
     value:
@@ -95,13 +129,13 @@ definitions:
   config_item_5:
     type: legacy_type.data_service:config_item
     value:
-      key: models.global_commands:open_global_commands.d
-      value: shortcut_Alt_F1
+      key: ui.layout:open_layout_tree.d
+      value: shortcut_Alt_Shift_L
   config_item_6:
     type: legacy_type.data_service:config_item
     value:
-      key: ui.layout:open_layout_tree.d
-      value: shortcut_Alt_Shift_L
+      key: models.column_list:toggle_visibility.d
+      value: shortcut_Space
   config_item_7:
     type: legacy_type.data_service:config_item
     value:
@@ -140,10 +174,10 @@ definitions:
     value:
       items:
       - config_item_8
-      - config_item_5
-      - config_item_3
-      - config_item_6
       - config_item_2
+      - config_item_3
+      - config_item_5
+      - config_item_1
       - config_item_7
       - config_item_4
-      - config_item_1
+      - config_item_6
