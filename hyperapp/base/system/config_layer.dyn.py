@@ -104,7 +104,7 @@ class ProjectConfigLayer(ConfigLayer):
 
     def _save(self):
         if not self._name_gen:
-            self._name_gen = ResourceNameGenerator(self._system['resource_name_creg'])
+            self._name_gen = ResourceNameGenerator(self._system['resource_name_creg'], self._project, self._module)
         if not self._pick_refs:
             self._pick_refs = self._system['pick_refs']
         # We should remove not only old values from mapping,
@@ -167,8 +167,16 @@ class ProjectConfigLayer(ConfigLayer):
 
 class ResourceNameGenerator:
 
-    def __init__(self, resource_name_creg):
+    def __init__(self, resource_name_creg, project, resource_module):
         self._resource_name_creg = resource_name_creg
+        self._project = project
+        self._module = resource_module
+
+    def assigned_name(self, piece):
+        module_name, name = self._project.reverse_resolve(piece)
+        if module_name == self._module.name:
+            return name
+        return f'{module_name}:{name}'
 
     def make_stem(self, piece, t=None):
         if t is None:
