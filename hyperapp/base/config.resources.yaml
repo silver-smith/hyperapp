@@ -32,6 +32,7 @@ import:
 - base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - base.subprocess.subprocess_transport:subprocess_transport.service
+- base.system.builtin_resource_name:builtin-bool.actor-template
 - base.system.builtin_resource_name:builtin-call.actor-template
 - base.system.builtin_resource_name:builtin-record_mt.actor-template
 - base.system.builtin_resource_name:builtin-string.actor-template
@@ -93,6 +94,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - base.system.builtin_resource_name:builtin-bool.actor-template
       - base.system.builtin_resource_name:builtin-call.actor-template
       - base.system.builtin_resource_name:builtin-record_mt.actor-template
       - base.system.builtin_resource_name:builtin-string.actor-template

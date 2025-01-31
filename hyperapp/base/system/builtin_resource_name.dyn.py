@@ -14,6 +14,13 @@ def string_name(piece, gen):
     return None
 
 
+def bool_name(piece, gen):
+    if piece:
+        return 'bool-true'
+    else:
+        return 'bool-false'
+
+
 def record_mt_name(piece, gen):
     return f'{piece.name}_record_mt'
 
