@@ -95,7 +95,8 @@ class RcRunner:
         ts_count = ", ".join(f"{name}: {ts.count}" for name, ts in name_to_target_set.items())
         rc_log.info("%d targets: %s", total_count, ts_count)
         for name, target_set in name_to_target_set.items():
-            self._run_target_set_jobs(name, target_set)
+            if not self._run_target_set_jobs(name, target_set):
+                break
         self._report_traces()
         for name, target_set in name_to_target_set.items():
             self._report_deps(name, target_set)
@@ -111,14 +112,14 @@ class RcRunner:
             self._submit_jobs(target_set)
             if target_set.all_completed:
                 rc_log.info("%s: All targets are completed\n", name)
-                return
+                return True
             if self._pool.job_count == 0:
                 rc_log.info("%s: Not all targets are completed, but there are no jobs\n", name)
-                return
+                return True
             for job, result_piece in self._pool.iter_completed(self._options.timeout):
                 result = self._handle_result(target_set, job, result_piece)
                 if result.status == JobStatus.failed and self._options.fail_fast:
-                    return
+                    return False
             target_set.update_statuses()
             if self._options.check:
                 target_set.check_statuses()
