@@ -71,3 +71,7 @@ class DataServiceConfig:
 
     def __setitem__(self, key, value):
         self._target_layer.set(self._service_name, key, value)
+
+    # Used with config fixtures.
+    def update(self, config):
+        self._system.update_service_config(self._service_name, config)

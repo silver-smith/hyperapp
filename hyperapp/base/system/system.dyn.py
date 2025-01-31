@@ -245,6 +245,15 @@ class System:
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
 
+    def update_service_config(self, service_name, config):
+        try:
+            dest = self._config_templates[service_name]
+        except KeyError:
+            ctl = self._config_ctl[service_name]
+            dest = ctl.empty_config_template()
+            self._config_templates[service_name]= dest
+        dest.update(config)
+
     def update_service_own_config(self, service_name, config):
         service = self._name_to_service[service_name]
         for key, template in config.items():
