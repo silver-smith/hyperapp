@@ -245,7 +245,7 @@ class System:
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
 
-    def update_service_config(self, service_name, config):
+    def update_service_own_config(self, service_name, config):
         service = self._name_to_service[service_name]
         for key, template in config.items():
             value = template.resolve(self, service_name)

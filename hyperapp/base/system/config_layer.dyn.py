@@ -45,7 +45,7 @@ class ConfigLayer:
             config = ctl.from_data(piece)
             if service_name in {'config_ctl_creg', 'cfg_item_creg'}:
                 # Subsequent ctl.from_data calls may already use it.
-                self._system.update_service_config(service_name, config)
+                self._system.update_service_own_config(service_name, config)
             if service_name == 'system':
                 # Subsequent ctl.from_data calls may already use it.
                 self._system.update_config_ctl(config)
