@@ -1,4 +1,9 @@
+from unittest.mock import Mock
+
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .tested.code import data_service
 
 
@@ -12,3 +17,12 @@ def test_config_ctl():
     data = ctl.to_data(config)
     reverse_config = ctl.from_data(data)
     assert reverse_config == config
+
+
+def test_resource_name():
+    gen = Mock()
+    config_item = htypes.data_service.config_item(
+        key=mosaic.put('sample-key'),
+        value=mosaic.put('sample-value'),
+        )
+    name = data_service.config_item_name(config_item, gen)

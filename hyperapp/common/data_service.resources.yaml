@@ -21,11 +21,22 @@ definitions:
     value:
       object: DataServiceConfigCtl
       attr_name: from_piece
+  config_item_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_service.module
+      attr_name: config_item_name
   data_service-config_ctl.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.data_service:config_ctl
       function: DataServiceConfigCtl.from_piece
+      service_params: []
+  data_service-config_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.data_service:config_item
+      function: config_item_name
       service_params: []
   data_service.module:
     type: legacy_type.builtin:python_module

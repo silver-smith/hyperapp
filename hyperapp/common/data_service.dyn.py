@@ -75,3 +75,11 @@ class DataServiceConfig:
     # Used with config fixtures.
     def update(self, config):
         self._system.update_service_config(self._service_name, config)
+
+
+@mark.actor.resource_name_creg
+def config_item_name(piece, gen):
+    key = web.summon(piece.key)
+    key_name = gen.assigned_name(key)
+    suffix = key_name.replace(':', '-')
+    return f'config_item-{suffix}'
