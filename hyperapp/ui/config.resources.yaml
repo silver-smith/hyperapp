@@ -3,6 +3,7 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- ui.column_resource_name:column-column_k.actor-template
 - ui.column_visible_reg:column_visible_reg.service
 - ui.command_cfg_item:command-cfg_item.actor-template
 - ui.command_cfg_item:command-model_command.actor-template
@@ -144,6 +145,7 @@ definitions:
         model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
         model_layout_creg: model_layout_creg
+        resource_name_creg: resource_name_creg
         system: system
         system_fn_creg: system_fn_creg
         ui_adapter_creg: ui_adapter_creg
@@ -199,6 +201,11 @@ definitions:
       - ui.crud:crud-model.actor-template
       - ui.visualizer:builtin-int.actor-template
       - ui.visualizer:builtin-string.actor-template
+  resource_name_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.column_resource_name:column-column_k.actor-template
   system:
     type: legacy_type.system:item_list_config
     value:
