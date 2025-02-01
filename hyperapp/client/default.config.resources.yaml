@@ -11,6 +11,7 @@ import:
 - legacy_type.system:system_config
 - models.column_list:toggle_visibility.d
 - models.command_list_model:set_shortcut.d
+- models.config.config_layer_list:open_config_layer_list.d
 - models.global_commands:open_global_commands.d
 - models.global_commands:run_command.d
 - models.model_commands:open_model_commands.d
@@ -122,6 +123,11 @@ definitions:
     value:
       key: models.command_list_model:set_shortcut.d
       value: shortcut_Space
+  config_item-models.config.config_layer_list-open_config_layer_list.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.config.config_layer_list:open_config_layer_list.d
+      value: shortcut_Alt_L
   config_item-models.global_commands-open_global_commands.d:
     type: legacy_type.data_service:config_item
     value:
@@ -160,6 +166,9 @@ definitions:
   shortcut_Alt_F1:
     type: legacy_type.builtin:string
     value: Alt+F1
+  shortcut_Alt_L:
+    type: legacy_type.builtin:string
+    value: Alt+L
   shortcut_Alt_Right:
     type: legacy_type.builtin:string
     value: Alt+Right
@@ -191,3 +200,4 @@ definitions:
       - config_item-ui.navigator-go_forward.d
       - config_item-models.column_list-toggle_visibility.d
       - config_item-models.global_commands-run_command.d
+      - config_item-models.config.config_layer_list-open_config_layer_list.d

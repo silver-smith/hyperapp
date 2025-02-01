@@ -239,6 +239,10 @@ class System:
             }
 
     @property
+    def name_to_layer(self):
+        return self._name_to_layer
+
+    @property
     def service_names(self):
         return {*self._name_to_template, *self._name_to_service}
 

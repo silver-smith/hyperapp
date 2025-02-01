@@ -1,0 +1,87 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.command:model_command
+- legacy_type.config_layer_list:item
+- legacy_type.config_layer_list:model
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
+- ui.directory:directory.module
+definitions:
+  config_layer_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_layer_list.module
+      attr_name: config_layer_list
+  config_layer_list-model.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.config_layer_list:item
+  config_layer_list-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: config_layer_list-model.list-ui-t
+      system_fn: config_layer_list-model.system-fn
+  config_layer_list-model.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.config_layer_list:model
+      model: config_layer_list-model.model
+  config_layer_list-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: config_layer_list
+      ctx_params:
+      - piece
+      service_params:
+      - system
+  config_layer_list.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: config_layer_list
+      file_name: config_layer_list.dyn.py
+      import_list:
+        code.directory: ui.directory:directory.module
+        code.mark: base.mark:mark.module
+        htypes.config_layer_list.item: legacy_type.config_layer_list:item
+        htypes.config_layer_list.model: legacy_type.config_layer_list:model
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+  open_config_layer_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_layer_list.module
+      attr_name: open_config_layer_list
+  open_config_layer_list.d:
+    type: open_config_layer_list_d
+    value: {}
+  open_config_layer_list.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_config_layer_list.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_config_layer_list.system-fn
+  open_config_layer_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_config_layer_list
+      ctx_params: []
+      service_params: []
+  open_config_layer_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: config_layer_list
+      name: open_config_layer_list_d
+      base: null
+      fields: {}

@@ -1,0 +1,5 @@
+model = record
+
+item = record:
+  name: string
+  service_count: int
