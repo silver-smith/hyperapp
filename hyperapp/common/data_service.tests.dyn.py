@@ -26,3 +26,4 @@ def test_resource_name():
         value=mosaic.put('sample-value'),
         )
     name = data_service.config_item_name(config_item, gen)
+    assert name
