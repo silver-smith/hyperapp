@@ -1,0 +1,6 @@
+model = record:
+  service_name: string
+
+item = record:
+  key: string
+  value: string

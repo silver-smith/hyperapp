@@ -12,6 +12,8 @@ import:
 - models.command_list_model:global_commands-model.feed-template
 - models.command_list_model:model_commands-model-set_shortcut.command-cfg-item
 - models.command_list_model:model_commands-model.edit.command-cfg-item
+- models.config.config_item_list:config_item_list-model.model-cfg-item
+- models.config.config_item_list:config_service_list-model-open_config_item_list.command-cfg-item
 - models.config.config_layer_list:config_layer_list-model.model-cfg-item
 - models.config.config_layer_list:open_config_layer_list.global-model-command
 - models.config.config_service_list:config_service_list-model.model-cfg-item
@@ -82,6 +84,7 @@ definitions:
       - models.command_list_model:global_commands-model.edit.command-cfg-item
       - models.command_list_model:model_commands-model-set_shortcut.command-cfg-item
       - models.command_list_model:model_commands-model.edit.command-cfg-item
+      - models.config.config_item_list:config_service_list-model-open_config_item_list.command-cfg-item
       - models.data_browser:data_browser-list_view-list_open.command-cfg-item
       - models.data_browser:data_browser-record_view-record_open.command-cfg-item
       - models.data_browser:data_browser-ref_list_view-ref_list_open.command-cfg-item
@@ -100,6 +103,7 @@ definitions:
     value:
       items:
       - models.column_list:column_list-view.model-cfg-item
+      - models.config.config_item_list:config_item_list-model.model-cfg-item
       - models.config.config_layer_list:config_layer_list-model.model-cfg-item
       - models.config.config_service_list:config_service_list-model.model-cfg-item
       - models.data_browser:data_browser-list_view.model-cfg-item

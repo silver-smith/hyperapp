@@ -1,0 +1,90 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.config_item_list:item
+- legacy_type.config_item_list:model
+- legacy_type.config_service_list:model
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
+definitions:
+  config_item_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: config_item_list
+  config_item_list-model.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.config_item_list:item
+  config_item_list-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: config_item_list-model.list-ui-t
+      system_fn: config_item_list-model.system-fn
+  config_item_list-model.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.config_item_list:model
+      model: config_item_list-model.model
+  config_item_list-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: config_item_list
+      ctx_params:
+      - piece
+      service_params:
+      - system
+  config_item_list.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: config_item_list
+      file_name: config_item_list.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.config_item_list.item: legacy_type.config_item_list:item
+        htypes.config_item_list.model: legacy_type.config_item_list:model
+  config_service_list-model-open_config_item_list.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_service_list:model
+      command: open_config_item_list.model-command
+  open_config_item_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: open_config_item_list
+  open_config_item_list.d:
+    type: open_config_item_list_d
+    value: {}
+  open_config_item_list.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_config_item_list.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_config_item_list.system-fn
+  open_config_item_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_config_item_list
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  open_config_item_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: config_item_list
+      name: open_config_item_list_d
+      base: null
+      fields: {}
