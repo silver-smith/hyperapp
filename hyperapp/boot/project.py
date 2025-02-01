@@ -110,7 +110,7 @@ class Project(ResourceRegistry):
         return self._types
 
     def load(self, path_to_text):
-        log.info("Project %s: loading %d files", self._name, len(path_to_text))
+        log.debug("Project %s: loading %d files", self._name, len(path_to_text))
         self.load_types(path_to_text)
         self.load_resources(path_to_text)
 
