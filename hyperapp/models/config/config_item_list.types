@@ -4,3 +4,4 @@ model = record:
 item = record:
   key: string
   value: string
+  layers: string
