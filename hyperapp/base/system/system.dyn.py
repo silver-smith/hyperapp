@@ -159,20 +159,23 @@ class ActorTemplate:
     def from_piece(cls, piece):
         return cls(
             t=pyobj_creg.invite(piece.t),
-            fn_ref=piece.function,
+            fn=pyobj_creg.invite(piece.function),
             service_params=piece.service_params,
             )
 
-    def __init__(self, t, fn_ref, service_params):
+    def __init__(self, t, fn, service_params):
         self.t = t
-        self._fn_ref = fn_ref
+        self._fn = fn
         self._service_params = service_params
+
+    def __repr__(self):
+        return f"<ActorTemplate {self._fn}({self._service_params})>"
 
     @property
     def piece(self):
         return htypes.system.actor_template(
             t=pyobj_creg.actor_to_ref(self.t),
-            function=self._fn_ref,
+            function=pyobj_creg.actor_to_ref(self._fn),
             service_params=tuple(self._service_params),
             )
 
@@ -181,8 +184,7 @@ class ActorTemplate:
         return self.t
 
     def resolve(self, system, service_name):
-        fn = pyobj_creg.invite(self._fn_ref)
-        return self._resolve_services(fn, system)
+        return self._resolve_services(self._fn, system)
 
     def _resolve_services(self, fn, system):
         if not self._service_params:

@@ -20,12 +20,12 @@ class SkipProbeActorTemplate(ActorTemplate):
     def piece(self):
         return htypes.skip_probe_actor_template.skip_probe_actor_template(
             t=pyobj_creg.actor_to_ref(self.t),
-            function=self._fn_ref,
+            function=pyobj_creg.actor_to_ref(self._fn),
             service_params=tuple(self._service_params),
             )
 
     def resolve(self, system, service_name):
-        fn = pyobj_creg.invite(self._fn_ref)
+        fn = self._fn
         if inspect.ismethod(fn):
             probe = fn.__func__
             if isinstance(probe, ActorProbe):
