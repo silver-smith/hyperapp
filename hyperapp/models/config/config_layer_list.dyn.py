@@ -1,14 +1,5 @@
-import logging
-
 from . import htypes
-from .services import (
-    mosaic,
-    web,
-    )
 from .code.mark import mark
-from .code.directory import d_to_name
-
-log = logging.getLogger(__name__)
 
 
 @mark.model
