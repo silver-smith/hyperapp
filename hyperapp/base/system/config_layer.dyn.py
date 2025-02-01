@@ -103,10 +103,6 @@ class ProjectConfigLayer(ConfigLayer):
         self._system.invalidate_config_cache()
 
     def _save(self):
-        if not self._name_gen:
-            self._name_gen = ResourceNameGenerator(self._system['resource_name_creg'], self._project, self._module)
-        if not self._pick_refs:
-            self._pick_refs = self._system['pick_refs']
         # We should remove not only old values from mapping,
         # but also now-unused elements they reference.
         # Thus, construct it from afresh every time.
@@ -115,6 +111,10 @@ class ProjectConfigLayer(ConfigLayer):
         else:
             self._module = resource_module_factory(
                 self._project, self._config_module_name, self._module_path, resource_dir=self._resource_dir, load_from_file=False)
+        if not self._name_gen:
+            self._name_gen = ResourceNameGenerator(self._system['resource_name_creg'], self._project, self._module)
+        if not self._pick_refs:
+            self._pick_refs = self._system['pick_refs']
         service_to_piece = {}
         for service_name, config in self.config.items():
             ctl = self._config_ctl[service_name]
