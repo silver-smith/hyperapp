@@ -212,11 +212,11 @@ class System:
         # cfg_item_creg is used by DictConfigCtl.
         self._cfg_item_creg = cached_code_registry_ctr('cfg_item_creg', self._make_cfg_item_creg_config())
         config_ctl_creg_config[htypes.system.dict_config_ctl] = partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
-        dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
+        self._dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
         self._config_ctl = self._make_config_ctl({
-            'system': dict_config_ctl,
-            'config_ctl_creg': dict_config_ctl,
-            'cfg_item_creg': dict_config_ctl,
+            'system': self._dict_config_ctl,
+            'config_ctl_creg': self._dict_config_ctl,
+            'cfg_item_creg': self._dict_config_ctl,
             })
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
         self.add_core_service('config_ctl_creg', self._config_ctl_creg)
@@ -248,6 +248,7 @@ class System:
 
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
+        self._config_ctl[name] = self._dict_config_ctl
 
     def update_service_config(self, service_name, config):
         try:
