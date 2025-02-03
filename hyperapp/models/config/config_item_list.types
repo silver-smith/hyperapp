@@ -2,6 +2,8 @@ model = record:
   service_name: string
 
 item = record:
-  key: string
-  value: string
-  layers: string
+  key: ref
+  key_str: string
+  value_str: string
+  layers: string list
+  layers_str: string

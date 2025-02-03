@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .code.mark import mark
 from .tested.code import config_item_list
@@ -22,3 +24,27 @@ def test_open():
         )
     model = config_item_list.open_config_item_list(piece, current_item)
     assert isinstance(model, htypes.config_item_list.model)
+
+
+def test_get_layer(piece):
+    layer = config_item_list.config_item_get_layer(
+        piece,
+        layers=('source-layer',),
+        )
+    assert isinstance(layer, htypes.config_layer_list.layer)
+
+
+def test_move(system, piece):
+    source_layer = Mock(config={})
+    target_layer = Mock(config={})
+    system.load_config_layer('source-layer', source_layer)
+    system.load_config_layer('target-layer', target_layer)
+
+    key = 123
+    layers = ('source-layer',)
+    value = htypes.config_layer_list.layer(
+        name='target-layer',
+        )
+    config_item_list.config_item_move_to_another_layer(piece, key, layers, value)
+    source_layer.remove.assert_called_once()
+    target_layer.set.assert_called_once()

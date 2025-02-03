@@ -1,6 +1,9 @@
 from collections import defaultdict
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 
 
@@ -35,17 +38,42 @@ def config_item_list(piece, system):
         return result
 
     config = system.get_config_template(piece.service_name)
-    return [
-        htypes.config_item_list.item(
-            key=str(key),
-            value=str(value),
-            layers=", ".join(item_layers(key, value)),
+    item_list = []
+    for key, value in sorted(enum_items(config), key=lambda rec: str(rec[0])):
+        layers = item_layers(key, value)
+        item = htypes.config_item_list.item(
+            key=mosaic.put(key),
+            key_str=str(key),
+            value_str=str(value),
+            layers=tuple(layers),
+            layers_str=", ".join(layers),
             )
-        for key, value
-        in sorted(enum_items(config), key=lambda rec: str(rec[0]))
-        ]
+        item_list.append(item)
+    return item_list
 
 
 @mark.command
 def open_config_item_list(piece, current_item):
     return htypes.config_item_list.model(current_item.service_name)
+
+
+@mark.crud.get_layer(commit_action='move')
+def config_item_get_layer(piece, layers):
+    if not layers:
+        return None
+    return htypes.config_layer_list.layer(
+        name=layers[0],
+        )
+
+
+@mark.crud.move
+def config_item_move_to_another_layer(piece, key, layers, value, system):
+    source_layer_name = layers[0]
+    target_layer_name = value.name
+    if target_layer_name == source_layer_name:
+        return
+    source_layer = system.name_to_layer[source_layer_name]
+    target_layer = system.name_to_layer[target_layer_name]
+    target_layer.set(piece.service_name, key, value)
+    source_layer.remove(piece.service_name, key, value)
+    return piece

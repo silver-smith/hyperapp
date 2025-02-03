@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
@@ -9,17 +10,43 @@ import:
 - legacy_type.command:model_command
 - legacy_type.config_item_list:item
 - legacy_type.config_item_list:model
+- legacy_type.config_layer_list:layer
 - legacy_type.config_service_list:model
+- legacy_type.crud:open_command_fn
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 definitions:
+  config_item_get_layer:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: config_item_get_layer
   config_item_list:
     type: legacy_type.builtin:attribute
     value:
       object: config_item_list.module
       attr_name: config_item_list
+  config_item_list-model.crud.get_layer.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: config_item_get_layer
+      ctx_params:
+      - piece
+      - layers
+      service_params: []
+  config_item_list-model.crud.move.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: config_item_move_to_another_layer
+      ctx_params:
+      - piece
+      - key
+      - layers
+      - value
+      service_params:
+      - system
   config_item_list-model.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -34,6 +61,37 @@ definitions:
     value:
       t: legacy_type.config_item_list:model
       model: config_item_list-model.model
+  config_item_list-model.open_move.command:
+    type: legacy_type.command:model_command
+    value:
+      d: config_item_list-model.open_move.open-command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: config_item_list-model.open_move.command-fn
+  config_item_list-model.open_move.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_item_list:model
+      command: config_item_list-model.open_move.command
+  config_item_list-model.open_move.command-fn:
+    type: legacy_type.crud:open_command_fn
+    value:
+      name: open_move
+      value_t: legacy_type.config_layer_list:layer
+      key_fields:
+      - key
+      - layers
+      init_action_fn: config_item_list-model.crud.get_layer.system-fn
+      commit_command_d: config_item_list-model.open_move.commit-command.d
+      commit_action_fn: config_item_list-model.crud.move.system-fn
+  config_item_list-model.open_move.commit-command.d:
+    type: move_d
+    value: {}
+  config_item_list-model.open_move.open-command.d:
+    type: open_move_d
+    value: {}
   config_item_list-model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -51,11 +109,25 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.config_item_list.item: legacy_type.config_item_list:item
         htypes.config_item_list.model: legacy_type.config_item_list:model
+        htypes.config_layer_list.layer: legacy_type.config_layer_list:layer
+        services.mosaic: builtins:mosaic.service
+  config_item_move_to_another_layer:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: config_item_move_to_another_layer
   config_service_list-model-open_config_item_list.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.config_service_list:model
       command: open_config_item_list.model-command
+  move_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: crud
+      name: move_d
+      base: null
+      fields: {}
   open_config_item_list:
     type: legacy_type.builtin:attribute
     value:
@@ -86,5 +158,12 @@ definitions:
     value:
       module_name: config_item_list
       name: open_config_item_list_d
+      base: null
+      fields: {}
+  open_move_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: crud
+      name: open_move_d
       base: null
       fields: {}
