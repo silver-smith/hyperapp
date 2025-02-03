@@ -89,7 +89,10 @@ class ProjectConfigLayer(ConfigLayer):
     def config(self):
         if not self._module:
             return {}
-        config_piece = self._module['config']
+        try:
+            config_piece = self._module['config']
+        except KeyError:
+            return {}
         return self._data_to_config(config_piece)
 
     def set(self, service_name, key, value):
