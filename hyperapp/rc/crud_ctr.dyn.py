@@ -177,7 +177,8 @@ class CrudOpenCommandCtr(ModuleCtr):
         return name_to_res[f'{self._resource_name}.command-cfg-item']
 
     def _command_d(self, types, name):
-        d_t = d_type(types, 'crud', name)
+        code_name = self._module_name.split('.')[-1]
+        d_t = d_type(types, code_name, name)
         return d_t()
 
     def make_component(self, types, python_module, name_to_res):
