@@ -3,6 +3,7 @@
 import:
 - base.mark:mark.module
 - builtins:mosaic.service
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
@@ -111,6 +112,7 @@ definitions:
         htypes.config_item_list.model: legacy_type.config_item_list:model
         htypes.config_layer_list.layer: legacy_type.config_layer_list:layer
         services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   config_item_move_to_another_layer:
     type: legacy_type.builtin:attribute
     value:

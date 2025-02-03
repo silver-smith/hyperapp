@@ -3,6 +3,7 @@ from collections import defaultdict
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code.mark import mark
 
@@ -74,6 +75,9 @@ def config_item_move_to_another_layer(piece, key, layers, value, system):
         return
     source_layer = system.name_to_layer[source_layer_name]
     target_layer = system.name_to_layer[target_layer_name]
-    target_layer.set(piece.service_name, key, value)
-    source_layer.remove(piece.service_name, key, value)
+    key_piece = web.summon(key)
+    service_config = system.get_config_template(piece.service_name)
+    value_template = service_config[key_piece]
+    target_layer.set(piece.service_name, key_piece, value_template)
+    source_layer.remove(piece.service_name, key_piece)
     return piece
