@@ -6,6 +6,7 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - models.model_commands:open_model_commands.d
+- models.model_commands:run_command.d
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -17,11 +18,20 @@ definitions:
     value:
       key: models.model_commands:open_model_commands.d
       value: shortcut_F1
+  config_item-models.model_commands-run_command.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.model_commands:run_command.d
+      value: shortcut_Return
   shortcut_F1:
     type: legacy_type.builtin:string
     value: F1
+  shortcut_Return:
+    type: legacy_type.builtin:string
+    value: Return
   shortcut_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-models.model_commands-open_model_commands.d
+      - config_item-models.model_commands-run_command.d

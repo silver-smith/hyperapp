@@ -1,0 +1,27 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:string
+- legacy_type.data_service:config_item
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- sample.sample_commands:show_state.d
+definitions:
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        shortcut_reg: shortcut_reg.config
+  config_item-sample.sample_commands-show_state.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: sample.sample_commands:show_state.d
+      value: shortcut_Ctrl_Return
+  shortcut_Ctrl_Return:
+    type: legacy_type.builtin:string
+    value: Ctrl+Return
+  shortcut_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-sample.sample_commands-show_state.d
