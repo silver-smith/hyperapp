@@ -7,10 +7,12 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.command:model_command
 - legacy_type.config_layer_list:item
+- legacy_type.config_layer_list:layer
 - legacy_type.config_layer_list:model
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
+- legacy_type.selector:template
 - legacy_type.system_fn:ctx_fn
 definitions:
   config_layer_list:
@@ -18,6 +20,27 @@ definitions:
     value:
       object: config_layer_list.module
       attr_name: config_layer_list
+  config_layer_list-layer.selector-template:
+    type: legacy_type.selector:template
+    value:
+      value_t: legacy_type.config_layer_list:layer
+      get_fn: config_layer_list-layer.selector.get.system-fn
+      pick_fn: config_layer_list-layer.selector.pick.system-fn
+  config_layer_list-layer.selector.get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: layer_get
+      ctx_params:
+      - value
+      service_params: []
+  config_layer_list-layer.selector.pick.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: layer_put
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   config_layer_list-model.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -48,7 +71,18 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         htypes.config_layer_list.item: legacy_type.config_layer_list:item
+        htypes.config_layer_list.layer: legacy_type.config_layer_list:layer
         htypes.config_layer_list.model: legacy_type.config_layer_list:model
+  layer_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_layer_list.module
+      attr_name: layer_get
+  layer_put:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_layer_list.module
+      attr_name: layer_put
   open_config_layer_list:
     type: legacy_type.builtin:attribute
     value:

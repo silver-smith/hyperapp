@@ -16,3 +16,15 @@ def config_layer_list(piece, system):
 @mark.global_command
 def open_config_layer_list():
     return htypes.config_layer_list.model()
+
+
+@mark.selector.get
+def layer_get(value):
+    return htypes.config_layer_list.model()
+
+
+@mark.selector.pick
+def layer_put(piece, current_item):
+    return htypes.config_layer_list.layer(
+        name=current_item.name,
+        )
