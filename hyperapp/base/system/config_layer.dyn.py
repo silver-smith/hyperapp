@@ -129,19 +129,22 @@ class ProjectConfigLayer(ConfigLayer):
             self._pick_refs = self._system['pick_refs']
         service_to_piece = {}
         for service_name, config in self.config.items():
+            if not config:
+                continue  # Do not add empty configs.
             ctl = self._config_ctl[service_name]
             piece = ctl.to_data(config)
             service_to_piece[service_name] = piece
             self._ensure_refs_stored(piece)
             self._module[f'{service_name}.config'] = piece
-        config_piece = htypes.system.system_config(tuple(
-            htypes.system.service_config(
-                service=service_name,
-                config=mosaic.put(piece),
-                )
-            for service_name, piece in service_to_piece.items()
-            ))
-        self._module['config'] = config_piece
+        if service_to_piece:
+            config_piece = htypes.system.system_config(tuple(
+                htypes.system.service_config(
+                    service=service_name,
+                    config=mosaic.put(piece),
+                    )
+                for service_name, piece in service_to_piece.items()
+                ))
+            self._module['config'] = config_piece
         self._module.save()
 
     def _ensure_refs_stored(self, piece, t=None):
