@@ -205,7 +205,8 @@ class ResourceModule:
     def as_dict(self):
         self._ensure_loaded()
         d = {}
-        d['import'] = sorted(self._import_set)
+        if self._import_set:
+            d['import'] = sorted(self._import_set)
         d['definitions'] = {
             name: self._get_data(name).as_dict
             for name in sorted(self._all_names)
