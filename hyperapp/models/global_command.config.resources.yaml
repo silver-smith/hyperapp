@@ -1,31 +1,31 @@
 # Automatically generated file. Do not edit.
 
 import:
-- lcs.lcs_view:lcs_view-view.open_move.commit-command.d
-- lcs.lcs_view:lcs_view-view.open_move.open-command.d
 - legacy_type.builtin:string
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- models.global_commands:open_global_commands.d
+- models.global_commands:run_command.d
 definitions:
   config:
     type: legacy_type.system:system_config
     value:
       services:
         shortcut_reg: shortcut_reg.config
-  config_item-lcs.lcs_view-lcs_view-view.open_move.commit-command.d:
+  config_item-models.global_commands-open_global_commands.d:
     type: legacy_type.data_service:config_item
     value:
-      key: lcs.lcs_view:lcs_view-view.open_move.commit-command.d
+      key: models.global_commands:open_global_commands.d
+      value: shortcut_Alt_F1
+  config_item-models.global_commands-run_command.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.global_commands:run_command.d
       value: shortcut_Return
-  config_item-lcs.lcs_view-lcs_view-view.open_move.open-command.d:
-    type: legacy_type.data_service:config_item
-    value:
-      key: lcs.lcs_view:lcs_view-view.open_move.open-command.d
-      value: shortcut_M
-  shortcut_M:
+  shortcut_Alt_F1:
     type: legacy_type.builtin:string
-    value: M
+    value: Alt+F1
   shortcut_Return:
     type: legacy_type.builtin:string
     value: Return
@@ -33,5 +33,5 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - config_item-lcs.lcs_view-lcs_view-view.open_move.commit-command.d
-      - config_item-lcs.lcs_view-lcs_view-view.open_move.open-command.d
+      - config_item-models.global_commands-open_global_commands.d
+      - config_item-models.global_commands-run_command.d

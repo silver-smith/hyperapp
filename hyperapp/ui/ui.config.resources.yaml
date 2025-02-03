@@ -1,1 +1,87 @@
-definitions: {}
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:string
+- legacy_type.data_service:config_item
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- ui.layout:open_layout_tree.d
+- ui.layout:open_view_item_commands.d
+- ui.layout:set_shortcut.d
+- ui.navigator:go_back.d
+- ui.navigator:go_forward.d
+- ui.qt.window_commands:duplicate_window.d
+- ui.qt.window_commands:quit.d
+definitions:
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        shortcut_reg: shortcut_reg.config
+  config_item-ui.layout-open_layout_tree.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.layout:open_layout_tree.d
+      value: shortcut_Alt_Shift_L
+  config_item-ui.layout-open_view_item_commands.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.layout:open_view_item_commands.d
+      value: shortcut_C
+  config_item-ui.layout-set_shortcut.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.layout:set_shortcut.d
+      value: shortcut_Space
+  config_item-ui.navigator-go_back.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.navigator:go_back.d
+      value: shortcut_Esc
+  config_item-ui.navigator-go_forward.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.navigator:go_forward.d
+      value: shortcut_Alt_Right
+  config_item-ui.qt.window_commands-duplicate_window.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.window_commands:duplicate_window.d
+      value: shortcut_Alt_W
+  config_item-ui.qt.window_commands-quit.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.window_commands:quit.d
+      value: shortcut_Alt_Q
+  shortcut_Alt_Q:
+    type: legacy_type.builtin:string
+    value: Alt+Q
+  shortcut_Alt_Right:
+    type: legacy_type.builtin:string
+    value: Alt+Right
+  shortcut_Alt_Shift_L:
+    type: legacy_type.builtin:string
+    value: Alt+Shift+L
+  shortcut_Alt_W:
+    type: legacy_type.builtin:string
+    value: Alt+W
+  shortcut_C:
+    type: legacy_type.builtin:string
+    value: C
+  shortcut_Esc:
+    type: legacy_type.builtin:string
+    value: Esc
+  shortcut_Space:
+    type: legacy_type.builtin:string
+    value: Space
+  shortcut_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-ui.navigator-go_back.d
+      - config_item-ui.navigator-go_forward.d
+      - config_item-ui.qt.window_commands-duplicate_window.d
+      - config_item-ui.qt.window_commands-quit.d
+      - config_item-ui.layout-open_layout_tree.d
+      - config_item-ui.layout-open_view_item_commands.d
+      - config_item-ui.layout-set_shortcut.d
