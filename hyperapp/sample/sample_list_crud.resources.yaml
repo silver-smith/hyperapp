@@ -4,16 +4,22 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
-- legacy_type.crud:edit_d
 - legacy_type.crud:open_command_fn
-- legacy_type.crud:save_d
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_list_crud:form_item
 - legacy_type.system_fn:ctx_fn
 - sample.sample_list:sample_list.module
 definitions:
+  edit_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_list_crud
+      name: edit_d
+      base: null
+      fields: {}
   sample_list-sample_list.crud.get.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -56,10 +62,10 @@ definitions:
       commit_command_d: sample_list-sample_list.edit.commit-command.d
       commit_action_fn: sample_list-sample_list.crud.update.system-fn
   sample_list-sample_list.edit.commit-command.d:
-    type: legacy_type.crud:save_d
+    type: save_d
     value: {}
   sample_list-sample_list.edit.open-command.d:
-    type: legacy_type.crud:edit_d
+    type: edit_d
     value: {}
   sample_list_crud.module:
     type: legacy_type.builtin:python_module
@@ -80,3 +86,10 @@ definitions:
     value:
       object: sample_list_crud.module
       attr_name: sample_list_update
+  save_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_list_crud
+      name: save_d
+      base: null
+      fields: {}

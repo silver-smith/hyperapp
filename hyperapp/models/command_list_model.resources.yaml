@@ -7,14 +7,13 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command_list_model:form
 - legacy_type.command_list_model:item
 - legacy_type.command_list_model:set_shortcut_d
-- legacy_type.crud:edit_d
 - legacy_type.crud:open_command_fn
-- legacy_type.crud:save_d
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.global_commands:model
@@ -47,6 +46,13 @@ definitions:
     value:
       object: command_list_model.module
       attr_name: command_update
+  edit_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: command_list_model
+      name: edit_d
+      base: null
+      fields: {}
   global_commands-model-set_shortcut.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -96,10 +102,10 @@ definitions:
       commit_command_d: global_commands-model.edit.commit-command.d
       commit_action_fn: global_commands-model.crud.update.system-fn
   global_commands-model.edit.commit-command.d:
-    type: legacy_type.crud:save_d
+    type: save_d
     value: {}
   global_commands-model.edit.open-command.d:
-    type: legacy_type.crud:edit_d
+    type: edit_d
     value: {}
   global_commands-model.feed-template:
     type: legacy_type.feed:feed_template
@@ -159,10 +165,10 @@ definitions:
       commit_command_d: model_commands-model.edit.commit-command.d
       commit_action_fn: model_commands-model.crud.update.system-fn
   model_commands-model.edit.commit-command.d:
-    type: legacy_type.crud:save_d
+    type: save_d
     value: {}
   model_commands-model.edit.open-command.d:
-    type: legacy_type.crud:edit_d
+    type: edit_d
     value: {}
   model_commands-model.feed-template:
     type: legacy_type.feed:feed_template
@@ -173,6 +179,13 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.command_list_model:item
+  save_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: command_list_model
+      name: save_d
+      base: null
+      fields: {}
   set_shortcut:
     type: legacy_type.builtin:attribute
     value:

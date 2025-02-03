@@ -78,7 +78,7 @@ definitions:
   open_rename_d:
     type: legacy_type.builtin:record_mt
     value:
-      module_name: crud
+      module_name: rename_command
       name: open_rename_d
       base: null
       fields: {}
@@ -96,7 +96,7 @@ definitions:
   rename_d:
     type: legacy_type.builtin:record_mt
     value:
-      module_name: crud
+      module_name: rename_command
       name: rename_d
       base: null
       fields: {}

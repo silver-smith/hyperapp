@@ -124,7 +124,7 @@ definitions:
   move_d:
     type: legacy_type.builtin:record_mt
     value:
-      module_name: crud
+      module_name: config_item_list
       name: move_d
       base: null
       fields: {}
@@ -163,7 +163,7 @@ definitions:
   open_move_d:
     type: legacy_type.builtin:record_mt
     value:
-      module_name: crud
+      module_name: config_item_list
       name: open_move_d
       base: null
       fields: {}
