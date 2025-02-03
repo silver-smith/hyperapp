@@ -105,6 +105,15 @@ class ProjectConfigLayer(ConfigLayer):
         self._save()
         self._system.invalidate_config_cache()
 
+    def remove(self, service_name, key):
+        try:
+            service_config = self.config[service_name]
+        except KeyError:
+            return
+        del service_config[key]
+        self._save()
+        self._system.invalidate_config_cache()
+
     def _save(self):
         # We should remove not only old values from mapping,
         # but also now-unused elements they reference.
