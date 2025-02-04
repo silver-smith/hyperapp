@@ -296,7 +296,7 @@ class SystemProbe(System):
         ctr_collector.add_constructor(ctr)
 
     def migrate_globals(self):
-        for obj in self._globals:
+        for obj in list(self._globals):
             obj.migrate_to(self)
 
     def run_async_coroutine(self, coroutine):
