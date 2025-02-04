@@ -1,8 +1,8 @@
 
 class Filter:
 
-    def __init__(self, target_set, target_names):
-        self._target_set = target_set
+    def __init__(self, full_target_set, target_names):
+        self._full_target_set = full_target_set
         self._target_names = set(target_names)
         self._wanted_names = set()
         self.update_deps()
@@ -18,7 +18,7 @@ class Filter:
         while name_set:
             name = name_set.pop()
             try:
-                tgt = self._target_set[name]
+                tgt = self._full_target_set[name]
             except KeyError:
                 hints = set(self._get_hints(name))
                 if not hints:

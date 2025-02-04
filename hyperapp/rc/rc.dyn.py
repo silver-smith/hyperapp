@@ -17,7 +17,7 @@ from .services import (
 from .code.reconstructors import register_reconstructors
 from .code.rc_constants import JobStatus
 from .code.job_cache import JobCache
-from .code.target_set import GlobalTargets
+from .code.target_set import FullTargetSet, GlobalTargets
 from .code.init_targets import add_base_target_items, create_target_set
 from .code.rc_filter import Filter
 
@@ -90,24 +90,24 @@ class RcRunner:
             self._job_cache.put(cache_target_name, target.src, deps, result)
         return result
 
-    def run(self, name_to_target_set):
-        total_count = sum(ts.count for ts in name_to_target_set.values())
-        ts_count = ", ".join(f"{name}: {ts.count}" for name, ts in name_to_target_set.items())
+    def run(self, full_target_set):
+        total_count = sum(ts.count for name, ts in full_target_set)
+        ts_count = ", ".join(f"{name}: {ts.count}" for name, ts in full_target_set)
         rc_log.info("%d targets: %s", total_count, ts_count)
-        for name, target_set in name_to_target_set.items():
-            if not self._run_target_set_jobs(name, target_set):
+        for name, target_set in full_target_set:
+            if not self._run_target_set_jobs(name, full_target_set, target_set):
                 break
         self._report_traces()
-        for name, target_set in name_to_target_set.items():
+        for name, target_set in full_target_set:
             self._report_deps(name, target_set)
         rc_log.info("Diffs:\n")
         name_to_output_stats = {}
-        for name, target_set in name_to_target_set.items():
+        for name, target_set in full_target_set:
             with_output, changed_count = self._collect_output(target_set)
             name_to_output_stats[name] = with_output, changed_count
-        self._report_all_stats(name_to_target_set, name_to_output_stats)
+        self._report_stats(full_target_set, name_to_output_stats)
 
-    def _run_target_set_jobs(self, name, target_set):
+    def _run_target_set_jobs(self, name, full_target_set, target_set):
         while True:
             self._submit_jobs(target_set)
             if target_set.all_completed:
@@ -120,9 +120,9 @@ class RcRunner:
                 result = self._handle_result(target_set, job, result_piece)
                 if result.status == JobStatus.failed and self._options.fail_fast:
                     return False
-            target_set.update_statuses()
+            full_target_set.update_statuses()
             if self._options.check:
-                target_set.check_statuses()
+                full_target_set.check_statuses()
             self._filter.update_deps()
 
     def _report_traces(self):
@@ -150,26 +150,38 @@ class RcRunner:
                     ", ".join(dep.name for dep in target.deps),
                     )
 
-    def _report_all_stats(self, name_to_target_set, name_to_output_stats):
+    def _report_stats(self, full_target_set, name_to_output_stats):
         total_count = 0
         total_completed_count = 0
         total_with_output = 0
         total_changed_count = 0
-        for name, target_set in name_to_target_set.items():
-            completed_count = len(list(target_set.iter_completed()))
+        for name, target_set in full_target_set:
+            completed_count = target_set.completed_count
             with_output, changed_count = name_to_output_stats[name]
-            self._report_stats(name, target_set.count, completed_count, with_output, changed_count)
+            job_count = sum(1 for target in self._job_id_to_target.values() if target in target_set)
+            self._report_target_set_stats(name, target_set.count, completed_count, job_count, with_output, changed_count)
             total_count += target_set.count
             total_completed_count += completed_count
             total_with_output += with_output
             total_changed_count += changed_count
-        self._report_stats("Total", total_count, total_completed_count, total_with_output, total_changed_count)
+        self._report_total_stats(total_count, total_completed_count, total_with_output, total_changed_count)
 
-    def _report_stats(self, name, total_count, completed_count, with_output, changed_count):
+    def _report_target_set_stats(self, name, total_count, completed_count, job_count, with_output, changed_count):
+        rc_log.info(
+            "%s: %d, completed: %d; not completed: %d, jobs: %d, output: %d, changed: %d",
+            name,
+            total_count,
+            completed_count,
+            total_count - completed_count,
+            job_count,
+            with_output,
+            changed_count,
+            )
+
+    def _report_total_stats(self, total_count, completed_count, with_output, changed_count):
         job_count = len(self._job_id_to_target)
         rc_log.info(
-            "%s: %d, completed: %d; not completed: %d, jobs: %d, cached: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
-            name,
+            "Total: %d, completed: %d; not completed: %d, jobs: %d, cached: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
             total_count,
             completed_count,
             total_count - completed_count,
@@ -273,7 +285,8 @@ def build_target_sets(
         if not only_target_projects or name in only_target_projects
         }
 
-    globals_targets = GlobalTargets()
+    global_targets = GlobalTargets()
+    full_target_set = FullTargetSet(global_targets)
     name_to_target_project = {}
     name_to_target_set = {}
     for name, rec in name_to_target_rec.items():
@@ -292,13 +305,14 @@ def build_target_sets(
         target_project.load_types(path_to_text)
         target_set = create_target_set(
             config_ctl, ctr_from_template_creg, rc_config,
-            project_dir, job_cache, cached_count, globals_targets, target_project, path_to_text, target_set_imports)
+            project_dir, job_cache, cached_count, global_targets, target_project, path_to_text, target_set_imports)
         if name == 'base':
             add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templates, target_set, base_project)
-        target_set.post_init()
         name_to_target_project[name] = target_project
         name_to_target_set[name] = target_set
-    return name_to_target_set
+        full_target_set.add_target_set(name, target_set)
+    full_target_set.post_init()
+    return full_target_set
 
 
 def compile_resources(
@@ -309,17 +323,16 @@ def compile_resources(
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
 
-    name_to_target_set = build_target_sets(
+    full_target_set = build_target_sets(
         base_config_templates, config_ctl, ctr_from_template_creg,
         rc_config, job_cache, cached_count, only_target_projects, name_to_project)
     if options.check:
-        for target_set in name_to_target_set.values():
-            target_set.check_statuses()
+        full_target_set.check_statuses()
 
-    filter = Filter(target_set, targets)
+    filter = Filter(full_target_set, targets)
     runner = RcRunner(rc_job_result_creg, options, filter, pool, job_cache, cached_count)
     try:
-        runner.run(name_to_target_set)
+        runner.run(full_target_set)
     except HException as x:
         if isinstance(x, htypes.rpc.server_error):
             log.error("Server error: %s", x.message)

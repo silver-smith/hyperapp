@@ -25,76 +25,70 @@ class TargetSetBase:
     def __getitem__(self, name):
         return self._name_to_target[name]
 
+    def __contains__(self, target):
+        return target in self._name_to_target.values()
+
     def add(self, target):
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
 
-    def iter_completed(self):
-        for target in self:
-            if target.completed:
-                yield target
+    @property
+    def completed_count(self):
+        return sum(1 for target in self._name_to_target.values() if target.completed)
 
 
 class GlobalTargets(TargetSetBase):
     pass
 
 
-class TargetSet(TargetSetBase):
+class FullTargetSet:
 
-    def __init__(self, globals_targets, resource_dir, types, imports):
-        super().__init__()
-        self._globals_targets = globals_targets
-        self._resource_dir = resource_dir
-        self._imports = imports  # TargetSet set.
-        self._types = types
-        self._name_to_full_name = {}
-        self._full_name_to_name = {}
+    def __init__(self, global_targets):
+        self._global_targets = global_targets
+        self._name_to_target_set = {}
         self._prev_completed = set()
         self._prev_incomplete_deps_map = {}
 
-    @property
-    def globals(self):
-        return self._globals_targets
+    def __iter__(self):
+        return iter(self._name_to_target_set.items())
 
-    @property
-    def count(self):
-        return len(self._name_to_target)
-
-    def iter_ready(self):
-        for target in self:
-            if target.ready:
-                yield target
-
-    def add_module_name(self, full_name, name):
-        self._full_name_to_name[full_name] = name
-        self._name_to_full_name[name] = full_name
-
-    def adopt(self, target):
-        self.add(target)
-
-    def find_by_name(self, name):
-        try:
-            return (self, self._name_to_full_name[name])
-        except KeyError:
-            for target_set in self._imports:
-                try:
-                    return target_set.find_by_name(name)
-                except KeyError:
-                    pass
+    def __getitem__(self, name):
+        for target_set in [self._global_targets, self._name_to_target_set.values()]:
+            try:
+                return target_set[name]
+            except KeyError:
+                pass
         raise KeyError(name)
+
+    def add_target_set(self, name, target_set):
+        self._name_to_target_set[name] = target_set
+
+    def post_init(self):
+        for target_set in self._name_to_target_set.values():
+            target_set.post_init()
+        self._init_all_statuses()
+        self.update_statuses()
+
+    def _init_all_statuses(self):
+        self._prev_incomplete_deps_map = self._incomplete_deps_map
+        for target in self._all_targets:
+            self._update_target(target)
+
+    @property
+    def _all_targets(self):
+        targets = [*self._global_targets]
+        for target_set in self._name_to_target_set.values():
+            targets.extend(target_set)
+        return targets
 
     @property
     def _completed_targets(self):
-        return {*self._globals_targets.iter_completed(), *self.iter_completed()}
-
-    @property
-    def _my_and_global_targets(self):
-        return [*self._globals_targets, *self._name_to_target.values()]
+        return {target for target in self._all_targets if target.completed}
 
     @property
     def _reverse_deps_map(self):
         dep_to_targets = defaultdict(set)  # target -> target set
-        for target in self._my_and_global_targets:
+        for target in self._all_targets:
             for dep in target.deps:
                 dep_to_targets[dep].add(target)
         return dict(dep_to_targets)
@@ -105,7 +99,7 @@ class TargetSet(TargetSetBase):
     def _incomplete_deps_map(self):
         return {
             target: target.deps
-            for target in self._my_and_global_targets
+            for target in self._all_targets
             if not target.completed
             }
 
@@ -160,24 +154,60 @@ class TargetSet(TargetSetBase):
             self._prev_completed = completed_targets
             self._prev_incomplete_deps_map = new_deps_map
 
-    def init_all_statuses(self):
-        self._prev_incomplete_deps_map = self._incomplete_deps_map
-        for target in self._my_and_global_targets:
-            self._update_target(target)
-
-    def post_init(self):
-        self.factory.all_imports_known().init_completed()
-        self.init_all_statuses()
-        self.update_statuses()
-
     def check_statuses(self):
-        for target in self._my_and_global_targets:
+        for target in self._all_targets:
             if target.completed:
                 continue
             deps = target.deps
             target.update_status()
             assert not target.completed, target
             assert target.deps == deps
+
+
+class TargetSet(TargetSetBase):
+
+    def __init__(self, global_targets, resource_dir, types, imports):
+        super().__init__()
+        self._global_targets = global_targets
+        self._resource_dir = resource_dir
+        self._imports = imports  # TargetSet set.
+        self._types = types
+        self._name_to_full_name = {}
+        self._full_name_to_name = {}
+
+    @property
+    def globals(self):
+        return self._global_targets
+
+    @property
+    def count(self):
+        return len(self._name_to_target)
+
+    def iter_ready(self):
+        for target in self:
+            if target.ready:
+                yield target
+
+    def add_module_name(self, full_name, name):
+        self._full_name_to_name[full_name] = name
+        self._name_to_full_name[name] = full_name
+
+    def adopt(self, target):
+        self.add(target)
+
+    def find_by_name(self, name):
+        try:
+            return (self, self._name_to_full_name[name])
+        except KeyError:
+            for target_set in self._imports:
+                try:
+                    return target_set.find_by_name(name)
+                except KeyError:
+                    pass
+        raise KeyError(name)
+
+    def post_init(self):
+        self.factory.all_imports_known().init_completed()
 
     @property
     def all_completed(self):
