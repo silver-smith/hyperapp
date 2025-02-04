@@ -132,11 +132,12 @@ class ConfigItemCompleteTarget(Target):
     def target_name(service_name, key):
         return f'item-complete/{service_name}/{key}'
 
-    def __init__(self, service_name, key, resolved_tgt, service_cfg_item_complete_tgt):
+    def __init__(self, service_name, key, resolved_tgt, service_cfg_item_complete_tgt, req=None):
         self._service_name = service_name
         self._key = key
         self._resolved_tgt = resolved_tgt
         self._service_cfg_item_complete_tgt = service_cfg_item_complete_tgt
+        self._req = req
         self._target_set = None
         self._completed = False
         self._provider_resource_tgt = None
@@ -176,6 +177,8 @@ class ConfigItemCompleteTarget(Target):
         if not self._target_set:
             self._target_set = self._resolved_tgt.adopted_by
             self._target_set.adopt(self)
+            config_tgt = self._target_set.factory.config_resource()
+            config_tgt.add_item(self._service_name, self, self._req)
         self._completed = True
 
     @property
