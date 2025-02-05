@@ -1,18 +1,76 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_type.builtin:bool
 - legacy_type.builtin:string
+- legacy_type.column:column_k
 - legacy_type.data_service:config_item
+- legacy_type.model_commands:model
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - models.model_commands:open_model_commands.d
 - models.model_commands:run_command.d
 definitions:
+  bool-false:
+    type: legacy_type.builtin:bool
+    value: false
+  bool-true:
+    type: legacy_type.builtin:bool
+    value: true
+  column_k-model_commands.model-model_command_d:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.model_commands:model
+      column_name: model_command_d
+  column_k-model_commands.model-repr:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.model_commands:model
+      column_name: repr
+  column_k-model_commands.model-shortcut:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.model_commands:model
+      column_name: shortcut
+  column_k-model_commands.model-ui_command_d:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.model_commands:model
+      column_name: ui_command_d
+  column_visible_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-column_k-model_commands.model-model_command_d
+      - config_item-column_k-model_commands.model-repr
+      - config_item-column_k-model_commands.model-shortcut
+      - config_item-column_k-model_commands.model-ui_command_d
   config:
     type: legacy_type.system:system_config
     value:
       services:
         shortcut_reg: shortcut_reg.config
+        column_visible_reg: column_visible_reg.config
+  config_item-column_k-model_commands.model-model_command_d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-model_commands.model-model_command_d
+      value: bool-false
+  config_item-column_k-model_commands.model-repr:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-model_commands.model-repr
+      value: bool-false
+  config_item-column_k-model_commands.model-shortcut:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-model_commands.model-shortcut
+      value: bool-true
+  config_item-column_k-model_commands.model-ui_command_d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-model_commands.model-ui_command_d
+      value: bool-false
   config_item-models.model_commands-open_model_commands.d:
     type: legacy_type.data_service:config_item
     value:

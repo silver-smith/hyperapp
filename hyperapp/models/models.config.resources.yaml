@@ -1,7 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_type.builtin:bool
 - legacy_type.builtin:string
+- legacy_type.column:column_k
+- legacy_type.config_item_list:model
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
@@ -11,14 +14,46 @@ import:
 - models.config.config_item_list:config_item_list-model.open_move.commit-command.d
 - models.config.config_item_list:config_item_list-model.open_move.open-command.d
 - models.config.config_item_list:open_config_item_list.d
+- models.config.config_item_list:open_config_key.d
 - models.config.config_layer_list:open_config_layer_list.d
 - models.config.config_service_list:open_config_service_list.d
+- models.data_browser:record_open.d
 definitions:
+  bool-false:
+    type: legacy_type.builtin:bool
+    value: false
+  column_k-config_item_list.model-key:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.config_item_list:model
+      column_name: key
+  column_k-config_item_list.model-layers:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.config_item_list:model
+      column_name: layers
+  column_visible_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-column_k-config_item_list.model-key
+      - config_item-column_k-config_item_list.model-layers
   config:
     type: legacy_type.system:system_config
     value:
       services:
         shortcut_reg: shortcut_reg.config
+        column_visible_reg: column_visible_reg.config
+  config_item-column_k-config_item_list.model-key:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-config_item_list.model-key
+      value: bool-false
+  config_item-column_k-config_item_list.model-layers:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-config_item_list.model-layers
+      value: bool-false
   config_item-models.column_list-open_column_list.d:
     type: legacy_type.data_service:config_item
     value:
@@ -49,6 +84,11 @@ definitions:
     value:
       key: models.config.config_item_list:open_config_item_list.d
       value: shortcut_Return
+  config_item-models.config.config_item_list-open_config_key.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.config.config_item_list:open_config_key.d
+      value: shortcut_K
   config_item-models.config.config_layer_list-open_config_layer_list.d:
     type: legacy_type.data_service:config_item
     value:
@@ -59,6 +99,11 @@ definitions:
     value:
       key: models.config.config_service_list:open_config_service_list.d
       value: shortcut_Alt_S
+  config_item-models.data_browser-record_open.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.data_browser:record_open.d
+      value: shortcut_Return
   shortcut_Alt_L:
     type: legacy_type.builtin:string
     value: Alt+L
@@ -68,6 +113,9 @@ definitions:
   shortcut_Alt_Shift_C:
     type: legacy_type.builtin:string
     value: Alt+Shift+C
+  shortcut_K:
+    type: legacy_type.builtin:string
+    value: K
   shortcut_M:
     type: legacy_type.builtin:string
     value: M
@@ -89,3 +137,5 @@ definitions:
       - config_item-models.column_list-open_column_list.d
       - config_item-models.column_list-toggle_visibility.d
       - config_item-models.command_list_model-set_shortcut.d
+      - config_item-models.config.config_item_list-open_config_key.d
+      - config_item-models.data_browser-record_open.d
