@@ -1,0 +1,2 @@
+item = record:
+  id: int
