@@ -64,6 +64,7 @@ class CfgItemReq(Requirement):
             _module_name, _recorder_piece, python_module = import_tgt.recorded_python_module()
             template_piece = target.constructor.make_component(import_tgt.types, python_module)
         else: 
+            assert resource_tgt.completed
             template_piece = resource_tgt.get_resource_component(target.constructor)
         return ConfigItemResource(
             service_name=self._service_name,
