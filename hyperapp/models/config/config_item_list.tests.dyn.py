@@ -36,6 +36,19 @@ def piece():
     return htypes.config_item_list.model(service_name='sample_service')
 
 
+def test_open_key(piece):
+    key = htypes.config_item_list_tests.sample_key(123)
+    current_item = htypes.config_item_list.item(
+        key=mosaic.put(key),
+        key_str="<unused>",
+        value_str="<unused>",
+        layers=('<unused>',),
+        layers_str="<unused>",
+        )
+    browser = config_item_list.open_config_key(piece, current_item)
+    assert browser
+
+
 def test_get_layer(piece):
     layer = config_item_list.config_item_get_layer(
         piece,

@@ -6,6 +6,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.data_browser import data_browser
 
 
 @mark.model
@@ -56,6 +57,12 @@ def config_item_list(piece, system):
 @mark.command
 def open_config_item_list(piece, current_item):
     return htypes.config_item_list.model(current_item.service_name)
+
+
+@mark.command
+def open_config_key(piece, current_item):
+    key = web.summon(current_item.key)
+    return data_browser(key)
 
 
 @mark.crud.get_layer(commit_action='move')

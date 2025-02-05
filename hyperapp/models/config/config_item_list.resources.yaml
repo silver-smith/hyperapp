@@ -18,6 +18,7 @@ import:
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
+- models.data_browser:data_browser.module
 definitions:
   config_item_get_layer:
     type: legacy_type.builtin:attribute
@@ -29,6 +30,11 @@ definitions:
     value:
       object: config_item_list.module
       attr_name: config_item_list
+  config_item_list-model-open_config_key.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_item_list:model
+      command: open_config_key.model-command
   config_item_list-model.crud.get_layer.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -107,6 +113,7 @@ definitions:
       module_name: config_item_list
       file_name: config_item_list.dyn.py
       import_list:
+        code.data_browser: models.data_browser:data_browser.module
         code.mark: base.mark:mark.module
         htypes.config_item_list.item: legacy_type.config_item_list:item
         htypes.config_item_list.model: legacy_type.config_item_list:model
@@ -160,6 +167,38 @@ definitions:
     value:
       module_name: config_item_list
       name: open_config_item_list_d
+      base: null
+      fields: {}
+  open_config_key:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: open_config_key
+  open_config_key.d:
+    type: open_config_key_d
+    value: {}
+  open_config_key.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_config_key.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_config_key.system-fn
+  open_config_key.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_config_key
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  open_config_key_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: config_item_list
+      name: open_config_key_d
       base: null
       fields: {}
   open_move_d:

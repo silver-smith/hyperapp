@@ -1,0 +1,2 @@
+sample_key = record:
+  id: int
