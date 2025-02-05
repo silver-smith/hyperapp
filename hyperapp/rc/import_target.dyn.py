@@ -15,6 +15,14 @@ from .code.utils import iter_types
 rc_log = logging.getLogger('rc')
 
 
+def _resolve_requirements(target_factory, requirements):
+    req_to_target = {}
+    for req in requirements:
+        target = req.get_target(target_factory)
+        req_to_target[req] = target
+    return req_to_target
+
+
 class AllImportsKnownTarget(Target):
 
     name = 'all-imports-known'
@@ -77,6 +85,10 @@ class ImportCachedTarget(Target):
     def update_status(self):
         if self._completed:
             return
+        if not all(target.completed for target in self._req_to_target.values()):
+            return
+        # Second resolve may shift from resolved to complete target.
+        self._req_to_target = _resolve_requirements(self._target_set.factory, self._req_to_target)
         if all(target.completed for target in self._req_to_target.values()):
             self._completed = True  # Should be set before using job result for import target to become completed.
             self._check_deps()
@@ -229,18 +241,11 @@ class ImportTarget(Target):
 
     def _create_cached_target(self, entry):
         entry.result.non_ready_update_targets(self, self._target_set)
-        req_to_target = self._resolve_requirements(entry.deps.keys())
+        req_to_target = _resolve_requirements(self._target_set.factory, entry.deps.keys())
         target = ImportCachedTarget(
             self._rc_config, self._cached_count, self._target_set, self._types,
             self, self._src, entry.deps, req_to_target, entry.result)
         self._init_current_job_target(target)
-
-    def _resolve_requirements(self, requirements):
-        req_to_target = {}
-        for req in requirements:
-            target = req.get_target(self._target_set.factory)
-            req_to_target[req] = target
-        return req_to_target
 
     def _init_current_job_target(self, target):
         self._current_job_target = target
