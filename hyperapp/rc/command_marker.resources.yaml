@@ -18,92 +18,92 @@ definitions:
         code.command_ctr: rc.command_ctr:command_ctr.module
         code.marker_utils: rc.marker_utils:marker_utils.module
 
-  ui_command_marker:
+  UiCommandMarker:
     type: legacy_type.builtin:attribute
     value:
       object: command_marker.module
-      attr_name: ui_command_marker
+      attr_name: UiCommandMarker
 
   ui_command.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: ui_command
-      function: ui_command_marker
+      function: UiCommandMarker
       service_params:
       - system
       - ctr_collector
 
-  ui_model_command_marker:
+  UiModelCommandMarker:
     type: legacy_type.builtin:attribute
     value:
       object: command_marker.module
-      attr_name: ui_model_command_marker
+      attr_name: UiModelCommandMarker
 
   ui_model_command.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: ui_model_command
-      function: ui_model_command_marker
+      function: UiModelCommandMarker
       service_params:
       - system
       - ctr_collector
 
-  universal_ui_command_marker:
+  UniversalUiCommandMarker:
     type: legacy_type.builtin:attribute
     value:
       object: command_marker.module
-      attr_name: universal_ui_command_marker
+      attr_name: UniversalUiCommandMarker
 
   universal_ui_command.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: universal_ui_command
-      function: universal_ui_command_marker
+      function: UniversalUiCommandMarker
       service_params:
       - system
       - ctr_collector
 
-  model_command_marker:
+  ModelCommandMarker:
     type: legacy_type.builtin:attribute
     value:
       object: command_marker.module
-      attr_name: model_command_marker
+      attr_name: ModelCommandMarker
 
   command.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: command
-      function: model_command_marker
+      function: ModelCommandMarker
       service_params:
       - system
       - ctr_collector
 
-  model_command_enumerator_marker:
+  ModelCommandEnumeratorMarker:
     type: legacy_type.builtin:attribute
     value:
       object: command_marker.module
-      attr_name: model_command_enumerator_marker
+      attr_name: ModelCommandEnumeratorMarker
 
   command_enum.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: command_enum
-      function: model_command_enumerator_marker
+      function: ModelCommandEnumeratorMarker
       service_params:
       - system
       - ctr_collector
 
-  global_model_command_marker:
+  GlobalModelCommandMarker:
     type: legacy_type.builtin:attribute
     value:
       object: command_marker.module
-      attr_name: global_model_command_marker
+      attr_name: GlobalModelCommandMarker
 
   global_command.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: global_command
-      function: global_model_command_marker
+      function: GlobalModelCommandMarker
       service_params:
       - system
       - ctr_collector

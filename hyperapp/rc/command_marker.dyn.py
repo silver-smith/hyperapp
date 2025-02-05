@@ -166,57 +166,77 @@ class ModelCommandEnumeratorDecorator(CommandDecorator):
     _probe_class = ModelCommandEnumeratorProbe
 
 
-def ui_command_marker(t, module_name, system, ctr_collector):
-    if not isinstance(t, Type):
-        raise RuntimeError(f"Use type specialized marker, like '@mark.ui_command(my_type)'")
-    service_name = 'view_ui_command_reg'
-    return UiCommandDecorator(system, ctr_collector, module_name, service_name, t)
+class CommandMarker:
+
+    def __init__(self, module_name, system, ctr_collector):
+        self._module_name = module_name
+        self._system = system
+        self._ctr_collector = ctr_collector
 
 
-def ui_model_command_marker(t, module_name, system, ctr_collector):
-    if not isinstance(t, Type):
-        raise RuntimeError(f"Use type specialized marker, like '@mark.ui_model_command(my_type)'")
-    service_name = 'view_ui_model_command_reg'
-    return UiCommandDecorator(system, ctr_collector, module_name, service_name, t)
+class UiCommandMarker(CommandMarker):
+
+    def __call__(self, t):
+        if not isinstance(t, Type):
+            raise RuntimeError(f"Use type specialized marker, like '@mark.ui_command(my_type)'")
+        service_name = 'view_ui_command_reg'
+        return UiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, t)
 
 
-def universal_ui_command_marker(fn, module_name, system, ctr_collector):
-    if isinstance(fn, Type):
-        raise RuntimeError(f"Use non-type specialized marker, like '@mark.universal_ui_command'")
-    check_is_function(real_fn(fn))
-    service_name = 'universal_ui_command_reg'
-    return UniversalUiCommandProbe(system, ctr_collector, module_name, service_name, fn)
+class UiModelCommandMarker(CommandMarker):
+
+    def __call__(self, t):
+        if not isinstance(t, Type):
+            raise RuntimeError(f"Use type specialized marker, like '@mark.ui_model_command(my_type)'")
+        service_name = 'view_ui_model_command_reg'
+        return UiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, t)
 
 
-def model_command_marker(fn_or_t, module_name, system, ctr_collector):
-    service_name = 'model_command_reg'
-    if isinstance(fn_or_t, Type):
-        # Type-specialized variant (@mark.command(my_type)).
-        return ModelCommandDecorator(system, ctr_collector, module_name, service_name, t=fn_or_t)
-    else:
-        # Not type-specialized variant  (@mark.command).
-        check_is_function(real_fn(fn_or_t))
-        return ModelCommandProbe(system, ctr_collector, module_name, service_name, fn=fn_or_t)
+class UniversalUiCommandMarker(CommandMarker):
+
+    def __call__(self, fn):
+        if isinstance(fn, Type):
+            raise RuntimeError(f"Use non-type specialized marker, like '@mark.universal_ui_command'")
+        check_is_function(real_fn(fn))
+        service_name = 'universal_ui_command_reg'
+        return UniversalUiCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, fn)
 
 
-def model_command_enumerator_marker(fn_or_t, module_name, system, ctr_collector):
-    service_name = 'model_command_enumerator_reg'
-    if isinstance(fn_or_t, Type):
-        # Type-specialized variant (@mark.command_enum(my_type)).
-        return ModelCommandEnumeratorDecorator(system, ctr_collector, module_name, service_name, t=fn_or_t)
-    else:
-        # Not type-specialized variant  (@mark.command_enum).
-        check_not_classmethod(fn_or_t)
-        check_is_function(real_fn(fn_or_t))
-        return ModelCommandEnumeratorProbe(system, ctr_collector, module_name, service_name, fn=fn_or_t)
+class ModelCommandMarker(CommandMarker):
+
+    def __call__(self, fn_or_t):
+        service_name = 'model_command_reg'
+        if isinstance(fn_or_t, Type):
+            # Type-specialized variant (@mark.command(my_type)).
+            return ModelCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, t=fn_or_t)
+        else:
+            # Not type-specialized variant  (@mark.command).
+            check_is_function(real_fn(fn_or_t))
+            return ModelCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, fn=fn_or_t)
 
 
-def global_model_command_marker(fn_or_t, module_name, system, ctr_collector):
-    service_name = 'global_model_command_reg'
-    if isinstance(fn_or_t, Type):
-        raise RuntimeError(f"Global commands can not have type specialization: {fn_or_t!r}")
-    else:
-        # Not type-specialized variant  (@mark.global_command).
-        check_not_classmethod(fn_or_t)
-        check_is_function(real_fn(fn_or_t))
-        return GlobalModelCommandProbe(system, ctr_collector, module_name, service_name, fn=fn_or_t)
+class ModelCommandEnumeratorMarker(CommandMarker):
+
+    def __call__(self, fn_or_t):
+        service_name = 'model_command_enumerator_reg'
+        if isinstance(fn_or_t, Type):
+            # Type-specialized variant (@mark.command_enum(my_type)).
+            return ModelCommandEnumeratorDecorator(self._system, self._ctr_collector, self._module_name, service_name, t=fn_or_t)
+        else:
+            # Not type-specialized variant  (@mark.command_enum).
+            check_not_classmethod(fn_or_t)
+            check_is_function(real_fn(fn_or_t))
+            return ModelCommandEnumeratorProbe(self._system, self._ctr_collector, self._module_name, service_name, fn=fn_or_t)
+
+
+class GlobalModelCommandMarker(CommandMarker):
+
+    def __call__(self, fn_or_t):
+        service_name = 'global_model_command_reg'
+        if isinstance(fn_or_t, Type):
+            raise RuntimeError(f"Global commands can not have type specialization: {fn_or_t!r}")
+        else:
+            # Not type-specialized variant  (@mark.global_command).
+            check_not_classmethod(fn_or_t)
+            check_is_function(real_fn(fn_or_t))
+            return GlobalModelCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, fn=fn_or_t)
