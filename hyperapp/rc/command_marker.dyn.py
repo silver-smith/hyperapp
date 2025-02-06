@@ -70,12 +70,17 @@ class CommandProbe:
         return deduce_t(piece)
 
     def _common_ctr_kw(self, params):
+        args = {
+            name: deduce_t(params.values[name])
+            for name in self._args or []
+            }
         return dict(
             module_name=self._module_name,
             attr_qual_name=self.real_fn.__qualname__.split('.'),
             service_name=self._service_name,
             ctx_params=params.ctx_names,
             service_params=params.service_names,
+            args=args,
             )
 
     def _raise_error(self, error_msg):
@@ -87,8 +92,8 @@ class UiCommandProbe(CommandProbe):
     def _add_constructor(self, params):
         # Only type specialized markers are allowed.
         ctr = UiCommandTemplateCtr(
-            t=self._t,
             **self._common_ctr_kw(params),
+            t=self._t,
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -110,8 +115,8 @@ class ModelCommandProbe(CommandProbe):
         else:
             t = self._deduce_piece_t(params, ['piece', 'model'])
         ctr = ModelCommandTemplateCtr(
-            t=t,
             **self._common_ctr_kw(params),
+            t=t,
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -124,8 +129,8 @@ class ModelCommandEnumeratorProbe(CommandProbe):
         else:
             t = self._deduce_piece_t(params, ['piece', 'model'])
         ctr = ModelCommandEnumeratorTemplateCtr(
-            t=t,
             **self._common_ctr_kw(params),
+            t=t,
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -133,7 +138,6 @@ class ModelCommandEnumeratorProbe(CommandProbe):
 class GlobalModelCommandProbe(CommandProbe):
 
     def _add_constructor(self, params):
-        assert not self._args, self._args
         assert not self._t
         ctr = GlobalModelCommandTemplateCtr(
             **self._common_ctr_kw(params),

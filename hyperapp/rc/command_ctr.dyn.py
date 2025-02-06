@@ -13,12 +13,30 @@ LOCAL_PARAMS = {'controller', 'ctx', 'lcs', 'rpc_endpoint', 'identity', 'remote_
 
 class CommandTemplateCtr(Constructor):
 
-    def __init__(self, module_name, attr_qual_name, service_name, ctx_params, service_params):
+    def __init__(self, module_name, attr_qual_name, service_name, ctx_params, service_params, args):
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
         self._ctx_params = ctx_params
         self._service_params = service_params
+        self._args = args
+
+    @property
+    def _args_tuple(self):
+        return tuple(
+            htypes.command_resource.arg(
+                name=name,
+                t=pyobj_creg.actor_to_ref(t),
+                )
+            for name, t in self._args.items()
+            )
+
+    @staticmethod
+    def _args_dict(arg_list):
+        return {
+            arg.name: pyobj_creg.invite(arg.t)
+            for arg in arg_list
+            }
 
     def update_targets(self, target_set):
         resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
@@ -86,6 +104,7 @@ class UntypedCommandTemplateCtr(CommandTemplateCtr):
             service_name=piece.service_name,
             ctx_params=piece.ctx_params,
             service_params=piece.service_params,
+            args=cls._args_dict(piece.args),
             )
 
     @property
@@ -96,6 +115,7 @@ class UntypedCommandTemplateCtr(CommandTemplateCtr):
             service_name=self._service_name,
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
+            args=self._args_tuple,
             )
 
     def get_component(self, name_to_res):
@@ -117,13 +137,14 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
-            t=pyobj_creg.invite(piece.t),
             ctx_params=piece.ctx_params,
             service_params=piece.service_params,
+            args=cls._args_dict(piece.args),
+            t=pyobj_creg.invite(piece.t),
             )
 
-    def __init__(self, module_name, attr_qual_name, service_name, t, ctx_params, service_params):
-        super().__init__(module_name, attr_qual_name, service_name, ctx_params, service_params)
+    def __init__(self, module_name, attr_qual_name, service_name, ctx_params, service_params, args, t):
+        super().__init__(module_name, attr_qual_name, service_name, ctx_params, service_params, args)
         self._t = t
 
     @property
@@ -132,9 +153,10 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,
-            t=pyobj_creg.actor_to_ref(self._t),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
+            args=self._args_tuple,
+            t=pyobj_creg.actor_to_ref(self._t),
             )
 
     def get_component(self, name_to_res):
