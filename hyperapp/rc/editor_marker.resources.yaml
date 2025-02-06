@@ -1,0 +1,34 @@
+import:
+- builtins:deduce_t.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.marker:marker_template
+- rc.editor_ctr:editor_ctr.module
+- rc.marker_utils:marker_utils.module
+
+definitions:
+
+  editor_marker.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: editor_marker
+      file_name: editor_marker.dyn.py
+      import_list:
+        services.deduce_t: builtins:deduce_t.service
+        code.marker_utils: rc.marker_utils:marker_utils.module
+        code.editor_ctr: rc.editor_ctr:editor_ctr.module
+
+  EditorMarker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: editor_marker.module
+      attr_name: EditorMarker
+
+  editor.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: editor
+      function: EditorMarker
+      service_params:
+      - system
+      - ctr_collector

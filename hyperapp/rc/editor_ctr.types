@@ -1,0 +1,6 @@
+default_ctr = record:
+  module_name: string
+  attr_qual_name: string list
+  ctx_params: string list
+  service_params: string list
+  value_t: ref
