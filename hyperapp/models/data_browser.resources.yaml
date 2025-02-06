@@ -7,6 +7,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.data_browser:browse_current_model_d
@@ -21,7 +22,6 @@ import:
 - legacy_type.data_browser:ref_list_item
 - legacy_type.data_browser:ref_list_open_d
 - legacy_type.data_browser:ref_list_view
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model:record_ui_t
@@ -86,10 +86,10 @@ definitions:
       ui_t: data_browser-list_view.list-ui-t
       system_fn: data_browser-list_view.system-fn
   data_browser-list_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.data_browser:list_view
-      model: data_browser-list_view.model
+      value: data_browser-list_view.model
   data_browser-list_view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -103,10 +103,10 @@ definitions:
       ui_t: data_browser-primitive_view.record-ui-t
       system_fn: data_browser-primitive_view.system-fn
   data_browser-primitive_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.data_browser:primitive_view
-      model: data_browser-primitive_view.model
+      value: data_browser-primitive_view.model
   data_browser-primitive_view.record-ui-t:
     type: legacy_type.model:record_ui_t
     value:
@@ -133,10 +133,10 @@ definitions:
       ui_t: data_browser-record_view.list-ui-t
       system_fn: data_browser-record_view.system-fn
   data_browser-record_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.data_browser:record_view
-      model: data_browser-record_view.model
+      value: data_browser-record_view.model
   data_browser-record_view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -159,10 +159,10 @@ definitions:
       ui_t: data_browser-ref_list_view.list-ui-t
       system_fn: data_browser-ref_list_view.system-fn
   data_browser-ref_list_view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.data_browser:ref_list_view
-      model: data_browser-ref_list_view.model
+      value: data_browser-ref_list_view.model
   data_browser-ref_list_view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

@@ -7,25 +7,25 @@ from .services import (
 from .code.mark import mark
 
 
-class ModelCfgItem:
+class TypedCfgItem:
 
     @classmethod
     @mark.actor.cfg_item_creg
     def from_piece(cls, piece):
         return cls(
             t=pyobj_creg.invite(piece.t),
-            model=web.summon(piece.model),
+            value=web.summon(piece.value),
             )
 
-    def __init__(self, t, model):
+    def __init__(self, t, value):
         self._t = t
-        self._model = model
+        self._value = value
 
     @property
     def piece(self):
-        return htypes.model.cfg_item(
+        return htypes.cfg_item.typed_cfg_item(
             t=pyobj_creg.actor_to_ref(self._t),
-            model=mosaic.put(self._model),
+            value=mosaic.put(self._value),
             )
 
     @property
@@ -33,4 +33,4 @@ class ModelCfgItem:
         return self._t
 
     def resolve(self, system, service_name):
-        return self._model
+        return self._value

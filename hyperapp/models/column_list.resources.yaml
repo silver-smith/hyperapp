@@ -7,6 +7,7 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.column:column_k
 - legacy_type.column_list:item
 - legacy_type.column_list:open_column_list_d
@@ -18,7 +19,6 @@ import:
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.list:view
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
@@ -52,10 +52,10 @@ definitions:
       ui_t: column_list-view.list-ui-t
       system_fn: column_list-view.system-fn
   column_list-view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.column_list:view
-      model: column_list-view.model
+      value: column_list-view.model
   column_list-view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

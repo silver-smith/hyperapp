@@ -5,10 +5,10 @@ import:
 - common.tree_diff:tree_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:index_tree_feed_type
-- legacy_type.model:cfg_item
 - legacy_type.model:model
 - legacy_type.model:tree_ui_t
 - legacy_type.sample_tree:feed_sample_tree
@@ -89,10 +89,10 @@ definitions:
       ui_t: sample_tree-feed_sample_tree.tree-ui-t
       system_fn: sample_tree-feed_sample_tree.system-fn
   sample_tree-feed_sample_tree.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_tree:feed_sample_tree
-      model: sample_tree-feed_sample_tree.model
+      value: sample_tree-feed_sample_tree.model
   sample_tree-feed_sample_tree.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -112,10 +112,10 @@ definitions:
       ui_t: sample_tree-sample_tree.tree-ui-t
       system_fn: sample_tree-sample_tree.system-fn
   sample_tree-sample_tree.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_tree:sample_tree
-      model: sample_tree-sample_tree.model
+      value: sample_tree-sample_tree.model
   sample_tree-sample_tree.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

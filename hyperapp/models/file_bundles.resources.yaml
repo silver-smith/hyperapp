@@ -4,6 +4,7 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.data_browser:record_view
@@ -11,7 +12,6 @@ import:
 - legacy_type.file_bundles:open_d
 - legacy_type.file_bundles:open_file_bundle_list_d
 - legacy_type.file_bundles:view
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
@@ -36,10 +36,10 @@ definitions:
       ui_t: file_bundles-view.list-ui-t
       system_fn: file_bundles-view.system-fn
   file_bundles-view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.file_bundles:view
-      model: file_bundles-view.model
+      value: file_bundles-view.model
   file_bundles-view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

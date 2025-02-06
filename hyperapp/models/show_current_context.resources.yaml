@@ -4,8 +4,8 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.show_current_context:item
@@ -33,10 +33,10 @@ definitions:
       ui_t: show_current_context-view.list-ui-t
       system_fn: show_current_context-view.system-fn
   show_current_context-view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.show_current_context:view
-      model: show_current_context-view.model
+      value: show_current_context-view.model
   show_current_context-view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

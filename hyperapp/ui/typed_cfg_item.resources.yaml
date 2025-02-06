@@ -7,33 +7,33 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.model:cfg_item
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
 definitions:
-  ModelCfgItem:
+  TypedCfgItem:
     type: legacy_type.builtin:attribute
     value:
-      object: model_cfg_item.module
-      attr_name: ModelCfgItem
-  ModelCfgItem.from_piece:
+      object: typed_cfg_item.module
+      attr_name: TypedCfgItem
+  TypedCfgItem.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ModelCfgItem
+      object: TypedCfgItem
       attr_name: from_piece
-  model-cfg_item.actor-template:
+  cfg_item-typed_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.model:cfg_item
-      function: ModelCfgItem.from_piece
+      t: legacy_type.cfg_item:typed_cfg_item
+      function: TypedCfgItem.from_piece
       service_params: []
-  model_cfg_item.module:
+  typed_cfg_item.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: model_cfg_item
-      file_name: model_cfg_item.dyn.py
+      module_name: typed_cfg_item
+      file_name: typed_cfg_item.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        htypes.model.cfg_item: legacy_type.model:cfg_item
+        htypes.cfg_item.typed_cfg_item: legacy_type.cfg_item:typed_cfg_item
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service

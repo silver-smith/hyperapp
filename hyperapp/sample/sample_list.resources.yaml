@@ -5,10 +5,10 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.sample_list:feed_sample_list
@@ -93,10 +93,10 @@ definitions:
       ui_t: sample_list-feed_sample_list.list-ui-t
       system_fn: sample_list-feed_sample_list.system-fn
   sample_list-feed_sample_list.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_list:feed_sample_list
-      model: sample_list-feed_sample_list.model
+      value: sample_list-feed_sample_list.model
   sample_list-feed_sample_list.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -115,10 +115,10 @@ definitions:
       ui_t: sample_list-sample_list.list-ui-t
       system_fn: sample_list-sample_list.system-fn
   sample_list-sample_list.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_list:sample_list
-      model: sample_list-sample_list.model
+      value: sample_list-sample_list.model
   sample_list-sample_list.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

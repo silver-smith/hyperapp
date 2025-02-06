@@ -7,13 +7,13 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.lcs_layer:item
 - legacy_type.lcs_layer:layer
 - legacy_type.lcs_layer:model
 - legacy_type.lcs_view:view
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.selector:template
@@ -61,10 +61,10 @@ definitions:
       ui_t: lcs_layer-model.list-ui-t
       system_fn: lcs_layer-model.system-fn
   lcs_layer-model.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.lcs_layer:model
-      model: lcs_layer-model.model
+      value: lcs_layer-model.model
   lcs_layer-model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

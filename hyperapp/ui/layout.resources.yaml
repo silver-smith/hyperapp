@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
@@ -19,7 +20,6 @@ import:
 - legacy_type.layout:set_escape_shortcut_d
 - legacy_type.layout:set_shortcut_d
 - legacy_type.layout:view
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model:tree_ui_t
@@ -96,10 +96,10 @@ definitions:
       ui_t: layout-command_list.list-ui-t
       system_fn: layout-command_list.system-fn
   layout-command_list.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.layout:command_list
-      model: layout-command_list.model
+      value: layout-command_list.model
   layout-command_list.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -126,10 +126,10 @@ definitions:
       ui_t: layout-view.tree-ui-t
       system_fn: layout-view.system-fn
   layout-view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.layout:view
-      model: layout-view.model
+      value: layout-view.model
   layout-view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

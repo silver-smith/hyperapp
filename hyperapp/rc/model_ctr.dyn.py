@@ -69,9 +69,9 @@ class ModelCtr(ModuleCtr):
             ui_t=mosaic.put(self._ui_t),
             system_fn=mosaic.put(system_fn),
             )
-        cfg_item = htypes.model.cfg_item(
+        cfg_item = htypes.cfg_item.typed_cfg_item(
             t=pyobj_creg.actor_to_ref(self._model_t),
-            model=mosaic.put(model),
+            value=mosaic.put(model),
             )
         if name_to_res is not None:
             name_to_res[f'{self._resource_name}.{self._ui_t_name}'] = self._ui_t

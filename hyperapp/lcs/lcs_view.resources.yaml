@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:list_mt
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.crud:open_command_fn
@@ -19,7 +20,6 @@ import:
 - legacy_type.lcs_view:lcs_open_piece_d
 - legacy_type.lcs_view:lcs_remove_d
 - legacy_type.lcs_view:view
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
@@ -142,10 +142,10 @@ definitions:
       ui_t: lcs_view-view.list-ui-t
       system_fn: lcs_view-view.system-fn
   lcs_view-view.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.lcs_view:view
-      model: lcs_view-view.model
+      value: lcs_view-view.model
   lcs_view-view.open_move.command:
     type: legacy_type.command:model_command
     value:

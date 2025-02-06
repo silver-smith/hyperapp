@@ -1,0 +1,3 @@
+typed_cfg_item = record:
+  t: ref
+  value: ref

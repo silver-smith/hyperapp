@@ -4,8 +4,8 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
-- legacy_type.model:cfg_item
 - legacy_type.model:model
 - legacy_type.model:record_ui_t
 - legacy_type.sample_record:item
@@ -47,10 +47,10 @@ definitions:
       ui_t: sample_record-sample_record.record-ui-t
       system_fn: sample_record-sample_record.system-fn
   sample_record-sample_record.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_record:sample_record
-      model: sample_record-sample_record.model
+      value: sample_record-sample_record.model
   sample_record-sample_record.record-ui-t:
     type: legacy_type.model:record_ui_t
     value:

@@ -5,11 +5,11 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
 - legacy_type.config_layer_list:item
 - legacy_type.config_layer_list:layer
 - legacy_type.config_layer_list:model
-- legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.selector:template
@@ -51,10 +51,10 @@ definitions:
       ui_t: config_layer_list-model.list-ui-t
       system_fn: config_layer_list-model.system-fn
   config_layer_list-model.model-cfg-item:
-    type: legacy_type.model:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_layer_list:model
-      model: config_layer_list-model.model
+      value: config_layer_list-model.model
   config_layer_list-model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
