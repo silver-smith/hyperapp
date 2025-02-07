@@ -366,8 +366,10 @@ class System:
             return self._name_to_service[name]
         except KeyError:
             pass
+        # ConfigItemMissing(KeyError) can be fired here, should be out of try/except KeyError.
+        name_to_template = self._name_to_template
         try:
-            template = self._name_to_template[name]
+            template = name_to_template[name]
         except KeyError:
             self._raise_missing_service(name)
         if name in self._resolve_stack:
