@@ -58,16 +58,16 @@ class EditorDefaultTemplateCtr(ModuleCtr):
                 )
             name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
-        system_fn = htypes.system_fn.ctx_fn(
+        fn = htypes.system_fn.ctx_fn(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
-        cfg_item = htypes.cfg_item.typed_cfg_item(
+        cfg_item = htypes.cfg_item.typed_fn_cfg_item(
             t=pyobj_creg.actor_to_ref(self._value_t),
-            value=mosaic.put(system_fn),
+            system_fn=mosaic.put(fn),
             )
-        name_to_res[f'{self._fn_name}.system-fn'] = system_fn
+        name_to_res[f'{self._fn_name}.system-fn'] = fn
         name_to_res[f'{self._resource_name}.cfg-item'] = cfg_item
         return cfg_item
 
