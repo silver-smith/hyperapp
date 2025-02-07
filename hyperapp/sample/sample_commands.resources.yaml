@@ -25,6 +25,14 @@ definitions:
   details.d:
     type: legacy_type.sample_commands:details_d
     value: {}
+  details.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: details
+      ctx_params:
+      - piece
+      - current_idx
+      service_params: []
   details.model-command:
     type: legacy_type.command:model_command
     value:
@@ -33,15 +41,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: details.system-fn
-  details.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: details
-      ctx_params:
-      - piece
-      - current_idx
-      service_params: []
+      system_fn: details.fn
   open_sample_static_list:
     type: legacy_type.builtin:attribute
     value:
@@ -50,6 +50,12 @@ definitions:
   open_sample_static_list.d:
     type: legacy_type.sample_commands:open_sample_static_list_d
     value: {}
+  open_sample_static_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_sample_static_list
+      ctx_params: []
+      service_params: []
   open_sample_static_list.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -58,13 +64,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_sample_static_list.system-fn
-  open_sample_static_list.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_sample_static_list
-      ctx_params: []
-      service_params: []
+      system_fn: open_sample_static_list.fn
   open_sample_static_text_1:
     type: legacy_type.builtin:attribute
     value:
@@ -73,6 +73,12 @@ definitions:
   open_sample_static_text_1.d:
     type: legacy_type.sample_commands:open_sample_static_text_1_d
     value: {}
+  open_sample_static_text_1.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_sample_static_text_1
+      ctx_params: []
+      service_params: []
   open_sample_static_text_1.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -81,13 +87,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_sample_static_text_1.system-fn
-  open_sample_static_text_1.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_sample_static_text_1
-      ctx_params: []
-      service_params: []
+      system_fn: open_sample_static_text_1.fn
   open_sample_static_text_2:
     type: legacy_type.builtin:attribute
     value:
@@ -96,6 +96,12 @@ definitions:
   open_sample_static_text_2.d:
     type: legacy_type.sample_commands:open_sample_static_text_2_d
     value: {}
+  open_sample_static_text_2.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_sample_static_text_2
+      ctx_params: []
+      service_params: []
   open_sample_static_text_2.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -104,13 +110,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_sample_static_text_2.system-fn
-  open_sample_static_text_2.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_sample_static_text_2
-      ctx_params: []
-      service_params: []
+      system_fn: open_sample_static_text_2.fn
   sample_commands.module:
     type: legacy_type.builtin:python_module
     value:
@@ -137,6 +137,13 @@ definitions:
   sample_tree_info.d:
     type: legacy_type.sample_commands:sample_tree_info_d
     value: {}
+  sample_tree_info.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: sample_tree_info
+      ctx_params:
+      - piece
+      service_params: []
   sample_tree_info.model-command:
     type: legacy_type.command:model_command
     value:
@@ -145,14 +152,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
-      system_fn: sample_tree_info.system-fn
-  sample_tree_info.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: sample_tree_info
-      ctx_params:
-      - piece
-      service_params: []
+      system_fn: sample_tree_info.fn
   show_state:
     type: legacy_type.builtin:attribute
     value:
@@ -161,6 +161,13 @@ definitions:
   show_state.d:
     type: legacy_type.sample_commands:show_state_d
     value: {}
+  show_state.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: show_state
+      ctx_params:
+      - model_state
+      service_params: []
   show_state.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -169,11 +176,4 @@ definitions:
         is_global: true
         uses_state: true
         remotable: true
-      system_fn: show_state.system-fn
-  show_state.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: show_state
-      ctx_params:
-      - model_state
-      service_params: []
+      system_fn: show_state.fn

@@ -42,16 +42,7 @@ definitions:
   add_identity_command.d:
     type: legacy_type.identity_command:add_identity_command_d
     value: {}
-  add_identity_command.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: add_identity_command.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: add_identity_command.system-fn
-  add_identity_command.system-fn:
+  add_identity_command.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: add_identity_command
@@ -63,6 +54,15 @@ definitions:
       - feed_factory
       - ui_model_command_items
       - shortcut_reg
+  add_identity_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: add_identity_command.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: add_identity_command.fn
   identity_command-identity_command.actor-template:
     type: legacy_type.system:actor_template
     value:

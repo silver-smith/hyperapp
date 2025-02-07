@@ -21,6 +21,12 @@ definitions:
   open_view_factory_list.d:
     type: open_view_factory_list_d
     value: {}
+  open_view_factory_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_view_factory_list
+      ctx_params: []
+      service_params: []
   open_view_factory_list.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -29,13 +35,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_view_factory_list.system-fn
-  open_view_factory_list.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_view_factory_list
-      ctx_params: []
-      service_params: []
+      system_fn: open_view_factory_list.fn
   open_view_factory_list_d:
     type: legacy_type.builtin:record_mt
     value:

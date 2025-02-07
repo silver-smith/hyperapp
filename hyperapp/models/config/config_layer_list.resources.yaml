@@ -91,6 +91,12 @@ definitions:
   open_config_layer_list.d:
     type: open_config_layer_list_d
     value: {}
+  open_config_layer_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_config_layer_list
+      ctx_params: []
+      service_params: []
   open_config_layer_list.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -99,13 +105,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_config_layer_list.system-fn
-  open_config_layer_list.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_config_layer_list
-      ctx_params: []
-      service_params: []
+      system_fn: open_config_layer_list.fn
   open_config_layer_list_d:
     type: legacy_type.builtin:record_mt
     value:

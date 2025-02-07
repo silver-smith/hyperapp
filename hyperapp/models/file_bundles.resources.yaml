@@ -65,16 +65,7 @@ definitions:
   open.d:
     type: legacy_type.file_bundles:open_d
     value: {}
-  open.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: open.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: open.system-fn
-  open.system-fn:
+  open.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: open
@@ -83,6 +74,15 @@ definitions:
       - current_item
       service_params:
       - file_bundle
+  open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open.fn
   open_file_bundle_list:
     type: legacy_type.builtin:attribute
     value:
@@ -91,6 +91,12 @@ definitions:
   open_file_bundle_list.d:
     type: legacy_type.file_bundles:open_file_bundle_list_d
     value: {}
+  open_file_bundle_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_file_bundle_list
+      ctx_params: []
+      service_params: []
   open_file_bundle_list.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -99,10 +105,4 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_file_bundle_list.system-fn
-  open_file_bundle_list.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_file_bundle_list
-      ctx_params: []
-      service_params: []
+      system_fn: open_file_bundle_list.fn

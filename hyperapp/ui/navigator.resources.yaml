@@ -45,7 +45,7 @@ definitions:
   go_back.d:
     type: legacy_type.navigator:go_back_d
     value: {}
-  go_back.system-fn:
+  go_back.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: go_back
@@ -63,7 +63,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      system_fn: go_back.system-fn
+      system_fn: go_back.fn
   go_forward:
     type: legacy_type.builtin:attribute
     value:
@@ -72,7 +72,7 @@ definitions:
   go_forward.d:
     type: legacy_type.navigator:go_forward_d
     value: {}
-  go_forward.system-fn:
+  go_forward.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: go_forward
@@ -90,7 +90,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      system_fn: go_forward.system-fn
+      system_fn: go_forward.fn
   navigator-view-go_back.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

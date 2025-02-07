@@ -106,7 +106,7 @@ definitions:
   open_opener_commands.d:
     type: legacy_type.list_as_tree:open_opener_commands_d
     value: {}
-  open_opener_commands.system-fn:
+  open_opener_commands.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: open_opener_commands
@@ -122,7 +122,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: open_opener_commands.system-fn
+      system_fn: open_opener_commands.fn
   opener_command_list:
     type: legacy_type.builtin:attribute
     value:
@@ -136,7 +136,7 @@ definitions:
   switch_list_to_tree.d:
     type: legacy_type.list_as_tree:switch_list_to_tree_d
     value: {}
-  switch_list_to_tree.system-fn:
+  switch_list_to_tree.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: switch_list_to_tree
@@ -155,7 +155,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      system_fn: switch_list_to_tree.system-fn
+      system_fn: switch_list_to_tree.fn
   toggle_open_command:
     type: legacy_type.builtin:attribute
     value:
@@ -164,16 +164,7 @@ definitions:
   toggle_open_command.d:
     type: legacy_type.list_as_tree:toggle_open_command_d
     value: {}
-  toggle_open_command.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: toggle_open_command.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: toggle_open_command.system-fn
-  toggle_open_command.system-fn:
+  toggle_open_command.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: toggle_open_command
@@ -188,6 +179,15 @@ definitions:
       - get_model_commands
       - get_custom_layout
       - set_custom_layout
+  toggle_open_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: toggle_open_command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: toggle_open_command.fn
   tree-view-open_opener_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

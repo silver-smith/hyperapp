@@ -99,6 +99,13 @@ definitions:
   lcs_open_layers.d:
     type: lcs_open_layers_d
     value: {}
+  lcs_open_layers.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_open_layers
+      ctx_params:
+      - piece
+      service_params: []
   lcs_open_layers.model-command:
     type: legacy_type.command:model_command
     value:
@@ -107,14 +114,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
-      system_fn: lcs_open_layers.system-fn
-  lcs_open_layers.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: lcs_open_layers
-      ctx_params:
-      - piece
-      service_params: []
+      system_fn: lcs_open_layers.fn
   lcs_open_layers_d:
     type: legacy_type.builtin:record_mt
     value:

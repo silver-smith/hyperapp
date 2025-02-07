@@ -36,6 +36,14 @@ definitions:
   add_view_command.d:
     type: legacy_type.layout:add_view_command_d
     value: {}
+  add_view_command.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: add_view_command
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   add_view_command.model-command:
     type: legacy_type.command:model_command
     value:
@@ -44,25 +52,13 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: add_view_command.system-fn
-  add_view_command.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: add_view_command
-      ctx_params:
-      - piece
-      - current_item
-      service_params: []
+      system_fn: add_view_command.fn
   enum_layout_tree_commands:
     type: legacy_type.builtin:attribute
     value:
       object: layout.module
       attr_name: enum_layout_tree_commands
-  enum_layout_tree_commands.model-command-enumerator:
-    type: legacy_type.command:model_command_enumerator
-    value:
-      system_fn: enum_layout_tree_commands.system-fn
-  enum_layout_tree_commands.system-fn:
+  enum_layout_tree_commands.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: enum_layout_tree_commands
@@ -71,6 +67,10 @@ definitions:
       - current_item
       - controller
       service_params: []
+  enum_layout_tree_commands.model-command-enumerator:
+    type: legacy_type.command:model_command_enumerator
+    value:
+      system_fn: enum_layout_tree_commands.fn
   layout-command_list-add_view_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -172,6 +172,12 @@ definitions:
   open_layout_tree.d:
     type: legacy_type.layout:open_layout_tree_d
     value: {}
+  open_layout_tree.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_layout_tree
+      ctx_params: []
+      service_params: []
   open_layout_tree.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -180,13 +186,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_layout_tree.system-fn
-  open_layout_tree.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_layout_tree
-      ctx_params: []
-      service_params: []
+      system_fn: open_layout_tree.fn
   open_view_item_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -195,6 +195,14 @@ definitions:
   open_view_item_commands.d:
     type: legacy_type.layout:open_view_item_commands_d
     value: {}
+  open_view_item_commands.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_view_item_commands
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   open_view_item_commands.model-command:
     type: legacy_type.command:model_command
     value:
@@ -203,15 +211,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: open_view_item_commands.system-fn
-  open_view_item_commands.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_view_item_commands
-      ctx_params:
-      - piece
-      - current_item
-      service_params: []
+      system_fn: open_view_item_commands.fn
   set_escape_shortcut:
     type: legacy_type.builtin:attribute
     value:
@@ -220,16 +220,7 @@ definitions:
   set_escape_shortcut.d:
     type: legacy_type.layout:set_escape_shortcut_d
     value: {}
-  set_escape_shortcut.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: set_escape_shortcut.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: set_escape_shortcut.system-fn
-  set_escape_shortcut.system-fn:
+  set_escape_shortcut.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: set_escape_shortcut
@@ -238,6 +229,15 @@ definitions:
       - current_item
       service_params:
       - shortcut_reg
+  set_escape_shortcut.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: set_escape_shortcut.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: set_escape_shortcut.fn
   set_shortcut:
     type: legacy_type.builtin:attribute
     value:
@@ -246,16 +246,7 @@ definitions:
   set_shortcut.d:
     type: legacy_type.layout:set_shortcut_d
     value: {}
-  set_shortcut.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: set_shortcut.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: set_shortcut.system-fn
-  set_shortcut.system-fn:
+  set_shortcut.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: set_shortcut
@@ -264,6 +255,15 @@ definitions:
       - current_item
       service_params:
       - shortcut_reg
+  set_shortcut.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: set_shortcut.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: set_shortcut.fn
   view_item_commands:
     type: legacy_type.builtin:attribute
     value:

@@ -79,16 +79,7 @@ definitions:
   open_command_layout_context.d:
     type: legacy_type.command_layout_context:open_command_layout_context_d
     value: {}
-  open_command_layout_context.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: open_command_layout_context.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: open_command_layout_context.system-fn
-  open_command_layout_context.system-fn:
+  open_command_layout_context.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: open_command_layout_context
@@ -99,3 +90,12 @@ definitions:
       - ctx
       service_params:
       - view_reg
+  open_command_layout_context.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_command_layout_context.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: open_command_layout_context.fn

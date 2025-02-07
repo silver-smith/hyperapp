@@ -21,7 +21,7 @@ definitions:
   duplicate_window.d:
     type: legacy_type.window_commands:duplicate_window_d
     value: {}
-  duplicate_window.system-fn:
+  duplicate_window.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: duplicate_window
@@ -38,7 +38,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: duplicate_window.system-fn
+      system_fn: duplicate_window.fn
   quit:
     type: legacy_type.builtin:attribute
     value:
@@ -47,7 +47,7 @@ definitions:
   quit.d:
     type: legacy_type.window_commands:quit_d
     value: {}
-  quit.system-fn:
+  quit.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: quit
@@ -61,7 +61,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
-      system_fn: quit.system-fn
+      system_fn: quit.fn
   window-view-duplicate_window.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

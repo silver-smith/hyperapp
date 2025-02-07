@@ -21,6 +21,12 @@ definitions:
   open_sample_fn_record.d:
     type: legacy_type.sample_record:open_sample_fn_record_d
     value: {}
+  open_sample_fn_record.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_sample_fn_record
+      ctx_params: []
+      service_params: []
   open_sample_fn_record.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -29,13 +35,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_sample_fn_record.system-fn
-  open_sample_fn_record.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_sample_fn_record
-      ctx_params: []
-      service_params: []
+      system_fn: open_sample_fn_record.fn
   sample_record:
     type: legacy_type.builtin:attribute
     value:

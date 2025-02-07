@@ -44,7 +44,7 @@ definitions:
   open_tab_list.d:
     type: legacy_type.tabs:open_tab_list_d
     value: {}
-  open_tab_list.system-fn:
+  open_tab_list.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: open_tab_list
@@ -59,7 +59,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
-      system_fn: open_tab_list.system-fn
+      system_fn: open_tab_list.fn
   tabs-view-open_tab_list.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

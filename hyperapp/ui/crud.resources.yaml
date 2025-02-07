@@ -90,11 +90,7 @@ definitions:
     value:
       object: crud.module
       attr_name: crud_model_commands
-  crud_model_commands.model-command-enumerator:
-    type: legacy_type.command:model_command_enumerator
-    value:
-      system_fn: crud_model_commands.system-fn
-  crud_model_commands.system-fn:
+  crud_model_commands.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: crud_model_commands
@@ -102,6 +98,10 @@ definitions:
       - piece
       service_params:
       - system_fn_creg
+  crud_model_commands.model-command-enumerator:
+    type: legacy_type.command:model_command_enumerator
+    value:
+      system_fn: crud_model_commands.fn
   crud_model_layout:
     type: legacy_type.builtin:attribute
     value:

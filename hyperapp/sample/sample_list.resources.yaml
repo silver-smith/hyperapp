@@ -31,6 +31,12 @@ definitions:
   open_feed_sample_fn_list.d:
     type: legacy_type.sample_list:open_feed_sample_fn_list_d
     value: {}
+  open_feed_sample_fn_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_feed_sample_fn_list
+      ctx_params: []
+      service_params: []
   open_feed_sample_fn_list.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -39,13 +45,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_feed_sample_fn_list.system-fn
-  open_feed_sample_fn_list.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_feed_sample_fn_list
-      ctx_params: []
-      service_params: []
+      system_fn: open_feed_sample_fn_list.fn
   open_sample_fn_list:
     type: legacy_type.builtin:attribute
     value:
@@ -54,6 +54,12 @@ definitions:
   open_sample_fn_list.d:
     type: legacy_type.sample_list:open_sample_fn_list_d
     value: {}
+  open_sample_fn_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_sample_fn_list
+      ctx_params: []
+      service_params: []
   open_sample_fn_list.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -62,13 +68,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_sample_fn_list.system-fn
-  open_sample_fn_list.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_sample_fn_list
-      ctx_params: []
-      service_params: []
+      system_fn: open_sample_fn_list.fn
   sample_list:
     type: legacy_type.builtin:attribute
     value:

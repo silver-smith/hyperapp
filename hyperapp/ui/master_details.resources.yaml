@@ -119,7 +119,7 @@ definitions:
   unwrap_master_details.d:
     type: legacy_type.master_details:unwrap_master_details_d
     value: {}
-  unwrap_master_details.system-fn:
+  unwrap_master_details.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: unwrap_master_details
@@ -139,4 +139,4 @@ definitions:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: unwrap_master_details.system-fn
+      system_fn: unwrap_master_details.fn

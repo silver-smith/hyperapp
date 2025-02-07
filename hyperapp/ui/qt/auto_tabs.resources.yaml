@@ -68,7 +68,7 @@ definitions:
   close_tab.d:
     type: legacy_type.auto_tabs:close_tab_d
     value: {}
-  close_tab.system-fn:
+  close_tab.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: close_tab
@@ -85,7 +85,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: close_tab.system-fn
+      system_fn: close_tab.fn
   duplicate_tab:
     type: legacy_type.builtin:attribute
     value:
@@ -94,7 +94,7 @@ definitions:
   duplicate_tab.d:
     type: legacy_type.auto_tabs:duplicate_tab_d
     value: {}
-  duplicate_tab.system-fn:
+  duplicate_tab.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: duplicate_tab
@@ -113,4 +113,4 @@ definitions:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: duplicate_tab.system-fn
+      system_fn: duplicate_tab.fn

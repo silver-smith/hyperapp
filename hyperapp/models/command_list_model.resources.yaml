@@ -194,16 +194,7 @@ definitions:
   set_shortcut.d:
     type: legacy_type.command_list_model:set_shortcut_d
     value: {}
-  set_shortcut.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: set_shortcut.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: true
-      system_fn: set_shortcut.system-fn
-  set_shortcut.system-fn:
+  set_shortcut.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: set_shortcut
@@ -214,3 +205,12 @@ definitions:
       service_params:
       - shortcut_reg
       - feed_factory
+  set_shortcut.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: set_shortcut.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: set_shortcut.fn

@@ -44,6 +44,14 @@ definitions:
   lcs_open_piece.d:
     type: legacy_type.lcs_view:lcs_open_piece_d
     value: {}
+  lcs_open_piece.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: lcs_open_piece
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   lcs_open_piece.model-command:
     type: legacy_type.command:model_command
     value:
@@ -52,15 +60,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: lcs_open_piece.system-fn
-  lcs_open_piece.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: lcs_open_piece
-      ctx_params:
-      - piece
-      - current_item
-      service_params: []
+      system_fn: lcs_open_piece.fn
   lcs_remove:
     type: legacy_type.builtin:attribute
     value:
@@ -69,16 +69,7 @@ definitions:
   lcs_remove.d:
     type: legacy_type.lcs_view:lcs_remove_d
     value: {}
-  lcs_remove.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: lcs_remove.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: lcs_remove.system-fn
-  lcs_remove.system-fn:
+  lcs_remove.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: lcs_remove
@@ -89,6 +80,15 @@ definitions:
       - lcs
       service_params:
       - feed_factory
+  lcs_remove.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: lcs_remove.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: lcs_remove.fn
   lcs_view:
     type: legacy_type.builtin:attribute
     value:
@@ -217,6 +217,12 @@ definitions:
   open_lcs_view.d:
     type: open_lcs_view_d
     value: {}
+  open_lcs_view.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_lcs_view
+      ctx_params: []
+      service_params: []
   open_lcs_view.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -225,13 +231,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_lcs_view.system-fn
-  open_lcs_view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_lcs_view
-      ctx_params: []
-      service_params: []
+      system_fn: open_lcs_view.fn
   open_lcs_view_d:
     type: legacy_type.builtin:record_mt
     value:

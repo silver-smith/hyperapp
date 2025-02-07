@@ -74,6 +74,14 @@ definitions:
   open_model_commands.d:
     type: legacy_type.model_commands:open_model_commands_d
     value: {}
+  open_model_commands.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_model_commands
+      ctx_params:
+      - piece
+      - model_state
+      service_params: []
   open_model_commands.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -82,15 +90,7 @@ definitions:
         is_global: true
         uses_state: true
         remotable: true
-      system_fn: open_model_commands.system-fn
-  open_model_commands.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: open_model_commands
-      ctx_params:
-      - piece
-      - model_state
-      service_params: []
+      system_fn: open_model_commands.fn
   run_command:
     type: legacy_type.builtin:attribute
     value:
@@ -99,16 +99,7 @@ definitions:
   run_command.d:
     type: legacy_type.model_commands:run_command_d
     value: {}
-  run_command.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: run_command.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: run_command.system-fn
-  run_command.system-fn:
+  run_command.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: run_command
@@ -119,3 +110,12 @@ definitions:
       - lcs
       service_params:
       - ui_model_command_items
+  run_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: run_command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: run_command.fn

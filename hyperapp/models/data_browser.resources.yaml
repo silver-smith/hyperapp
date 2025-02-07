@@ -35,6 +35,13 @@ definitions:
   browse_current_model.d:
     type: legacy_type.data_browser:browse_current_model_d
     value: {}
+  browse_current_model.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_current_model
+      ctx_params:
+      - piece
+      service_params: []
   browse_current_model.global-model-command:
     type: legacy_type.command:model_command
     value:
@@ -43,14 +50,7 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: browse_current_model.system-fn
-  browse_current_model.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: browse_current_model
-      ctx_params:
-      - piece
-      service_params: []
+      system_fn: browse_current_model.fn
   browse_list:
     type: legacy_type.builtin:attribute
     value:
@@ -196,6 +196,14 @@ definitions:
   list_open.d:
     type: legacy_type.data_browser:list_open_d
     value: {}
+  list_open.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_open
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   list_open.model-command:
     type: legacy_type.command:model_command
     value:
@@ -204,15 +212,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: list_open.system-fn
-  list_open.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: list_open
-      ctx_params:
-      - piece
-      - current_item
-      service_params: []
+      system_fn: list_open.fn
   record_open:
     type: legacy_type.builtin:attribute
     value:
@@ -221,6 +221,14 @@ definitions:
   record_open.d:
     type: legacy_type.data_browser:record_open_d
     value: {}
+  record_open.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: record_open
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   record_open.model-command:
     type: legacy_type.command:model_command
     value:
@@ -229,15 +237,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: record_open.system-fn
-  record_open.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: record_open
-      ctx_params:
-      - piece
-      - current_item
-      service_params: []
+      system_fn: record_open.fn
   ref_list_open:
     type: legacy_type.builtin:attribute
     value:
@@ -246,6 +246,14 @@ definitions:
   ref_list_open.d:
     type: legacy_type.data_browser:ref_list_open_d
     value: {}
+  ref_list_open.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: ref_list_open
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   ref_list_open.model-command:
     type: legacy_type.command:model_command
     value:
@@ -254,12 +262,4 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: ref_list_open.system-fn
-  ref_list_open.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: ref_list_open
-      ctx_params:
-      - piece
-      - current_item
-      service_params: []
+      system_fn: ref_list_open.fn

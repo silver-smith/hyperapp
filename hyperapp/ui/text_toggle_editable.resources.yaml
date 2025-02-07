@@ -38,7 +38,7 @@ definitions:
   toggle_editable.d:
     type: legacy_type.text_toggle_editable:toggle_editable_d
     value: {}
-  toggle_editable.system-fn:
+  toggle_editable.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: toggle_editable
@@ -57,4 +57,4 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      system_fn: toggle_editable.system-fn
+      system_fn: toggle_editable.fn

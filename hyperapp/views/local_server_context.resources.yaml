@@ -65,7 +65,7 @@ definitions:
   open_local_server_context.d:
     type: legacy_type.local_server_context:open_local_server_context_d
     value: {}
-  open_local_server_context.system-fn:
+  open_local_server_context.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: open_local_server_context
@@ -84,4 +84,4 @@ definitions:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: open_local_server_context.system-fn
+      system_fn: open_local_server_context.fn
