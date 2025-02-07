@@ -3,6 +3,13 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.command:arg
+- legacy_type.command:args_picker_command_fn
+- legacy_type.command:cfg_item
+- legacy_type.command:properties
+- legacy_type.command:model_command
+- legacy_type.command:model_command_enumerator
+- legacy_type.command:ui_command
 - legacy_type.command_resource:arg
 - legacy_type.command_resource:global_model_command_template_ctr
 - legacy_type.command_resource:model_command_enumerator_template_ctr
@@ -10,11 +17,6 @@ import:
 - legacy_type.command_resource:ui_command_template_ctr
 - legacy_type.command_resource:universal_ui_command_template_ctr
 - legacy_type.system:actor_template
-- legacy_type.command:cfg_item
-- legacy_type.command:properties
-- legacy_type.command:model_command
-- legacy_type.command:model_command_enumerator
-- legacy_type.command:ui_command
 - legacy_type.system_fn:ctx_fn
 - rc.d_type:d_type.module
 - rc.rc_constructor:rc_constructor.module
@@ -28,17 +30,19 @@ definitions:
       file_name: command_ctr.dyn.py
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.command.arg: legacy_type.command:arg
+        htypes.command.args_picker_command_fn: legacy_type.command:args_picker_command_fn
+        htypes.command.cfg_item: legacy_type.command:cfg_item
+        htypes.command.properties: legacy_type.command:properties
+        htypes.command.model_command: legacy_type.command:model_command
+        htypes.command.model_command_enumerator: legacy_type.command:model_command_enumerator
+        htypes.command.ui_command: legacy_type.command:ui_command
         htypes.command_resource.arg: legacy_type.command_resource:arg
         htypes.command_resource.global_model_command_template_ctr: legacy_type.command_resource:global_model_command_template_ctr
         htypes.command_resource.model_command_enumerator_template_ctr: legacy_type.command_resource:model_command_enumerator_template_ctr
         htypes.command_resource.model_command_template_ctr: legacy_type.command_resource:model_command_template_ctr
         htypes.command_resource.ui_command_template_ctr: legacy_type.command_resource:ui_command_template_ctr
         htypes.command_resource.universal_ui_command_template_ctr: legacy_type.command_resource:universal_ui_command_template_ctr
-        htypes.command.cfg_item: legacy_type.command:cfg_item
-        htypes.command.properties: legacy_type.command:properties
-        htypes.command.model_command: legacy_type.command:model_command
-        htypes.command.model_command_enumerator: legacy_type.command:model_command_enumerator
-        htypes.command.ui_command: legacy_type.command:ui_command
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

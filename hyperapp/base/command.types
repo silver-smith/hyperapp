@@ -22,6 +22,17 @@ model_command_enumerator = record:
   system_fn: ref
 
 
+arg = record:
+  name: string
+  t: ref
+
+args_picker_command_fn = record:
+  name: string
+  args: arg list
+  commit_command_d: ref
+  commit_fn: ref
+
+
 # LCS selector for model to ui_model_command set mapping.
 custom_model_commands_lcs_d = record
 

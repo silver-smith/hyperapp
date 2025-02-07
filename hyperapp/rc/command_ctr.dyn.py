@@ -55,9 +55,45 @@ class CommandTemplateCtr(Constructor):
     def _fn_name(self):
         return '_'.join(self._attr_qual_name)
 
-    def _make_command(self, types, system_fn, name_to_res):
-        d_t = d_type(types, self._module_name.split('.')[-1], name=self._attr_qual_name[-1])
-        d = d_t()
+    def _command_d(self, types, name):
+        code_name = self._module_name.split('.')[-1]
+        d_t = d_type(types, code_name, name)
+        return d_t()
+
+    def _make_args_picker_command(self, types, name, commit_fn, name_to_res):
+        commit_d = self._command_d(types, name)
+        open_d = self._command_d(types, f'open_{name}')
+        args = tuple(
+            htypes.command.arg(
+                name=name,
+                t=pyobj_creg.actor_to_ref(t),
+                )
+            for name, t in self._args.items()
+            )
+        open_fn = htypes.command.args_picker_command_fn(
+            name=name,
+            args=args,
+            commit_command_d=mosaic.put(commit_d),
+            commit_fn=mosaic.put(commit_fn),
+            )
+        properties = htypes.command.properties(
+            is_global=False,
+            uses_state=True,
+            remotable=False,
+            )
+        if name_to_res is not None:
+            name_to_res[f'{self._fn_name}.commit-d'] = commit_d
+            name_to_res[f'{self._fn_name}.open-d'] = open_d
+            name_to_res[f'{self._fn_name}.commit-fn'] = commit_fn
+            name_to_res[f'{self._fn_name}.open-fn'] = open_fn
+        return self._command_t(
+            d=mosaic.put(open_d),
+            properties=properties,
+            system_fn=mosaic.put(open_fn),
+            )
+
+    def _make_command(self, types, name, fn, name_to_res):
+        d = self._command_d(types, name)
         properties = htypes.command.properties(
             is_global=self._is_global,
             uses_state=bool(set(self._ctx_params) & STATE_PARAMS),
@@ -65,10 +101,11 @@ class CommandTemplateCtr(Constructor):
             )
         if name_to_res is not None:
             name_to_res[f'{self._fn_name}.d'] = d
+            name_to_res[f'{self._fn_name}.fn'] = fn
         return self._command_t(
             d=mosaic.put(d),
             properties=properties,
-            system_fn=mosaic.put(system_fn),
+            system_fn=mosaic.put(fn),
             )
 
     def _make_command_component(self, types, python_module, name_to_res=None):
@@ -82,14 +119,17 @@ class CommandTemplateCtr(Constructor):
             if name_to_res is not None:
                 name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
-        system_fn = htypes.system_fn.ctx_fn(
+        fn = htypes.system_fn.ctx_fn(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
-        command = self._make_command(types, system_fn, name_to_res)
+        name = self._attr_qual_name[-1]
+        if self._args:
+            command = self._make_args_picker_command(types, name, fn, name_to_res)
+        else:
+            command = self._make_command(types, name, fn, name_to_res)
         if name_to_res is not None:
-            name_to_res[f'{self._fn_name}.system-fn'] = system_fn
             name_to_res[f'{self._fn_name}.{self._command_resource_suffix}'] = command
         return command
 
@@ -207,9 +247,11 @@ class ModelCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
     _is_global = False
     _command_resource_suffix = 'model-command-enumerator'
 
-    def _make_command(self, types, system_fn, name_to_res):
+    def _make_command(self, types, name, fn, name_to_res):
+        if name_to_res is not None:
+            name_to_res[f'{self._fn_name}.fn'] = fn
         return htypes.command.model_command_enumerator(
-            system_fn=mosaic.put(system_fn),
+            system_fn=mosaic.put(fn),
             )
 
 
