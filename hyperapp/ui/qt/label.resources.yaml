@@ -4,10 +4,10 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.label:state
 - legacy_type.label:view
 - legacy_type.system_fn:ctx_fn
-- legacy_type.view:template
 - ui.view.view:view.module
 definitions:
   LabelView:
@@ -29,7 +29,7 @@ definitions:
       - ctx
       service_params: []
   label-view.view-template:
-    type: legacy_type.view:template
+    type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
       t: legacy_type.label:view
       system_fn: LabelView_from_piece.system-fn

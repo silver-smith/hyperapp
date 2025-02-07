@@ -7,6 +7,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
 - legacy_type.navigator:go_back_d
@@ -14,7 +15,6 @@ import:
 - legacy_type.navigator:history_rec
 - legacy_type.navigator:view
 - legacy_type.system_fn:ctx_fn
-- legacy_type.view:template
 - ui.view.view:view.module
 definitions:
   NavigatorView:
@@ -102,7 +102,7 @@ definitions:
       t: legacy_type.navigator:view
       command: go_forward.ui-command
   navigator-view.view-template:
-    type: legacy_type.view:template
+    type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
       t: legacy_type.navigator:view
       system_fn: NavigatorView_from_piece.system-fn

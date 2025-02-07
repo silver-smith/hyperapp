@@ -5,6 +5,7 @@ import:
 - builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
 - legacy_type.local_server_context:open_local_server_context_d
@@ -12,7 +13,6 @@ import:
 - legacy_type.local_server_context:view
 - legacy_type.navigator:view
 - legacy_type.system_fn:ctx_fn
-- legacy_type.view:template
 - views.context_view:context_view.module
 definitions:
   LocalServerContextView:
@@ -36,7 +36,7 @@ definitions:
       - view_reg
       - local_server_peer
   local_server_context-view.view-template:
-    type: legacy_type.view:template
+    type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
       t: legacy_type.local_server_context:view
       system_fn: LocalServerContextView_from_piece.system-fn

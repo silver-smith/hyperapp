@@ -6,11 +6,11 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.form:field
 - legacy_type.form:state
 - legacy_type.form:view
 - legacy_type.system_fn:ctx_fn
-- legacy_type.view:template
 - ui.view.view:view.module
 definitions:
   FormView:
@@ -36,7 +36,7 @@ definitions:
       - ui_adapter_creg
       - view_reg
   form-view.view-template:
-    type: legacy_type.view:template
+    type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
       t: legacy_type.form:view
       system_fn: FormView_from_piece.system-fn

@@ -4,12 +4,12 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command_groups:pane_1_d
 - legacy_type.command_groups:pane_2_d
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
 - legacy_type.system_fn:ctx_fn
-- legacy_type.view:template
 - ui.view.view:view.module
 definitions:
   CommandPaneView:
@@ -32,7 +32,7 @@ definitions:
       service_params:
       - shortcut_reg
   command_pane-view.view-template:
-    type: legacy_type.view:template
+    type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
       t: legacy_type.command_pane:view
       system_fn: CommandPaneView_from_piece.system-fn
