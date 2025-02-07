@@ -1,0 +1,61 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.system:actor_template
+
+definitions:
+
+  typed_cfg_item.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: typed_cfg_item
+      file_name: typed_cfg_item.dyn.py
+      import_list:
+        htypes.cfg_item.typed_cfg_item: legacy_type.cfg_item:typed_cfg_item
+        htypes.cfg_item.typed_fn_cfg_item: legacy_type.cfg_item:typed_fn_cfg_item
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
+
+  TypedCfgItem:
+    type: legacy_type.builtin:attribute
+    value:
+      object: typed_cfg_item.module
+      attr_name: TypedCfgItem
+
+  TypedCfgItem.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TypedCfgItem
+      attr_name: from_piece
+
+  cfg_item-typed_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.cfg_item:typed_cfg_item
+      function: TypedCfgItem.from_piece
+      service_params: []
+
+  TypedFnCfgItem:
+    type: legacy_type.builtin:attribute
+    value:
+      object: typed_cfg_item.module
+      attr_name: TypedFnCfgItem
+
+  TypedFnCfgItem.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TypedFnCfgItem
+      attr_name: from_piece
+
+  cfg_item-typed_fn_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.cfg_item:typed_fn_cfg_item
+      function: TypedFnCfgItem.from_piece
+      service_params: []

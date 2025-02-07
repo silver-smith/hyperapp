@@ -59,13 +59,22 @@ import:
 - base.transport.tcp_transport:tcp_server_factory.service
 - base.transport.tcp_transport:tcp_transport-route.actor-template
 - base.transport.transport:transport.service
+- base.typed_cfg_item:cfg_item-typed_cfg_item.actor-template
+- base.typed_cfg_item:cfg_item-typed_fn_cfg_item.actor-template
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
+  cfg_item_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.typed_cfg_item:cfg_item-typed_cfg_item.actor-template
+      - base.typed_cfg_item:cfg_item-typed_fn_cfg_item.actor-template
   config:
     type: legacy_type.system:system_config
     value:
       services:
+        cfg_item_creg: cfg_item_creg
         identity_registry: identity_registry
         parcel_registry: parcel_registry
         peer_registry: peer_registry
