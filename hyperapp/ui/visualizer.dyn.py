@@ -55,14 +55,6 @@ def ui_type_creg(config):
     return code_registry_ctr('ui_type_creg', config)
 
 
-def _model_layout(visualizer_reg, ui_type_creg, t):
-    try:
-        ui_t, system_fn_ref = visualizer_reg(t)
-    except KeyError:
-        raise
-    return ui_type_creg.animate(ui_t, system_fn_ref)
-
-
 @mark.service
 def get_custom_layout(lcs, t):
     t_res = pyobj_creg.actor_to_piece(t)
@@ -100,6 +92,7 @@ def visualizer(model_layout_creg, visualizer_reg, ui_type_creg, get_custom_layou
         log.info("Using configured layout for %s: %s", model_t, view)
         return view
     try:
-        return _model_layout(visualizer_reg, ui_type_creg, model_t)
+        ui_t, system_fn_ref = visualizer_reg(model_t)
     except KeyError:
         raise RuntimeError(f"No view for model is known: {model!r}")
+    return ui_type_creg.animate(ui_t, system_fn_ref)
