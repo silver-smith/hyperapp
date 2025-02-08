@@ -41,7 +41,7 @@ class CrudOpenFn:
         self._commit_action_fn_ref = commit_action_fn_ref
 
     def __repr__(self):
-        return f"<CrudOpenFn {self._name} keys={self._key_fields})>"
+        return f"<CrudOpenFn {self._name} keys={self._key_fields}>"
 
     def missing_params(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
