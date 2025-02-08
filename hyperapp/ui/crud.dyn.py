@@ -52,10 +52,6 @@ class CrudOpenFn:
         return self._open(ctx_kw['model'], ctx_kw['current_item'])
 
     def _open(self, model, current_item):
-        keys = tuple(
-            mosaic.put(getattr(current_item, name))
-            for name in self._key_fields
-            )
         try:
             selector = self._selector_reg[self._value_t]
         except KeyError:
@@ -64,11 +60,17 @@ class CrudOpenFn:
         else:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
+        args = tuple(
+            htypes.crud.arg(
+                name=name,
+                value=mosaic.put(getattr(current_item, name)),
+                )
+            for name in self._key_fields
+            )
         return htypes.crud.model(
             value_t=pyobj_creg.actor_to_ref(self._value_t),
             model=mosaic.put(model),
-            keys=keys,
-            key_fields=self._key_fields,
+            args=args,
             init_action_fn=self._init_action_fn_ref,
             commit_command_d=self._commit_command_d_ref,
             get_fn=mosaic.put(get_fn.piece) if get_fn else None,
@@ -79,16 +81,15 @@ class CrudOpenFn:
 
 def _run_crud_init(ctx, system_fn_creg, crud_model):
     model = web.summon(crud_model.model)
-    key_values = [web.summon(key) for key in crud_model.keys]
-    keys_kw = {
-        name: value
-        for name, value in zip(crud_model.key_fields, key_values)
+    args_kw = {
+        arg.name: web.summon(arg.value)
+        for arg in crud_model.args
         }
     action_fn = system_fn_creg.invite(crud_model.init_action_fn)
     model_ctx = ctx.clone_with(
         piece=model,
         model=model,
-        **keys_kw,
+        **args_kw,
         )
     return action_fn.call(model_ctx)
 
@@ -141,10 +142,9 @@ def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg)
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
-    def __init__(self, d, key_fields, keys, pick_fn, commit_fn):
+    def __init__(self, d, args, pick_fn, commit_fn):
         super().__init__(d)
-        self._key_fields = key_fields
-        self._keys = keys
+        self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
 
@@ -157,15 +157,14 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
             )
 
     def bind(self, ctx):
-        return BoundCrudCommitCommand(self._d, self._key_fields, self._keys, self._pick_fn, self._commit_fn, ctx)
+        return BoundCrudCommitCommand(self._d, self._args, self._pick_fn, self._commit_fn, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    def __init__(self, d, key_fields, keys, pick_fn, commit_fn, ctx):
+    def __init__(self, d, args, pick_fn, commit_fn, ctx):
         super().__init__(d)
-        self._key_fields = key_fields
-        self._keys = keys
+        self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
         self._ctx = ctx
@@ -194,16 +193,12 @@ class BoundCrudCommitCommand(BoundCommandBase):
             value = self._pick_fn.call(model_ctx)
         else:
             value = self._pick_ctx_value(self._ctx)
-        log.info("Run CRUD commit command %r: %s=%r; value=%r", self.name, self._key_fields, self._keys, value)
-        keys_kw = {
-            name: value
-            for name, value in zip(self._key_fields, self._keys)
-            }
+        log.info("Run CRUD commit command %r: args=%s; value=%r", self.name, self._args, value)
         ctx = self._ctx.clone_with(
             piece=model,
             model=model,
             value=value,
-            **keys_kw,
+            **self._args,
             )
         return self._commit_fn.call(ctx)
 
@@ -219,7 +214,10 @@ class BoundCrudCommitCommand(BoundCommandBase):
 @mark.command_enum
 def crud_model_commands(piece, system_fn_creg):
     command_d = web.summon(piece.commit_command_d)
-    keys = [web.summon(k) for k in piece.keys]
+    args = {
+        arg.name: web.summon(arg.value)
+        for arg in piece.args
+        }
     pick_fn = system_fn_creg.invite_opt(piece.pick_fn)
     commit_fn = system_fn_creg.invite(piece.commit_action_fn)
-    return [UnboundCrudCommitCommand(command_d, piece.key_fields, keys, pick_fn, commit_fn)]
+    return [UnboundCrudCommitCommand(command_d, args, pick_fn, commit_fn)]

@@ -150,8 +150,7 @@ def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
         model=mosaic.put(model),
-        keys=(mosaic.put(123),),
-        key_fields=('id',),
+        args=(htypes.crud.arg('id', mosaic.put(123)),),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
         get_fn=None,
@@ -189,8 +188,7 @@ def selector_crud_model(selector_model, _sample_crud_get_fn, _sample_crud_update
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
         model=mosaic.put(selector_model),
-        keys=(mosaic.put(123),),
-        key_fields=('id',),
+        args=(htypes.crud.arg('id', mosaic.put(123)),),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
         get_fn=mosaic.put(_sample_selector_get_fn.piece),

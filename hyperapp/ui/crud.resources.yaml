@@ -11,6 +11,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:properties
+- legacy_type.crud:arg
 - legacy_type.crud:init_fn
 - legacy_type.crud:model
 - legacy_type.crud:open_command_fn
@@ -77,6 +78,7 @@ definitions:
         code.command: ui.command:command.module
         code.mark: base.mark:mark.module
         htypes.command.properties: legacy_type.command:properties
+        htypes.crud.arg: legacy_type.crud:arg
         htypes.crud.init_fn: legacy_type.crud:init_fn
         htypes.crud.model: legacy_type.crud:model
         htypes.form.view: legacy_type.form:view

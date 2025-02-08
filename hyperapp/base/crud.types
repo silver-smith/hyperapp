@@ -1,8 +1,11 @@
+arg = record:
+  name: string
+  value: ref
+
 model = record:
   value_t: ref
   model: ref
-  keys: ref list
-  key_fields: string list
+  args: arg list
   init_action_fn: ref
   commit_command_d: ref
   get_fn: ref opt
