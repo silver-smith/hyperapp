@@ -17,16 +17,22 @@ log = logging.getLogger(__name__)
 
 
 def _sample_crud_get(piece, id):
-    assert isinstance(piece, (htypes.crud_tests.sample_model, htypes.crud_tests.sample_selector_model)), piece
-    if isinstance(piece, htypes.crud_tests.sample_model):
+    assert isinstance(piece, htypes.crud_tests.sample_model), piece
+    if id == 11:
         return htypes.crud_tests.sample_record(id, f'item#{id}')
     else:
+        assert id == 22
         return htypes.crud_tests.sample_selector()
 
 
 def _sample_crud_update(piece, id, value):
-    assert isinstance(piece, (htypes.crud_tests.sample_model, htypes.crud_tests.sample_selector_model)), piece
-    assert isinstance(value, (htypes.crud_tests.sample_record, htypes.crud_tests.sample_selector)), value
+    assert isinstance(piece, htypes.crud_tests.sample_model), piece
+    if id == 11:
+        assert isinstance(value, htypes.crud_tests.sample_record), value
+    elif id == 22:
+        assert isinstance(value, htypes.crud_tests.sample_selector), value
+    else:
+        assert 0, id
     log.info("Update %s: #%d -> %s", piece, id, value)
 
 
@@ -54,7 +60,7 @@ def _sample_selector_get(value):
 
 
 def _sample_selector_pick(piece, current_item):
-    assert isinstance(piece, htypes.crud_tests.sample_selector_model), piece
+    # assert isinstance(piece, htypes.crud_tests.sample_selector_model), piece
     assert isinstance(current_item, htypes.crud_tests.sample_selector_item)
     return htypes.crud_tests.sample_selector()
 
@@ -101,7 +107,7 @@ def test_open_command_fn(_sample_crud_get_fn, _sample_crud_update_fn):
     assert fn.missing_params(Context()) == {'model', 'current_item'}
     ctx = Context(
         model=htypes.crud_tests.sample_model(),
-        current_item=htypes.crud_tests.sample_item(id=123),
+        current_item=htypes.crud_tests.sample_item(id=11),
         )
     assert not fn.missing_params(ctx)
     crud_model = fn.call(ctx)
@@ -125,7 +131,7 @@ def test_open_command_fn_with_selector(_sample_crud_get_fn, _sample_crud_update_
     assert fn.missing_params(Context()) == {'model', 'current_item'}
     ctx = Context(
         model=htypes.crud_tests.sample_model(),
-        current_item=htypes.crud_tests.sample_item(id=123),
+        current_item=htypes.crud_tests.sample_item(id=22),
         )
     assert not fn.missing_params(ctx)
     crud_model = fn.call(ctx)
@@ -150,7 +156,7 @@ def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
         model=mosaic.put(model),
-        args=(htypes.crud.arg('id', mosaic.put(123)),),
+        args=(htypes.crud.arg('id', mosaic.put(11)),),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
         get_fn=None,
@@ -170,7 +176,7 @@ def test_init_fn(crud_model):
         )
     assert not fn.missing_params(ctx)
     result = fn.call(ctx)
-    assert result == htypes.crud_tests.sample_record(123, 'item#123')
+    assert result == htypes.crud_tests.sample_record(11, 'item#11')
 
 
 @mark.config_fixture('selector_reg')
@@ -184,12 +190,12 @@ def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
 
 
 @mark.fixture
-def selector_crud_model(selector_model, _sample_crud_get_fn, _sample_crud_update_fn, _sample_selector_get_fn, _sample_selector_pick_fn):
+def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn, _sample_selector_get_fn, _sample_selector_pick_fn):
     value_t = htypes.crud_tests.sample_selector
     return htypes.crud.model(
         value_t=pyobj_creg.actor_to_ref(value_t),
-        model=mosaic.put(selector_model),
-        args=(htypes.crud.arg('id', mosaic.put(123)),),
+        model=mosaic.put(model),
+        args=(htypes.crud.arg('id', mosaic.put(22)),),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
         get_fn=mosaic.put(_sample_selector_get_fn.piece),
@@ -209,7 +215,7 @@ def test_record_model_layout(crud_model, ctx):
 def model_layout_config():
     return {
         htypes.crud_tests.sample_selector_model:
-            lambda piece, lcs, ctx: htypes.crud_tests.phony_view(),
+            lambda piece, lcs, ctx: htypes.crud_tests.selector_view(),
         }
 
 
@@ -217,7 +223,7 @@ def test_selector_model_layout(ctx, selector_crud_model):
     lcs = Mock()
     lcs.get.return_value = None  # Used by visualizer.
     view_piece = crud.crud_model_layout(selector_crud_model, lcs, ctx)
-    assert isinstance(view_piece, htypes.crud_tests.phony_view), view_piece
+    assert isinstance(view_piece, htypes.crud_tests.selector_view), view_piece
 
 
 async def test_model_commands(crud_model):
@@ -238,7 +244,7 @@ async def test_model_commands(crud_model):
     await bound_cmd.run()
 
 
-async def test_model_commands_selector(selector_model, selector_crud_model):
+async def test_model_commands_selector(selector_crud_model):
     commands = crud.crud_model_commands(selector_crud_model)
     assert commands
     [unbound_cmd] = commands

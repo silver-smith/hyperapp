@@ -192,7 +192,10 @@ class BoundCrudCommitCommand(BoundCommandBase):
         crud_model = self._ctx.model
         model = web.summon(crud_model.model)
         if self._pick_fn:
-            model_ctx = self._ctx.clone_with(piece=model, model=model)
+            # TODO: Invite a method to retrieve proper selector model.
+            # May be, add special wrapper view adding selector model to context when using selector.
+            selector_model = None
+            model_ctx = self._ctx.clone_with(piece=selector_model, model=selector_model)
             value = self._pick_fn.call(model_ctx)
         else:
             value = self._pick_ctx_value(self._ctx)
