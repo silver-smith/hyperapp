@@ -16,6 +16,8 @@ import:
 - sample.sample_list:sample_list-feed_sample_list.feed-template
 - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
 - sample.sample_list:sample_list-sample_list.model-cfg-item
+- sample.sample_list_arg:sample_list_selector-item.editor_default.cfg-item
+- sample.sample_list_arg:show_sample_list_item.global-model-command
 - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
 - sample.sample_list_selector:sample_list_selector-item.selector-template
 - sample.sample_record:open_sample_fn_record.global-model-command
@@ -30,11 +32,17 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
+        editor_default_reg: editor_default_reg
         feed_factory: feed_factory
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
         selector_reg: selector_reg
         visualizer_reg: visualizer_reg
+  editor_default_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - sample.sample_list_arg:sample_list_selector-item.editor_default.cfg-item
   feed_factory:
     type: legacy_type.system:item_list_config
     value:
@@ -53,6 +61,7 @@ definitions:
       - sample.sample_commands:show_state.global-model-command
       - sample.sample_list:open_feed_sample_fn_list.global-model-command
       - sample.sample_list:open_sample_fn_list.global-model-command
+      - sample.sample_list_arg:show_sample_list_item.global-model-command
       - sample.sample_record:open_sample_fn_record.global-model-command
       - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
       - sample.sample_tree:open_sample_fn_tree.global-model-command
