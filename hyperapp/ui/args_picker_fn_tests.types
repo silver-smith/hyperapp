@@ -1,0 +1,4 @@
+sample_value = record:
+  id: int
+
+sample_commit_command_d = record

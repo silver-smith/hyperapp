@@ -3,6 +3,7 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- ui.args_picker_fn:command-args_picker_command_fn.actor-template
 - ui.column_resource_name:column-column_k.actor-template
 - ui.column_visible_reg:column_visible_reg.service
 - ui.command_cfg_item:command-cfg_item.actor-template
@@ -244,6 +245,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.args_picker_fn:command-args_picker_command_fn.actor-template
       - ui.crud:crud-init_fn.actor-template
       - ui.crud:crud-open_command_fn.actor-template
       - ui.system_fn:system_fn-ctx_fn.actor-template
