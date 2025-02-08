@@ -18,6 +18,7 @@ import:
 - models.config.config_layer_list:open_config_layer_list.d
 - models.config.config_service_list:open_config_service_list.d
 - models.data_browser:record_open.d
+- models.show_current_context:show_current_context.d
 definitions:
   bool-false:
     type: legacy_type.builtin:bool
@@ -104,6 +105,11 @@ definitions:
     value:
       key: models.data_browser:record_open.d
       value: shortcut_Return
+  config_item-models.show_current_context-show_current_context.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.show_current_context:show_current_context.d
+      value: shortcut_Ctrl_Alt_C
   shortcut_Alt_L:
     type: legacy_type.builtin:string
     value: Alt+L
@@ -113,6 +119,9 @@ definitions:
   shortcut_Alt_Shift_C:
     type: legacy_type.builtin:string
     value: Alt+Shift+C
+  shortcut_Ctrl_Alt_C:
+    type: legacy_type.builtin:string
+    value: Ctrl+Alt+C
   shortcut_K:
     type: legacy_type.builtin:string
     value: K
@@ -139,3 +148,4 @@ definitions:
       - config_item-models.command_list_model-set_shortcut.d
       - config_item-models.config.config_item_list-open_config_key.d
       - config_item-models.data_browser-record_open.d
+      - config_item-models.show_current_context-show_current_context.d

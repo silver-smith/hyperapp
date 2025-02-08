@@ -42,7 +42,6 @@ import:
 - models.model_commands:model_commands-model.model-cfg-item
 - models.model_commands:open_model_commands.global-model-command
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
-- models.show_current_context:show_current_context-view.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 definitions:
   command_creg:
@@ -124,4 +123,3 @@ definitions:
       - models.file_bundles:file_bundles-view.model-cfg-item
       - models.global_commands:global_commands-model.model-cfg-item
       - models.model_commands:model_commands-model.model-cfg-item
-      - models.show_current_context:show_current_context-view.model-cfg-item

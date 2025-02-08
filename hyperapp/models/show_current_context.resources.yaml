@@ -4,56 +4,25 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.builtin:record_mt
 - legacy_type.command:model_command
-- legacy_type.model:list_ui_t
-- legacy_type.model:model
 - legacy_type.show_current_context:item
-- legacy_type.show_current_context:show_current_context_d
-- legacy_type.show_current_context:view
 - legacy_type.system_fn:ctx_fn
 definitions:
-  current_context_list:
-    type: legacy_type.builtin:attribute
-    value:
-      object: show_current_context.module
-      attr_name: current_context_list
   show_current_context:
     type: legacy_type.builtin:attribute
     value:
       object: show_current_context.module
       attr_name: show_current_context
-  show_current_context-view.list-ui-t:
-    type: legacy_type.model:list_ui_t
-    value:
-      item_t: legacy_type.show_current_context:item
-  show_current_context-view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: show_current_context-view.list-ui-t
-      system_fn: show_current_context-view.system-fn
-  show_current_context-view.model-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.show_current_context:view
-      value: show_current_context-view.model
-  show_current_context-view.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: current_context_list
-      ctx_params:
-      - piece
-      - ctx
-      service_params: []
   show_current_context.d:
-    type: legacy_type.show_current_context:show_current_context_d
+    type: show_current_context_d
     value: {}
   show_current_context.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: show_current_context
       ctx_params:
-      - piece
+      - ctx
       service_params: []
   show_current_context.global-model-command:
     type: legacy_type.command:model_command
@@ -62,7 +31,7 @@ definitions:
       properties:
         is_global: true
         uses_state: false
-        remotable: true
+        remotable: false
       system_fn: show_current_context.fn
   show_current_context.module:
     type: legacy_type.builtin:python_module
@@ -72,4 +41,10 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         htypes.show_current_context.item: legacy_type.show_current_context:item
-        htypes.show_current_context.view: legacy_type.show_current_context:view
+  show_current_context_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: show_current_context
+      name: show_current_context_d
+      base: null
+      fields: {}
