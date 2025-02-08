@@ -28,11 +28,11 @@ def test_selector_get():
     assert isinstance(piece, htypes.config_layer_list.model)
 
 
-def test_selector_put():
+def test_selector_pick():
     piece = htypes.config_layer_list.model()  # Unused.
     current_item = htypes.config_layer_list.item(
         name='sample-layer',
         service_count=0,  # Unused.
         )
-    value = config_layer_list.layer_put(piece, current_item)
+    value = config_layer_list.layer_pick(piece, current_item)
     assert value == htypes.config_layer_list.layer('sample-layer')

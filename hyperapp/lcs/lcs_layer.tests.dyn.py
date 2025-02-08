@@ -65,11 +65,11 @@ def test_selector_get():
     assert isinstance(piece, htypes.lcs_layer.model)
 
 
-def test_selector_put():
+def test_selector_pick():
     piece = htypes.lcs_layer.model()
     current_item = htypes.lcs_layer.item(
         name="<unused>",
         d=mosaic.put(htypes.lcs_layer_tests.layer_2_d()),
         )
-    value = lcs_layer.layer_put(piece, current_item)
+    value = lcs_layer.layer_pick(piece, current_item)
     assert isinstance(value, htypes.lcs_layer.layer)

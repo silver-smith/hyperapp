@@ -24,7 +24,7 @@ def layer_get(value):
 
 
 @mark.selector.pick
-def layer_put(piece, current_item):
+def layer_pick(piece, current_item):
     return htypes.config_layer_list.layer(
         name=current_item.name,
         )

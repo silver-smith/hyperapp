@@ -25,11 +25,11 @@ definitions:
     value:
       object: lcs_layer.module
       attr_name: layer_get
-  layer_put:
+  layer_pick:
     type: legacy_type.builtin:attribute
     value:
       object: lcs_layer.module
-      attr_name: layer_put
+      attr_name: layer_pick
   lcs_layer-layer.selector-template:
     type: legacy_type.selector:template
     value:
@@ -46,7 +46,7 @@ definitions:
   lcs_layer-layer.selector.pick.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: layer_put
+      function: layer_pick
       ctx_params:
       - piece
       - current_item

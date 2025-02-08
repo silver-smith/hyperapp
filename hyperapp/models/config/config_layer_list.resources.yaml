@@ -36,7 +36,7 @@ definitions:
   config_layer_list-layer.selector.pick.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: layer_put
+      function: layer_pick
       ctx_params:
       - piece
       - current_item
@@ -78,11 +78,11 @@ definitions:
     value:
       object: config_layer_list.module
       attr_name: layer_get
-  layer_put:
+  layer_pick:
     type: legacy_type.builtin:attribute
     value:
       object: config_layer_list.module
-      attr_name: layer_put
+      attr_name: layer_pick
   open_config_layer_list:
     type: legacy_type.builtin:attribute
     value:
