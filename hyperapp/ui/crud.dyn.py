@@ -76,6 +76,7 @@ class CrudOpenFn:
             get_fn=mosaic.put(get_fn.piece) if get_fn else None,
             pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
             commit_action_fn=self._commit_action_fn_ref,
+            commit_value_field='value',
             )
 
 
@@ -142,11 +143,12 @@ def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg)
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
-    def __init__(self, d, args, pick_fn, commit_fn):
+    def __init__(self, d, args, pick_fn, commit_fn, commit_value_field):
         super().__init__(d)
         self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
+        self._commit_value_field = commit_value_field
 
     @property
     def properties(self):
@@ -157,16 +159,17 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
             )
 
     def bind(self, ctx):
-        return BoundCrudCommitCommand(self._d, self._args, self._pick_fn, self._commit_fn, ctx)
+        return BoundCrudCommitCommand(self._d, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    def __init__(self, d, args, pick_fn, commit_fn, ctx):
+    def __init__(self, d, args, pick_fn, commit_fn, commit_value_field, ctx):
         super().__init__(d)
         self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
+        self._commit_value_field = commit_value_field
         self._ctx = ctx
 
     @property
@@ -193,12 +196,12 @@ class BoundCrudCommitCommand(BoundCommandBase):
             value = self._pick_fn.call(model_ctx)
         else:
             value = self._pick_ctx_value(self._ctx)
-        log.info("Run CRUD commit command %r: args=%s; value=%r", self.name, self._args, value)
+        log.info("Run CRUD commit command %r: args=%s; %s=%r", self.name, self._args, self._commit_value_field, value)
         ctx = self._ctx.clone_with(
             piece=model,
             model=model,
-            value=value,
             **self._args,
+            **{self._commit_value_field: value},
             )
         return self._commit_fn.call(ctx)
 
@@ -220,4 +223,4 @@ def crud_model_commands(piece, system_fn_creg):
         }
     pick_fn = system_fn_creg.invite_opt(piece.pick_fn)
     commit_fn = system_fn_creg.invite(piece.commit_action_fn)
-    return [UnboundCrudCommitCommand(command_d, args, pick_fn, commit_fn)]
+    return [UnboundCrudCommitCommand(command_d, args, pick_fn, commit_fn, piece.commit_value_field)]

@@ -11,6 +11,7 @@ model = record:
   get_fn: ref opt
   pick_fn: ref opt
   commit_action_fn: ref
+  commit_value_field: string
 
 
 open_command_fn = record:

@@ -156,6 +156,7 @@ def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
         get_fn=None,
         pick_fn=None,
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
+        commit_value_field='value',
         )
 
 
@@ -194,6 +195,7 @@ def selector_crud_model(selector_model, _sample_crud_get_fn, _sample_crud_update
         get_fn=mosaic.put(_sample_selector_get_fn.piece),
         pick_fn=mosaic.put(_sample_selector_pick_fn.piece),
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
+        commit_value_field='value',
         )
 
 
