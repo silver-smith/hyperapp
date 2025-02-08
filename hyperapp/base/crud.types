@@ -4,7 +4,7 @@ arg = record:
 
 model = record:
   value_t: ref
-  model: ref
+  model: ref opt
   args: arg list
   init_action_fn: ref
   commit_command_d: ref

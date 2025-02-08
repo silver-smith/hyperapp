@@ -80,19 +80,30 @@ class CrudOpenFn:
             )
 
 
-def _run_crud_init(ctx, system_fn_creg, crud_model):
-    model = web.summon(crud_model.model)
+def _fn_ctx(ctx, crud_model, **kw):
+    model = web.summon_opt(crud_model.model)
     args_kw = {
         arg.name: web.summon(arg.value)
         for arg in crud_model.args
         }
-    action_fn = system_fn_creg.invite(crud_model.init_action_fn)
-    model_ctx = ctx.clone_with(
-        piece=model,
-        model=model,
+    if model is not None:
+        model_kw = {
+            'piece': model,
+            'model': model,
+            }
+    else:
+        model_kw = {}
+    return ctx.clone_with(
+        **model_kw,
         **args_kw,
+        **kw,
         )
-    return action_fn.call(model_ctx)
+
+
+def _run_crud_init(ctx, system_fn_creg, crud_model):
+    fn = system_fn_creg.invite(crud_model.init_action_fn)
+    fn_ctx = _fn_ctx(ctx, crud_model)
+    return fn.call(fn_ctx)
 
 
 class CrudInitFn:
@@ -200,13 +211,11 @@ class BoundCrudCommitCommand(BoundCommandBase):
         else:
             value = self._pick_ctx_value(self._ctx)
         log.info("Run CRUD commit command %r: args=%s; %s=%r", self.name, self._args, self._commit_value_field, value)
-        ctx = self._ctx.clone_with(
-            piece=model,
-            model=model,
-            **self._args,
+        fn_ctx = _fn_ctx(
+            self._ctx, crud_model=self._ctx.model,
             **{self._commit_value_field: value},
             )
-        return self._commit_fn.call(ctx)
+        return self._commit_fn.call(fn_ctx)
 
     @staticmethod
     def _pick_ctx_value(ctx):
