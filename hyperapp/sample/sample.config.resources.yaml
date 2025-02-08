@@ -5,23 +5,53 @@ import:
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- sample.sample_commands:details.d
 - sample.sample_commands:show_state.d
+- sample.sample_list:open_sample_fn_list.d
+- sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
 definitions:
   config:
     type: legacy_type.system:system_config
     value:
       services:
         shortcut_reg: shortcut_reg.config
+  config_item-sample.sample_commands-details.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: sample.sample_commands:details.d
+      value: shortcut_Return
   config_item-sample.sample_commands-show_state.d:
     type: legacy_type.data_service:config_item
     value:
       key: sample.sample_commands:show_state.d
       value: shortcut_Ctrl_Return
+  config_item-sample.sample_list-open_sample_fn_list.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: sample.sample_list:open_sample_fn_list.d
+      value: shortcut_F4
+  config_item-sample.sample_list_crud-sample_list-sample_list.edit.open-command.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
+      value: shortcut_Space
   shortcut_Ctrl_Return:
     type: legacy_type.builtin:string
     value: Ctrl+Return
+  shortcut_F4:
+    type: legacy_type.builtin:string
+    value: F4
+  shortcut_Return:
+    type: legacy_type.builtin:string
+    value: Return
+  shortcut_Space:
+    type: legacy_type.builtin:string
+    value: Space
   shortcut_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-sample.sample_commands-show_state.d
+      - config_item-sample.sample_list-open_sample_fn_list.d
+      - config_item-sample.sample_list_crud-sample_list-sample_list.edit.open-command.d
+      - config_item-sample.sample_commands-details.d
