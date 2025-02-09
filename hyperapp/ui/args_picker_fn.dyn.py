@@ -1,3 +1,4 @@
+from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
@@ -45,7 +46,6 @@ class ArgsPickerFn:
         assert len(self._args) == 1, "TODO: Pick args from context and implement multi-args editor"
         [(value_field, value_t)] = self._args.items()
         get_default_fn = self._editor_default_reg[value_t]
-        assert 0, get_default_fn
         try:
             selector = self._selector_reg[value_t]
         except KeyError:
@@ -58,7 +58,7 @@ class ArgsPickerFn:
             value_t=pyobj_creg.actor_to_ref(value_t),
             model=None,
             args=(),
-            init_action_fn=self._init_action_fn_ref,
+            init_action_fn=mosaic.put(get_default_fn),
             commit_command_d=mosaic.put(self._commit_command_d),
             get_fn=mosaic.put(get_fn.piece) if get_fn is not None else None,
             pick_fn=mosaic.put(pick_fn.piece) if pick_fn is not None else None,
