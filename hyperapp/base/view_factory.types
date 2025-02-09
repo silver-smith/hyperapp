@@ -13,3 +13,6 @@ item = record:
   is_wrapper: bool
   view_ctx_params: string list
   system_fn: ref
+
+factory = record:
+  d: ref

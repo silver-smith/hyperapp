@@ -9,7 +9,9 @@ import:
 - legacy_type.command:model_command
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
+- legacy_type.selector:template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:factory
 - legacy_type.view_factory:item
 - legacy_type.view_factory_list:view
 definitions:
@@ -43,6 +45,27 @@ definitions:
       name: open_view_factory_list_d
       base: null
       fields: {}
+  view_factory-factory.selector-template:
+    type: legacy_type.selector:template
+    value:
+      value_t: legacy_type.view_factory:factory
+      get_fn: view_factory-factory.selector.get.system-fn
+      pick_fn: view_factory-factory.selector.pick.system-fn
+  view_factory-factory.selector.get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: view_factory_list_get
+      ctx_params:
+      - value
+      service_params: []
+  view_factory-factory.selector.pick.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: view_factory_list_pick
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   view_factory_list:
     type: legacy_type.builtin:attribute
     value:
@@ -77,4 +100,15 @@ definitions:
       file_name: view_factory_list.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        htypes.view_factory.factory: legacy_type.view_factory:factory
         htypes.view_factory_list.view: legacy_type.view_factory_list:view
+  view_factory_list_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_factory_list.module
+      attr_name: view_factory_list_get
+  view_factory_list_pick:
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_factory_list.module
+      attr_name: view_factory_list_pick

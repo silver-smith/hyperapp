@@ -45,3 +45,27 @@ def test_view_factory_list(piece):
 def test_open():
     piece = view_factory_list.open_view_factory_list()
     assert isinstance(piece, htypes.view_factory_list.view)
+
+
+def test_selector_get():
+    d = htypes.view_factory_list_tests.sample_d(),
+    value = htypes.view_factory.factory(
+        d=mosaic.put(d),
+        )
+    piece = view_factory_list.view_factory_list_get(value)
+    assert piece
+
+
+def test_selector_pick():
+    d = htypes.view_factory_list_tests.sample_d(),
+    current_item = htypes.view_factory.item(
+        d=mosaic.put(d),
+        d_str="<unused>",
+        view_t=mosaic.put("<unused>"),
+        view_t_str="<unused>",
+        is_wrapper=False,
+        view_ctx_params=(),
+        system_fn=mosaic.put("<unused>"),
+        )
+    factory = view_factory_list.view_factory_list_pick(piece, current_item)
+    assert isinstance(factory, htypes.view_factory.factory)

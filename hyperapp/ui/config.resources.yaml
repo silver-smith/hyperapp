@@ -102,6 +102,7 @@ import:
 - ui.view.view_factory:view_factory_reg.service
 - ui.view.view_factory_cfg_item:view_factory-template.actor-template
 - ui.view.view_factory_list:open_view_factory_list.global-model-command
+- ui.view.view_factory_list:view_factory-factory.selector-template
 - ui.view.view_factory_list:view_factory_list-view.model-cfg-item
 - ui.view.view_registry:view_reg.service
 - ui.visualizer:builtin-int.actor-template
@@ -144,6 +145,7 @@ definitions:
         model_command_reg: model_command_reg
         model_layout_creg: model_layout_creg
         resource_name_creg: resource_name_creg
+        selector_reg: selector_reg
         system: system
         system_fn_creg: system_fn_creg
         ui_adapter_creg: ui_adapter_creg
@@ -204,6 +206,11 @@ definitions:
     value:
       items:
       - ui.column_resource_name:column-column_k.actor-template
+  selector_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.view.view_factory_list:view_factory-factory.selector-template
   system:
     type: legacy_type.system:item_list_config
     value:
