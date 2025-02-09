@@ -62,8 +62,8 @@ definitions:
     value:
       d: show_sample_list_item.open-d
       properties:
-        is_global: false
-        uses_state: true
+        is_global: true
+        uses_state: false
         remotable: false
       system_fn: show_sample_list_item.open-fn
   show_sample_list_item.open-d:

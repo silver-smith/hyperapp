@@ -77,8 +77,8 @@ class CommandTemplateCtr(Constructor):
             commit_fn=mosaic.put(commit_fn),
             )
         properties = htypes.command.properties(
-            is_global=False,
-            uses_state=True,
+            is_global=self._is_global,
+            uses_state=False,
             remotable=False,
             )
         if name_to_res is not None:
