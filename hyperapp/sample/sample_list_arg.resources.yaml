@@ -5,7 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
-- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:args_picker_command_fn
 - legacy_type.command:model_command
 - legacy_type.sample_list_selector:item
@@ -38,10 +38,10 @@ definitions:
       ctx_params: []
       service_params: []
   sample_list_selector-item.editor_default.cfg-item:
-    type: legacy_type.cfg_item:typed_fn_cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_list_selector:item
-      system_fn: sample_list_default.system-fn
+      value: sample_list_default.system-fn
   show_sample_list_item:
     type: legacy_type.builtin:attribute
     value:
