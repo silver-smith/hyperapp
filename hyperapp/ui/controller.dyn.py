@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from functools import cached_property, partial
 from typing import Any, Self
 
+# from PySide6 import QtGui
+
 from hyperapp.boot import dict_coders  # register codec
 
 from . import htypes
@@ -238,12 +240,18 @@ class _Item:
         self.schedule_update_parents_context()
         self.save_state()
 
+    def removed_hook(self):
+        self.parent.element_removed_hook(self.idx)
+
     def replace_parent_widget_hook(self, new_widget):
         parent = self.parent
         parent.view.replace_child_widget(parent.widget, self.idx, new_widget)
         self._widget_wr = None
         self._view_commands = None
         self._model_commands = None
+
+    def save_state_hook(self):
+        self.save_state()
 
     def save_state(self):
         self.parent.save_state()
@@ -275,7 +283,7 @@ class _WindowItem(_Item):
         self._window_widget = widget  # Prevent windows refs from be gone.
 
     def save_state(self):
-        self.parent.save_state(current_window=self)
+        self.parent.save_state()
 
 
 @dataclass(repr=False)
@@ -316,10 +324,17 @@ class _RootItem(_Item):
     def current_child_idx(self):
         return None
 
-    def save_state(self, current_window):
+    def save_state(self):
+        # TODO: Find out real active window.
+        # all_windows = QtGui.QGuiApplication.allWindows()
+        # current_idx_list = [idx for idx, w in enumerate(all_windows) if w.isActive()]
+        # if current_idx_list:
+        #     [current_idx] = current_idx_list
+        # else:
+        current_idx = 0
         layout = htypes.root.layout(
             piece=self._root_piece,
-            state=self._root_state(current_window),
+            state=self._root_state(current_idx),
             )
         self._layout_bundle.save_piece(layout)
 
@@ -332,12 +347,12 @@ class _RootItem(_Item):
                 ),
             )
 
-    def _root_state(self, current_window):
+    def _root_state(self, current_idx):
         window_list = tuple(
             mosaic.put(item.view.widget_state(item.widget))
             for item in self.children
             )
-        return htypes.root.state(window_list, current_window.idx)
+        return htypes.root.state(window_list, current_idx)
 
     async def create_window(self, piece, state):
         view = self._meta.svc.view_reg.animate(piece, self.ctx)
@@ -349,9 +364,20 @@ class _RootItem(_Item):
         await item.init_children_reverse_context()
         if self._show:
             item.widget.show()
-        self.save_state(item)
+        self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
+
+    def schedule_update_parents_context(self):
+        # This is window open/close event. No context is changed for other windows.
+        pass
+
+    def element_removed_hook(self, idx):
+        if len(self.children) > 1:
+            super().element_removed_hook(idx)
+        else:
+            # Last window is closed by user - we are actually exiting now.
+            self.save_state()
 
 
 def _description(piece):
@@ -387,11 +413,17 @@ class CtlHook:
     def element_removed(self, idx):
         self._item.element_removed_hook(idx)
 
+    def removed(self):
+        self._item.removed_hook()
+
     def element_replaced(self, idx, new_view, new_widget=None):
         self._item.element_replaced_hook(idx, new_view, new_widget)
 
     def replace_parent_widget(self, new_widget):
         self._item.replace_parent_widget_hook(new_widget)
+
+    def save_state(self):
+        self._item.save_state_hook()
 
 
 class Controller:

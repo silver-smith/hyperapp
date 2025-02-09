@@ -51,7 +51,8 @@ definitions:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: quit
-      ctx_params: []
+      ctx_params:
+      - hook
       service_params: []
   quit.ui-command:
     type: legacy_type.command:ui_command

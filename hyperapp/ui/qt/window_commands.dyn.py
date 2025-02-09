@@ -26,5 +26,6 @@ async def duplicate_window(root, view, state):
 
 
 @mark.ui_command(htypes.window.view)
-def quit():
+def quit(hook):
+    hook.save_state()
     QtWidgets.QApplication.quit()

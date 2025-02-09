@@ -14,6 +14,19 @@ from .code.view import Item, View
 log = logging.getLogger(__name__)
 
 
+class MainWindow(QtWidgets.QMainWindow):
+
+    def __init__(self, on_close):
+        super().__init__()
+        self._on_close = on_close
+
+    def closeEvent(self, event):
+        result = super().closeEvent(event)
+        if event.spontaneous():
+            self._on_close(self)
+        return result
+
+
 class WindowView(View):
 
     @classmethod
@@ -36,7 +49,7 @@ class WindowView(View):
             )
 
     def construct_widget(self, state, ctx):
-        w = QtWidgets.QMainWindow()
+        w = MainWindow(self._on_close)
         central_view_state = web.summon(state.central_view_state)
         menu_bar_state = web.summon(state.menu_bar_state)
         central_widget = self._central_view.construct_widget(central_view_state, ctx)
@@ -72,3 +85,7 @@ class WindowView(View):
         if idx == 1:
             return widget.centralWidget()
         return super().item_widget(widget, idx)
+
+    def _on_close(self, w):
+        log.info("Window closed: %s", w)
+        self._ctl_hook.removed()
