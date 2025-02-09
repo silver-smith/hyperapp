@@ -201,7 +201,6 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
     async def run(self):
         crud_model = self._ctx.model
-        model = web.summon(crud_model.model)
         if self._pick_fn:
             # TODO: Invite a method to retrieve proper selector model.
             # May be, add special wrapper view adding selector model to context when using selector.
