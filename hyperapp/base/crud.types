@@ -6,7 +6,7 @@ model = record:
   value_t: ref
   model: ref opt
   args: arg list
-  init_action_fn: ref
+  init_action_fn: ref opt
   commit_command_d: ref
   get_fn: ref opt
   pick_fn: ref opt

@@ -145,9 +145,13 @@ def _form_view(value_t_ref):
 @mark.actor.model_layout_creg
 def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg):
     if not piece.get_fn:
+        assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
         return _form_view(piece.value_t)
     get_fn = system_fn_creg.invite(piece.get_fn)
-    value = _run_crud_init(ctx, system_fn_creg, piece)
+    if piece.init_action_fn:
+        value = _run_crud_init(ctx, system_fn_creg, piece)
+    else:
+        value = None
     selector_model = get_fn.call(ctx, value=value)
     return visualizer(lcs, ctx, selector_model)
 
