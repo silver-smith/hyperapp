@@ -167,8 +167,23 @@ class TypedCommandDecorator(CommandDecorator):
         return self._probe_class(self._system, self._ctr_collector, self._module_name, self._service_name, self._args, fn, self._t)
 
 
+class UntypedCommandDecorator(CommandDecorator):
+
+    def __call__(self, fn):
+        if isinstance(fn, Type):
+            raise RuntimeError(f"{self._command_desc} commands can not have type specialization: {fn!r}")
+        check_not_classmethod(fn)
+        check_is_function(real_fn(fn))
+        return self._probe_class(self._system, self._ctr_collector, self._module_name, self._service_name, self._args, fn)
+
+
 class UiCommandDecorator(TypedCommandDecorator):
     _probe_class = UiCommandProbe
+
+
+class UniversalUiCommandDecorator(UntypedCommandDecorator):
+    _probe_class = UniversalUiCommandProbe
+    _command_desc = "Universal"
 
 
 class ModelCommandDecorator(TypedCommandDecorator):
@@ -179,16 +194,9 @@ class ModelCommandEnumeratorDecorator(TypedCommandDecorator):
     _probe_class = ModelCommandEnumeratorProbe
 
 
-class GlobalModelCommandDecorator(CommandDecorator):
-
+class GlobalModelCommandDecorator(UntypedCommandDecorator):
     _probe_class = GlobalModelCommandProbe
-
-    def __call__(self, fn):
-        if isinstance(fn, Type):
-            raise RuntimeError(f"Global commands can not have type specialization: {fn!r}")
-        check_not_classmethod(fn)
-        check_is_function(real_fn(fn))
-        return self._probe_class(self._system, self._ctr_collector, self._module_name, self._service_name, self._args, fn)
+    _command_desc = "Global"
 
 
 class CommandMarker:
@@ -219,11 +227,15 @@ class UiModelCommandMarker(CommandMarker):
 
 class UniversalUiCommandMarker(CommandMarker):
 
-    def __call__(self, fn):
+    def __call__(self, fn=None, *, args=None):
+        service_name = 'universal_ui_command_reg'
+        if fn is None:
+            return UniversalUiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, args)
+        if args is not None:
+            raise RuntimeError(f"Universal UI commands decorator does not support positional arguments")
         if isinstance(fn, Type):
             raise RuntimeError(f"Use non-type specialized marker, like '@mark.universal_ui_command'")
         check_is_function(real_fn(fn))
-        service_name = 'universal_ui_command_reg'
         return UniversalUiCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, args=None, fn=fn)
 
 
