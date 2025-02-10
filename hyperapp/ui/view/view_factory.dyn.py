@@ -21,6 +21,10 @@ class ViewFactory:
         return self._d
 
     @property
+    def fn(self):
+        return self._system_fn
+
+    @property
     def item(self):
         return htypes.view_factory.item(
             d=mosaic.put(self._d),
