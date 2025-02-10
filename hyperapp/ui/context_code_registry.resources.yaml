@@ -1,0 +1,13 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:web.service
+- legacy_type.builtin:python_module
+definitions:
+  context_code_registry.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: context_code_registry
+      file_name: context_code_registry.dyn.py
+      import_list:
+        services.web: builtins:web.service
