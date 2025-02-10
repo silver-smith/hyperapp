@@ -215,7 +215,8 @@ class BoundCrudCommitCommand(BoundCommandBase):
             value = self._pick_ctx_value(self._ctx)
         log.info("Run CRUD commit command %r: args=%s; %s=%r", self.name, self._args, self._commit_value_field, value)
         fn_ctx = _fn_ctx(
-            self._ctx, crud_model=self._ctx.model,
+            self._ctx,
+            crud_model=self._ctx.model,
             **{self._commit_value_field: value},
             )
         return self._commit_fn.call(fn_ctx)
