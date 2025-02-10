@@ -33,8 +33,10 @@ definitions:
       ctx_params:
       - view_factory
       - view
+      - hook
       - ctx
       service_params:
+      - view_reg
       - view_factory_reg
   wrap_view.module:
     type: legacy_type.builtin:python_module
