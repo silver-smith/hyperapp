@@ -42,7 +42,6 @@ class ArgsPickerFn:
         # return self._required_kw - ctx_kw.keys()
 
     def call(self, ctx, **kw):
-        ctx_kw = {**ctx.as_dict(), **kw}
         assert len(self._args) == 1, "TODO: Pick args from context and implement multi-args editor"
         [(value_field, value_t)] = self._args.items()
         try:
