@@ -1,3 +1,7 @@
+view_hook = record:
+  item_id: int
+  path: int list
+
 
 external_ui_model_command_impl = record:
   model_command_impl: ref

@@ -18,6 +18,7 @@ import:
 - legacy_type.root:view
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
+- legacy_type.ui:view_hook
 - ui.view.view:view.module
 definitions:
   controller.module:
@@ -35,6 +36,7 @@ definitions:
         htypes.root.layout: legacy_type.root:layout
         htypes.root.state: legacy_type.root:state
         htypes.root.view: legacy_type.root:view
+        htypes.ui.view_hook: legacy_type.ui:view_hook
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
@@ -73,3 +75,19 @@ definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
+  view_hook_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: controller.module
+      attr_name: view_hook_factory
+  view_hook_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: view_hook_factory
+      ctl: system-dict_config_ctl.ctl
+      function: view_hook_factory
+      service_params: []
+      want_config: false
+      free_params:
+      - piece
+      - controller

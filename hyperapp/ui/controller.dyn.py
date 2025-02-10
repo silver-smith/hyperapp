@@ -69,16 +69,24 @@ class _Item:
                 self._children.append(item)
         return self._children
 
+    def pick_child(self, path):
+        if not path:
+            return self
+        idx, *rest = path
+        if idx < len(self.children):
+            return self.children[idx].pick_child(rest)
+        return None
+
     def _make_child_item(self, rec):
         item_id = next(self._meta.counter)
         ctx = rec.view.children_context(self.ctx)
         item = _Item(self._meta, item_id, self, ctx, None, rec.name, rec.view, rec.focusable)
-        item.view.set_controller_hook(item._hook)
+        item.view.set_controller_hook(item.hook)
         self._meta.id_to_item[item_id] = item
         return item
 
     @property
-    def _hook(self):
+    def hook(self):
         return CtlHook(self)
 
     @property
@@ -159,7 +167,7 @@ class _Item:
         ctx = ctx.push(
             view=self.view,
             widget=weakref.ref(self.widget),
-            hook=self._hook,
+            hook=self.hook,
             )
         ctx = ctx.copy_from(rctx)
         if 'model' in ctx:
@@ -278,7 +286,7 @@ class _WindowItem(_Item):
     def _init(self, state):
         widget = self.view.construct_widget(state, self.ctx)
         self._widget_wr = weakref.ref(widget)
-        self.view.set_controller_hook(self._hook)
+        self.view.set_controller_hook(self.hook)
         self._meta.id_to_item[self.id] = self
         self._window_widget = widget  # Prevent windows refs from be gone.
 
@@ -398,6 +406,13 @@ class CtlHook:
     def __init__(self, item):
         self._item = item
 
+    @property
+    def piece(self):
+        return htypes.ui.view_hook(
+            item_id=self._item.id,
+            path=tuple(self._item.path),
+            )
+
     def current_changed(self):
         self._item.current_changed_hook()
 
@@ -453,6 +468,12 @@ class Controller:
     def show(self):
         self._root_item.show()
 
+    def pick_item_hook(self, path, item_id):
+        item = self._root_item.pick_child(path)
+        if not item or item.id != item_id:
+            raise RuntimeError(f"View item {item_id} at {path} is already gone")
+        return item.hook
+
     def view_items(self, item_id):
         item = self._id_to_item.get(item_id)
         if item:
@@ -473,6 +494,11 @@ class Controller:
                 return []
         finally:
             self._inside_commands_call = False
+
+
+@mark.service
+def view_hook_factory(piece, controller):
+    return controller.pick_item_hook(piece.path, piece.item_id)
 
 
 @mark.service

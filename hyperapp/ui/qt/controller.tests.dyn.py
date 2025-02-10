@@ -72,8 +72,17 @@ class PhonyLayoutBundle:
         pass
 
 
-async def test_duplicate_window(qapp, feed_factory, controller_running, default_layout):
-    lcs=Mock()
+def test_view_hook_factory():
+    ctl = Mock()
+    piece = htypes.ui.view_hook(
+        item_id=123,
+        path=(0, 1),
+        )
+    hook = controller.view_hook_factory(piece, ctl)
+
+
+async def test_controller_and_duplicate_window(qapp, feed_factory, view_hook_factory, controller_running, default_layout):
+    lcs = Mock()
     lcs.get.return_value = None  # command list - mock is not iterable.
     ctx = Context(lcs=lcs)
     feed = feed_factory(htypes.layout.view())
@@ -81,8 +90,14 @@ async def test_duplicate_window(qapp, feed_factory, controller_running, default_
     async with controller_running(PhonyLayoutBundle(), default_layout, ctx, show=False, load_state=False) as ctl:
         root_item = ctl._root_item
         root = controller.Root(root_item)
-        view = root_item.children[0].view
+        window_item = root_item.children[0]
+        view = window_item.view
         state = web.summon(default_layout.state.window_list[0])
         await window_commands.duplicate_window(root, view, state)
         assert len(root_item.children) == 2
         await feed.wait_for_diffs(count=1)
+
+        # View hook.
+        hook_piece = window_item.hook.piece
+        hook = view_hook_factory(hook_piece, ctl)
+        assert hook.piece == hook_piece
