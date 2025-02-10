@@ -111,10 +111,10 @@ class RcRunner:
         while True:
             self._submit_jobs(target_set)
             if target_set.all_completed:
-                rc_log.info("%s: All targets are completed\n", name)
+                rc_log.info("%s: All targets are completed", name)
                 return True
             if self._pool.job_count == 0:
-                rc_log.info("%s: Not all targets are completed, but there are no jobs\n", name)
+                rc_log.info("%s: Not all targets are completed, but there are no jobs", name)
                 return True
             for job, result_piece in self._pool.iter_completed(self._options.timeout):
                 result = self._handle_result(target_set, job, result_piece)
