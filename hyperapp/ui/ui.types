@@ -1,16 +1,4 @@
 
-# Selectors for ui command associations.
-ui_command_d = record
-universal_ui_command_d = record
-ui_model_command_layout_d = record
-command_properties_d = record
-
-# Selectors for model command associations.
-model_command_d = record
-model_command_enumerator_d = record
-global_model_command_d = record
-
-
 external_ui_model_command_impl = record:
   model_command_impl: ref
   layout: ref opt
@@ -23,6 +11,3 @@ ui_model_command_list = record:
 
 # Selector for model view layout lcs association.
 model_view_layout_d = record
-
-
-feed_d = record
