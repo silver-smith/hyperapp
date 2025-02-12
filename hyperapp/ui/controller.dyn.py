@@ -408,7 +408,7 @@ class CtlHook:
 
     @property
     def piece(self):
-        return htypes.ui.view_hook(
+        return htypes.ui.ctl_hook(
             item_id=self._item.id,
             path=tuple(self._item.path),
             )
@@ -497,7 +497,7 @@ class Controller:
 
 
 @mark.service
-def view_hook_factory(piece, controller):
+def ctl_hook_factory(piece, controller):
     return controller.pick_item_hook(piece.path, piece.item_id)
 
 

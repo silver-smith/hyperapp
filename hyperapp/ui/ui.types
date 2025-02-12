@@ -1,4 +1,4 @@
-view_hook = record:
+ctl_hook = record:
   item_id: int
   path: int list
 

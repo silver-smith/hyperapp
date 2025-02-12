@@ -13,8 +13,8 @@ import:
 - ui.command_config_ctl:command-untyped_config_ctl.actor-template
 - ui.command_creg:command_creg.service
 - ui.controller:controller_running.service
+- ui.controller:ctl_hook_factory.service
 - ui.controller:layout-view.feed-template
-- ui.controller:view_hook_factory.service
 - ui.crud:crud-init_fn.actor-template
 - ui.crud:crud-model-crud_model_commands.command-cfg-item
 - ui.crud:crud-model.actor-template
@@ -221,7 +221,7 @@ definitions:
       - ui.column_visible_reg:column_visible_reg.service
       - ui.command_creg:command_creg.service
       - ui.controller:controller_running.service
-      - ui.controller:view_hook_factory.service
+      - ui.controller:ctl_hook_factory.service
       - ui.editor_default_reg:editor_default_reg.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_type_creg.service

@@ -72,16 +72,16 @@ class PhonyLayoutBundle:
         pass
 
 
-def test_view_hook_factory():
+def test_ctl_hook_factory():
     ctl = Mock()
-    piece = htypes.ui.view_hook(
+    piece = htypes.ui.ctl_hook(
         item_id=123,
         path=(0, 1),
         )
-    hook = controller.view_hook_factory(piece, ctl)
+    hook = controller.ctl_hook_factory(piece, ctl)
 
 
-async def test_controller_and_duplicate_window(qapp, feed_factory, view_hook_factory, controller_running, default_layout):
+async def test_controller_and_duplicate_window(qapp, feed_factory, ctl_hook_factory, controller_running, default_layout):
     lcs = Mock()
     lcs.get.return_value = None  # command list - mock is not iterable.
     ctx = Context(lcs=lcs)
@@ -99,5 +99,5 @@ async def test_controller_and_duplicate_window(qapp, feed_factory, view_hook_fac
 
         # View hook.
         hook_piece = window_item.hook.piece
-        hook = view_hook_factory(hook_piece, ctl)
+        hook = ctl_hook_factory(hook_piece, ctl)
         assert hook.piece == hook_piece
