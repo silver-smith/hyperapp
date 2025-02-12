@@ -80,6 +80,7 @@ class CrudOpenFn:
             )
 
 
+# Override context with original elements, canned by args picker.
 def _canned_kw(ctl_hook_factory, view_reg, ctx, args_kw):
     kw = {}
     try:
