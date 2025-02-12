@@ -55,14 +55,11 @@ def builtin_types_as_dict(pyobj_creg, builtin_types):
 
 
 @pytest.fixture
-def builtin_services(
-        mosaic,
-        web,
-        ):
+def builtin_services(mosaic, web):
     return {
         'mosaic': mosaic,
         'web': web,
-    }
+        }
 
 
 @pytest.fixture
