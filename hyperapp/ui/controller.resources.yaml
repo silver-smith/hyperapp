@@ -78,7 +78,7 @@ definitions:
       want_config: false
       free_params:
       - piece
-      - controller
+      - ctx
   layout-view.feed-template:
     type: legacy_type.feed:feed_template
     value:

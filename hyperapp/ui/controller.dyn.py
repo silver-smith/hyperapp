@@ -497,8 +497,8 @@ class Controller:
 
 
 @mark.service
-def ctl_hook_factory(piece, controller):
-    return controller.pick_item_hook(piece.path, piece.item_id)
+def ctl_hook_factory(piece, ctx):
+    return ctx.controller.pick_item_hook(piece.path, piece.item_id)
 
 
 @mark.service

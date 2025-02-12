@@ -98,7 +98,7 @@ def _fn_ctx(ctl_hook_factory, ctx, crud_model, **kw):
     except KeyError:
         pass
     else:
-        args_kw['hook'] = ctl_hook_factory(hook_piece)
+        args_kw['hook'] = ctl_hook_factory(hook_piece, ctx)
     return ctx.clone_with(
         **model_kw,
         **args_kw,
