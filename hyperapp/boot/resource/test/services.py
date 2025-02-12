@@ -8,7 +8,7 @@ from hyperapp.boot.htypes.call import call_t
 from hyperapp.boot.htypes.partial import partial_t
 from hyperapp.boot.resource.resource_type import ResourceType
 from hyperapp.boot.resource.builtin_service import make_builtin_service_resource_module
-from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache, load_legacy_type_resources
+from hyperapp.boot.resource.legacy_type import load_legacy_type_resources
 from hyperapp.boot.resource.resource_type_producer import resource_type_producer as resource_type_producer_fn
 from hyperapp.boot.resource.resource_module import ResourceModule
 from hyperapp.boot.resource.python_module import PythonModuleResourceType

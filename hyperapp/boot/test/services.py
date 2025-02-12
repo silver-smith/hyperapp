@@ -1,5 +1,4 @@
 import logging
-from functools import partial
 
 import pytest
 
@@ -8,11 +7,9 @@ from hyperapp.boot.htypes.python_module import python_module_t
 from hyperapp.boot.htypes.attribute import attribute_t
 from hyperapp.boot.htypes.call import call_t
 from hyperapp.boot.htypes.partial import partial_t
-from hyperapp.boot.htypes.deduce_value_type import deduce_value_type
 from hyperapp.boot.mosaic import Mosaic
 from hyperapp.boot.web import Web
-from hyperapp.boot.services import HYPERAPP_DIR, pyobj_config
-from hyperapp.boot.code_registry import CodeRegistry
+from hyperapp.boot.services import pyobj_config
 from hyperapp.boot.pyobj_registry import PyObjRegistry
 from hyperapp.boot.association_registry import AssociationRegistry
 from hyperapp.boot.python_importer import PythonImporter

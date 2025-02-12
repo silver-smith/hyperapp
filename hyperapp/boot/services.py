@@ -1,13 +1,9 @@
 import logging
-import sys
-from collections import namedtuple
 from functools import partial
 from pathlib import Path
-from types import SimpleNamespace
 
 from .htypes import BuiltinTypeRegistry, register_builtin_types
 from .htypes.deduce_value_type import deduce_value_type
-from .ref import ref_repr
 from .mosaic import Mosaic
 from .web import Web
 from .type_module_loader import TypeModuleLoader
@@ -25,7 +21,6 @@ from .resource.resource_module import ResourceModule
 from .project import BuiltinsProject, Project, load_projects_from_file
 from .resource.legacy_type import (
     add_builtin_types_to_pyobj_cache,
-    add_legacy_types_to_cache,
     convert_builtin_types_to_dict,
     load_legacy_type_resources,
     )
