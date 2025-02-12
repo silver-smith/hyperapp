@@ -21,7 +21,7 @@ from .resource.resource_type import ResourceType
 from .resource.resource_type_producer import resource_type_producer
 from .resource.python_module import PythonModuleResourceType, python_module_pyobj
 from .htypes.python_module import python_module_t
-from .resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
+from .resource.resource_module import ResourceModule, load_resource_modules
 from .project import BuiltinsProject, Project, load_projects_from_file
 from .resource.legacy_type import (
     add_builtin_types_to_pyobj_cache,
@@ -76,7 +76,6 @@ class Services(object):
         'resource_type_producer',
         'resource_module_factory',
         'resource_loader',
-        'resource_list_loader',
         'builtin_types_as_dict',
         'builtin_service_resource_loader',
         'deduce_t',
@@ -123,10 +122,6 @@ class Services(object):
         )
         self.resource_loader = partial(
             load_resource_modules,
-            self.resource_module_factory,
-            )
-        self.resource_list_loader = partial(
-            load_resource_modules_list,
             self.resource_module_factory,
             )
         self.builtin_types_as_dict = partial(convert_builtin_types_to_dict, self.pyobj_creg, self.builtin_types)
