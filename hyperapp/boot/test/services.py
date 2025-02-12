@@ -19,14 +19,10 @@ from hyperapp.boot.python_importer import PythonImporter
 from hyperapp.boot.type_module_loader import TypeModuleLoader
 from hyperapp.boot.resource_dir import ResourceDir
 from hyperapp.boot.test.hyper_types_namespace import HyperTypesNamespace
-from hyperapp.boot.resource.resource_type import ResourceType
-from hyperapp.boot.resource.resource_type_producer import resource_type_producer as resource_type_producer_fn
-from hyperapp.boot.resource.resource_module import ResourceModule, load_resource_modules_list
-from hyperapp.boot.resource.python_module import PythonModuleResourceType, python_module_pyobj
-from hyperapp.boot.resource.attribute import AttributeResourceType, attribute_pyobj
-from hyperapp.boot.resource.call import CallResourceType, call_pyobj
-from hyperapp.boot.resource.partial import PartialResourceType, partial_pyobj
-from hyperapp.boot.resource.legacy_type import convert_builtin_types_to_dict
+from hyperapp.boot.resource.attribute import attribute_pyobj
+from hyperapp.boot.resource.call import call_pyobj
+from hyperapp.boot.resource.partial import partial_pyobj
+from hyperapp.boot.resource.python_module import python_module_pyobj
 # from hyperapp.boot.resource.builtin_service import builtin_service_pyobj
 
 log = logging.getLogger(__name__)
@@ -135,38 +131,3 @@ def local_types(type_module_loader, module_dir_list):
 @pytest.fixture
 def htypes(pyobj_creg, local_types):
     return HyperTypesNamespace(pyobj_creg, local_types)
-
-
-@pytest.fixture
-def resource_type_factory(mosaic, web, pyobj_creg):
-    return partial(ResourceType, mosaic, web, pyobj_creg)
-
-
-@pytest.fixture
-def resource_type_reg():
-    reg = {}
-    reg[python_module_t] = PythonModuleResourceType()
-    reg[attribute_t] = AttributeResourceType()
-    reg[call_t] = CallResourceType()
-    reg[partial_t] = PartialResourceType()
-    return reg
-
-
-@pytest.fixture
-def resource_type_producer(resource_type_factory, resource_type_reg):
-    return partial(resource_type_producer_fn, resource_type_factory, resource_type_reg)
-
-
-@pytest.fixture
-def resource_module_factory(mosaic, resource_type_producer, pyobj_creg):
-    return partial(ResourceModule, mosaic, resource_type_producer, pyobj_creg)
-
-
-@pytest.fixture
-def resource_list_loader(resource_module_factory):
-    return partial(load_resource_modules_list, resource_module_factory)
-
-
-@pytest.fixture
-def builtin_types_as_dict(pyobj_creg, builtin_types):
-    return partial(convert_builtin_types_to_dict, pyobj_creg, builtin_types)
