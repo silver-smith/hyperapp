@@ -61,6 +61,10 @@ class ArgsPickerFn:
                 name='hook_piece',
                 value=mosaic.put(ctx.hook.piece),
                 ),
+            htypes.crud.arg(
+                name='view_piece',
+                value=mosaic.put(ctx.view.piece),
+                ),
             )
         return htypes.crud.model(
             value_t=pyobj_creg.actor_to_ref(value_t),

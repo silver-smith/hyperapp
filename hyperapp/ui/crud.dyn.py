@@ -80,7 +80,24 @@ class CrudOpenFn:
             )
 
 
-def _fn_ctx(ctl_hook_factory, ctx, crud_model, **kw):
+def _canned_kw(ctl_hook_factory, view_reg, ctx, args_kw):
+    kw = {}
+    try:
+        hook_piece = args_kw['hook_piece']
+    except KeyError:
+        pass
+    else:
+        kw['hook'] = ctl_hook_factory(hook_piece, ctx)
+    try:
+        view_piece = args_kw['view_piece']
+    except KeyError:
+        pass
+    else:
+        kw['view'] = view_reg.animate(view_piece, ctx)
+    return kw
+
+
+def _fn_ctx(ctl_hook_factory, view_reg, ctx, crud_model, **kw):
     model = web.summon_opt(crud_model.model)
     args_kw = {
         arg.name: web.summon(arg.value)
@@ -93,22 +110,17 @@ def _fn_ctx(ctl_hook_factory, ctx, crud_model, **kw):
             }
     else:
         model_kw = {}
-    try:
-        hook_piece = args_kw['hook_piece']
-    except KeyError:
-        pass
-    else:
-        args_kw['hook'] = ctl_hook_factory(hook_piece, ctx)
     return ctx.clone_with(
         **model_kw,
         **args_kw,
+        **_canned_kw(ctl_hook_factory, view_reg, ctx, args_kw),
         **kw,
         )
 
 
-def _run_crud_init(ctl_hook_factory, system_fn_creg, ctx, crud_model):
+def _run_crud_init(ctl_hook_factory, system_fn_creg, view_reg, ctx, crud_model):
     fn = system_fn_creg.invite(crud_model.init_action_fn)
-    fn_ctx = _fn_ctx(ctl_hook_factory, ctx, crud_model)
+    fn_ctx = _fn_ctx(ctl_hook_factory, view_reg, ctx, crud_model)
     return fn.call(fn_ctx)
 
 
@@ -118,12 +130,13 @@ class CrudInitFn:
 
     @classmethod
     @mark.actor.system_fn_creg
-    def from_piece(cls, piece, ctl_hook_factory, system_fn_creg):
-        return cls(ctl_hook_factory, system_fn_creg)
+    def from_piece(cls, piece, ctl_hook_factory, system_fn_creg, view_reg):
+        return cls(ctl_hook_factory, system_fn_creg, view_reg)
 
-    def __init__(self, ctl_hook_factory, system_fn_creg):
+    def __init__(self, ctl_hook_factory, system_fn_creg, view_reg):
         self._ctl_hook_factory = ctl_hook_factory
         self._system_fn_creg = system_fn_creg
+        self._view_reg = view_reg
 
     def __repr__(self):
         return f"<CrudInitFn>"
@@ -137,7 +150,7 @@ class CrudInitFn:
         return self._init(ctx, ctx_kw['model'])
 
     def _init(self, ctx, crud_model):
-        return _run_crud_init(self._ctl_hook_factory, self._system_fn_creg, ctx, crud_model)
+        return _run_crud_init(self._ctl_hook_factory, self._system_fn_creg, self._view_reg, ctx, crud_model)
 
 
 def _form_view(value_t_ref):
@@ -150,13 +163,13 @@ def _form_view(value_t_ref):
 
 
 @mark.actor.model_layout_creg
-def crud_model_layout(piece, lcs, ctx, ctl_hook_factory, system_fn_creg, visualizer, selector_reg):
+def crud_model_layout(piece, lcs, ctx, ctl_hook_factory, system_fn_creg, view_reg, visualizer, selector_reg):
     if not piece.get_fn:
         assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
         return _form_view(piece.value_t)
     get_fn = system_fn_creg.invite(piece.get_fn)
     if piece.init_action_fn:
-        value = _run_crud_init(ctl_hook_factory, system_fn_creg, ctx, piece)
+        value = _run_crud_init(ctl_hook_factory, system_fn_creg, view_reg, ctx, piece)
     else:
         value = None
     selector_model = get_fn.call(ctx, value=value)
@@ -165,9 +178,10 @@ def crud_model_layout(piece, lcs, ctx, ctl_hook_factory, system_fn_creg, visuali
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
-    def __init__(self, ctl_hook_factory, d, args, pick_fn, commit_fn, commit_value_field):
+    def __init__(self, ctl_hook_factory, view_reg, d, args, pick_fn, commit_fn, commit_value_field):
         super().__init__(d)
         self._ctl_hook_factory = ctl_hook_factory
+        self._view_reg = view_reg
         self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
@@ -182,14 +196,17 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
             )
 
     def bind(self, ctx):
-        return BoundCrudCommitCommand(self._ctl_hook_factory, self._d, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
+        return BoundCrudCommitCommand(
+            self._ctl_hook_factory, self._view_reg,
+            self._d, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    def __init__(self, ctl_hook_factory, d, args, pick_fn, commit_fn, commit_value_field, ctx):
+    def __init__(self, ctl_hook_factory, view_reg, d, args, pick_fn, commit_fn, commit_value_field, ctx):
         super().__init__(d)
         self._ctl_hook_factory = ctl_hook_factory
+        self._view_reg = view_reg
         self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
@@ -224,7 +241,8 @@ class BoundCrudCommitCommand(BoundCommandBase):
             value = self._pick_ctx_value(self._ctx)
         log.info("Run CRUD commit command %r: args=%s; %s=%r", self.name, self._args, self._commit_value_field, value)
         fn_ctx = _fn_ctx(
-            self._ctl_hook_factory, 
+            self._ctl_hook_factory,
+            self._view_reg,
             self._ctx,
             crud_model=self._ctx.model,
             **{self._commit_value_field: value},
@@ -241,7 +259,7 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
 
 @mark.command_enum
-def crud_model_commands(piece, ctl_hook_factory, system_fn_creg):
+def crud_model_commands(piece, ctl_hook_factory, view_reg, system_fn_creg):
     command_d = web.summon(piece.commit_command_d)
     args = {
         arg.name: web.summon(arg.value)
@@ -249,4 +267,7 @@ def crud_model_commands(piece, ctl_hook_factory, system_fn_creg):
         }
     pick_fn = system_fn_creg.invite_opt(piece.pick_fn)
     commit_fn = system_fn_creg.invite(piece.commit_action_fn)
-    return [UnboundCrudCommitCommand(ctl_hook_factory, command_d, args, pick_fn, commit_fn, piece.commit_value_field)]
+    return [
+        UnboundCrudCommitCommand(
+            ctl_hook_factory, view_reg, command_d, args, pick_fn, commit_fn, piece.commit_value_field)
+        ]

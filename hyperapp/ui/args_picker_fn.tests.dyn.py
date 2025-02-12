@@ -48,5 +48,6 @@ def test_args_picker_fn():
     picker_fn = args_picker_fn.ArgsPickerFn.from_piece(piece)
     ctx = Context(
         hook=Mock(piece=None),
+        view=Mock(piece=None),
         )
     picker_fn.call(ctx)
