@@ -1,6 +1,5 @@
 import logging
 from functools import partial
-from types import SimpleNamespace
 
 import pytest
 
