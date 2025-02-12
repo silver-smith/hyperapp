@@ -14,7 +14,8 @@ from hyperapp.boot.htypes import (
     ref_t,
     )
 from hyperapp.boot import cdr_coders  # register codec
-from hyperapp.boot.type_module_loader import CircularDepError, TypeModuleLoader
+from hyperapp.boot.type_module_loader import CircularDepError
+from hyperapp.boot.project import load_texts
 from hyperapp.boot.test.hyper_types_namespace import HyperTypesNamespace
 
 
@@ -22,33 +23,35 @@ TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 
 @pytest.fixture
-def local_types():
+def types():
     return {}
 
 
 @pytest.fixture
-def loader(builtin_types, mosaic, pyobj_creg):
-    return TypeModuleLoader(builtin_types, mosaic, pyobj_creg)
+def htypes(pyobj_creg, types):
+    return HyperTypesNamespace(pyobj_creg, types)
 
 
 @pytest.fixture
-def htypes(pyobj_creg, local_types):
-    return HyperTypesNamespace(pyobj_creg, local_types)
+def load_type_modules(type_module_loader, types):
+    def load(dir):
+        path_to_text = load_texts(dir)
+        type_module_loader.load_texts(path_to_text, types)
+    return load
 
 
-def test_type_module_loader(local_types, loader):
-    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'], local_types)
+def test_type_module_loader(load_type_modules):
+    load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
 
 
-def test_circular_type_dep(local_types, loader):
+def test_circular_type_dep(load_type_modules):
     with pytest.raises(CircularDepError) as excinfo:
-        loader.load_type_modules([TEST_MODULES_DIR / 'circular_type_dep'], local_types)
+        load_type_modules(TEST_MODULES_DIR / 'circular_type_dep')
     assert str(excinfo.value) == 'Circular type module dependency: module_1->module_2->module_3->module_1'
 
 
-def test_types(local_types, htypes, loader):
-    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'], local_types)
-
+def test_types(load_type_modules, htypes):
+    load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
 
     assert htypes.type_module_1.record_1 == TRecord('type_module_1', 'record_1', {'int_field': tInt})
     assert htypes.type_module_1.record_2 == TRecord('type_module_1', 'record_2', {'int_field': tInt, 'string_field': tString})
@@ -63,8 +66,9 @@ def test_types(local_types, htypes, loader):
     assert htypes.type_module_1.empty_record_1 != htypes.type_module_2.empty_record_2
 
 
-def test_same_instance(local_types, htypes, loader):
-    loader.load_type_modules([TEST_MODULES_DIR / 'same_instance'], local_types)
+def test_same_instance(load_type_modules, htypes):
+    load_type_modules(TEST_MODULES_DIR / 'same_instance')
+
     element = htypes.same_instance.element('abcd')
 
     # Same types should resolve to same instances.
@@ -84,8 +88,8 @@ def test_same_instance(local_types, htypes, loader):
     assert isinstance(value, htypes.same_instance.container)
 
 
-def test_exception_type(local_types, htypes, loader):
-    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'], local_types)
+def test_exception_type(load_type_modules, htypes):
+    load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
 
     assert htypes.exceptions.exception_1 == TException('exceptions', 'exception_1', {'int_field': tInt})
     assert htypes.exceptions.exception_2 == TException('exceptions', 'exception_2', {'int_field': tInt, 'string_field': tString})

@@ -17,7 +17,6 @@ from hyperapp.boot.pyobj_registry import PyObjRegistry
 from hyperapp.boot.association_registry import AssociationRegistry
 from hyperapp.boot.python_importer import PythonImporter
 from hyperapp.boot.type_module_loader import TypeModuleLoader
-from hyperapp.boot.test.hyper_types_namespace import HyperTypesNamespace
 from hyperapp.boot.resource.attribute import attribute_pyobj
 from hyperapp.boot.resource.call import call_pyobj
 from hyperapp.boot.resource.partial import partial_pyobj
@@ -90,15 +89,3 @@ def web(mosaic_and_web):
 @pytest.fixture
 def type_module_loader(builtin_types, mosaic, pyobj_creg):
     return TypeModuleLoader(builtin_types, mosaic, pyobj_creg)
-
-
-@pytest.fixture
-def local_types(type_module_loader, test_resources_dir):
-    lt = {}
-    type_module_loader.load_type_modules([test_resources_dir], lt)
-    return lt
-
-
-@pytest.fixture
-def htypes(pyobj_creg, local_types):
-    return HyperTypesNamespace(pyobj_creg, local_types)

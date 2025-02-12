@@ -54,25 +54,6 @@ class TypeModuleLoader(object):
         self._mosaic = mosaic
         self._pyobj_creg = pyobj_creg
 
-    # registry: module name -> name -> type piece.
-    def load_type_modules(self, dir_list, registry):
-        log.info("Load type modules from: %s", dir_list)
-        name_to_source = self._load_sources(dir_list)  # name -> type_module_t.
-        for name, source in sorted(name_to_source.items()):
-            module = self._resolve_module(name_to_source, registry, name, [])
-            registry[name] = module
-
-    def _load_sources(self, dir_list):
-        name_to_source = {}
-        for root_dir in dir_list:
-            for path in root_dir.rglob('*.types'):
-                if 'test' in path.relative_to(root_dir).parts:
-                    continue  # Skip test subdirectories.
-                name = path.stem  # module name
-                source = load_type_module_source(self._builtin_types, self._mosaic, path, name)
-                name_to_source[name] = source
-        return name_to_source
-
     # registry: module name -> name -> mt piece.
     def load_texts(self, path_to_text, registry):
         name_to_source = {}

@@ -17,6 +17,7 @@ from hyperapp.boot.resource.call import CallResourceType
 from hyperapp.boot.resource.partial import PartialResourceType
 from hyperapp.boot.resource.legacy_type import convert_builtin_types_to_dict
 from hyperapp.boot.project import BuiltinsProject, Project, load_texts
+from hyperapp.boot.test.hyper_types_namespace import HyperTypesNamespace
 
 
 @pytest.fixture
@@ -63,14 +64,24 @@ def builtin_service_resource_loader(mosaic, builtin_services):
 
 
 @pytest.fixture
-def resource_registry(
+def project(
         type_module_loader, resource_module_factory, builtin_types_as_dict, builtin_service_resource_loader,
         test_resources_dir):
     builtin_type_modules = load_legacy_type_resources(builtin_types_as_dict())
     builtins_project = BuiltinsProject(builtin_types_as_dict(), builtin_type_modules, builtin_service_resource_loader)
-    registry = Project(
+    project = Project(
         builtins_project, type_module_loader, resource_module_factory,
         test_resources_dir, name='test-project')
     path_to_text = load_texts(test_resources_dir)
-    registry.load(path_to_text)
-    return registry
+    project.load(path_to_text)
+    return project
+
+
+@pytest.fixture
+def resource_registry(project):
+    return project
+
+
+@pytest.fixture
+def htypes(pyobj_creg, project):
+    return HyperTypesNamespace(pyobj_creg, project.types)
