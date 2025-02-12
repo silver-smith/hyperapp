@@ -94,6 +94,8 @@ def _canned_kw(ctl_hook_factory, view_reg, ctx, args_kw):
     except KeyError:
         pass
     else:
+        # Note: This is not the same view instance as was passed originally to args picker.
+        # But using it's piece property is ok.
         kw['view'] = view_reg.animate(view_piece, ctx)
     return kw
 
