@@ -47,6 +47,7 @@ definitions:
       t: legacy_type.crud:init_fn
       function: CrudInitFn.from_piece
       service_params:
+      - ctl_hook_factory
       - system_fn_creg
   crud-model-crud_model_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
@@ -59,6 +60,7 @@ definitions:
       t: legacy_type.crud:model
       function: crud_model_layout
       service_params:
+      - ctl_hook_factory
       - system_fn_creg
       - visualizer
       - selector_reg
@@ -99,6 +101,7 @@ definitions:
       ctx_params:
       - piece
       service_params:
+      - ctl_hook_factory
       - system_fn_creg
   crud_model_commands.model-command-enumerator:
     type: legacy_type.command:model_command_enumerator

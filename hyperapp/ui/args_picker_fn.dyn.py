@@ -56,10 +56,16 @@ class ArgsPickerFn:
         else:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
+        args = (
+            htypes.crud.arg(
+                name='hook_piece',
+                value=mosaic.put(ctx.hook.piece),
+                ),
+            )
         return htypes.crud.model(
             value_t=pyobj_creg.actor_to_ref(value_t),
             model=None,
-            args=(),
+            args=args,
             init_action_fn=mosaic.put_opt(get_default_fn),
             commit_command_d=mosaic.put(self._commit_command_d),
             get_fn=mosaic.put(get_fn.piece) if get_fn is not None else None,

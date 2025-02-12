@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -44,5 +46,7 @@ def test_args_picker_fn():
         commit_fn=mosaic.put(commit_fn),
         )
     picker_fn = args_picker_fn.ArgsPickerFn.from_piece(piece)
-    ctx = Context()
+    ctx = Context(
+        hook=Mock(piece=None),
+        )
     picker_fn.call(ctx)
