@@ -158,11 +158,6 @@ def resource_type_producer(resource_type_factory, resource_type_reg):
 
 
 @pytest.fixture
-def deduce_t(mosaic, pyobj_creg):
-    return deduce_value_type
-
-
-@pytest.fixture
 def resource_module_factory(mosaic, resource_type_producer, pyobj_creg):
     return partial(ResourceModule, mosaic, resource_type_producer, pyobj_creg)
 
@@ -175,8 +170,3 @@ def resource_list_loader(resource_module_factory):
 @pytest.fixture
 def builtin_types_as_dict(pyobj_creg, builtin_types):
     return partial(convert_builtin_types_to_dict, pyobj_creg, builtin_types)
-
-
-@pytest.fixture
-def code_registry_ctr(web):
-    return partial(CodeRegistry, web)
