@@ -23,13 +23,8 @@ TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'
 
 
 @pytest.fixture
-def module_dir_list(default_module_dir_list):
-    return [TEST_RESOURCES_DIR]
-
-
-@pytest.fixture
-def additional_resource_dirs():
-    return [TEST_RESOURCES_DIR]
+def test_resources_dir():
+    return TEST_RESOURCES_DIR
 
 
 @pytest.fixture
@@ -43,15 +38,15 @@ def compare():
 
 
 def test_load(resource_registry):
-    servant_list = resource_registry['test_resources', 'servant_list']
+    servant_list = resource_registry['test-project.test_resources', 'servant_list']
     log.info("Servant list: %r", servant_list)
 
-    sample_servant = resource_registry['test_resources', 'sample_servant']
+    sample_servant = resource_registry['test-project.test_resources', 'sample_servant']
     log.info("Sample servant: %r", sample_servant)
 
 
 def test_set_attr(mosaic, resource_registry, resource_module_factory, compare):
-    sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
+    sample_module_2 = resource_registry['test-project.sample_module_2', 'sample_module_2.module']
     res_module = resource_module_factory(resource_registry, 'test_module')
     res_module['sample_servant_2'] = attribute_t(
         object=mosaic.put(sample_module_2),
@@ -65,7 +60,7 @@ def test_set_attr(mosaic, resource_registry, resource_module_factory, compare):
 
 
 def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory, compare):
-    sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
+    sample_module_2 = resource_registry['test-project.sample_module_2', 'sample_module_2.module']
     res_module = resource_module_factory(resource_registry, 'test_module')
     attr = attribute_t(
         object=mosaic.put(sample_module_2),

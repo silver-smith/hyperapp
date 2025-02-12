@@ -1,5 +1,5 @@
 import:
-- sample_module:sample_module.module
+- test-project.sample_module:sample_module.module
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -11,7 +11,7 @@ definitions:
   sample_servant_factory:
     type: legacy_type.builtin:attribute
     value:
-      object: sample_module:sample_module.module
+      object: test-project.sample_module:sample_module.module
       attr_name: sample_servant
   sample_servant_partial:
     type: legacy_type.builtin:partial

@@ -18,11 +18,8 @@ TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'
 
 
 @pytest.fixture
-def module_dir_list(default_module_dir_list):
-    return [
-        *default_module_dir_list,
-        TEST_RESOURCES_DIR,
-        ]
+def test_resources_dir():
+    return TEST_RESOURCES_DIR
 
 
 def test_definition_type_partial(resource_type_producer, htypes):

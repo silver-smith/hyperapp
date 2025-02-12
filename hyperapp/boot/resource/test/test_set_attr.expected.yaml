@@ -1,9 +1,9 @@
 import:
 - legacy_type.builtin:attribute
-- sample_module_2:sample_module_2.module
+- test-project.sample_module_2:sample_module_2.module
 definitions:
   sample_servant_2:
     type: legacy_type.builtin:attribute
     value:
-      object: sample_module_2:sample_module_2.module
+      object: test-project.sample_module_2:sample_module_2.module
       attr_name: sample_servant_2

@@ -3,12 +3,12 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:partial
-- sample_module_2:sample_module_2.module
+- test-project.sample_module_2:sample_module_2.module
 definitions:
   sample_servant_2:
     type: legacy_type.builtin:attribute
     value:
-      object: sample_module_2:sample_module_2.module
+      object: test-project.sample_module_2:sample_module_2.module
       attr_name: sample_servant_2
   sample_servant_2_partial:
     type: legacy_type.builtin:partial

@@ -303,14 +303,3 @@ class ResourceModule:
         except KeyError as x:
             raise RuntimeError(f"{self._name}: definition {name!r} has no {x.args[0]!r} attribute")
         return _Data(type_name, value_dict)
-
-
-def load_resource_modules(resource_module_factory, resource_dir, resource_registry):
-    for rp in resource_dir.enum():
-        log.debug("Resource module: %r", rp.name)
-        resource_registry.set_module(rp.name, resource_module_factory(resource_registry, rp.name, rp.path))
-
-
-def load_resource_modules_list(resource_module_factory, resource_dir_list, resource_registry):
-    for resource_dir in resource_dir_list:
-        load_resource_modules(resource_module_factory, resource_dir, resource_registry)
