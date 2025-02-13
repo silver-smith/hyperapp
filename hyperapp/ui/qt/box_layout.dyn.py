@@ -57,10 +57,14 @@ class BoxLayoutView(View):
     def construct_widget(self, state, ctx):
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QBoxLayout(self._direction, widget)
-        for elt, elt_state_ref in zip(self._elements, state.elements):
-            elt_state = web.summon(elt_state_ref)
+        for idx, elt in enumerate(self._elements):
+            if state:
+                elt_state = web.summon(state.elements[idx])
+            else:
+                elt_state = None
             layout.addWidget(elt.view.construct_widget(elt_state, ctx))
-        layout.itemAt(state.current).widget().setFocus()
+        if state:
+            layout.itemAt(state.current).widget().setFocus()
         return widget
 
     def replace_child_widget(self, widget, idx, new_child_widget):
