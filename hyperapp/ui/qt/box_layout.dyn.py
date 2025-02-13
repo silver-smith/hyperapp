@@ -115,3 +115,18 @@ class BoxLayoutView(View):
         elt_widget = view.construct_widget(None, ctx)
         self.replace_child(ctx, widget, idx, view, elt_widget)
         self._ctl_hook.element_replaced(idx, view, elt_widget)
+
+
+@mark.view_factory
+def box_layout(inner):
+    log.info("Wrap box layout: %s", inner)
+    return htypes.box_layout.view(
+        direction='TopToBottom',
+        elements=(
+            htypes.box_layout.element(
+                view=mosaic.put(inner),
+                focusable=True,
+                stretch=1,
+                ),
+            ),
+        )

@@ -48,3 +48,9 @@ def test_box_layout(qapp, piece, state):
     assert view.piece
     state = view.widget_state(widget)
     assert state
+
+
+def test_wrap():
+    inner = htypes.label.view("Inner label")
+    piece = box_layout.box_layout(inner)
+    assert isinstance(piece, htypes.box_layout.view)

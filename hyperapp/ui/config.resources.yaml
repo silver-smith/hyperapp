@@ -57,6 +57,7 @@ import:
 - ui.qt.auto_tabs:auto_tabs-view-duplicate_tab.command-cfg-item
 - ui.qt.auto_tabs:auto_tabs-view.view-template
 - ui.qt.box_layout:box_layout-view.view-template
+- ui.qt.box_layout:box_layout.view-factory-template
 - ui.qt.command_pane:command_pane-view.view-template
 - ui.qt.fn_index_tree_adapter:model-tree_ui_t.actor-template
 - ui.qt.fn_index_tree_adapter:tree_adapter-fn_index_tree_adapter.actor-template
@@ -290,6 +291,7 @@ definitions:
     value:
       items:
       - ui.master_details:master_details.view-factory-template
+      - ui.qt.box_layout:box_layout.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
