@@ -17,7 +17,10 @@ import:
 - models.config.config_item_list:open_config_key.d
 - models.config.config_layer_list:open_config_layer_list.d
 - models.config.config_service_list:open_config_service_list.d
+- models.data_browser:list_open.d
 - models.data_browser:record_open.d
+- models.data_browser:ref_list_open.d
+- models.file_bundles:open.d
 - models.show_current_context:show_current_context.d
 definitions:
   bool-false:
@@ -100,10 +103,25 @@ definitions:
     value:
       key: models.config.config_service_list:open_config_service_list.d
       value: shortcut_Alt_S
+  config_item-models.data_browser-list_open.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.data_browser:list_open.d
+      value: shortcut_Return
   config_item-models.data_browser-record_open.d:
     type: legacy_type.data_service:config_item
     value:
       key: models.data_browser:record_open.d
+      value: shortcut_Return
+  config_item-models.data_browser-ref_list_open.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.data_browser:ref_list_open.d
+      value: shortcut_Return
+  config_item-models.file_bundles-open.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.file_bundles:open.d
       value: shortcut_Return
   config_item-models.show_current_context-show_current_context.d:
     type: legacy_type.data_service:config_item
@@ -149,3 +167,6 @@ definitions:
       - config_item-models.config.config_item_list-open_config_key.d
       - config_item-models.data_browser-record_open.d
       - config_item-models.show_current_context-show_current_context.d
+      - config_item-models.data_browser-list_open.d
+      - config_item-models.data_browser-ref_list_open.d
+      - config_item-models.file_bundles-open.d
