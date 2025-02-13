@@ -12,6 +12,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:template
 - ui.view.view:view.module
@@ -40,6 +42,11 @@ definitions:
     value:
       object: box_layout.module
       attr_name: box_layout
+  box_layout-view-unwrap.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.box_layout:view
+      command: unwrap.ui-command
   box_layout-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
@@ -84,5 +91,39 @@ definitions:
     value:
       module_name: box_layout
       name: box_layout_d
+      base: null
+      fields: {}
+  unwrap:
+    type: legacy_type.builtin:attribute
+    value:
+      object: box_layout.module
+      attr_name: unwrap
+  unwrap.d:
+    type: unwrap_d
+    value: {}
+  unwrap.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: unwrap
+      ctx_params:
+      - view
+      - state
+      - hook
+      - ctx
+      service_params: []
+  unwrap.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: unwrap.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: unwrap.fn
+  unwrap_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: box_layout
+      name: unwrap_d
       base: null
       fields: {}

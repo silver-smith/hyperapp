@@ -121,6 +121,14 @@ class BoxLayoutView(View):
         self._ctl_hook.element_replaced(idx, view, elt_widget)
 
 
+@mark.ui_command(htypes.box_layout.view)
+def unwrap(view, state, hook, ctx):
+    log.info("Unwrap box layout: %s / %s", view, state)
+    inner_view = view.child_view(0)
+    inner_state = web.summon(state.elements[0])
+    hook.replace_view(inner_view, inner_state)
+
+
 @mark.view_factory
 def box_layout(inner):
     log.info("Wrap box layout: %s", inner)

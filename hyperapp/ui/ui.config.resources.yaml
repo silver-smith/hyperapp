@@ -14,6 +14,7 @@ import:
 - ui.master_details:unwrap_master_details.d
 - ui.navigator:go_back.d
 - ui.navigator:go_forward.d
+- ui.qt.box_layout:unwrap.d
 - ui.qt.window_commands:duplicate_window.d
 - ui.qt.window_commands:quit.d
 - ui.view.view_factory_list:open_view_factory_list.d
@@ -96,6 +97,11 @@ definitions:
     value:
       key: ui.navigator:go_forward.d
       value: shortcut_Alt_Right
+  config_item-ui.qt.box_layout-unwrap.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.box_layout:unwrap.d
+      value: shortcut_U
   config_item-ui.qt.window_commands-duplicate_window.d:
     type: legacy_type.data_service:config_item
     value:
@@ -169,3 +175,4 @@ definitions:
       - config_item-ui.view.wrap_view-wrap_view.open-d
       - config_item-ui.view.wrap_view-wrap_view.commit-d
       - config_item-ui.master_details-unwrap_master_details.d
+      - config_item-ui.qt.box_layout-unwrap.d

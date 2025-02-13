@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -41,13 +43,24 @@ def state():
         )
 
 
-def test_box_layout(qapp, piece, state):
-    ctx = Context()
+@mark.fixture
+def ctx():
+    return Context()
+
+
+def test_box_layout(qapp, piece, state, ctx):
     view = box_layout.BoxLayoutView.from_piece(piece, ctx)
     widget = view.construct_widget(state, ctx)
     assert view.piece
     state = view.widget_state(widget)
     assert state
+
+
+def test_unwrap(qapp, piece, state, ctx, view_reg):
+    view = view_reg.animate(piece, ctx)
+    hook = Mock()
+    box_layout.unwrap(view, state, hook, ctx)
+    hook.replace_view.assert_called_once()
 
 
 def test_wrap():
