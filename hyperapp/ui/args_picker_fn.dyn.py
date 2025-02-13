@@ -41,6 +41,35 @@ class ArgsPickerFn:
         # ctx_kw = {**ctx.as_dict(), **kw}
         # return self._required_kw - ctx_kw.keys()
 
+    @staticmethod
+    def _make_canned_args(ctx):
+        args = (
+            htypes.crud.arg(
+                name='hook_piece',
+                value=mosaic.put(ctx.hook.piece),
+                ),
+            htypes.crud.arg(
+                name='view_piece',
+                value=mosaic.put(ctx.view.piece),
+                ),
+            )
+        if 'model' in ctx:
+            args += (
+                htypes.crud.arg(
+                    name='model',
+                    value=mosaic.put(ctx.model),
+                    ),
+                )
+            return args
+        if 'model_state' in ctx:
+            args += (
+                htypes.crud.arg(
+                    name='model_state',
+                    value=mosaic.put(ctx.model_state),
+                    ),
+                )
+        return args
+
     def call(self, ctx, **kw):
         assert len(self._args) == 1, "TODO: Pick args from context and implement multi-args editor"
         [(value_field, value_t)] = self._args.items()
@@ -56,16 +85,7 @@ class ArgsPickerFn:
         else:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
-        args = (
-            htypes.crud.arg(
-                name='hook_piece',
-                value=mosaic.put(ctx.hook.piece),
-                ),
-            htypes.crud.arg(
-                name='view_piece',
-                value=mosaic.put(ctx.view.piece),
-                ),
-            )
+        args = self._make_canned_args(ctx)
         return htypes.crud.model(
             value_t=pyobj_creg.actor_to_ref(value_t),
             model=None,
