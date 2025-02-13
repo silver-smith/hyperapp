@@ -89,6 +89,18 @@ class TabsView(View):
         idx = widget.currentIndex()
         return widget.widget(idx)
 
+    def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
+        label = self._tabs[idx].label
+        current_idx = widget.currentIndex()
+        self._current_changed_hook_enabled = False
+        try:
+            widget.removeTab(idx)
+            widget.insertTab(idx, new_child_widget, label)
+            widget.setCurrentIndex(current_idx)
+            self._tabs[idx] = self._Tab(new_child_view, label)
+        finally:
+            self._current_changed_hook_enabled = True
+
     @property
     def tab_count(self):
         return len(self._tabs)
