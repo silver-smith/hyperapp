@@ -46,11 +46,15 @@ class TabsView(View):
 
     def construct_widget(self, state, ctx):
         tabs = QtWidgets.QTabWidget()
-        for tab, tab_state_ref in zip(self._tabs, state.tabs):
-            tab_state = web.summon(tab_state_ref)
+        for idx, tab in enumerate(self._tabs):
+            if state:
+                tab_state = web.summon(state.tabs[idx])
+            else:
+                tab_state = None
             w = tab.view.construct_widget(tab_state, ctx)
             tabs.addTab(w, tab.label)
-        tabs.setCurrentIndex(state.current_tab)
+        if state:
+            tabs.setCurrentIndex(state.current_tab)
         tabs.currentChanged.connect(self._call_current_changed_hook)
         return tabs
 
