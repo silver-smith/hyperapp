@@ -90,7 +90,6 @@ definitions:
       - inner
       - ctx
       service_params:
-      - view_reg
       - global_model_command_reg
       - get_model_commands
   master_details.view-factory-template:
