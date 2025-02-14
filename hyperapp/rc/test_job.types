@@ -2,6 +2,7 @@ from system_job import req_to_resource, job_base
 
 
 job = record(job_base):
+  import_reqs: ref list
   test_fn_name: string
 
 used_imports = record:

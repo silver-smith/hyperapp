@@ -212,9 +212,13 @@ class _TestJobResult(Result):
 
 class _Succeeded(_TestJobResult):
 
+    def __init__(self, module_name, import_reqs):
+        super().__init__(module_name)
+        self._import_reqs = import_reqs
+
     def make_result(self, resources, recorder, key_to_req, system):
         return SucceededTestResult(
-            used_reqs=self._used_requirements(recorder, key_to_req, system),
+            used_reqs=self._used_requirements(recorder, key_to_req, system) | self._import_reqs,
             used_imports=self._used_imports(resources, system),
             constructors=self._constructors(system),
             )
@@ -259,12 +263,17 @@ class TestJob(SystemJob):
             idx=piece.idx,
             req_to_resources=cls.req_to_resources_from_pieces(
                 rc_requirement_creg, rc_resource_creg, piece.req_to_resource),
+            import_reqs={rc_requirement_creg.invite(ref) for ref in piece.import_reqs},
             test_fn_name=piece.test_fn_name,
             )
 
-    def __init__(self, rc_config, python_module_src, idx, req_to_resources, test_fn_name):
+    def __init__(self, rc_config, python_module_src, idx, req_to_resources, import_reqs, test_fn_name):
         super().__init__(rc_config, python_module_src, req_to_resources)
         self._idx = idx
+        # Requirement set. Requirements collected by import job.
+        # Second import recorder usage in the same process does not yield requirements yielded during import.
+        # So, preserve them - they are actually used.
+        self._import_reqs = import_reqs
         self._test_fn_name = test_fn_name
 
     def __repr__(self):
@@ -277,6 +286,7 @@ class TestJob(SystemJob):
             python_module=self._src.piece,
             idx=self._idx,
             req_to_resource=self._req_to_resource_pieces,
+            import_reqs=tuple(mosaic.put(req.piece) for req in self._import_reqs),
             test_fn_name=self._test_fn_name,
             )
 
@@ -301,7 +311,7 @@ class TestJob(SystemJob):
         except _TestJobError as x:
             result = x
         else:
-            result = _Succeeded(self._src.name)
+            result = _Succeeded(self._src.name, self._import_reqs)
         return result.make_result(system_resources, recorder, key_to_req, system)
 
     def _run_system(self, system):

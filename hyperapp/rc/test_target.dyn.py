@@ -175,7 +175,11 @@ class TestJobTarget(Target):
         return True
 
     def make_job(self):
-        return TestJob(self._rc_config, self._src, self._idx, self._req_to_resources, self._function.name)
+        import_reqs = {
+            req for req in self._req_to_target
+            if not req.is_builtin
+            }
+        return TestJob(self._rc_config, self._src, self._idx, self._req_to_resources, import_reqs, self._function.name)
 
     @property
     def _req_to_resources(self):
