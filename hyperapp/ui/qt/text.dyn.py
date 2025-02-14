@@ -65,6 +65,19 @@ class ViewTextView(View):
         return self.get_plain_text(widget)
 
 
+class TextInput:
+
+    def __init__(self, view, widget):
+        self._view = view
+        self._widget_wr = weakref.ref(widget)
+
+    def get_value(self):
+        widget = self._widget_wr()
+        if not widget:
+            raise RuntimeError(f"Text input: widget for {self._view} is gone")
+        return self._view.get_value(widget)
+
+
 class EditTextView(View):
 
     @classmethod
@@ -98,7 +111,7 @@ class EditTextView(View):
         return rctx.clone_with(
             model=self._adapter.model,
             model_state=self._model_state(widget),
-            input=self,
+            input=TextInput(self, widget),
             )
 
     def _model_state(self, widget):
