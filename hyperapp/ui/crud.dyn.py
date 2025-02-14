@@ -158,10 +158,35 @@ class CrudInitFn:
         return _run_crud_init(self._ctl_hook_factory, self._system_fn_creg, self._view_reg, ctx, crud_model)
 
 
+class CrudStrAdapter:
+
+    @classmethod
+    @mark.actor.ui_adapter_creg
+    def from_piece(cls, piece, model, ctx, ctl_hook_factory, system_fn_creg, view_reg):
+        return cls(ctl_hook_factory, system_fn_creg, view_reg, ctx, model)
+
+    def __init__(self, ctl_hook_factory, system_fn_creg, view_reg, ctx, crud_model):
+        self._ctl_hook_factory = ctl_hook_factory
+        self._system_fn_creg = system_fn_creg
+        self._view_reg = view_reg
+        self._ctx = ctx 
+        self._crud_model = crud_model
+
+    @property
+    def model(self):
+        return self._crud_model
+
+    def get_text(self):
+        return _run_crud_init(self._ctl_hook_factory, self._system_fn_creg, self._view_reg, self._ctx, self._crud_model)
+
 
 def _primitive_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, crud_model):
     value = _run_crud_init(ctl_hook_factory, system_fn_creg, view_reg, ctx, crud_model)
-    return visualizer(lcs, ctx, value)
+    if type(value) is str:
+        adapter = htypes.crud.str_adapter()
+        return htypes.text.edit_view(mosaic.put(adapter))
+    else:
+        raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type {type(value)}: {value!r}")
 
 
 def _form_view(value_t_ref):

@@ -26,3 +26,5 @@ init_fn = record
 
 edit_d = record
 save_d = record
+
+str_adapter = record

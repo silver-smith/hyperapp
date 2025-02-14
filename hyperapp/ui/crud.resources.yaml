@@ -15,10 +15,12 @@ import:
 - legacy_type.crud:init_fn
 - legacy_type.crud:model
 - legacy_type.crud:open_command_fn
+- legacy_type.crud:str_adapter
 - legacy_type.form:view
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.text:edit_view
 - ui.command:command.module
 definitions:
   CrudInitFn:
@@ -40,6 +42,16 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: CrudOpenFn
+      attr_name: from_piece
+  CrudStrAdapter:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud.module
+      attr_name: CrudStrAdapter
+  CrudStrAdapter.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CrudStrAdapter
       attr_name: from_piece
   crud-init_fn.actor-template:
     type: legacy_type.system:actor_template
@@ -73,6 +85,15 @@ definitions:
       function: CrudOpenFn.from_piece
       service_params:
       - selector_reg
+  crud-str_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.crud:str_adapter
+      function: CrudStrAdapter.from_piece
+      service_params:
+      - ctl_hook_factory
+      - system_fn_creg
+      - view_reg
   crud.module:
     type: legacy_type.builtin:python_module
     value:
@@ -85,8 +106,10 @@ definitions:
         htypes.crud.arg: legacy_type.crud:arg
         htypes.crud.init_fn: legacy_type.crud:init_fn
         htypes.crud.model: legacy_type.crud:model
+        htypes.crud.str_adapter: legacy_type.crud:str_adapter
         htypes.form.view: legacy_type.form:view
         htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
+        htypes.text.edit_view: legacy_type.text:edit_view
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

@@ -1,6 +1,8 @@
 import logging
 from unittest.mock import Mock
 
+from hyperapp.boot.htypes import tString
+
 from . import htypes
 from .services import (
     mosaic,
@@ -20,9 +22,10 @@ def _sample_crud_get(piece, id):
     assert isinstance(piece, htypes.crud_tests.sample_model), piece
     if id == 11:
         return htypes.crud_tests.sample_record(id, f'item#{id}')
-    else:
-        assert id == 22
+    if id == 22:
         return htypes.crud_tests.sample_selector()
+    assert id == 33
+    return "Default string value"
 
 
 def _sample_crud_update(piece, id, value):
@@ -31,6 +34,8 @@ def _sample_crud_update(piece, id, value):
         assert isinstance(value, htypes.crud_tests.sample_record), value
     elif id == 22:
         assert isinstance(value, htypes.crud_tests.sample_selector), value
+    elif id == 33:
+        assert type(value) is str, value
     else:
         assert 0, id
     log.info("Update %s: #%d -> %s", piece, id, value)
@@ -226,6 +231,27 @@ def test_selector_model_layout(ctx, selector_crud_model):
     assert isinstance(view_piece, htypes.crud_tests.selector_view), view_piece
 
 
+@mark.fixture
+def str_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
+    return htypes.crud.model(
+        value_t=pyobj_creg.actor_to_ref(tString),
+        model=mosaic.put(model),
+        args=(htypes.crud.arg('id', mosaic.put(33)),),
+        init_action_fn=mosaic.put(_sample_crud_get_fn),
+        commit_command_d=mosaic.put(htypes.crud.save_d()),
+        get_fn=None,
+        pick_fn=None,
+        commit_action_fn=mosaic.put(_sample_crud_update_fn),
+        commit_value_field='value',
+        )
+
+
+def test_str_model_layout(ctx, str_crud_model):
+    lcs = Mock()
+    view_piece = crud.crud_model_layout(str_crud_model, lcs, ctx)
+    assert isinstance(view_piece, htypes.text.edit_view), view_piece
+
+
 async def test_model_commands(crud_model):
     commands = crud.crud_model_commands(crud_model)
     assert commands
@@ -257,3 +283,10 @@ async def test_model_commands_selector(selector_crud_model):
     bound_cmd = unbound_cmd.bind(ctx)
     assert bound_cmd.enabled
     await bound_cmd.run()
+
+
+def test_str_adapter(ctx):
+    piece = htypes.crud.str_adapter()
+    model = Mock()
+    adapter = crud.CrudStrAdapter.from_piece(piece, model, ctx)
+    assert adapter

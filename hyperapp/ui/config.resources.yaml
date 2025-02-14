@@ -19,6 +19,7 @@ import:
 - ui.crud:crud-model-crud_model_commands.command-cfg-item
 - ui.crud:crud-model.actor-template
 - ui.crud:crud-open_command_fn.actor-template
+- ui.crud:crud-str_adapter.actor-template
 - ui.editor_default_reg:editor_default_reg.service
 - ui.editor_defaults:builtin-string.editor_default.cfg-item
 - ui.feed:feed-index_tree_feed_type.actor-template
@@ -276,6 +277,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.crud:crud-str_adapter.actor-template
       - ui.int_adapter:int_adapter-int_adapter.actor-template
       - ui.qt.fn_index_tree_adapter:tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.fn_list_adapter:list_adapter-fn_list_adapter.actor-template
