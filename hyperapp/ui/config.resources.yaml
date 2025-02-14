@@ -66,6 +66,7 @@ import:
 - ui.qt.fn_list_adapter:list_adapter-fn_list_adapter.actor-template
 - ui.qt.fn_list_adapter:model-list_ui_t.actor-template
 - ui.qt.form:form-view.view-template
+- ui.qt.label:label-view-set_label_text.command-cfg-item
 - ui.qt.label:label-view.view-template
 - ui.qt.label:label_view.view-factory-template
 - ui.qt.list:list-view.view-template
@@ -333,6 +334,7 @@ definitions:
       - ui.qt.auto_tabs:auto_tabs-view-close_tab.command-cfg-item
       - ui.qt.auto_tabs:auto_tabs-view-duplicate_tab.command-cfg-item
       - ui.qt.box_layout:box_layout-view-unwrap.command-cfg-item
+      - ui.qt.label:label-view-set_label_text.command-cfg-item
       - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
       - ui.qt.window_commands:window-view-quit.command-cfg-item
       - ui.tab_groups:tabs-view-move_tab_to_new_group.command-cfg-item

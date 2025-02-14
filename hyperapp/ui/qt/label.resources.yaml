@@ -5,7 +5,11 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.command:args_picker_command_fn
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
 - legacy_type.label:state
 - legacy_type.label:view
 - legacy_type.system_fn:ctx_fn
@@ -30,6 +34,11 @@ definitions:
       - piece
       - ctx
       service_params: []
+  label-view-set_label_text.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.label:view
+      command: set_label_text.ui-command
   label-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
@@ -74,5 +83,58 @@ definitions:
     value:
       module_name: label
       name: label_view_d
+      base: null
+      fields: {}
+  open_set_label_text_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: label
+      name: open_set_label_text_d
+      base: null
+      fields: {}
+  set_label_text:
+    type: legacy_type.builtin:attribute
+    value:
+      object: label.module
+      attr_name: set_label_text
+  set_label_text.commit-d:
+    type: set_label_text_d
+    value: {}
+  set_label_text.commit-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: set_label_text
+      ctx_params:
+      - piece
+      - text
+      - hook
+      - ctx
+      service_params:
+      - view_reg
+  set_label_text.open-d:
+    type: open_set_label_text_d
+    value: {}
+  set_label_text.open-fn:
+    type: legacy_type.command:args_picker_command_fn
+    value:
+      name: set_label_text
+      args:
+        text: legacy_type.builtin:string
+      commit_command_d: set_label_text.commit-d
+      commit_fn: set_label_text.commit-fn
+  set_label_text.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: set_label_text.open-d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: set_label_text.open-fn
+  set_label_text_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: label
+      name: set_label_text_d
       base: null
       fields: {}

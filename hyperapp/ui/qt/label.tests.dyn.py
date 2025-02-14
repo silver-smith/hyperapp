@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -22,3 +24,12 @@ def test_label(qapp):
 def test_factory():
     piece = label.label_view()
     assert piece
+
+
+def test_set_text():
+    hook = Mock()
+    ctx = Context()
+    piece = htypes.label.view("Original text")
+    label.set_label_text(piece, "New text", hook, ctx)
+    hook.replace_view.assert_called_once()
+

@@ -32,3 +32,12 @@ def label_view():
     return htypes.label.view(
         text="Label text not set",
         )
+
+
+@mark.ui_command(htypes.label.view, args=['text'])
+def set_label_text(piece, text, hook, ctx, view_reg):
+    new_piece = htypes.label.view(
+        text=text,
+        )
+    new_view = view_reg.animate(new_piece, ctx)
+    hook.replace_view(new_view)
