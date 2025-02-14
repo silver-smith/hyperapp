@@ -158,7 +158,7 @@ class CommandDecorator:
 class TypedCommandDecorator(CommandDecorator):
 
     def __init__(self, system, ctr_collector, module_name, service_name, args, t):
-        super().__init__(system, ctr_collector, module_name, service_name, args=None)
+        super().__init__(system, ctr_collector, module_name, service_name, args)
         self._t = t
 
     def __call__(self, fn):
@@ -209,11 +209,11 @@ class CommandMarker:
 
 class UiCommandMarker(CommandMarker):
 
-    def __call__(self, t):
+    def __call__(self, t, *, args=None):
         if not isinstance(t, Type):
             raise RuntimeError(f"Use type specialized marker, like '@mark.ui_command(my_type)'")
         service_name = 'view_ui_command_reg'
-        return UiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, args=None, t=t)
+        return UiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, args, t)
 
 
 class UiModelCommandMarker(CommandMarker):
