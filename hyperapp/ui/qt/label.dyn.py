@@ -25,3 +25,10 @@ class LabelView(View):
 
     def widget_state(self, widget):
         return htypes.label.state()
+
+
+@mark.view_factory
+def label_view():
+    return htypes.label.view(
+        text="Label text not set",
+        )

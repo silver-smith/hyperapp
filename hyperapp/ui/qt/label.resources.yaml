@@ -4,10 +4,12 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.label:state
 - legacy_type.label:view
 - legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:template
 - ui.view.view:view.module
 definitions:
   LabelView:
@@ -43,3 +45,34 @@ definitions:
         code.view: ui.view.view:view.module
         htypes.label.state: legacy_type.label:state
         htypes.label.view: legacy_type.label:view
+  label_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: label.module
+      attr_name: label_view
+  label_view.d:
+    type: label_view_d
+    value: {}
+  label_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: label_view
+      ctx_params: []
+      service_params: []
+  label_view.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      d: label_view.d
+      view_t: legacy_type.label:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - ctx
+      system_fn: label_view.system-fn
+  label_view_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: label
+      name: label_view_d
+      base: null
+      fields: {}

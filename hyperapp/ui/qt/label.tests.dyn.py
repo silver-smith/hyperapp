@@ -17,3 +17,8 @@ def test_label(qapp):
     assert view.piece
     state = view.widget_state(widget)
     assert state
+
+
+def test_factory():
+    piece = label.label_view()
+    assert piece

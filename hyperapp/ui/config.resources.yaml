@@ -66,6 +66,7 @@ import:
 - ui.qt.fn_list_adapter:model-list_ui_t.actor-template
 - ui.qt.form:form-view.view-template
 - ui.qt.label:label-view.view-template
+- ui.qt.label:label_view.view-factory-template
 - ui.qt.list:list-view.view-template
 - ui.qt.list_as_tree_adapter:list_as_tree_adapter-adapter.actor-template
 - ui.qt.menu_bar:menu_bar-view.view-template
@@ -293,6 +294,7 @@ definitions:
       items:
       - ui.master_details:master_details.view-factory-template
       - ui.qt.box_layout:box_layout.view-factory-template
+      - ui.qt.label:label_view.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
