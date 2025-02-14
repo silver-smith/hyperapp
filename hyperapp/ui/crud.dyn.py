@@ -1,6 +1,8 @@
 import logging
 from functools import cached_property
 
+from hyperapp.boot.htypes import TPrimitive
+
 from . import htypes
 from .services import (
     deduce_t,
@@ -156,6 +158,12 @@ class CrudInitFn:
         return _run_crud_init(self._ctl_hook_factory, self._system_fn_creg, self._view_reg, ctx, crud_model)
 
 
+
+def _primitive_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, crud_model):
+    value = _run_crud_init(ctl_hook_factory, system_fn_creg, view_reg, ctx, crud_model)
+    return visualizer(lcs, ctx, value)
+
+
 def _form_view(value_t_ref):
     crud_init_fn = htypes.crud.init_fn()
     adapter = htypes.record_adapter.fn_record_adapter(
@@ -165,11 +173,19 @@ def _form_view(value_t_ref):
     return htypes.form.view(mosaic.put(adapter))
 
 
+def _editor_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, crud_model):
+    value_t = pyobj_creg.invite(crud_model.value_t)
+    if isinstance(value_t, TPrimitive):
+        return _primitive_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, crud_model)
+    else:
+        return _form_view(crud_model.value_t)
+
+
 @mark.actor.model_layout_creg
 def crud_model_layout(piece, lcs, ctx, ctl_hook_factory, system_fn_creg, view_reg, visualizer, selector_reg):
     if not piece.get_fn:
         assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
-        return _form_view(piece.value_t)
+        return _editor_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, piece)
     get_fn = system_fn_creg.invite(piece.get_fn)
     if piece.init_action_fn:
         value = _run_crud_init(ctl_hook_factory, system_fn_creg, view_reg, ctx, piece)
