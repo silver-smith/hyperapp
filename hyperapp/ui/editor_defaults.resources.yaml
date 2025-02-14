@@ -1,0 +1,33 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:string
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.system_fn:ctx_fn
+definitions:
+  builtin-string.editor_default.cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:string
+      value: string_default.system-fn
+  editor_defaults.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: editor_defaults
+      file_name: editor_defaults.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+  string_default:
+    type: legacy_type.builtin:attribute
+    value:
+      object: editor_defaults.module
+      attr_name: string_default
+  string_default.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: string_default
+      ctx_params: []
+      service_params: []

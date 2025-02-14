@@ -20,6 +20,7 @@ import:
 - ui.crud:crud-model.actor-template
 - ui.crud:crud-open_command_fn.actor-template
 - ui.editor_default_reg:editor_default_reg.service
+- ui.editor_defaults:builtin-string.editor_default.cfg-item
 - ui.feed:feed-index_tree_feed_type.actor-template
 - ui.feed:feed-list_feed_type.actor-template
 - ui.feed:feed_factory.service
@@ -144,6 +145,7 @@ definitions:
         cfg_item_creg: cfg_item_creg
         command_creg: command_creg
         config_ctl_creg: config_ctl_creg
+        editor_default_reg: editor_default_reg
         feed_factory: feed_factory
         feed_type_creg: feed_type_creg
         global_model_command_reg: global_model_command_reg
@@ -168,6 +170,11 @@ definitions:
       items:
       - ui.command_config_ctl:command-typed_config_ctl.actor-template
       - ui.command_config_ctl:command-untyped_config_ctl.actor-template
+  editor_default_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.editor_defaults:builtin-string.editor_default.cfg-item
   feed_factory:
     type: legacy_type.system:item_list_config
     value:
