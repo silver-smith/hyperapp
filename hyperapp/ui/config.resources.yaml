@@ -103,6 +103,7 @@ import:
 - ui.ui_model_command:get_ui_model_commands.service
 - ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
+- ui.view.replace_view:replace_view.universal-ui-command
 - ui.view.view_factory:view_factory_reg.service
 - ui.view.view_factory_cfg_item:view_factory-template.actor-template
 - ui.view.view_factory_list:open_view_factory_list.global-model-command
@@ -287,6 +288,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.view.replace_view:replace_view.universal-ui-command
       - ui.view.wrap_view:wrap_view.universal-ui-command
   view_factory_reg:
     type: legacy_type.system:item_list_config
