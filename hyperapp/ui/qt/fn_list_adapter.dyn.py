@@ -47,6 +47,7 @@ class FnListAdapter(FnListAdapterBase):
 
 
 @mark.actor.ui_type_creg
+@mark.multi_actor.adapter_creg
 def list_ui_type_layout(piece, system_fn_ref):
     adapter = htypes.list_adapter.fn_list_adapter(
         item_t=piece.item_t,
