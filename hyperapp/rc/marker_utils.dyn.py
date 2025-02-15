@@ -1,22 +1,26 @@
 import inspect
 from collections import namedtuple
 
+from .code.probe import real_fn
+
 
 Params = namedtuple('Params', 'ctx_names service_names values')
 
 
 def check_is_function(fn):
-    if not inspect.isfunction(fn):
+    rfn = real_fn(fn)
+    if not inspect.isfunction(rfn):
         raise RuntimeError(
-            f"Unknown object attempted to be marked as an actor: {fn!r};"
+            f"Unknown object attempted to be marked as an actor: {rfn!r};"
             " Expected function, classmethod or staticmethod"
             )
 
 
 def check_not_classmethod(fn):
-    if type(fn) is classmethod:
+    rfn = real_fn(fn)
+    if type(rfn) is classmethod:
         raise RuntimeError(
-            f"Wrap this method first with marker and then with classmethod (classmethod should be first): {fn!r}"
+            f"Wrap this method first with marker and then with classmethod (classmethod should be first): {rfn!r}"
             )
 
     

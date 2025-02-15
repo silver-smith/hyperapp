@@ -1,0 +1,11 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  probe.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: probe
+      file_name: probe.dyn.py
+      import_list: {}

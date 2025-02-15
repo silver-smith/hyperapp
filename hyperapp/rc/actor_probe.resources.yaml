@@ -8,6 +8,7 @@ import:
 - legacy_type.system:actor_template
 - rc.actor_ctr:actor_ctr.module
 - rc.marker_utils:marker_utils.module
+- rc.probe:probe.module
 
 definitions:
 
@@ -21,6 +22,7 @@ definitions:
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
         code.actor_ctr: rc.actor_ctr:actor_ctr.module
+        code.probe: rc.probe:probe.module
         code.marker_utils: rc.marker_utils:marker_utils.module
 
   ActorProbeTemplate:

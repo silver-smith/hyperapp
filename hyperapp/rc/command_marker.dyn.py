@@ -8,6 +8,7 @@ from .code.command_ctr import (
     ModelCommandEnumeratorTemplateCtr,
     GlobalModelCommandTemplateCtr,
     )
+from .code.probe import ProbeBase
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
@@ -15,33 +16,18 @@ from .code.marker_utils import (
     )
 
 
-def real_fn(fn):
-    if isinstance(fn, CommandProbe):
-        # Multiple wrappers.
-        return fn.real_fn
-    else:
-        return fn
-
-
-class CommandProbe:
+class CommandProbe(ProbeBase):
 
     def __init__(self, system_probe, ctr_collector, module_name, service_name, args, fn, t=None):
-        self._system = system_probe
-        self._ctr_collector = ctr_collector
-        self._module_name = module_name
+        super().__init__(system_probe, ctr_collector, module_name, fn)
         self._service_name = service_name
         self._args = args
-        self._fn = fn
         self._t = t
         system_probe.add_global(self)
 
     def migrate_to(self, system_probe):
         self._system = system_probe
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
-
-    @property
-    def real_fn(self):
-        return real_fn(self._fn)
 
     def __call__(self, *args, **kw):
         params = split_params(self.real_fn, args, kw)
@@ -163,7 +149,7 @@ class TypedCommandDecorator(CommandDecorator):
 
     def __call__(self, fn):
         check_not_classmethod(fn)
-        check_is_function(real_fn(fn))
+        check_is_function(fn)
         return self._probe_class(self._system, self._ctr_collector, self._module_name, self._service_name, self._args, fn, self._t)
 
 
@@ -173,7 +159,7 @@ class UntypedCommandDecorator(CommandDecorator):
         if isinstance(fn, Type):
             raise RuntimeError(f"{self._command_desc} commands can not have type specialization: {fn!r}")
         check_not_classmethod(fn)
-        check_is_function(real_fn(fn))
+        check_is_function(fn)
         return self._probe_class(self._system, self._ctr_collector, self._module_name, self._service_name, self._args, fn)
 
 
@@ -235,7 +221,7 @@ class UniversalUiCommandMarker(CommandMarker):
             raise RuntimeError(f"Universal UI commands decorator does not support positional arguments")
         if isinstance(fn, Type):
             raise RuntimeError(f"Use non-type specialized marker, like '@mark.universal_ui_command'")
-        check_is_function(real_fn(fn))
+        check_is_function(fn)
         return UniversalUiCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, args=None, fn=fn)
 
 
@@ -248,7 +234,7 @@ class ModelCommandMarker(CommandMarker):
             return ModelCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, args=None, t=fn_or_t)
         else:
             # Not type-specialized variant  (@mark.command).
-            check_is_function(real_fn(fn_or_t))
+            check_is_function(fn_or_t)
             return ModelCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, args=None, fn=fn_or_t)
 
 
@@ -262,7 +248,7 @@ class ModelCommandEnumeratorMarker(CommandMarker):
         else:
             # Not type-specialized variant  (@mark.command_enum).
             check_not_classmethod(fn_or_t)
-            check_is_function(real_fn(fn_or_t))
+            check_is_function(fn_or_t)
             return ModelCommandEnumeratorProbe(self._system, self._ctr_collector, self._module_name, service_name, args=None, fn=fn_or_t)
 
 
@@ -279,5 +265,5 @@ class GlobalModelCommandMarker(CommandMarker):
         else:
             # Not type-specialized variant  (@mark.global_command).
             check_not_classmethod(fn)
-            check_is_function(real_fn(fn))
+            check_is_function(fn)
             return GlobalModelCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, args=None, fn=fn)

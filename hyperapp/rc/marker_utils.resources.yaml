@@ -1,5 +1,6 @@
 import:
 - legacy_type.builtin:python_module
+- rc.probe:probe.module
 
 definitions:
 
@@ -8,4 +9,5 @@ definitions:
     value:
       module_name: marker_utils
       file_name: marker_utils.dyn.py
-      import_list: {}
+      import_list:
+        code.probe: rc.probe:probe.module

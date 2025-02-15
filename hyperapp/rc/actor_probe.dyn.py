@@ -4,16 +4,14 @@ from .services import (
     web,
     )
 from .code.actor_ctr import ActorTemplateCtr
+from .code.probe import ProbeBase
 from .code.marker_utils import split_params
 
 
-class ActorProbeBase:
+class ActorProbeBase(ProbeBase):
 
     def __init__(self, system_probe, ctr_collector, module_name, fn, t=None):
-        self._system = system_probe
-        self._ctr_collector = ctr_collector
-        self._module_name = module_name
-        self._fn = fn
+        super().__init__(system_probe, ctr_collector, module_name, fn)
         self._t = t
         system_probe.add_global(self)
 
@@ -21,14 +19,10 @@ class ActorProbeBase:
         self._system = system_probe
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
-    @property
-    def real_fn(self):
-        return self._fn
-
     def __call__(self, *args, **kw):
-        params = split_params(self._fn, args, kw)
+        params = split_params(self.real_fn, args, kw)
         if len(params.ctx_names) < 1 or params.ctx_names[0] != 'piece':
-            raise RuntimeError(f"First parameter expected to be a 'piece': {self._fn!r}: {params.ctx_names!r}")
+            raise RuntimeError(f"First parameter expected to be a 'piece': {self.real_fn!r}: {params.ctx_names!r}")
         piece = params.values[params.ctx_names[0]]
         if self._t is None:
             t = deduce_t(piece)
@@ -51,7 +45,7 @@ class ActorProbe(ActorProbeBase):
     def _add_constructor(self, params, t):
         ctr = ActorTemplateCtr(
             module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
+            attr_qual_name=self.real_fn.__qualname__.split('.'),
             service_name=self._service_name,
             t=t,
             creg_params=params.ctx_names,
