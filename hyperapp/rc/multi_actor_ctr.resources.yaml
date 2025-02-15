@@ -1,0 +1,47 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.actor_resource:multi_actor_template_ctr
+- legacy_type.system:actor_template
+- legacy_type.system:multi_actor_template
+- rc.cfg_item_req:cfg_item_req.module
+- rc.d_type:d_type.module
+- rc.rc_constructor:rc_constructor.module
+
+definitions:
+
+  multi_actor_ctr.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: multi_actor_ctr
+      file_name: multi_actor_ctr.dyn.py
+      import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.actor_resource.multi_actor_template_ctr: legacy_type.actor_resource:multi_actor_template_ctr
+        htypes.system.multi_actor_template: legacy_type.system:multi_actor_template
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        code.cfg_item_req: rc.cfg_item_req:cfg_item_req.module
+        code.rc_constructor: rc.rc_constructor:rc_constructor.module
+        code.d_type: rc.d_type:d_type.module
+
+  MultiActorTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: multi_actor_ctr.module
+      attr_name: MultiActorTemplateCtr
+
+  MultiActorTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: MultiActorTemplateCtr
+      attr_name: from_piece
+
+  actor_resource-multi_actor_template_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.actor_resource:multi_actor_template_ctr
+      function: MultiActorTemplateCtr.from_piece
+      service_params: []

@@ -56,6 +56,8 @@ import:
 - rc.marker_req:marker_req-marker_req.actor-template
 - rc.model_ctr:model_resource-model_ctr.actor-template
 - rc.model_marker:model.marker-template
+- rc.multi_actor_ctr:actor_resource-multi_actor_template_ctr.actor-template
+- rc.multi_actor_marker:multi_actor.marker-template
 - rc.rc_constructor_creg:rc_constructor_creg.service
 - rc.rc_job:rc_job_submit_factory.service
 - rc.rc_job:rc_job-job_target.actor-template
@@ -155,6 +157,7 @@ definitions:
       - rc.editor_marker:editor.marker-template
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
+      - rc.multi_actor_marker:multi_actor.marker-template
       - rc.selector_marker:selector.marker-template
       - rc.service_marker:service.marker-template
       - rc.view_factory_marker:view_factory.marker-template
@@ -186,6 +189,7 @@ definitions:
       - rc.fixture_ctr:fixture_resource-fixture_obj_ctr.actor-template
       - rc.fixture_ctr:fixture_resource-fixture_probe_ctr.actor-template
       - rc.model_ctr:model_resource-model_ctr.actor-template
+      - rc.multi_actor_ctr:actor_resource-multi_actor_template_ctr.actor-template
       - rc.selector_ctr:selector_ctr-get_ctr.actor-template
       - rc.selector_ctr:selector_ctr-pick_ctr.actor-template
       - rc.service_ctr:service_resource-finalizer_gen_service_template_ctr.actor-template

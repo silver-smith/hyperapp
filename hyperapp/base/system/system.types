@@ -30,3 +30,9 @@ actor_template = record:
   t: ref
   function: ref
   service_params: string list
+
+multi_actor_template = record:
+  k: ref
+  t: ref
+  function: ref
+  service_params: string list

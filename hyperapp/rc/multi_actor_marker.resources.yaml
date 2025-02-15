@@ -1,0 +1,34 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.marker:marker_template
+- rc.actor_probe:actor_probe.module
+- rc.marker_utils:marker_utils.module
+- rc.multi_actor_ctr:multi_actor_ctr.module
+
+definitions:
+
+  multi_actor_marker.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: multi_actor_marker
+      file_name: multi_actor_marker.dyn.py
+      import_list:
+        code.actor_probe: rc.actor_probe:actor_probe.module
+        code.multi_actor_ctr: rc.multi_actor_ctr:multi_actor_ctr.module
+        code.marker_utils: rc.marker_utils:marker_utils.module
+
+  MultiActorMarker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: multi_actor_marker.module
+      attr_name: MultiActorMarker
+
+  multi_actor.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: multi_actor
+      function: MultiActorMarker
+      service_params:
+      - system
+      - ctr_collector

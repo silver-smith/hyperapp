@@ -8,13 +8,16 @@ actor_probe_ctr = record:
   service_name: string
   t: ref
 
-actor_template_ctr = record:
+actor_template_ctr_base = record:
   module_name: string
   attr_qual_name: string list
   service_name: string
   t: ref
   creg_params: string list  # Not used by constructor.
   service_params: string list
+
+actor_template_ctr = record(actor_template_ctr_base)
+multi_actor_template_ctr = record(actor_template_ctr_base)
 
 actor_probe_template = record:
   t: ref
