@@ -1,8 +1,11 @@
 from collections import defaultdict
 
+from hyperapp.boot.htypes import Type
+
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -42,9 +45,13 @@ def config_item_list(piece, system):
     config = system.get_config_template(piece.service_name)
     item_list = []
     for key, value in sorted(enum_items(config), key=lambda rec: str(rec[0])):
+        if isinstance(key, Type):
+            key_data = pyobj_creg.actor_to_piece(key)
+        else:
+            key_data = key
         layers = item_layers(key, value)
         item = htypes.config_item_list.item(
-            key=mosaic.put(key),
+            key=mosaic.put(key_data),
             key_str=str(key),
             value_str=str(value),
             layers=tuple(layers),
