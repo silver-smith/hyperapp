@@ -8,8 +8,6 @@ from .code.view_ctr import ViewTemplateCtr
 
 class ViewProbe(ActorProbeBase):
 
-    _t = None
-
     def _add_constructor(self, params, t):
         ctr = ViewTemplateCtr(
             module_name=self._module_name,
