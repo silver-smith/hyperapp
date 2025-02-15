@@ -37,6 +37,7 @@ import:
 - base.system.builtin_resource_name:builtin-record_mt.actor-template
 - base.system.builtin_resource_name:builtin-string.actor-template
 - base.system.config_layer:resource_name_creg.service
+- base.system.multi_actor_template:system-multi_actor_template.actor-template
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
 - base.transport.endpoint:endpoint_registry.service
@@ -68,6 +69,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - base.system.multi_actor_template:system-multi_actor_template.actor-template
       - base.typed_cfg_item:cfg_item-typed_cfg_item.actor-template
       - base.typed_cfg_item:cfg_item-typed_fn_cfg_item.actor-template
   config:
