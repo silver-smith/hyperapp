@@ -1,0 +1,11 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+definitions:
+  multi_code_registry.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: multi_code_registry
+      file_name: multi_code_registry.dyn.py
+      import_list: {}
