@@ -63,7 +63,7 @@ class BoxLayoutView(View):
             else:
                 elt_state = None
             layout.addWidget(elt.view.construct_widget(elt_state, ctx))
-        if state:
+        if state and state.current < len(self._elements):
             layout.itemAt(state.current).widget().setFocus()
         return widget
 
