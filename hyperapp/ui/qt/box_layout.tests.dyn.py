@@ -65,5 +65,5 @@ def test_unwrap(qapp, piece, state, ctx, view_reg):
 
 def test_wrap():
     inner = htypes.label.view("Inner label")
-    piece = box_layout.box_layout(inner)
+    piece = box_layout.wrap(inner)
     assert isinstance(piece, htypes.box_layout.view)
