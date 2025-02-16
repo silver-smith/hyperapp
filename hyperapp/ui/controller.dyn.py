@@ -407,8 +407,15 @@ class CtlHook:
         self._item = item
 
     @property
-    def piece(self):
+    def canned_piece(self):
         return htypes.ui.canned_ctl_hook(
+            item_id=self._item.id,
+            path=tuple(self._item.path),
+            )
+
+    @property
+    def canned_widget_piece(self):
+        return htypes.ui.canned_widget(
             item_id=self._item.id,
             path=tuple(self._item.path),
             )
@@ -474,6 +481,12 @@ class Controller:
             raise RuntimeError(f"View item {item_id} at {path} is already gone")
         return item.hook
 
+    def pick_widget(self, path, item_id):
+        item = self._root_item.pick_child(path)
+        if not item or item.id != item_id:
+            raise RuntimeError(f"View item {item_id} at {path} is already gone")
+        return item.widget
+
     def view_items(self, item_id):
         item = self._id_to_item.get(item_id)
         if item:
@@ -499,6 +512,11 @@ class Controller:
 @mark.service
 def canned_ctl_hook_factory(piece, ctx):
     return ctx.controller.pick_item_hook(piece.path, piece.item_id)
+
+
+@mark.service
+def canned_widget_factory(piece, ctx):
+    return ctx.controller.pick_widget(piece.path, piece.item_id)
 
 
 @mark.service

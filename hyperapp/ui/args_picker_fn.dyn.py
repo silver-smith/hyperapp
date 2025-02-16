@@ -46,7 +46,7 @@ class ArgsPickerFn:
         args = (
             htypes.crud.arg(
                 name='hook_piece',
-                value=mosaic.put(ctx.hook.piece),
+                value=mosaic.put(ctx.hook.canned_piece),
                 ),
             htypes.crud.arg(
                 name='view_piece',

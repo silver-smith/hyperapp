@@ -72,7 +72,7 @@ class PhonyLayoutBundle:
         pass
 
 
-def test_ctl_hook_factory():
+def test_canned_ctl_hook_factory():
     ctl = Mock()
     piece = htypes.ui.canned_ctl_hook(
         item_id=123,
@@ -81,10 +81,23 @@ def test_ctl_hook_factory():
     ctx = Context(
         controller=ctl,
         )
-    hook = controller.canned_ctl_hook_factory(piece, ctx)
+    mock_hook = controller.canned_ctl_hook_factory(piece, ctx)
 
 
-async def test_controller_and_duplicate_window(qapp, feed_factory, canned_ctl_hook_factory, controller_running, default_layout):
+def test_canned_widget_factory():
+    ctl = Mock()
+    piece = htypes.ui.canned_widget(
+        item_id=123,
+        path=(0, 1),
+        )
+    ctx = Context(
+        controller=ctl,
+        )
+    mock_widget = controller.canned_widget_factory(piece, ctx)
+
+
+async def test_controller_and_duplicate_window(
+        qapp, feed_factory, canned_ctl_hook_factory, canned_widget_factory, controller_running, default_layout):
     lcs = Mock()
     lcs.get.return_value = None  # command list - mock is not iterable.
     ctx = Context(lcs=lcs)
@@ -100,8 +113,12 @@ async def test_controller_and_duplicate_window(qapp, feed_factory, canned_ctl_ho
         assert len(root_item.children) == 2
         await feed.wait_for_diffs(count=1)
 
-        # View hook.
-        hook_piece = window_item.hook.piece
         ctl_ctx = ctx.clone_with(controller=ctl)
+        # Canned ctl hook.
+        hook_piece = window_item.hook.canned_piece
         hook = canned_ctl_hook_factory(hook_piece, ctl_ctx)
-        assert hook.piece == hook_piece
+        assert hook.canned_piece == hook_piece
+        # Canned widget.
+        widget_piece = window_item.hook.canned_widget_piece
+        widget = canned_widget_factory(widget_piece, ctl_ctx)
+        assert widget

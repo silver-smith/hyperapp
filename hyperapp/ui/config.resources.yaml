@@ -14,6 +14,7 @@ import:
 - ui.command_config_ctl:command-untyped_config_ctl.actor-template
 - ui.command_creg:command_creg.service
 - ui.controller:canned_ctl_hook_factory.service
+- ui.controller:canned_widget_factory.service
 - ui.controller:controller_running.service
 - ui.controller:layout-view.feed-template
 - ui.crud:crud-init_fn.actor-template
@@ -245,6 +246,7 @@ definitions:
       - ui.column_visible_reg:column_visible_reg.service
       - ui.command_creg:command_creg.service
       - ui.controller:canned_ctl_hook_factory.service
+      - ui.controller:canned_widget_factory.service
       - ui.controller:controller_running.service
       - ui.crud:crud_helpers.service
       - ui.editor_default_reg:editor_default_reg.service

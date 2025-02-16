@@ -2,6 +2,10 @@ canned_ctl_hook = record:
   item_id: int
   path: int list
 
+canned_widget = record:
+  item_id: int
+  path: int list
+
 
 external_ui_model_command_impl = record:
   model_command_impl: ref
