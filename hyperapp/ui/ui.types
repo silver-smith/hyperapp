@@ -1,4 +1,4 @@
-ctl_hook = record:
+canned_ctl_hook = record:
   item_id: int
   path: int list
 

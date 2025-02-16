@@ -18,7 +18,7 @@ import:
 - legacy_type.root:view
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
-- legacy_type.ui:ctl_hook
+- legacy_type.ui:canned_ctl_hook
 - ui.view.view:view.module
 definitions:
   canned_ctl_hook_factory:
@@ -52,7 +52,7 @@ definitions:
         htypes.root.layout: legacy_type.root:layout
         htypes.root.state: legacy_type.root:state
         htypes.root.view: legacy_type.root:view
-        htypes.ui.ctl_hook: legacy_type.ui:ctl_hook
+        htypes.ui.canned_ctl_hook: legacy_type.ui:canned_ctl_hook
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service

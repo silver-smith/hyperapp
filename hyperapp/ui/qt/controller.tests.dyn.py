@@ -74,7 +74,7 @@ class PhonyLayoutBundle:
 
 def test_ctl_hook_factory():
     ctl = Mock()
-    piece = htypes.ui.ctl_hook(
+    piece = htypes.ui.canned_ctl_hook(
         item_id=123,
         path=(0, 1),
         )

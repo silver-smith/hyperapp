@@ -408,7 +408,7 @@ class CtlHook:
 
     @property
     def piece(self):
-        return htypes.ui.ctl_hook(
+        return htypes.ui.canned_ctl_hook(
             item_id=self._item.id,
             path=tuple(self._item.path),
             )
