@@ -19,6 +19,8 @@ import:
 - legacy_type.form:view
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.system:actor_template
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.text:edit_view
 - ui.command:command.module
@@ -59,9 +61,7 @@ definitions:
       t: legacy_type.crud:init_fn
       function: CrudInitFn.from_piece
       service_params:
-      - ctl_hook_factory
-      - system_fn_creg
-      - view_reg
+      - crud_helpers
   crud-model-crud_model_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -73,11 +73,10 @@ definitions:
       t: legacy_type.crud:model
       function: crud_model_layout
       service_params:
-      - ctl_hook_factory
       - system_fn_creg
-      - view_reg
       - visualizer
       - selector_reg
+      - crud_helpers
   crud-open_command_fn.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -91,9 +90,7 @@ definitions:
       t: legacy_type.crud:str_adapter
       function: CrudStrAdapter.from_piece
       service_params:
-      - ctl_hook_factory
-      - system_fn_creg
-      - view_reg
+      - crud_helpers
   crud.module:
     type: legacy_type.builtin:python_module
     value:
@@ -114,6 +111,23 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+  crud_helpers:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud.module
+      attr_name: crud_helpers
+  crud_helpers.service:
+    type: legacy_type.system:service_template
+    value:
+      name: crud_helpers
+      ctl: system-dict_config_ctl.ctl
+      function: crud_helpers
+      service_params:
+      - ctl_hook_factory
+      - system_fn_creg
+      - view_reg
+      want_config: false
+      free_params: []
   crud_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -126,9 +140,8 @@ definitions:
       ctx_params:
       - piece
       service_params:
-      - ctl_hook_factory
-      - view_reg
       - system_fn_creg
+      - crud_helpers
   crud_model_commands.model-command-enumerator:
     type: legacy_type.command:model_command_enumerator
     value:
@@ -138,3 +151,6 @@ definitions:
     value:
       object: crud.module
       attr_name: crud_model_layout
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}

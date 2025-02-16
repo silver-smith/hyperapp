@@ -21,6 +21,7 @@ import:
 - ui.crud:crud-model.actor-template
 - ui.crud:crud-open_command_fn.actor-template
 - ui.crud:crud-str_adapter.actor-template
+- ui.crud:crud_helpers.service
 - ui.editor_default_reg:editor_default_reg.service
 - ui.editor_defaults:builtin-string.editor_default.cfg-item
 - ui.feed:feed-index_tree_feed_type.actor-template
@@ -245,6 +246,7 @@ definitions:
       - ui.command_creg:command_creg.service
       - ui.controller:controller_running.service
       - ui.controller:ctl_hook_factory.service
+      - ui.crud:crud_helpers.service
       - ui.editor_default_reg:editor_default_reg.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_type_creg.service

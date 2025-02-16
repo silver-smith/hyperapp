@@ -82,51 +82,61 @@ class CrudOpenFn:
             )
 
 
-# Override context with original elements, canned by args picker.
-def _canned_kw(ctl_hook_factory, view_reg, ctx, args_kw):
-    kw = {}
-    try:
-        hook_piece = args_kw['hook_piece']
-    except KeyError:
-        pass
-    else:
-        kw['hook'] = ctl_hook_factory(hook_piece, ctx)
-    try:
-        view_piece = args_kw['view_piece']
-    except KeyError:
-        pass
-    else:
-        # Note: This is not the same view instance as was passed originally to args picker.
-        # But using it's piece property is ok.
-        kw['view'] = view_reg.animate(view_piece, ctx)
-    return kw
+class CrudHelpers:
 
+    def __init__(self, ctl_hook_factory, system_fn_creg, view_reg):
+        self._ctl_hook_factory = ctl_hook_factory
+        self._system_fn_creg = system_fn_creg
+        self._view_reg = view_reg
 
-def _fn_ctx(ctl_hook_factory, view_reg, ctx, crud_model, **kw):
-    model = web.summon_opt(crud_model.model)
-    args_kw = {
-        arg.name: web.summon(arg.value)
-        for arg in crud_model.args
-        }
-    if model is not None:
-        model_kw = {
-            'piece': model,
-            'model': model,
+    # Override context with original elements, canned by args picker.
+    def _canned_kw(self, ctx, args_kw):
+        kw = {}
+        try:
+            hook_piece = args_kw['hook_piece']
+        except KeyError:
+            pass
+        else:
+            kw['hook'] = self._ctl_hook_factory(hook_piece, ctx)
+        try:
+            view_piece = args_kw['view_piece']
+        except KeyError:
+            pass
+        else:
+            # Note: This is not the same view instance as was passed originally to args picker.
+            # But using it's piece property is ok.
+            kw['view'] = self._view_reg.animate(view_piece, ctx)
+        return kw
+
+    def fn_ctx(self, ctx, crud_model, **kw):
+        model = web.summon_opt(crud_model.model)
+        args_kw = {
+            arg.name: web.summon(arg.value)
+            for arg in crud_model.args
             }
-    else:
-        model_kw = {}
-    return ctx.clone_with(
-        **model_kw,
-        **args_kw,
-        **_canned_kw(ctl_hook_factory, view_reg, ctx, args_kw),
-        **kw,
-        )
+        if model is not None:
+            model_kw = {
+                'piece': model,
+                'model': model,
+                }
+        else:
+            model_kw = {}
+        return ctx.clone_with(
+            **model_kw,
+            **args_kw,
+            **self._canned_kw(ctx, args_kw),
+            **kw,
+            )
+
+    def run_crud_init(self, ctx, crud_model):
+        fn = self._system_fn_creg.invite(crud_model.init_action_fn)
+        fn_ctx = self.fn_ctx(ctx, crud_model)
+        return fn.call(fn_ctx)
 
 
-def _run_crud_init(ctl_hook_factory, system_fn_creg, view_reg, ctx, crud_model):
-    fn = system_fn_creg.invite(crud_model.init_action_fn)
-    fn_ctx = _fn_ctx(ctl_hook_factory, view_reg, ctx, crud_model)
-    return fn.call(fn_ctx)
+@mark.service
+def crud_helpers(ctl_hook_factory, system_fn_creg, view_reg):
+    return CrudHelpers(ctl_hook_factory, system_fn_creg, view_reg)
 
 
 class CrudInitFn:
@@ -135,13 +145,11 @@ class CrudInitFn:
 
     @classmethod
     @mark.actor.system_fn_creg
-    def from_piece(cls, piece, ctl_hook_factory, system_fn_creg, view_reg):
-        return cls(ctl_hook_factory, system_fn_creg, view_reg)
+    def from_piece(cls, piece, crud_helpers):
+        return cls(crud_helpers)
 
-    def __init__(self, ctl_hook_factory, system_fn_creg, view_reg):
-        self._ctl_hook_factory = ctl_hook_factory
-        self._system_fn_creg = system_fn_creg
-        self._view_reg = view_reg
+    def __init__(self, helpers):
+        self._helpers = helpers
 
     def __repr__(self):
         return f"<CrudInitFn>"
@@ -155,20 +163,18 @@ class CrudInitFn:
         return self._init(ctx, ctx_kw['model'])
 
     def _init(self, ctx, crud_model):
-        return _run_crud_init(self._ctl_hook_factory, self._system_fn_creg, self._view_reg, ctx, crud_model)
+        return self._helpers.run_crud_init(ctx, crud_model)
 
 
 class CrudStrAdapter:
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, ctl_hook_factory, system_fn_creg, view_reg):
-        return cls(ctl_hook_factory, system_fn_creg, view_reg, ctx, model)
+    def from_piece(cls, piece, model, ctx, crud_helpers):
+        return cls(crud_helpers, ctx, model)
 
-    def __init__(self, ctl_hook_factory, system_fn_creg, view_reg, ctx, crud_model):
-        self._ctl_hook_factory = ctl_hook_factory
-        self._system_fn_creg = system_fn_creg
-        self._view_reg = view_reg
+    def __init__(self, helpers, ctx, crud_model):
+        self._helpers = helpers
         self._ctx = ctx 
         self._crud_model = crud_model
 
@@ -177,11 +183,11 @@ class CrudStrAdapter:
         return self._crud_model
 
     def get_text(self):
-        return _run_crud_init(self._ctl_hook_factory, self._system_fn_creg, self._view_reg, self._ctx, self._crud_model)
+        return self._helpers.run_crud_init(self._ctx, self._crud_model)
 
 
-def _primitive_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, crud_model):
-    value = _run_crud_init(ctl_hook_factory, system_fn_creg, view_reg, ctx, crud_model)
+def _primitive_view(crud_helpers, ctx, crud_model):
+    value = crud_helpers.run_crud_init(ctx, crud_model)
     if type(value) is str:
         adapter = htypes.crud.str_adapter()
         return htypes.text.edit_view(mosaic.put(adapter))
@@ -198,22 +204,22 @@ def _form_view(value_t_ref):
     return htypes.form.view(mosaic.put(adapter))
 
 
-def _editor_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, crud_model):
+def _editor_view(crud_helpers, ctx, crud_model):
     value_t = pyobj_creg.invite(crud_model.value_t)
     if isinstance(value_t, TPrimitive):
-        return _primitive_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, crud_model)
+        return _primitive_view(crud_helpers, ctx, crud_model)
     else:
         return _form_view(crud_model.value_t)
 
 
 @mark.actor.model_layout_creg
-def crud_model_layout(piece, lcs, ctx, ctl_hook_factory, system_fn_creg, view_reg, visualizer, selector_reg):
+def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg, crud_helpers):
     if not piece.get_fn:
         assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
-        return _editor_view(ctl_hook_factory, system_fn_creg, view_reg, visualizer, lcs, ctx, piece)
+        return _editor_view(crud_helpers, ctx, piece)
     get_fn = system_fn_creg.invite(piece.get_fn)
     if piece.init_action_fn:
-        value = _run_crud_init(ctl_hook_factory, system_fn_creg, view_reg, ctx, piece)
+        value = crud_helpers.run_crud_init(ctx, piece)
     else:
         value = None
     selector_model = get_fn.call(ctx, value=value)
@@ -222,10 +228,9 @@ def crud_model_layout(piece, lcs, ctx, ctl_hook_factory, system_fn_creg, view_re
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
-    def __init__(self, ctl_hook_factory, view_reg, d, args, pick_fn, commit_fn, commit_value_field):
+    def __init__(self, helpers, d, args, pick_fn, commit_fn, commit_value_field):
         super().__init__(d)
-        self._ctl_hook_factory = ctl_hook_factory
-        self._view_reg = view_reg
+        self._helpers = helpers
         self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
@@ -241,16 +246,14 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
 
     def bind(self, ctx):
         return BoundCrudCommitCommand(
-            self._ctl_hook_factory, self._view_reg,
-            self._d, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
+            self._helpers, self._d, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    def __init__(self, ctl_hook_factory, view_reg, d, args, pick_fn, commit_fn, commit_value_field, ctx):
+    def __init__(self, helpers, d, args, pick_fn, commit_fn, commit_value_field, ctx):
         super().__init__(d)
-        self._ctl_hook_factory = ctl_hook_factory
-        self._view_reg = view_reg
+        self._helpers = helpers
         self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
@@ -284,9 +287,7 @@ class BoundCrudCommitCommand(BoundCommandBase):
         else:
             value = self._pick_ctx_value(self._ctx)
         log.info("Run CRUD commit command %r: args=%s; %s=%r", self.name, self._args, self._commit_value_field, value)
-        fn_ctx = _fn_ctx(
-            self._ctl_hook_factory,
-            self._view_reg,
+        fn_ctx = self._helpers.fn_ctx(
             self._ctx,
             crud_model=self._ctx.model,
             **{self._commit_value_field: value},
@@ -303,7 +304,7 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
 
 @mark.command_enum
-def crud_model_commands(piece, ctl_hook_factory, view_reg, system_fn_creg):
+def crud_model_commands(piece, system_fn_creg, crud_helpers):
     command_d = web.summon(piece.commit_command_d)
     args = {
         arg.name: web.summon(arg.value)
@@ -312,6 +313,5 @@ def crud_model_commands(piece, ctl_hook_factory, view_reg, system_fn_creg):
     pick_fn = system_fn_creg.invite_opt(piece.pick_fn)
     commit_fn = system_fn_creg.invite(piece.commit_action_fn)
     return [
-        UnboundCrudCommitCommand(
-            ctl_hook_factory, view_reg, command_d, args, pick_fn, commit_fn, piece.commit_value_field)
+        UnboundCrudCommitCommand(crud_helpers, command_d, args, pick_fn, commit_fn, piece.commit_value_field)
         ]
