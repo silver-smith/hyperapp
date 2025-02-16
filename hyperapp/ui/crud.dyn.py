@@ -84,8 +84,8 @@ class CrudOpenFn:
 
 class CrudHelpers:
 
-    def __init__(self, ctl_hook_factory, system_fn_creg, view_reg):
-        self._ctl_hook_factory = ctl_hook_factory
+    def __init__(self, canned_ctl_hook_factory, system_fn_creg, view_reg):
+        self._canned_ctl_hook_factory = canned_ctl_hook_factory
         self._system_fn_creg = system_fn_creg
         self._view_reg = view_reg
 
@@ -97,7 +97,7 @@ class CrudHelpers:
         except KeyError:
             pass
         else:
-            kw['hook'] = self._ctl_hook_factory(hook_piece, ctx)
+            kw['hook'] = self._canned_ctl_hook_factory(hook_piece, ctx)
         try:
             view_piece = args_kw['view_piece']
         except KeyError:
@@ -135,8 +135,8 @@ class CrudHelpers:
 
 
 @mark.service
-def crud_helpers(ctl_hook_factory, system_fn_creg, view_reg):
-    return CrudHelpers(ctl_hook_factory, system_fn_creg, view_reg)
+def crud_helpers(canned_ctl_hook_factory, system_fn_creg, view_reg):
+    return CrudHelpers(canned_ctl_hook_factory, system_fn_creg, view_reg)
 
 
 class CrudInitFn:

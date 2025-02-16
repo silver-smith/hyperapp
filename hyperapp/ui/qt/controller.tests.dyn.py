@@ -81,10 +81,10 @@ def test_ctl_hook_factory():
     ctx = Context(
         controller=ctl,
         )
-    hook = controller.ctl_hook_factory(piece, ctx)
+    hook = controller.canned_ctl_hook_factory(piece, ctx)
 
 
-async def test_controller_and_duplicate_window(qapp, feed_factory, ctl_hook_factory, controller_running, default_layout):
+async def test_controller_and_duplicate_window(qapp, feed_factory, canned_ctl_hook_factory, controller_running, default_layout):
     lcs = Mock()
     lcs.get.return_value = None  # command list - mock is not iterable.
     ctx = Context(lcs=lcs)
@@ -103,5 +103,5 @@ async def test_controller_and_duplicate_window(qapp, feed_factory, ctl_hook_fact
         # View hook.
         hook_piece = window_item.hook.piece
         ctl_ctx = ctx.clone_with(controller=ctl)
-        hook = ctl_hook_factory(hook_piece, ctl_ctx)
+        hook = canned_ctl_hook_factory(hook_piece, ctl_ctx)
         assert hook.piece == hook_piece

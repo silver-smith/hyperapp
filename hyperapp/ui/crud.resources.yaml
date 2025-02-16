@@ -123,7 +123,7 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: crud_helpers
       service_params:
-      - ctl_hook_factory
+      - canned_ctl_hook_factory
       - system_fn_creg
       - view_reg
       want_config: false

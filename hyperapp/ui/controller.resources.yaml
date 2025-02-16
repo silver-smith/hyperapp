@@ -21,6 +21,22 @@ import:
 - legacy_type.ui:ctl_hook
 - ui.view.view:view.module
 definitions:
+  canned_ctl_hook_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: controller.module
+      attr_name: canned_ctl_hook_factory
+  canned_ctl_hook_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: canned_ctl_hook_factory
+      ctl: system-dict_config_ctl.ctl
+      function: canned_ctl_hook_factory
+      service_params: []
+      want_config: false
+      free_params:
+      - piece
+      - ctx
   controller.module:
     type: legacy_type.builtin:python_module
     value:
@@ -63,22 +79,6 @@ definitions:
       - ctx
       - show
       - load_state
-  ctl_hook_factory:
-    type: legacy_type.builtin:attribute
-    value:
-      object: controller.module
-      attr_name: ctl_hook_factory
-  ctl_hook_factory.service:
-    type: legacy_type.system:service_template
-    value:
-      name: ctl_hook_factory
-      ctl: system-dict_config_ctl.ctl
-      function: ctl_hook_factory
-      service_params: []
-      want_config: false
-      free_params:
-      - piece
-      - ctx
   layout-view.feed-template:
     type: legacy_type.feed:feed_template
     value:
