@@ -23,13 +23,13 @@ def view_factory_reg_config(partial_ref):
         bound_fn=_sample_fn,
         )
     factory = ViewFactory(
-        d=htypes.view_factory_list_tests.sample_d(),
+        k=htypes.view_factory_list_tests.sample_k(),
         view_t=htypes.view_factory_list_tests.sample_view,
         is_wrapper=False,
         view_ctx_params=[],
         system_fn=system_fn,
         )
-    return {factory.d: factory}
+    return {factory.k: factory}
 
 
 @mark.fixture
@@ -48,19 +48,19 @@ def test_open():
 
 
 def test_selector_get():
-    d = htypes.view_factory_list_tests.sample_d(),
+    k = htypes.view_factory_list_tests.sample_k(),
     value = htypes.view_factory.factory(
-        d=mosaic.put(d),
+        k=mosaic.put(k),
         )
     piece = view_factory_list.view_factory_list_get(value)
     assert piece
 
 
 def test_selector_pick():
-    d = htypes.view_factory_list_tests.sample_d(),
+    k = htypes.view_factory_list_tests.sample_k(),
     current_item = htypes.view_factory.item(
-        d=mosaic.put(d),
-        d_str="<unused>",
+        k=mosaic.put(k),
+        k_str="<unused>",
         view_t=mosaic.put("<unused>"),
         view_t_str="<unused>",
         is_wrapper=False,

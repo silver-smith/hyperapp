@@ -4,21 +4,21 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .code.directory import d_to_name
+from .code.directory import k_to_name
 
 
 class ViewFactory:
 
-    def __init__(self, d, view_t, is_wrapper, view_ctx_params, system_fn):
-        self._d = d
+    def __init__(self, k, view_t, is_wrapper, view_ctx_params, system_fn):
+        self._k = k
         self._view_t = view_t
         self._is_wrapper = is_wrapper
         self._view_ctx_params = view_ctx_params
         self._system_fn = system_fn
 
     @property
-    def d(self):
-        return self._d
+    def k(self):
+        return self._k
 
     @property
     def fn(self):
@@ -27,8 +27,8 @@ class ViewFactory:
     @property
     def item(self):
         return htypes.view_factory.item(
-            d=mosaic.put(self._d),
-            d_str=d_to_name(self._d),
+            k=mosaic.put(self._k),
+            k_str=k_to_name(self._k),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
             view_t_str=str(self._view_t),
             is_wrapper=self._is_wrapper,

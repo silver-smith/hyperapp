@@ -11,6 +11,12 @@ def d_to_name(d):
     return name[:-2]
 
 
+def k_to_name(k):
+    name = k._t.name
+    assert name.endswith('_k'), repr(name)
+    return name[:-2]
+
+
 def d_res_ref_to_name(d_ref):
     d = web.summon(d_ref)
     return d_to_name(d)

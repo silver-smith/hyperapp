@@ -6,8 +6,8 @@ from .code.mark import mark
 
 @mark.universal_ui_command(args=['view_factory'])
 def replace_view(view_factory, view, hook, ctx, view_reg, view_factory_reg):
-    d = web.summon(view_factory.d)
-    factory = view_factory_reg[d]
+    k = web.summon(view_factory.k)
+    factory = view_factory_reg[k]
     fn_ctx = ctx.clone_with(
         inner=view.piece,
         )

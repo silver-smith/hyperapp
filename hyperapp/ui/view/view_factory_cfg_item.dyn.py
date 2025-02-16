@@ -12,15 +12,15 @@ class ViewFactoryTemplate:
     @mark.actor.cfg_item_creg
     def from_piece(cls, piece):
         return cls(
-            d=web.summon(piece.d),
+            k=web.summon(piece.k),
             view_t=pyobj_creg.invite(piece.view_t),
             is_wrapper=piece.is_wrapper,
             view_ctx_params=piece.view_ctx_params,
             system_fn=web.summon(piece.system_fn),
             )
 
-    def __init__(self, d, view_t, is_wrapper, view_ctx_params, system_fn):
-        self._d = d
+    def __init__(self, k, view_t, is_wrapper, view_ctx_params, system_fn):
+        self._k = k
         self._view_t = view_t
         self._is_wrapper = is_wrapper
         self._view_ctx_params = view_ctx_params
@@ -28,12 +28,12 @@ class ViewFactoryTemplate:
 
     @property
     def key(self):
-        return self._d
+        return self._k
 
     def resolve(self, system, service_name):
         system_fn_creg = system.resolve_service('system_fn_creg')
         return ViewFactory(
-            d=self._d,
+            k=self._k,
             view_t=self._view_t,
             is_wrapper=self._is_wrapper,
             view_ctx_params=self._view_ctx_params,

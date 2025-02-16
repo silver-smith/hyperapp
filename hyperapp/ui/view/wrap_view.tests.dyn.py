@@ -11,9 +11,9 @@ from .tested.code import wrap_view
 
 @mark.config_fixture('view_factory_reg')
 def view_factory_reg_config():
-    d = htypes.wrap_view_tests.sample_d()
+    k = htypes.wrap_view_tests.sample_k()
     factory = Mock()
-    return {d: factory}
+    return {k: factory}
 
 
 @mark.fixture
@@ -23,9 +23,9 @@ def view_reg():
 
 def test_wrap_view():
     ctx = Context()
-    d = htypes.wrap_view_tests.sample_d()
+    k = htypes.wrap_view_tests.sample_k()
     view_factory = htypes.view_factory.factory(
-        d=mosaic.put(d),
+        k=mosaic.put(k),
         )
     hook = Mock()
     view = Mock(piece=None)

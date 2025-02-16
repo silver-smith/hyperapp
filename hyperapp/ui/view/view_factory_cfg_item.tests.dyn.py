@@ -20,7 +20,7 @@ def template_piece():
         service_params=(),
         )
     return htypes.view_factory.template(
-        d=mosaic.put(htypes.view_factory_cfg_item_tests.sample_d()),
+        k=mosaic.put(htypes.view_factory_cfg_item_tests.sample_k()),
         view_t=pyobj_creg.actor_to_ref(htypes.view_factory_cfg_item_tests.sample_view),
         is_wrapper=False,
         view_ctx_params=(),

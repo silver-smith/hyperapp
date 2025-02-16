@@ -1,13 +1,13 @@
 template = record:
-  d: ref
+  k: ref
   view_t: ref
   is_wrapper: bool
   view_ctx_params: string list
   system_fn: ref
 
 item = record:
-  d: ref
-  d_str: string
+  k: ref
+  k_str: string
   view_t: ref
   view_t_str: string
   is_wrapper: bool
@@ -15,4 +15,4 @@ item = record:
   system_fn: ref
 
 factory = record:
-  d: ref
+  k: ref

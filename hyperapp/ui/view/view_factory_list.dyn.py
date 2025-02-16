@@ -20,5 +20,5 @@ def view_factory_list_get(value):
 @mark.selector.pick
 def view_factory_list_pick(piece, current_item):
     return htypes.view_factory.factory(
-        d=current_item.d,
+        k=current_item.k,
         )

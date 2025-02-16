@@ -59,8 +59,8 @@ definitions:
     value:
       object: label.module
       attr_name: label_view
-  label_view.d:
-    type: label_view_d
+  label_view.k:
+    type: label_view_k
     value: {}
   label_view.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -71,18 +71,18 @@ definitions:
   label_view.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      d: label_view.d
+      k: label_view.k
       view_t: legacy_type.label:view
       is_wrapper: false
       view_ctx_params:
       - piece
       - ctx
       system_fn: label_view.system-fn
-  label_view_d:
+  label_view_k:
     type: legacy_type.builtin:record_mt
     value:
       module_name: label
-      name: label_view_d
+      name: label_view_k
       base: null
       fields: {}
   open_set_label_text_d:

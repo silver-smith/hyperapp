@@ -4,7 +4,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.rc_constructor import Constructor
-from .code.d_type import d_type
+from .code.d_type import k_type
 
 
 class ViewFactoryTemplateCtr(Constructor):
@@ -69,10 +69,10 @@ class ViewFactoryTemplateCtr(Constructor):
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
-        d_t = d_type(types, self._module_name.split('.')[-1], name=self._attr_qual_name[-1])
-        d = d_t()
+        k_t = k_type(types, self._module_name.split('.')[-1], name=self._attr_qual_name[-1])
+        k = k_t()
         template = htypes.view_factory.template(
-            d=mosaic.put(d),
+            k=mosaic.put(k),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
             is_wrapper='inner' in self._ctx_params,
             view_ctx_params=self._view_resolved_tgt.constructor.ctx_params,
@@ -80,7 +80,7 @@ class ViewFactoryTemplateCtr(Constructor):
             )
         if name_to_res is not None:
             name_to_res[f'{self._fn_name}.system-fn'] = system_fn
-            name_to_res[f'{self._fn_name}.d'] = d
+            name_to_res[f'{self._fn_name}.k'] = k
             name_to_res[f'{self._fn_name}.view-factory-template'] = template
         return template
 

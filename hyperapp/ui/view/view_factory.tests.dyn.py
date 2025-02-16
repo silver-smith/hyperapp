@@ -16,7 +16,7 @@ def test_item(partial_ref):
         bound_fn=_sample_fn,
         )
     factory = view_factory.ViewFactory(
-        d=htypes.view_factory_list_tests.sample_d(),
+        k=htypes.view_factory_list_tests.sample_k(),
         view_t=htypes.view_factory_list_tests.sample_view,
         is_wrapper=False,
         view_ctx_params=[],
