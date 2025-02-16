@@ -93,13 +93,15 @@ class CrudHelpers:
 
     # Override context with original elements, canned by args picker.
     def _canned_kw(self, ctx, args_kw):
+        hook = None
         kw = {}
         try:
             hook_piece = args_kw['hook_piece']
         except KeyError:
             pass
         else:
-            kw['hook'] = self._canned_ctl_hook_factory(hook_piece, ctx)
+            hook = self._canned_ctl_hook_factory(hook_piece, ctx)
+            kw['hook'] = hook
         try:
             widget_piece = args_kw['widget_piece']
         except KeyError:
@@ -114,7 +116,10 @@ class CrudHelpers:
         else:
             # Note: This is not the same view instance as was passed originally to args picker.
             # But using it's piece property is ok.
-            kw['view'] = self._view_reg.animate(view_piece, ctx)
+            assert hook  # If view is canned, ctl hook should be canned too.
+            view = self._view_reg.animate(view_piece, ctx)
+            view.set_controller_hook(hook)
+            kw['view'] = view
         return kw
 
     def fn_ctx(self, ctx, crud_model, **kw):
