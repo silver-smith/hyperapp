@@ -85,6 +85,8 @@ def test_add_element(qapp, view_reg, piece, state, ctx):
         k=mosaic.put(k),
         )
     view = view_reg.animate(piece, ctx)
+    hook = Mock()
+    view.set_controller_hook(hook)
     widget = view.construct_widget(state, ctx)
     box_layout.add_child_element(view, widget, view_factory, ctx)
-    # hook.replace_view.assert_called_once()
+    hook.elements_changed.assert_called_once()

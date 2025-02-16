@@ -109,6 +109,7 @@ class BoxLayoutView(View):
         self._elements.insert(idx, elt)
         layout = widget.layout()
         layout.addWidget(elt_widget, elt.stretch)
+        self._ctl_hook.elements_changed()
 
     def items(self):
         return [

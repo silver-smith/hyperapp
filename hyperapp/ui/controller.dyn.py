@@ -248,6 +248,12 @@ class _Item:
         self.schedule_update_parents_context()
         self.save_state()
 
+    def elements_changed_hook(self):
+        self._children = None
+        self._current_child_idx = None
+        self.schedule_update_parents_context()
+        self.save_state()
+
     def removed_hook(self):
         self.parent.element_removed_hook(self.idx)
 
@@ -440,6 +446,9 @@ class CtlHook:
 
     def element_replaced(self, idx, new_view, new_widget=None):
         self._item.element_replaced_hook(idx, new_view, new_widget)
+
+    def elements_changed(self):
+        self._item.elements_changed_hook()
 
     def replace_parent_widget(self, new_widget):
         self._item.replace_parent_widget_hook(new_widget)
