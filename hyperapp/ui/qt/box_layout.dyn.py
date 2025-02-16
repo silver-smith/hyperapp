@@ -101,6 +101,15 @@ class BoxLayoutView(View):
         self._elements[idx] = self._Element(new_child_view, old_elt.focusable, old_elt.stretch)
         self.replace_child_widget(widget, idx, new_child_widget)
 
+    def add_child(self, ctx, widget, child_view):
+        log.info("Box layout: add child: %s", child_view)
+        idx = len(self._elements)
+        elt_widget = child_view.construct_widget(None, ctx)
+        elt = self._Element(child_view, focusable=False, stretch=0)
+        self._elements.insert(idx, elt)
+        layout = widget.layout()
+        layout.addWidget(elt_widget, elt.stretch)
+
     def items(self):
         return [
             Item(f"Item#{idx}", elt.view, focusable=elt.focusable)
@@ -110,6 +119,10 @@ class BoxLayoutView(View):
     def item_widget(self, widget, idx):
         layout = widget.layout()
         return layout.itemAt(idx).widget()
+
+    @property
+    def children_count(self):
+        return len(self._elements)
 
     def child_view(self, idx):
         return self._elements[idx].view
@@ -142,3 +155,17 @@ def wrap(inner):
                 ),
             ),
         )
+
+
+@mark.ui_command(htypes.box_layout.view, args=['view_factory'])
+def add_child_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
+    k = web.summon(view_factory.k)
+    factory = view_factory_reg[k]
+    last_child = view.child_view(view.children_count - 1)
+    # Just in case we want to add a wrapper.
+    fn_ctx = ctx.clone_with(
+        inner=last_child.piece,
+        )
+    elt_piece = factory.fn.call(ctx=fn_ctx)
+    elt_view = view_reg.animate(elt_piece, ctx)
+    view.add_child(ctx, widget, elt_view)

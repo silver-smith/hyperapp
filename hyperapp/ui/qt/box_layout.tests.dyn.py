@@ -67,3 +67,24 @@ def test_wrap():
     inner = htypes.label.view("Inner label")
     piece = box_layout.wrap(inner)
     assert isinstance(piece, htypes.box_layout.view)
+
+
+
+@mark.config_fixture('view_factory_reg')
+def view_factory_reg_config():
+    k = htypes.box_layout_tests.sample_k()
+    factory = Mock()
+    factory.fn.call.return_value = htypes.label.view("Sample label")
+    return {k: factory}
+
+
+def test_add_element(qapp, view_reg, piece, state, ctx):
+    ctx = Context()
+    k = htypes.box_layout_tests.sample_k()
+    view_factory = htypes.view_factory.factory(
+        k=mosaic.put(k),
+        )
+    view = view_reg.animate(piece, ctx)
+    widget = view.construct_widget(state, ctx)
+    box_layout.add_child_element(view, widget, view_factory, ctx)
+    # hook.replace_view.assert_called_once()

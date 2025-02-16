@@ -14,6 +14,8 @@ import:
 - ui.master_details:unwrap_master_details.d
 - ui.navigator:go_back.d
 - ui.navigator:go_forward.d
+- ui.qt.box_layout:add_child_element.commit-d
+- ui.qt.box_layout:add_child_element.open-d
 - ui.qt.box_layout:unwrap.d
 - ui.qt.label:set_label_text.commit-d
 - ui.qt.label:set_label_text.open-d
@@ -101,6 +103,16 @@ definitions:
     value:
       key: ui.navigator:go_forward.d
       value: shortcut_Alt_Right
+  config_item-ui.qt.box_layout-add_child_element.commit-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.box_layout:add_child_element.commit-d
+      value: shortcut_Return
+  config_item-ui.qt.box_layout-add_child_element.open-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.box_layout:add_child_element.open-d
+      value: shortcut_Ins
   config_item-ui.qt.box_layout-unwrap.d:
     type: legacy_type.data_service:config_item
     value:
@@ -172,6 +184,9 @@ definitions:
   shortcut_Esc:
     type: legacy_type.builtin:string
     value: Esc
+  shortcut_Ins:
+    type: legacy_type.builtin:string
+    value: Ins
   shortcut_R:
     type: legacy_type.builtin:string
     value: R
@@ -207,3 +222,5 @@ definitions:
       - config_item-ui.view.replace_view-replace_view.commit-d
       - config_item-ui.qt.label-set_label_text.open-d
       - config_item-ui.qt.label-set_label_text.commit-d
+      - config_item-ui.qt.box_layout-add_child_element.commit-d
+      - config_item-ui.qt.box_layout-add_child_element.open-d
