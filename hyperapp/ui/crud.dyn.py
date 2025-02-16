@@ -1,4 +1,5 @@
 import logging
+import weakref
 from functools import cached_property
 
 from hyperapp.boot.htypes import TPrimitive
@@ -84,8 +85,9 @@ class CrudOpenFn:
 
 class CrudHelpers:
 
-    def __init__(self, canned_ctl_hook_factory, system_fn_creg, view_reg):
+    def __init__(self, canned_ctl_hook_factory, canned_widget_factory, system_fn_creg, view_reg):
         self._canned_ctl_hook_factory = canned_ctl_hook_factory
+        self._canned_widget_factory = canned_widget_factory
         self._system_fn_creg = system_fn_creg
         self._view_reg = view_reg
 
@@ -98,6 +100,13 @@ class CrudHelpers:
             pass
         else:
             kw['hook'] = self._canned_ctl_hook_factory(hook_piece, ctx)
+        try:
+            widget_piece = args_kw['widget_piece']
+        except KeyError:
+            pass
+        else:
+            widget = self._canned_widget_factory(widget_piece, ctx)
+            kw['widget'] = weakref.ref(widget)
         try:
             view_piece = args_kw['view_piece']
         except KeyError:
@@ -135,8 +144,8 @@ class CrudHelpers:
 
 
 @mark.service
-def crud_helpers(canned_ctl_hook_factory, system_fn_creg, view_reg):
-    return CrudHelpers(canned_ctl_hook_factory, system_fn_creg, view_reg)
+def crud_helpers(canned_ctl_hook_factory, canned_widget_factory, system_fn_creg, view_reg):
+    return CrudHelpers(canned_ctl_hook_factory, canned_widget_factory, system_fn_creg, view_reg)
 
 
 class CrudInitFn:
