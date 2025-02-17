@@ -43,6 +43,11 @@ class CachedCodeRegistry(CodeRegistry):
         piece = self.actor_to_piece(actor, reconstruct)
         return self._mosaic.put(piece)
 
+    def actor_to_ref_opt(self, actor, reconstruct=True):
+        if actor is None:
+            return None
+        return self.actor_to_ref(actor, reconstruct)
+
     def add_to_cache(self, piece, actor):
         with self._lock:
             self._cache[piece] = actor
