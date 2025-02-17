@@ -85,41 +85,23 @@ class CrudOpenFn:
 
 class CrudHelpers:
 
-    def __init__(self, canned_ctl_hook_factory, canned_widget_factory, system_fn_creg, view_reg):
-        self._canned_ctl_hook_factory = canned_ctl_hook_factory
-        self._canned_widget_factory = canned_widget_factory
+    def __init__(self, canned_ctl_item_factory, system_fn_creg):
+        self._canned_ctl_item_factory = canned_ctl_item_factory
         self._system_fn_creg = system_fn_creg
-        self._view_reg = view_reg
 
     # Override context with original elements, canned by args picker.
     def _canned_kw(self, ctx, args_kw):
         hook = None
         kw = {}
         try:
-            hook_piece = args_kw['hook_piece']
+            item_piece = args_kw['canned_item_piece']
         except KeyError:
             pass
         else:
-            hook = self._canned_ctl_hook_factory(hook_piece, ctx)
-            kw['hook'] = hook
-        try:
-            widget_piece = args_kw['widget_piece']
-        except KeyError:
-            pass
-        else:
-            widget = self._canned_widget_factory(widget_piece, ctx)
-            kw['widget'] = weakref.ref(widget)
-        try:
-            view_piece = args_kw['view_piece']
-        except KeyError:
-            pass
-        else:
-            # Note: This is not the same view instance as was passed originally to args picker.
-            # But using it's piece property is ok.
-            assert hook  # If view is canned, ctl hook should be canned too.
-            view = self._view_reg.animate(view_piece, ctx)
-            view.set_controller_hook(hook)
-            kw['view'] = view
+            item = self._canned_ctl_item_factory(item_piece, ctx)
+            kw['hook'] = item.hook
+            kw['widget'] = weakref.ref(item.widget)
+            kw['view'] = item.view
         return kw
 
     def fn_ctx(self, ctx, crud_model, **kw):
@@ -149,8 +131,8 @@ class CrudHelpers:
 
 
 @mark.service
-def crud_helpers(canned_ctl_hook_factory, canned_widget_factory, system_fn_creg, view_reg):
-    return CrudHelpers(canned_ctl_hook_factory, canned_widget_factory, system_fn_creg, view_reg)
+def crud_helpers(canned_ctl_item_factory, system_fn_creg):
+    return CrudHelpers(canned_ctl_item_factory, system_fn_creg)
 
 
 class CrudInitFn:

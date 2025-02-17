@@ -123,10 +123,8 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: crud_helpers
       service_params:
-      - canned_ctl_hook_factory
-      - canned_widget_factory
+      - canned_ctl_item_factory
       - system_fn_creg
-      - view_reg
       want_config: false
       free_params: []
   crud_model_commands:

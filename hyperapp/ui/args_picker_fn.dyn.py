@@ -45,16 +45,8 @@ class ArgsPickerFn:
     def _make_canned_args(ctx):
         args = (
             htypes.crud.arg(
-                name='hook_piece',
-                value=mosaic.put(ctx.hook.canned_piece),
-                ),
-            htypes.crud.arg(
-                name='widget_piece',
-                value=mosaic.put(ctx.hook.canned_widget_piece),
-                ),
-            htypes.crud.arg(
-                name='view_piece',
-                value=mosaic.put(ctx.view.piece),
+                name='canned_item_piece',
+                value=mosaic.put(ctx.hook.canned_item_piece),
                 ),
             )
         if 'model' in ctx:

@@ -1,8 +1,4 @@
-canned_ctl_hook = record:
-  item_id: int
-  path: int list
-
-canned_widget = record:
+canned_ctl_item = record:
   item_id: int
   path: int list
 

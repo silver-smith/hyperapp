@@ -18,37 +18,20 @@ import:
 - legacy_type.root:view
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
-- legacy_type.ui:canned_ctl_hook
-- legacy_type.ui:canned_widget
+- legacy_type.ui:canned_ctl_item
 - ui.view.view:view.module
 definitions:
-  canned_ctl_hook_factory:
+  canned_ctl_item_factory:
     type: legacy_type.builtin:attribute
     value:
       object: controller.module
-      attr_name: canned_ctl_hook_factory
-  canned_ctl_hook_factory.service:
+      attr_name: canned_ctl_item_factory
+  canned_ctl_item_factory.service:
     type: legacy_type.system:service_template
     value:
-      name: canned_ctl_hook_factory
+      name: canned_ctl_item_factory
       ctl: system-dict_config_ctl.ctl
-      function: canned_ctl_hook_factory
-      service_params: []
-      want_config: false
-      free_params:
-      - piece
-      - ctx
-  canned_widget_factory:
-    type: legacy_type.builtin:attribute
-    value:
-      object: controller.module
-      attr_name: canned_widget_factory
-  canned_widget_factory.service:
-    type: legacy_type.system:service_template
-    value:
-      name: canned_widget_factory
-      ctl: system-dict_config_ctl.ctl
-      function: canned_widget_factory
+      function: canned_ctl_item_factory
       service_params: []
       want_config: false
       free_params:
@@ -69,8 +52,7 @@ definitions:
         htypes.root.layout: legacy_type.root:layout
         htypes.root.state: legacy_type.root:state
         htypes.root.view: legacy_type.root:view
-        htypes.ui.canned_ctl_hook: legacy_type.ui:canned_ctl_hook
-        htypes.ui.canned_widget: legacy_type.ui:canned_widget
+        htypes.ui.canned_ctl_item: legacy_type.ui:canned_ctl_item
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
