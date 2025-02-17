@@ -1,1 +1,27 @@
-definitions: {}
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:string
+- legacy_type.data_service:config_item
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- views.command_layout_context:open_command_layout_context.d
+definitions:
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        shortcut_reg: shortcut_reg.config
+  config_item-views.command_layout_context-open_command_layout_context.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.command_layout_context:open_command_layout_context.d
+      value: shortcut_C
+  shortcut_C:
+    type: legacy_type.builtin:string
+    value: C
+  shortcut_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-views.command_layout_context-open_command_layout_context.d
