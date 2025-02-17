@@ -7,15 +7,20 @@ import:
 - views.command_layout_context:global_commands-model-open_command_layout_context.command-cfg-item
 - views.command_layout_context:model_commands-model-open_command_layout_context.command-cfg-item
 - views.local_server_context:local_server_context-view.view-template
-- views.local_server_context:navigator-view-open_local_server_context.command-cfg-item
+- views.local_server_context:open_local_server_context.global-model-command
 definitions:
   config:
     type: legacy_type.system:system_config
     value:
       services:
+        global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
         view_reg: view_reg
-        view_ui_command_reg: view_ui_command_reg
+  global_model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - views.local_server_context:open_local_server_context.global-model-command
   model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -28,8 +33,3 @@ definitions:
       items:
       - views.command_layout_context:command_layout_context-view.view-template
       - views.local_server_context:local_server_context-view.view-template
-  view_ui_command_reg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - views.local_server_context:navigator-view-open_local_server_context.command-cfg-item

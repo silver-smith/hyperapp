@@ -39,7 +39,7 @@ class LocalServerContextView(ContextView):
             )
 
 
-@mark.ui_command(htypes.navigator.view)
+@mark.global_command
 def open_local_server_context(view, state, hook, ctx, view_reg):
     new_view_piece = htypes.local_server_context.view(
         base=mosaic.put(view.piece),
