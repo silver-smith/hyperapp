@@ -117,15 +117,12 @@ class _Item:
         return self.view.item_widget(self.widget, idx)
 
     def navigator_rec(self, rctx):
+        rctx = self.view.primary_parent_context(rctx, self.widget)
         try:
             return rctx.navigator
         except KeyError:
             pass
-        parent = self.parent
-        if not parent:
-            return None
-        rctx = parent.view.primary_parent_context(rctx, parent.widget)
-        return parent.navigator_rec(rctx)
+        return self.parent.navigator_rec(rctx)
 
     def schedule_init_children_reverse_context(self):
         asyncio.create_task(self.init_children_reverse_context())
@@ -144,7 +141,7 @@ class _Item:
 
     async def update_parents_context(self):
         kid = self.current_child
-        if kid:
+        if kid and kid.rctx:
             rctx = kid.rctx
         else:
             rctx = Context(command_recs=[], commands=[])
@@ -381,6 +378,9 @@ class _RootItem(_Item):
         self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
+
+    def navigator_rec(self, rctx):
+        return None
 
     def schedule_update_parents_context(self):
         # This is window open/close event. No context is changed for other windows.
