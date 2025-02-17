@@ -2,6 +2,9 @@
 
 import:
 - base.mark:mark.module
+- builtins:deduce_t.service
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
@@ -13,7 +16,7 @@ import:
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:factory
 - legacy_type.view_factory:item
-- legacy_type.view_factory_list:view
+- legacy_type.view_factory_list:model
 definitions:
   open_view_factory_list:
     type: legacy_type.builtin:attribute
@@ -45,6 +48,23 @@ definitions:
       name: open_view_factory_list_d
       base: null
       fields: {}
+  pick_view_factory_context:
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_factory_list.module
+      attr_name: pick_view_factory_context
+  pick_view_factory_context.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: pick_view_factory_context
+      ctx_params:
+      - ctx
+      service_params: []
+  view_factory-factory.editor_default.cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.view_factory:factory
+      value: pick_view_factory_context.system-fn
   view_factory-factory.selector-template:
     type: legacy_type.selector:template
     value:
@@ -71,21 +91,21 @@ definitions:
     value:
       object: view_factory_list.module
       attr_name: view_factory_list
-  view_factory_list-view.list-ui-t:
+  view_factory_list-model.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
       item_t: legacy_type.view_factory:item
-  view_factory_list-view.model:
+  view_factory_list-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: view_factory_list-view.list-ui-t
-      system_fn: view_factory_list-view.system-fn
-  view_factory_list-view.model-cfg-item:
+      ui_t: view_factory_list-model.list-ui-t
+      system_fn: view_factory_list-model.system-fn
+  view_factory_list-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
-      t: legacy_type.view_factory_list:view
-      value: view_factory_list-view.model
-  view_factory_list-view.system-fn:
+      t: legacy_type.view_factory_list:model
+      value: view_factory_list-model.model
+  view_factory_list-model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: view_factory_list
@@ -101,7 +121,10 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         htypes.view_factory.factory: legacy_type.view_factory:factory
-        htypes.view_factory_list.view: legacy_type.view_factory_list:view
+        htypes.view_factory_list.model: legacy_type.view_factory_list:model
+        services.deduce_t: builtins:deduce_t.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
   view_factory_list_get:
     type: legacy_type.builtin:attribute
     value:

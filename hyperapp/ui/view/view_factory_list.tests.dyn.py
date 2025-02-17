@@ -4,6 +4,7 @@ from .services import (
     mosaic,
     )
 from .code.mark import mark
+from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.view_factory import ViewFactory
 from .tested.code import view_factory_list
@@ -34,7 +35,7 @@ def view_factory_reg_config(partial_ref):
 
 @mark.fixture
 def piece():
-    return htypes.view_factory_list.view()
+    return htypes.view_factory_list.model()
 
 
 def test_view_factory_list(piece):
@@ -44,12 +45,18 @@ def test_view_factory_list(piece):
 
 def test_open():
     piece = view_factory_list.open_view_factory_list()
-    assert isinstance(piece, htypes.view_factory_list.view)
+    assert isinstance(piece, htypes.view_factory_list.model)
+
+
+def test_editor_default():
+    ctx = Context()
+    context = view_factory_list.pick_view_factory_context(ctx)
 
 
 def test_selector_get():
     k = htypes.view_factory_list_tests.sample_k(),
     value = htypes.view_factory.factory(
+        model_t=None,
         k=mosaic.put(k),
         )
     piece = view_factory_list.view_factory_list_get(value)

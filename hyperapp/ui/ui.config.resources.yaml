@@ -7,7 +7,7 @@ import:
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
-- legacy_type.view_factory_list:view
+- legacy_type.view_factory_list:model
 - ui.layout:open_layout_tree.d
 - ui.layout:open_view_item_commands.d
 - ui.layout:set_shortcut.d
@@ -30,48 +30,53 @@ definitions:
   bool-false:
     type: legacy_type.builtin:bool
     value: false
-  column_k-view_factory_list.view-d:
+  column_k-view_factory_list.model-k:
     type: legacy_type.column:column_k
     value:
-      model_t: legacy_type.view_factory_list:view
-      column_name: d
-  column_k-view_factory_list.view-system_fn:
+      model_t: legacy_type.view_factory_list:model
+      column_name: k
+  column_k-view_factory_list.model-system_fn:
     type: legacy_type.column:column_k
     value:
-      model_t: legacy_type.view_factory_list:view
+      model_t: legacy_type.view_factory_list:model
       column_name: system_fn
-  column_k-view_factory_list.view-view_t:
+  column_k-view_factory_list.model-view_t:
     type: legacy_type.column:column_k
     value:
-      model_t: legacy_type.view_factory_list:view
+      model_t: legacy_type.view_factory_list:model
       column_name: view_t
   column_visible_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - config_item-column_k-view_factory_list.view-d
-      - config_item-column_k-view_factory_list.view-system_fn
-      - config_item-column_k-view_factory_list.view-view_t
+      - config_item-column_k-view_factory_list.model-system_fn
+      - config_item-column_k-view_factory_list.model-view_t
+      - config_item-column_k-view_factory_list.model-k
   config:
     type: legacy_type.system:system_config
     value:
       services:
         shortcut_reg: shortcut_reg.config
         column_visible_reg: column_visible_reg.config
-  config_item-column_k-view_factory_list.view-d:
+  config_item-column_k-view_factory_list.model-d:
     type: legacy_type.data_service:config_item
     value:
-      key: column_k-view_factory_list.view-d
+      key: column_k-view_factory_list.model-d
       value: bool-false
-  config_item-column_k-view_factory_list.view-system_fn:
+  config_item-column_k-view_factory_list.model-k:
     type: legacy_type.data_service:config_item
     value:
-      key: column_k-view_factory_list.view-system_fn
+      key: column_k-view_factory_list.model-k
       value: bool-false
-  config_item-column_k-view_factory_list.view-view_t:
+  config_item-column_k-view_factory_list.model-system_fn:
     type: legacy_type.data_service:config_item
     value:
-      key: column_k-view_factory_list.view-view_t
+      key: column_k-view_factory_list.model-system_fn
+      value: bool-false
+  config_item-column_k-view_factory_list.model-view_t:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-view_factory_list.model-view_t
       value: bool-false
   config_item-ui.layout-open_layout_tree.d:
     type: legacy_type.data_service:config_item

@@ -82,6 +82,7 @@ def test_add_element(qapp, view_reg, piece, state, ctx):
     ctx = Context()
     k = htypes.box_layout_tests.sample_k()
     view_factory = htypes.view_factory.factory(
+        model_t=None,
         k=mosaic.put(k),
         )
     view = view_reg.animate(piece, ctx)

@@ -15,4 +15,5 @@ item = record:
   system_fn: ref
 
 factory = record:
-  k: ref
+  model_t: ref opt
+  k: ref opt
