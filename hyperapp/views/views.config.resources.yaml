@@ -6,6 +6,7 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - views.command_layout_context:open_command_layout_context.d
+- views.local_server_context:open_local_server_context.d
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -17,6 +18,14 @@ definitions:
     value:
       key: views.command_layout_context:open_command_layout_context.d
       value: shortcut_C
+  config_item-views.local_server_context-open_local_server_context.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.local_server_context:open_local_server_context.d
+      value: shortcut_Alt_Shift_L
+  shortcut_Alt_Shift_L:
+    type: legacy_type.builtin:string
+    value: Alt+Shift+L
   shortcut_C:
     type: legacy_type.builtin:string
     value: C
@@ -25,3 +34,4 @@ definitions:
     value:
       items:
       - config_item-views.command_layout_context-open_command_layout_context.d
+      - config_item-views.local_server_context-open_local_server_context.d
