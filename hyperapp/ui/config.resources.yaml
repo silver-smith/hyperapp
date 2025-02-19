@@ -79,6 +79,7 @@ import:
 - ui.qt.menu_bar:menu_bar-view.view-template
 - ui.qt.record_adapter:model-record_ui_t.actor-template
 - ui.qt.record_adapter:record_adapter-fn_record_adapter.actor-template
+- ui.qt.record_adapter:record_adapter-static_record_adapter.actor-template
 - ui.qt.remote_fn_index_tree_adapter:tree_adapter-remote_fn_index_tree_adapter.actor-template
 - ui.qt.remote_fn_list_adapter:list_adapter-remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:list_adapter-static_list_adapter.actor-template
@@ -297,6 +298,7 @@ definitions:
       - ui.qt.fn_list_adapter:list_adapter-fn_list_adapter.actor-template
       - ui.qt.list_as_tree_adapter:list_as_tree_adapter-adapter.actor-template
       - ui.qt.record_adapter:record_adapter-fn_record_adapter.actor-template
+      - ui.qt.record_adapter:record_adapter-static_record_adapter.actor-template
       - ui.qt.remote_fn_index_tree_adapter:tree_adapter-remote_fn_index_tree_adapter.actor-template
       - ui.qt.remote_fn_list_adapter:list_adapter-remote_fn_list_adapter.actor-template
       - ui.qt.static_list_adapter:list_adapter-static_list_adapter.actor-template

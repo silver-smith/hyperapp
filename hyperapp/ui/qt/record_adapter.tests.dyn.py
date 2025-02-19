@@ -12,10 +12,24 @@ from .tested.code import record_adapter
 log = logging.getLogger(__name__)
 
 
+
+def test_static_adapter():
+    ctx = Context()
+    model = htypes.record_adapter_tests.item(123, "Sample static item")
+    record_t_res = pyobj_creg.actor_to_piece(htypes.record_adapter_tests.item)
+    adapter_piece = htypes.record_adapter.static_record_adapter(
+        record_t=mosaic.put(record_t_res),
+        )
+    adapter = record_adapter.StaticRecordAdapter.from_piece(adapter_piece, model, ctx)
+    assert adapter.record_t == htypes.record_adapter_tests.item
+    assert adapter.get_field('id') == 123
+    assert adapter.get_field('text') == "Sample static item"
+
+
 def _sample_record_fn(piece):
     log.info("Sample record fn: %s", piece)
     assert isinstance(piece, htypes.record_adapter_tests.sample_record), repr(piece)
-    return htypes.record_adapter_tests.item(123, "Sample item")
+    return htypes.record_adapter_tests.item(123, "Sample fn item")
 
 
 def test_fn_adapter():
@@ -35,7 +49,7 @@ def test_fn_adapter():
 
     assert adapter.record_t == htypes.record_adapter_tests.item
     assert adapter.get_field('id') == 123
-    assert adapter.get_field('text') == "Sample item"
+    assert adapter.get_field('text') == "Sample fn item"
 
 
 def test_record_ui_type_layout():
