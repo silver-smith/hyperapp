@@ -22,7 +22,7 @@ def test_local_server_context_view(qapp):
         base=mosaic.put(base_piece),
         )
     base_state = htypes.label.state()
-    state = htypes.local_server_context.state(
+    state = htypes.context_view.state(
         base=mosaic.put(base_state),
         )
     view = local_server_context.LocalServerContextView.from_piece(piece, ctx)

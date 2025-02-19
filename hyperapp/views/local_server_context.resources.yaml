@@ -7,8 +7,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:model_command
+- legacy_type.context_view:state
 - legacy_type.local_server_context:open_local_server_context_d
-- legacy_type.local_server_context:state
 - legacy_type.local_server_context:view
 - legacy_type.system_fn:ctx_fn
 - views.context_view:context_view.module
@@ -46,7 +46,7 @@ definitions:
       import_list:
         code.context_view: views.context_view:context_view.module
         code.mark: base.mark:mark.module
-        htypes.local_server_context.state: legacy_type.local_server_context:state
+        htypes.context_view.state: legacy_type.context_view:state
         htypes.local_server_context.view: legacy_type.local_server_context:view
         services.mosaic: builtins:mosaic.service
   open_local_server_context:

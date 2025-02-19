@@ -1,6 +1,8 @@
 from PySide6 import QtWidgets
 
+from . import htypes
 from .services import (
+    mosaic,
     web,
     )
 from .code.view import Item, View
@@ -13,6 +15,10 @@ class ContextView(View):
         self._base_view = base_view
         self._label = label
 
+    @property
+    def piece(self):
+        raise NotImplementedError()
+
     def construct_widget(self, state, ctx):
         if state is not None:
             base_state = web.summon(state.base)
@@ -24,6 +30,13 @@ class ContextView(View):
         layout.addWidget(QtWidgets.QLabel(text=self._label))
         layout.addWidget(base_widget)
         return widget
+
+    def widget_state(self, widget):
+        base_widget = self._base_widget(widget)
+        base_state = self._base_view.widget_state(base_widget)
+        return htypes.context_view.state(
+            base=mosaic.put(base_state),
+            )
 
     def get_current(self, widget):
         return 0

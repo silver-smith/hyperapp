@@ -31,20 +31,13 @@ class LocalServerContextView(ContextView):
             remote_peer=self._local_server_peer
             )
 
-    def widget_state(self, widget):
-        base_widget = self._base_widget(widget)
-        base_state = self._base_view.widget_state(base_widget)
-        return htypes.local_server_context.state(
-            base=mosaic.put(base_state),
-            )
-
 
 @mark.global_command
 def open_local_server_context(view, state, hook, ctx, view_reg):
     new_view_piece = htypes.local_server_context.view(
         base=mosaic.put(view.piece),
         )
-    new_state = htypes.local_server_context.state(
+    new_state = htypes.context_view.state(
         base=mosaic.put(state),
         )
     new_view = view_reg.animate(new_view_piece, ctx)
