@@ -13,19 +13,42 @@ from .services import (
     )
 from .code.mark import mark
 from .code.command import BoundCommandBase, UnboundCommandBase
+from .code.context_view import ContextView
 
 log = logging.getLogger(__name__)
 
 
+class CrudContextView(ContextView):
+
+    @classmethod
+    @mark.view
+    def from_piece(cls, piece, ctx, view_reg):
+        base_view = view_reg.invite(piece.base_view, ctx)
+        return cls(base_view, piece.label)
+
+    def __init__(self, base_view, label):
+        super().__init__(base_view, label)
+
+    @property
+    def piece(self):
+        return htypes.crud.view(
+            base_view=mosaic.put(self._base_view.piece),
+            label=self._label,
+            )
+
+
 class CrudOpenFn:
 
-    _required_kw = {'model', 'current_item'}
+    _required_kw = {'view', 'widget', 'hook', 'model', 'current_item'}
 
     @classmethod
     @mark.actor.system_fn_creg
-    def from_piece(cls, piece, selector_reg):
+    def from_piece(cls, piece, system_fn_creg, view_reg, selector_reg, crud_helpers):
         return cls(
+            system_fn_creg=system_fn_creg,
+            view_reg=view_reg,
             selector_reg=selector_reg,
+            helpers=crud_helpers,
             name=piece.name,
             value_t=pyobj_creg.invite(piece.value_t),
             key_fields=piece.key_fields,
@@ -34,8 +57,13 @@ class CrudOpenFn:
             commit_action_fn_ref=piece.commit_action_fn,
             )
 
-    def __init__(self, selector_reg, name, value_t, key_fields, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
+    def __init__(
+            self, system_fn_creg, view_reg, selector_reg, helpers,
+            name, value_t, key_fields, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
+        self._system_fn_creg = system_fn_creg
+        self._view_reg = view_reg
         self._selector_reg = selector_reg
+        self._helpers = helpers
         self._name = name
         self._value_t = value_t
         self._key_fields = key_fields
@@ -52,9 +80,21 @@ class CrudOpenFn:
 
     def call(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
-        return self._open(ctx_kw['model'], ctx_kw['current_item'])
+        view = ctx_kw['view']
+        widget_wr = ctx_kw['widget']
+        widget = widget_wr()
+        if widget is None:
+            raise RuntimeError(f"{self!r}: widget is gone")
+        return self._open(
+            view=view,
+            state=view.widget_state(widget),
+            hook=ctx_kw['hook'],
+            model=ctx_kw['model'],
+            current_item=ctx_kw['current_item'],
+            ctx=ctx,
+            )
 
-    def _open(self, model, current_item):
+    def _open(self, view, state, hook, model, current_item, ctx):
         try:
             selector = self._selector_reg[self._value_t]
         except KeyError:
@@ -70,17 +110,60 @@ class CrudOpenFn:
                 )
             for name in self._key_fields
             )
-        return htypes.crud.model(
-            value_t=pyobj_creg.actor_to_ref(self._value_t),
-            model=mosaic.put(model),
-            args=args,
-            init_action_fn=self._init_action_fn_ref,
-            commit_command_d=self._commit_command_d_ref,
-            get_fn=mosaic.put(get_fn.piece) if get_fn else None,
-            pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
-            commit_action_fn=self._commit_action_fn_ref,
-            commit_value_field='value',
+        if not get_fn:
+            # assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
+            new_model, base_view_piece = self._editor_view(ctx, model, args)
+        else:
+            assert 0, 'TODO'
+        # crud_model = htypes.crud.model(
+        #     value_t=pyobj_creg.actor_to_ref(self._value_t),
+        #     model=mosaic.put(model),
+        #     args=args,
+        #     init_action_fn=self._init_action_fn_ref,
+        #     commit_command_d=self._commit_command_d_ref,
+        #     get_fn=mosaic.put(get_fn.piece) if get_fn else None,
+        #     pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
+        #     commit_action_fn=self._commit_action_fn_ref,
+        #     commit_value_field='value',
+        #     )
+        new_view_piece = htypes.crud.view(
+            base_view=mosaic.put(base_view_piece),
+            label=self._name,
             )
+        new_state = None
+        new_ctx = ctx.clone_with(
+            model=new_model,
+            )
+        new_view = self._view_reg.animate(new_view_piece, new_ctx)
+        hook.replace_view(new_view, new_state)
+        return new_model
+
+    def _editor_view(self, ctx, model, args):
+        if isinstance(self._value_t, TPrimitive):
+            return self._primitive_view(ctx)
+        else:
+            return self._form_view(ctx, model, args)
+
+    def _form_view(self, ctx, model, args):
+        form_model = self._run_init(ctx, model, args)
+        adapter = htypes.record_adapter.static_record_adapter(
+            record_t=pyobj_creg.actor_to_ref(self._value_t),
+            )
+        return (form_model, htypes.form.view(mosaic.put(adapter)))
+
+    def _primitive_view(self, ctx):
+        assert 0, 'TODO'
+        value = self._helpers.run_crud_init(ctx)
+        if type(value) is str:
+            adapter = htypes.crud.str_adapter()
+            return htypes.text.edit_view(mosaic.put(adapter))
+        else:
+            raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type {type(value)}: {value!r}")
+
+    def _run_init(self, ctx, model, args):
+        fn = self._system_fn_creg.invite(self._init_action_fn_ref)
+        fn_ctx = self._helpers.fn_ctx(ctx, model, args)
+        return fn.call(fn_ctx)
 
 
 class CrudHelpers:
@@ -104,11 +187,10 @@ class CrudHelpers:
             kw['view'] = item.view
         return kw
 
-    def fn_ctx(self, ctx, crud_model, **kw):
-        model = web.summon_opt(crud_model.model)
+    def fn_ctx(self, ctx, model, args, **kw):
         args_kw = {
             arg.name: web.summon(arg.value)
-            for arg in crud_model.args
+            for arg in args
             }
         if model is not None:
             model_kw = {
@@ -124,42 +206,10 @@ class CrudHelpers:
             **kw,
             )
 
-    def run_crud_init(self, ctx, crud_model):
-        fn = self._system_fn_creg.invite(crud_model.init_action_fn)
-        fn_ctx = self.fn_ctx(ctx, crud_model)
-        return fn.call(fn_ctx)
-
 
 @mark.service
 def crud_helpers(canned_ctl_item_factory, system_fn_creg):
     return CrudHelpers(canned_ctl_item_factory, system_fn_creg)
-
-
-class CrudInitFn:
-
-    _required_kw = {'model'}
-
-    @classmethod
-    @mark.actor.system_fn_creg
-    def from_piece(cls, piece, crud_helpers):
-        return cls(crud_helpers)
-
-    def __init__(self, helpers):
-        self._helpers = helpers
-
-    def __repr__(self):
-        return f"<CrudInitFn>"
-
-    def missing_params(self, ctx, **kw):
-        ctx_kw = {**ctx.as_dict(), **kw}
-        return self._required_kw - ctx_kw.keys()
-
-    def call(self, ctx, **kw):
-        ctx_kw = {**ctx.as_dict(), **kw}
-        return self._init(ctx, ctx_kw['model'])
-
-    def _init(self, ctx, crud_model):
-        return self._helpers.run_crud_init(ctx, crud_model)
 
 
 class CrudStrAdapter:
@@ -180,32 +230,6 @@ class CrudStrAdapter:
 
     def get_text(self):
         return self._helpers.run_crud_init(self._ctx, self._crud_model)
-
-
-def _primitive_view(crud_helpers, ctx, crud_model):
-    value = crud_helpers.run_crud_init(ctx, crud_model)
-    if type(value) is str:
-        adapter = htypes.crud.str_adapter()
-        return htypes.text.edit_view(mosaic.put(adapter))
-    else:
-        raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type {type(value)}: {value!r}")
-
-
-def _form_view(value_t_ref):
-    crud_init_fn = htypes.crud.init_fn()
-    adapter = htypes.record_adapter.fn_record_adapter(
-        record_t=value_t_ref,
-        system_fn=mosaic.put(crud_init_fn),
-        )
-    return htypes.form.view(mosaic.put(adapter))
-
-
-def _editor_view(crud_helpers, ctx, crud_model):
-    value_t = pyobj_creg.invite(crud_model.value_t)
-    if isinstance(value_t, TPrimitive):
-        return _primitive_view(crud_helpers, ctx, crud_model)
-    else:
-        return _form_view(crud_model.value_t)
 
 
 @mark.actor.model_layout_creg

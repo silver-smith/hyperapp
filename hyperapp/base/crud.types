@@ -2,6 +2,10 @@ arg = record:
   name: string
   value: ref
 
+view = record:
+  base_view: ref
+  label: string
+
 model = record:
   value_t: ref
   model: ref opt
@@ -22,7 +26,11 @@ open_command_fn = record:
   commit_command_d: ref
   commit_action_fn: ref
 
-init_fn = record
+init_fn = record:
+  model: ref opt
+  args: arg list
+  fn: ref opt
+
 
 edit_d = record
 save_d = record

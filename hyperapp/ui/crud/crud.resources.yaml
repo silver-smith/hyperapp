@@ -8,33 +8,38 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.command:cfg_item
-- legacy_type.command:model_command_enumerator
-- legacy_type.command:properties
+- legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.crud:arg
-- legacy_type.crud:init_fn
-- legacy_type.crud:model
 - legacy_type.crud:open_command_fn
-- legacy_type.crud:str_adapter
+- legacy_type.crud:view
 - legacy_type.form:view
-- legacy_type.record_adapter:fn_record_adapter
+- legacy_type.record_adapter:static_record_adapter
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
-- legacy_type.text:edit_view
 - ui.command:command.module
+- ui.context_view:context_view.module
 definitions:
-  CrudInitFn:
+  CrudContextView:
     type: legacy_type.builtin:attribute
     value:
       object: crud.module
-      attr_name: CrudInitFn
-  CrudInitFn.from_piece:
+      attr_name: CrudContextView
+  CrudContextView.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: CrudInitFn
+      object: CrudContextView
       attr_name: from_piece
+  CrudContextView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: CrudContextView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params:
+      - view_reg
   CrudOpenFn:
     type: legacy_type.builtin:attribute
     value:
@@ -45,52 +50,21 @@ definitions:
     value:
       object: CrudOpenFn
       attr_name: from_piece
-  CrudStrAdapter:
-    type: legacy_type.builtin:attribute
-    value:
-      object: crud.module
-      attr_name: CrudStrAdapter
-  CrudStrAdapter.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: CrudStrAdapter
-      attr_name: from_piece
-  crud-init_fn.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.crud:init_fn
-      function: CrudInitFn.from_piece
-      service_params:
-      - crud_helpers
-  crud-model-crud_model_commands.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.crud:model
-      command: crud_model_commands.model-command-enumerator
-  crud-model.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.crud:model
-      function: crud_model_layout
-      service_params:
-      - system_fn_creg
-      - visualizer
-      - selector_reg
-      - crud_helpers
   crud-open_command_fn.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.crud:open_command_fn
       function: CrudOpenFn.from_piece
       service_params:
+      - system_fn_creg
+      - view_reg
       - selector_reg
-  crud-str_adapter.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.crud:str_adapter
-      function: CrudStrAdapter.from_piece
-      service_params:
       - crud_helpers
+  crud-view.view-template:
+    type: legacy_type.cfg_item:typed_fn_cfg_item
+    value:
+      t: legacy_type.crud:view
+      system_fn: CrudContextView_from_piece.system-fn
   crud.module:
     type: legacy_type.builtin:python_module
     value:
@@ -98,15 +72,12 @@ definitions:
       file_name: crud.dyn.py
       import_list:
         code.command: ui.command:command.module
+        code.context_view: ui.context_view:context_view.module
         code.mark: base.mark:mark.module
-        htypes.command.properties: legacy_type.command:properties
         htypes.crud.arg: legacy_type.crud:arg
-        htypes.crud.init_fn: legacy_type.crud:init_fn
-        htypes.crud.model: legacy_type.crud:model
-        htypes.crud.str_adapter: legacy_type.crud:str_adapter
+        htypes.crud.view: legacy_type.crud:view
         htypes.form.view: legacy_type.form:view
-        htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
-        htypes.text.edit_view: legacy_type.text:edit_view
+        htypes.record_adapter.static_record_adapter: legacy_type.record_adapter:static_record_adapter
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -127,29 +98,6 @@ definitions:
       - system_fn_creg
       want_config: false
       free_params: []
-  crud_model_commands:
-    type: legacy_type.builtin:attribute
-    value:
-      object: crud.module
-      attr_name: crud_model_commands
-  crud_model_commands.fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: crud_model_commands
-      ctx_params:
-      - piece
-      service_params:
-      - system_fn_creg
-      - crud_helpers
-  crud_model_commands.model-command-enumerator:
-    type: legacy_type.command:model_command_enumerator
-    value:
-      system_fn: crud_model_commands.fn
-  crud_model_layout:
-    type: legacy_type.builtin:attribute
-    value:
-      object: crud.module
-      attr_name: crud_model_layout
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
