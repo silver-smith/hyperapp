@@ -4,7 +4,6 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - ui.adapter_creg:adapter_creg.service
-- ui.args_picker_fn:command-args_picker_command_fn.actor-template
 - ui.column_resource_name:column-column_k.actor-template
 - ui.column_visible_reg:column_visible_reg.service
 - ui.command_cfg_item:command-cfg_item.actor-template
@@ -16,14 +15,15 @@ import:
 - ui.controller:canned_ctl_item_factory.service
 - ui.controller:controller_running.service
 - ui.controller:layout-view.feed-template
-- ui.crud:crud-init_fn.actor-template
-- ui.crud:crud-model-crud_model_commands.command-cfg-item
-- ui.crud:crud-model.actor-template
-- ui.crud:crud-open_command_fn.actor-template
-- ui.crud:crud-str_adapter.actor-template
-- ui.crud:crud_helpers.service
-- ui.editor_default_reg:editor_default_reg.service
-- ui.editor_defaults:builtin-string.editor_default.cfg-item
+- ui.crud.args_picker_fn:command-args_picker_command_fn.actor-template
+- ui.crud.crud:crud-init_fn.actor-template
+- ui.crud.crud:crud-model-crud_model_commands.command-cfg-item
+- ui.crud.crud:crud-model.actor-template
+- ui.crud.crud:crud-open_command_fn.actor-template
+- ui.crud.crud:crud-str_adapter.actor-template
+- ui.crud.crud:crud_helpers.service
+- ui.crud.editor_default_reg:editor_default_reg.service
+- ui.crud.editor_defaults:builtin-string.editor_default.cfg-item
 - ui.feed:feed-index_tree_feed_type.actor-template
 - ui.feed:feed-list_feed_type.actor-template
 - ui.feed:feed_factory.service
@@ -187,7 +187,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.editor_defaults:builtin-string.editor_default.cfg-item
+      - ui.crud.editor_defaults:builtin-string.editor_default.cfg-item
       - ui.view.view_factory_list:view_factory-factory.editor_default.cfg-item
   feed_factory:
     type: legacy_type.system:item_list_config
@@ -211,7 +211,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.crud:crud-model-crud_model_commands.command-cfg-item
+      - ui.crud.crud:crud-model-crud_model_commands.command-cfg-item
       - ui.layout:layout-view-enum_layout_tree_commands.command-cfg-item
   model_command_reg:
     type: legacy_type.system:item_list_config
@@ -226,7 +226,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.crud:crud-model.actor-template
+      - ui.crud.crud:crud-model.actor-template
       - ui.visualizer:builtin-int.actor-template
       - ui.visualizer:builtin-string.actor-template
   resource_name_creg:
@@ -248,8 +248,8 @@ definitions:
       - ui.command_creg:command_creg.service
       - ui.controller:canned_ctl_item_factory.service
       - ui.controller:controller_running.service
-      - ui.crud:crud_helpers.service
-      - ui.editor_default_reg:editor_default_reg.service
+      - ui.crud.crud:crud_helpers.service
+      - ui.crud.editor_default_reg:editor_default_reg.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_type_creg.service
       - ui.local_server:local_server_peer.service
@@ -283,15 +283,15 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.args_picker_fn:command-args_picker_command_fn.actor-template
-      - ui.crud:crud-init_fn.actor-template
-      - ui.crud:crud-open_command_fn.actor-template
+      - ui.crud.args_picker_fn:command-args_picker_command_fn.actor-template
+      - ui.crud.crud:crud-init_fn.actor-template
+      - ui.crud.crud:crud-open_command_fn.actor-template
       - ui.system_fn:system_fn-ctx_fn.actor-template
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.crud:crud-str_adapter.actor-template
+      - ui.crud.crud:crud-str_adapter.actor-template
       - ui.int_adapter:int_adapter-int_adapter.actor-template
       - ui.qt.fn_index_tree_adapter:tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.fn_list_adapter:list_adapter-fn_list_adapter.actor-template
