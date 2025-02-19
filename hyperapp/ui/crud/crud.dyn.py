@@ -39,7 +39,7 @@ class CrudContextView(ContextView):
 
 class CrudOpenFn:
 
-    _required_kw = {'view', 'widget', 'hook', 'model', 'current_item'}
+    _required_kw = {'view', 'widget', 'navigator', 'model', 'current_item'}
 
     @classmethod
     @mark.actor.system_fn_creg
@@ -88,13 +88,13 @@ class CrudOpenFn:
         return self._open(
             view=view,
             state=view.widget_state(widget),
-            hook=ctx_kw['hook'],
+            navigator_rec=ctx_kw['navigator'],
             model=ctx_kw['model'],
             current_item=ctx_kw['current_item'],
             ctx=ctx,
             )
 
-    def _open(self, view, state, hook, model, current_item, ctx):
+    def _open(self, view, state, navigator_rec, model, current_item, ctx):
         try:
             selector = self._selector_reg[self._value_t]
         except KeyError:
@@ -130,13 +130,14 @@ class CrudOpenFn:
             base_view=mosaic.put(base_view_piece),
             label=self._name,
             )
-        new_state = None
         new_ctx = ctx.clone_with(
             model=new_model,
             )
         new_view = self._view_reg.animate(new_view_piece, new_ctx)
-        hook.replace_view(new_view, new_state)
-        return new_model
+        navigator_widget = navigator_rec.widget_wr()
+        if navigator_widget is None:
+            raise RuntimeError("Navigator widget is gone")
+        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget)
 
     def _editor_view(self, ctx, model, args):
         if isinstance(self._value_t, TPrimitive):

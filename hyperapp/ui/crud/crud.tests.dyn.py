@@ -133,34 +133,33 @@ def run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, v
         )
     fn = crud.CrudOpenFn.from_piece(piece)
 
-    assert fn.missing_params(Context()) == {'view', 'widget', 'hook', 'model', 'current_item'}
+    assert fn.missing_params(Context()) == {'view', 'widget', 'navigator', 'model', 'current_item'}
     view = Mock()
     view.piece = htypes.label.view("Sample base view")
     view.widget_state.return_value = htypes.label.state()
     widget = Mock()
-    hook = Mock()
+    navigator_widget = Mock()
+    navigator_rec = Mock(view=Mock(), widget_wr=weakref.ref(navigator_widget))
     ctx = ctx.clone_with(
         view=view,
         widget=weakref.ref(widget),
-        hook=hook,
+        navigator=navigator_rec,
         model=htypes.crud_tests.sample_model(),
         current_item=htypes.crud_tests.sample_item(id=item_id),
         )
     assert not fn.missing_params(ctx)
     new_model = fn.call(ctx)
-    hook.replace_view.assert_called_once()
-    return new_model
+    navigator_rec.view.open.assert_called_once()
 
 
 def test_open_command_fn(ctx, _sample_crud_get_fn, _sample_crud_update_fn):
     value_t = htypes.crud_tests.sample_record
-    new_model = run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id=11)
-    assert isinstance(new_model, htypes.crud_tests.sample_record)
+    run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id=11)
 
 
 def _test_open_command_fn_with_selector(ctx, _sample_crud_get_fn, _sample_crud_update_fn):
     value_t = htypes.crud_tests.sample_selector
-    new_model = run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id=22)
+    run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id=22)
 
 
 @mark.fixture
