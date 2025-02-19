@@ -17,7 +17,7 @@ import:
 - legacy_type.global_commands:model
 - legacy_type.model_commands:model
 - legacy_type.system_fn:ctx_fn
-- views.context_view:context_view.module
+- ui.context_view:context_view.module
 definitions:
   CommandLayoutContextView:
     type: legacy_type.builtin:attribute
@@ -51,7 +51,7 @@ definitions:
       module_name: command_layout_context
       file_name: command_layout_context.dyn.py
       import_list:
-        code.context_view: views.context_view:context_view.module
+        code.context_view: ui.context_view:context_view.module
         code.mark: base.mark:mark.module
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view

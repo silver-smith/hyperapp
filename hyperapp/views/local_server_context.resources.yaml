@@ -11,7 +11,7 @@ import:
 - legacy_type.local_server_context:open_local_server_context_d
 - legacy_type.local_server_context:view
 - legacy_type.system_fn:ctx_fn
-- views.context_view:context_view.module
+- ui.context_view:context_view.module
 definitions:
   LocalServerContextView:
     type: legacy_type.builtin:attribute
@@ -44,7 +44,7 @@ definitions:
       module_name: local_server_context
       file_name: local_server_context.dyn.py
       import_list:
-        code.context_view: views.context_view:context_view.module
+        code.context_view: ui.context_view:context_view.module
         code.mark: base.mark:mark.module
         htypes.context_view.state: legacy_type.context_view:state
         htypes.local_server_context.view: legacy_type.local_server_context:view
