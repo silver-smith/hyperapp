@@ -39,3 +39,4 @@ def test_open_local_server_context(view_reg):
     view = view_reg.animate(piece, ctx)
     hook = Mock()
     result = local_server_context.open_local_server_context(view, state, hook, ctx)
+    hook.replace_view.assert_called_once()
