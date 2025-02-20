@@ -67,6 +67,21 @@ definitions:
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
         services.deduce_t: builtins:deduce_t.service
         services.web: builtins:web.service
+  ui_command_enumerator_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command.module
+      attr_name: ui_command_enumerator_reg
+  ui_command_enumerator_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: ui_command_enumerator_reg
+      ctl: command-typed_config_ctl.ctl
+      function: ui_command_enumerator_reg
+      service_params: []
+      want_config: true
+      free_params:
+      - view_t
   ui_command_from_piece:
     type: legacy_type.builtin:attribute
     value:

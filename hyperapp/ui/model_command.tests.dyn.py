@@ -57,8 +57,8 @@ def test_model_command_reg(model_command_reg):
 
 
 def test_model_command_enumerator_reg(model_command_enumerator_reg):
-    model = htypes.model_command_tests.sample_model()
-    commands = model_command_enumerator_reg(model)
+    model_t = htypes.model_command_tests.sample_model
+    commands = model_command_enumerator_reg(model_t)
 
 
 def test_get_model_commands(get_model_commands):

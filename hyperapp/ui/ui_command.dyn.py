@@ -72,6 +72,11 @@ def universal_ui_command_reg(config):
     return config
 
 
+@mark.service(ctl=TypedCommandConfigCtl())
+def ui_command_enumerator_reg(config, view_t):
+    return config.get(view_t, [])
+
+
 @mark.service
 def get_view_commands(view_reg, visualizer, view_ui_command_reg, view_ui_model_command_reg, universal_ui_command_reg, lcs, view):
     view_t = deduce_t(view.piece)

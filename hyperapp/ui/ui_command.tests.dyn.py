@@ -21,7 +21,7 @@ class PhonyView:
 
     @property
     def piece(self):
-        return htypes.ui_command_tests.view()
+        return htypes.ui_command_tests.sample_view()
 
     def widget_state(self, widget):
         return 'a-state'
@@ -62,7 +62,7 @@ def view_ui_command_reg_config(partial_ref):
         properties=htypes.command.properties(False, False, False),
         groups=set(),
         )
-    return {htypes.ui_command_tests.view: [command]}
+    return {htypes.ui_command_tests.sample_view: [command]}
 
 
 async def test_view_commands(get_view_commands, view, widget):
@@ -93,3 +93,8 @@ def test_ui_command_from_piece():
         )
     command = ui_command.ui_command_from_piece(piece)
     assert isinstance(command, ui_command.UnboundUiCommand)
+
+
+def test_ui_command_enumerator_reg(ui_command_enumerator_reg):
+    view_t = htypes.ui_command_tests.sample_view
+    commands = ui_command_enumerator_reg(view_t)
