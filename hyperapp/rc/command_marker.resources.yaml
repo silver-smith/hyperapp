@@ -65,6 +65,21 @@ definitions:
       - system
       - ctr_collector
 
+  UiCommandEnumeratorMarker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_marker.module
+      attr_name: UiCommandEnumeratorMarker
+
+  ui_command_enum.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: ui_command_enum
+      function: UiCommandEnumeratorMarker
+      service_params:
+      - system
+      - ctr_collector
+
   ModelCommandMarker:
     type: legacy_type.builtin:attribute
     value:

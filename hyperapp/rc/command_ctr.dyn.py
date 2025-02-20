@@ -233,6 +233,20 @@ class UniversalUiCommandTemplateCtr(UntypedCommandTemplateCtr):
     _command_resource_suffix = 'universal-ui-command'
 
 
+class UiCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
+
+    _template_ctr_t = htypes.command_resource.ui_command_enumerator_template_ctr
+    _is_global = False
+    _command_resource_suffix = 'ui-command-enumerator'
+
+    def _make_command(self, types, name, fn, name_to_res):
+        if name_to_res is not None:
+            name_to_res[f'{self._fn_name}.fn'] = fn
+        return htypes.command.ui_command_enumerator(
+            system_fn=mosaic.put(fn),
+            )
+
+
 class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
 
     _command_t = htypes.command.model_command

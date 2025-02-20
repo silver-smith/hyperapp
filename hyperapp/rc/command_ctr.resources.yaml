@@ -10,10 +10,12 @@ import:
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:ui_command
+- legacy_type.command:ui_command_enumerator
 - legacy_type.command_resource:arg
 - legacy_type.command_resource:global_model_command_template_ctr
 - legacy_type.command_resource:model_command_enumerator_template_ctr
 - legacy_type.command_resource:model_command_template_ctr
+- legacy_type.command_resource:ui_command_enumerator_template_ctr
 - legacy_type.command_resource:ui_command_template_ctr
 - legacy_type.command_resource:universal_ui_command_template_ctr
 - legacy_type.system:actor_template
@@ -37,10 +39,12 @@ definitions:
         htypes.command.model_command: legacy_type.command:model_command
         htypes.command.model_command_enumerator: legacy_type.command:model_command_enumerator
         htypes.command.ui_command: legacy_type.command:ui_command
+        htypes.command.ui_command_enumerator: legacy_type.command:ui_command_enumerator
         htypes.command_resource.arg: legacy_type.command_resource:arg
         htypes.command_resource.global_model_command_template_ctr: legacy_type.command_resource:global_model_command_template_ctr
         htypes.command_resource.model_command_enumerator_template_ctr: legacy_type.command_resource:model_command_enumerator_template_ctr
         htypes.command_resource.model_command_template_ctr: legacy_type.command_resource:model_command_template_ctr
+        htypes.command_resource.ui_command_enumerator_template_ctr: legacy_type.command_resource:ui_command_enumerator_template_ctr
         htypes.command_resource.ui_command_template_ctr: legacy_type.command_resource:ui_command_template_ctr
         htypes.command_resource.universal_ui_command_template_ctr: legacy_type.command_resource:universal_ui_command_template_ctr
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
@@ -85,6 +89,25 @@ definitions:
     value:
       t: legacy_type.command_resource:universal_ui_command_template_ctr
       function: UniversalUiCommandTemplateCtr.from_piece
+      service_params: []
+
+  UiCommandEnumeratorTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_ctr.module
+      attr_name: UiCommandEnumeratorTemplateCtr
+
+  UiCommandEnumeratorTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UiCommandEnumeratorTemplateCtr
+      attr_name: from_piece
+
+  command_resource-ui_command_enumerator_template_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command_resource:ui_command_enumerator_template_ctr
+      function: UiCommandEnumeratorTemplateCtr.from_piece
       service_params: []
 
   ModelCommandTemplateCtr:

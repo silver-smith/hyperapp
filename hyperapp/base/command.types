@@ -15,11 +15,13 @@ fn_command = record:
   properties: properties
   system_fn: ref
 
+command_enumerator = record:
+  system_fn: ref
+
 ui_command = record(fn_command)
 model_command = record(fn_command)
-
-model_command_enumerator = record:
-  system_fn: ref
+ui_command_enumerator = record(command_enumerator)
+model_command_enumerator = record(command_enumerator)
 
 
 arg = record:

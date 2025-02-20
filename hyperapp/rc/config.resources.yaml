@@ -19,6 +19,7 @@ import:
 - rc.command_ctr:command_resource-global_model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource-model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource-model_command_enumerator_template_ctr.actor-template
+- rc.command_ctr:command_resource-ui_command_enumerator_template_ctr.actor-template
 - rc.command_ctr:command_resource-ui_command_template_ctr.actor-template
 - rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-template
 - rc.command_marker:command.marker-template
@@ -26,6 +27,7 @@ import:
 - rc.command_marker:global_command.marker-template
 - rc.command_marker:ui_command.marker-template
 - rc.command_marker:universal_ui_command.marker-template
+- rc.command_marker:ui_command_enum.marker-template
 - rc.command_marker:ui_model_command.marker-template
 - rc.config_fixture_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource-config_item_resource.actor-template
@@ -151,6 +153,7 @@ definitions:
       - rc.command_marker:global_command.marker-template
       - rc.command_marker:ui_command.marker-template
       - rc.command_marker:universal_ui_command.marker-template
+      - rc.command_marker:ui_command_enum.marker-template
       - rc.command_marker:ui_model_command.marker-template
       - rc.config_fixture_marker:config_fixture.marker-template
       - rc.crud_marker:crud.marker-template
@@ -178,6 +181,7 @@ definitions:
       - rc.command_ctr:command_resource-global_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource-model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource-model_command_enumerator_template_ctr.actor-template
+      - rc.command_ctr:command_resource-ui_command_enumerator_template_ctr.actor-template
       - rc.command_ctr:command_resource-ui_command_template_ctr.actor-template
       - rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-template
       - rc.crud_ctr:crud_ctr-commit_ctr.actor-template

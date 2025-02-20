@@ -4,6 +4,7 @@ from .services import deduce_t
 from .code.command_ctr import (
     UiCommandTemplateCtr,
     UniversalUiCommandTemplateCtr,
+    UiCommandEnumeratorTemplateCtr,
     ModelCommandTemplateCtr,
     ModelCommandEnumeratorTemplateCtr,
     GlobalModelCommandTemplateCtr,
@@ -93,6 +94,29 @@ class UniversalUiCommandProbe(CommandProbe):
         self._ctr_collector.add_constructor(ctr)
 
 
+class UiCommandEnumeratorProbe(CommandProbe):
+
+    def _add_constructor(self, params):
+        if self._t:
+            t = self._t
+        else:
+            try:
+                view = params.values['view']
+            except KeyError:
+                self._raise_error(f"Use type-specialized variant (@ui_command_enum(my_type)) or add 'view' parameter")
+                pass
+            try:
+                piece = view.piece
+            except AttributeError:
+                self._raise_error(f"View does not have 'piece' property: {view!r}")
+            t = deduce_t(piece)
+        ctr = UiCommandEnumeratorTemplateCtr(
+            **self._common_ctr_kw(params),
+            t=t,
+            )
+        self._ctr_collector.add_constructor(ctr)
+
+
 class ModelCommandProbe(CommandProbe):
 
     def _add_constructor(self, params):
@@ -172,6 +196,10 @@ class UniversalUiCommandDecorator(UntypedCommandDecorator):
     _command_desc = "Universal"
 
 
+class UiCommandEnumeratorDecorator(TypedCommandDecorator):
+    _probe_class = UiCommandEnumeratorProbe
+
+
 class ModelCommandDecorator(TypedCommandDecorator):
     _probe_class = ModelCommandProbe
 
@@ -223,6 +251,20 @@ class UniversalUiCommandMarker(CommandMarker):
             raise RuntimeError(f"Use non-type specialized marker, like '@mark.universal_ui_command'")
         check_is_function(fn)
         return UniversalUiCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, args=None, fn=fn)
+
+
+class UiCommandEnumeratorMarker(CommandMarker):
+
+    def __call__(self, fn_or_t):
+        service_name = 'ui_command_enumerator_reg'
+        if isinstance(fn_or_t, Type):
+            # Type-specialized variant (@mark.ui_command_enum(my_type)).
+            return UiCommandEnumeratorDecorator(self._system, self._ctr_collector, self._module_name, service_name, args=None, t=fn_or_t)
+        else:
+            # Not type-specialized variant  (@mark.command_enum).
+            check_not_classmethod(fn_or_t)
+            check_is_function(fn_or_t)
+            return UiCommandEnumeratorProbe(self._system, self._ctr_collector, self._module_name, service_name, args=None, fn=fn_or_t)
 
 
 class ModelCommandMarker(CommandMarker):
