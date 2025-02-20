@@ -102,18 +102,50 @@ def lcs():
 
 
 @mark.fixture
-def ctx(lcs):
+def navigator_widget():
+    return Mock()
+
+
+@mark.fixture
+def navigator_rec(navigator_widget):
+    return Mock(view=Mock(), widget_wr=weakref.ref(navigator_widget))
+
+
+@mark.fixture
+def ctx(lcs, navigator_rec):
     return Context(
         lcs=lcs,
+        navigator=navigator_rec,
         )
 
 
-def test_context_view(qapp ,ctx):
+@mark.fixture
+def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, item_id):
     base_view_piece = htypes.label.view("Sample label")
-    piece = htypes.crud.view(
+    return htypes.crud.view(
         base_view=mosaic.put(base_view_piece),
         label="Sample CRUD context",
+        model=mosaic.put(model),
+        commit_command_d=mosaic.put(htypes.crud.save_d()),
+        args=(htypes.crud.arg('id', mosaic.put(item_id)),),
+        pick_fn=None,
+        commit_fn=mosaic.put(_sample_crud_update_fn),
+        commit_value_field='value',
         )
+
+
+@mark.fixture
+def form_model():
+    return htypes.crud_tests.sample_model()
+
+
+@mark.fixture
+def selector_model():
+    return htypes.crud_tests.sample_selector_model()
+
+
+def test_context_view(qapp, ctx, view_piece_ctr, form_model):
+    piece = view_piece_ctr(form_model, 11)
     view = crud.CrudContextView.from_piece(piece, ctx)
     state = None
     widget = view.construct_widget(state, ctx)
@@ -122,7 +154,8 @@ def test_context_view(qapp ,ctx):
     assert state
 
 
-def run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id):
+@mark.fixture
+def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id):
     piece = htypes.crud.open_command_fn(
         name='edit',
         value_t=pyobj_creg.actor_to_ref(value_t),
@@ -138,8 +171,6 @@ def run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, v
     view.piece = htypes.label.view("Sample base view")
     view.widget_state.return_value = htypes.label.state()
     widget = Mock()
-    navigator_widget = Mock()
-    navigator_rec = Mock(view=Mock(), widget_wr=weakref.ref(navigator_widget))
     ctx = ctx.clone_with(
         view=view,
         widget=weakref.ref(widget),
@@ -152,24 +183,14 @@ def run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, v
     navigator_rec.view.open.assert_called_once()
 
 
-def test_open_command_fn(ctx, _sample_crud_get_fn, _sample_crud_update_fn):
+def test_open_command_fn(run_open_command_fn_test):
     value_t = htypes.crud_tests.sample_record
-    run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id=11)
+    run_open_command_fn_test(value_t, item_id=11)
 
 
-def _test_open_command_fn_with_selector(ctx, _sample_crud_get_fn, _sample_crud_update_fn):
+def _test_open_command_fn_with_selector(run_open_command_fn_test):
     value_t = htypes.crud_tests.sample_selector
-    run_open_command_fn_test(ctx, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id=22)
-
-
-@mark.fixture
-def model():
-    return htypes.crud_tests.sample_model()
-
-
-@mark.fixture
-def selector_model():
-    return htypes.crud_tests.sample_selector_model()
+    run_open_command_fn_test(value_t, item_id=22)
 
 
 @mark.fixture
@@ -252,20 +273,22 @@ def _test_str_model_layout(lcs, ctx, str_crud_model):
     assert isinstance(view_piece, htypes.text.edit_view), view_piece
 
 
-async def _test_model_commands(crud_model):
-    commands = crud.crud_model_commands(crud_model)
+async def test_command_enum(view_reg, lcs, ctx, view_piece_ctr, form_model):
+    view_piece = view_piece_ctr(form_model, 11)
+    view = view_reg.animate(view_piece, ctx)
+    commands = crud.crud_commit_command_enum(view, lcs)
     assert commands
     [unbound_cmd] = commands
     assert unbound_cmd.properties
     value = htypes.crud_tests.sample_record(12345, "Some text")
     input = Mock()
     input.get_value.return_value = value
-    ctx = Context(
-        model=crud_model,
-        piece=crud_model,
+    command_ctx = ctx.clone_with(
+        model=form_model,
+        piece=form_model,
         input=input,
         )
-    bound_cmd = unbound_cmd.bind(ctx)
+    bound_cmd = unbound_cmd.bind(command_ctx)
     assert bound_cmd.enabled
     await bound_cmd.run()
 

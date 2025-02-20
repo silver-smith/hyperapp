@@ -5,6 +5,12 @@ arg = record:
 view = record:
   base_view: ref
   label: string
+  model: ref opt
+  commit_command_d: ref
+  args: arg list
+  pick_fn: ref opt
+  commit_fn: ref
+  commit_value_field: string
 
 model = record:
   value_t: ref

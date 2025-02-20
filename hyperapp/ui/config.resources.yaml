@@ -17,6 +17,7 @@ import:
 - ui.controller:layout-view.feed-template
 - ui.crud.args_picker_fn:command-args_picker_command_fn.actor-template
 - ui.crud.crud:crud-open_command_fn.actor-template
+- ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
 - ui.crud.crud:crud-view.view-template
 - ui.crud.crud:crud_helpers.service
 - ui.crud.editor_default_reg:editor_default_reg.service
@@ -171,6 +172,7 @@ definitions:
         system: system
         system_fn_creg: system_fn_creg
         ui_adapter_creg: ui_adapter_creg
+        ui_command_enumerator_reg: ui_command_enumerator_reg
         ui_type_creg: ui_type_creg
         universal_ui_command_reg: universal_ui_command_reg
         view_factory_reg: view_factory_reg
@@ -300,6 +302,11 @@ definitions:
       - ui.qt.remote_fn_list_adapter:list_adapter-remote_fn_list_adapter.actor-template
       - ui.qt.static_list_adapter:list_adapter-static_list_adapter.actor-template
       - ui.str_adapter:str_adapter-static_str_adapter.actor-template
+  ui_command_enumerator_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
   ui_type_creg:
     type: legacy_type.system:item_list_config
     value:

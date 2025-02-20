@@ -9,6 +9,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command_enumerator
 - legacy_type.crud:arg
 - legacy_type.crud:open_command_fn
 - legacy_type.crud:view
@@ -20,6 +22,7 @@ import:
 - legacy_type.system_fn:ctx_fn
 - ui.command:command.module
 - ui.context_view:context_view.module
+- ui.ui_model_command:ui_model_command.module
 definitions:
   CrudContextView:
     type: legacy_type.builtin:attribute
@@ -39,7 +42,9 @@ definitions:
       - piece
       - ctx
       service_params:
+      - system_fn_creg
       - view_reg
+      - crud_helpers
   CrudOpenFn:
     type: legacy_type.builtin:attribute
     value:
@@ -60,6 +65,11 @@ definitions:
       - view_reg
       - selector_reg
       - crud_helpers
+  crud-view-crud_commit_command_enum.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.crud:view
+      command: crud_commit_command_enum.ui-command-enumerator
   crud-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
@@ -74,6 +84,7 @@ definitions:
         code.command: ui.command:command.module
         code.context_view: ui.context_view:context_view.module
         code.mark: base.mark:mark.module
+        code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.crud.arg: legacy_type.crud:arg
         htypes.crud.view: legacy_type.crud:view
         htypes.form.view: legacy_type.form:view
@@ -82,6 +93,27 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+  crud_commit_command_enum:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud.module
+      attr_name: crud_commit_command_enum
+  crud_commit_command_enum.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: crud_commit_command_enum
+      ctx_params:
+      - view
+      - lcs
+      service_params:
+      - system_fn_creg
+      - view_reg
+      - visualizer
+      - crud_helpers
+  crud_commit_command_enum.ui-command-enumerator:
+    type: legacy_type.command:ui_command_enumerator
+    value:
+      system_fn: crud_commit_command_enum.fn
   crud_helpers:
     type: legacy_type.builtin:attribute
     value:

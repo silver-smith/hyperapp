@@ -13,28 +13,70 @@ from .services import (
     )
 from .code.mark import mark
 from .code.command import BoundCommandBase, UnboundCommandBase
+from .code.ui_model_command import wrap_model_command_to_ui_command
 from .code.context_view import ContextView
 
 log = logging.getLogger(__name__)
+
+
+def _args_dict_to_tuple(args):
+    return tuple(
+        htypes.crud.arg(name, mosaic.put(value))
+        for name, value in args.items()
+        )
+
+
+def _args_tuple_to_dict(args):
+    return {
+        arg.name: web.summon(arg.value)
+        for arg in args
+        }
 
 
 class CrudContextView(ContextView):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, view_reg):
+    def from_piece(cls, piece, ctx, system_fn_creg, view_reg, crud_helpers):
         base_view = view_reg.invite(piece.base_view, ctx)
-        return cls(base_view, piece.label)
+        model = web.summon_opt(piece.model)
+        command_d = web.summon(piece.commit_command_d)
+        return cls(
+            system_fn_creg, crud_helpers, base_view, piece.label, model,
+            command_d, _args_tuple_to_dict(piece.args), piece.pick_fn, piece.commit_fn, piece.commit_value_field)
 
-    def __init__(self, base_view, label):
+    def __init__(
+            self, system_fn_creg, helpers, base_view, label, model,
+            command_d, args, pick_fn_ref, commit_fn_ref, commit_value_field):
         super().__init__(base_view, label)
+        self._system_fn_creg = system_fn_creg
+        self._helpers = helpers
+        self._model = model
+        self._command_d = command_d
+        self._args = args
+        self._pick_fn_ref = pick_fn_ref
+        self._commit_fn_ref = commit_fn_ref
+        self._commit_value_field = commit_value_field
 
     @property
     def piece(self):
         return htypes.crud.view(
             base_view=mosaic.put(self._base_view.piece),
             label=self._label,
+            model=mosaic.put_opt(self._model),
+            commit_command_d=mosaic.put(self._command_d),
+            args=_args_dict_to_tuple(self._args),
+            pick_fn=self._pick_fn_ref,
+            commit_fn=self._commit_fn_ref,
+            commit_value_field=self._commit_value_field,
             )
+
+    @property
+    def unbound_commit_command(self):
+        pick_fn = self._system_fn_creg.invite_opt(self._pick_fn_ref)
+        commit_fn = self._system_fn_creg.invite(self._commit_fn_ref)
+        return UnboundCrudCommitCommand(
+            self._helpers, self._command_d, self._model, self._args, pick_fn, commit_fn, self._commit_value_field)
 
 
 class CrudOpenFn:
@@ -103,13 +145,10 @@ class CrudOpenFn:
         else:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
-        args = tuple(
-            htypes.crud.arg(
-                name=name,
-                value=mosaic.put(getattr(current_item, name)),
-                )
+        args = {
+            name: getattr(current_item, name)
             for name in self._key_fields
-            )
+            }
         if not get_fn:
             # assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
             new_model, base_view_piece = self._editor_view(ctx, model, args)
@@ -129,6 +168,12 @@ class CrudOpenFn:
         new_view_piece = htypes.crud.view(
             base_view=mosaic.put(base_view_piece),
             label=self._name,
+            model=mosaic.put(model),
+            commit_command_d=self._commit_command_d_ref,
+            args=_args_dict_to_tuple(args),
+            pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
+            commit_fn=self._commit_action_fn_ref,
+            commit_value_field='value',
             )
         new_ctx = ctx.clone_with(
             model=new_model,
@@ -174,11 +219,11 @@ class CrudHelpers:
         self._system_fn_creg = system_fn_creg
 
     # Override context with original elements, canned by args picker.
-    def _canned_kw(self, ctx, args_kw):
+    def _canned_kw(self, ctx, args):
         hook = None
         kw = {}
         try:
-            item_piece = args_kw['canned_item_piece']
+            item_piece = args['canned_item_piece']
         except KeyError:
             pass
         else:
@@ -189,10 +234,6 @@ class CrudHelpers:
         return kw
 
     def fn_ctx(self, ctx, model, args, **kw):
-        args_kw = {
-            arg.name: web.summon(arg.value)
-            for arg in args
-            }
         if model is not None:
             model_kw = {
                 'piece': model,
@@ -202,8 +243,8 @@ class CrudHelpers:
             model_kw = {}
         return ctx.clone_with(
             **model_kw,
-            **args_kw,
-            **self._canned_kw(ctx, args_kw),
+            **args,
+            **self._canned_kw(ctx, args),
             **kw,
             )
 
@@ -249,9 +290,10 @@ def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg,
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
-    def __init__(self, helpers, d, args, pick_fn, commit_fn, commit_value_field):
+    def __init__(self, helpers, d, model, args, pick_fn, commit_fn, commit_value_field):
         super().__init__(d)
         self._helpers = helpers
+        self._model = model
         self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
@@ -267,14 +309,15 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
 
     def bind(self, ctx):
         return BoundCrudCommitCommand(
-            self._helpers, self._d, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
+            self._helpers, self._d, self._model, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    def __init__(self, helpers, d, args, pick_fn, commit_fn, commit_value_field, ctx):
+    def __init__(self, helpers, d, model, args, pick_fn, commit_fn, commit_value_field, ctx):
         super().__init__(d)
         self._helpers = helpers
+        self._model = model
         self._args = args
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
@@ -298,19 +341,13 @@ class BoundCrudCommitCommand(BoundCommandBase):
         return required_kw - self._ctx.as_dict().keys()
 
     async def run(self):
-        crud_model = self._ctx.model
         if self._pick_fn:
-            # TODO: Invite a method to retrieve proper selector model.
-            # May be, add special wrapper view adding selector model to context when using selector.
-            selector_model = None
-            model_ctx = self._ctx.clone_with(piece=selector_model, model=selector_model)
-            value = self._pick_fn.call(model_ctx)
+            value = self._pick_fn.call(self._ctx)
         else:
             value = self._pick_ctx_value(self._ctx)
         log.info("Run CRUD commit command %r: args=%s; %s=%r", self.name, self._args, self._commit_value_field, value)
         fn_ctx = self._helpers.fn_ctx(
-            self._ctx,
-            crud_model=self._ctx.model,
+            self._ctx, self._model, self._args,
             **{self._commit_value_field: value},
             )
         return self._commit_fn.call(fn_ctx)
@@ -324,15 +361,8 @@ class BoundCrudCommitCommand(BoundCommandBase):
             return input.get_value()
 
 
-@mark.command_enum
-def crud_model_commands(piece, system_fn_creg, crud_helpers):
-    command_d = web.summon(piece.commit_command_d)
-    args = {
-        arg.name: web.summon(arg.value)
-        for arg in piece.args
-        }
-    pick_fn = system_fn_creg.invite_opt(piece.pick_fn)
-    commit_fn = system_fn_creg.invite(piece.commit_action_fn)
-    return [
-        UnboundCrudCommitCommand(crud_helpers, command_d, args, pick_fn, commit_fn, piece.commit_value_field)
-        ]
+@mark.ui_command_enum
+def crud_commit_command_enum(view, lcs, system_fn_creg, view_reg, visualizer, crud_helpers):
+    model_command = view.unbound_commit_command
+    ui_command = wrap_model_command_to_ui_command(view_reg, visualizer, lcs, model_command)
+    return [ui_command]
