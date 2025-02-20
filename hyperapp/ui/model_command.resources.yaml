@@ -15,6 +15,7 @@ import:
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_config_ctl:command_config_ctl.module
+- ui.command_enumerator:command_enumerator.module
 definitions:
   command-model_command.actor-template:
     type: legacy_type.system:actor_template
@@ -76,6 +77,7 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.command_config_ctl: ui.command_config_ctl:command_config_ctl.module
+        code.command_enumerator: ui.command_enumerator:command_enumerator.module
         code.mark: base.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
         services.web: builtins:web.service

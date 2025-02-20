@@ -1,4 +1,3 @@
-import inspect
 import logging
 from functools import partial
 
@@ -8,6 +7,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.command import UnboundCommand, BoundCommand
+from .code.command_enumerator import UnboundCommandEnumerator
 from .code.command_config_ctl import TypedCommandConfigCtl, UntypedCommandConfigCtl
 
 log = logging.getLogger(__name__)
@@ -57,26 +57,10 @@ def model_command_from_piece(piece, system_fn_creg):
         )
 
 
-class UnboundModelCommandEnumerator:
-
-    def __init__(self, ctx_fn):
-        self._ctx_fn = ctx_fn
-
-    def __repr__(self):
-        return f"<CommandEnum: {self._ctx_fn}>"
-
-    def enum_commands(self, ctx):
-        # log.info("Run command enumerator: %r (%s)", self, kw)
-        result = self._ctx_fn.call(ctx)
-        assert not inspect.iscoroutine(result), f"Async command enumerators are not supported: {self._ctx_fn}"
-        log.info("Run command enumerator %r result: [%s] %r", self, type(result), result)
-        return result
-
-
 @mark.actor.command_creg
 def model_command_enumerator_from_piece(piece, system_fn_creg):
     ctx_fn = system_fn_creg.invite(piece.system_fn)
-    return UnboundModelCommandEnumerator(
+    return UnboundCommandEnumerator(
         ctx_fn=ctx_fn,
         )
 

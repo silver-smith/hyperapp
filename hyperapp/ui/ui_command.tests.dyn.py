@@ -10,6 +10,7 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
+from .code.command_enumerator import UnboundCommandEnumerator
 from .tested.code import ui_command
 
 
@@ -72,7 +73,7 @@ async def test_view_commands(get_view_commands, view, widget):
         view=view,
         widget=weakref.ref(widget),
         )
-    command_list = get_view_commands(lcs, view)
+    command_list = get_view_commands(ctx, lcs, view)
     [unbound_command] = command_list
     bound_command = unbound_command.bind(ctx)
     result = await bound_command.run()
@@ -93,6 +94,19 @@ def test_ui_command_from_piece():
         )
     command = ui_command.ui_command_from_piece(piece)
     assert isinstance(command, ui_command.UnboundUiCommand)
+
+
+def test_ui_command_enumerator_from_piece():
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(_sample_fn),
+        ctx_params=('view', 'state'),
+        service_params=('sample_service',),
+        )
+    piece = htypes.command.ui_command_enumerator(
+        system_fn=mosaic.put(system_fn),
+        )
+    command = ui_command.ui_command_enumerator_from_piece(piece)
+    assert isinstance(command, UnboundCommandEnumerator)
 
 
 def test_ui_command_enumerator_reg(ui_command_enumerator_reg):

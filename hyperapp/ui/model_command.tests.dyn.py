@@ -5,6 +5,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.command_enumerator import UnboundCommandEnumerator
 from .tested.code import model_command
 
 
@@ -43,7 +44,7 @@ def test_model_command_enumerator_from_piece():
         system_fn=mosaic.put(system_fn),
         )
     command = model_command.model_command_enumerator_from_piece(piece)
-    assert isinstance(command, model_command.UnboundModelCommandEnumerator)
+    assert isinstance(command, UnboundCommandEnumerator)
 
 
 def test_global_command_reg(global_model_command_reg):

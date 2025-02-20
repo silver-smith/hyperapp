@@ -178,7 +178,7 @@ class _Item:
     async def _reverse_context(self, rctx):
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self._command_context(my_rctx)
-        unbound_view_commands = self._meta.svc.get_view_commands(self.ctx.lcs, self.view)
+        unbound_view_commands = self._meta.svc.get_view_commands(self.ctx, self.ctx.lcs, self.view)
         commands = view_commands = [cmd.bind(command_ctx) for cmd in unbound_view_commands]
         d_to_context = {}
         if 'model' in my_rctx.diffs(rctx):
