@@ -1,4 +1,4 @@
-from PySide6 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from . import htypes
 from .services import (
@@ -26,8 +26,18 @@ class ContextView(View):
             base_state = None
         base_widget = self._base_view.construct_widget(base_state, ctx)
         widget = QtWidgets.QWidget()
-        layout = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.Direction.TopToBottom, widget)
-        layout.addWidget(QtWidgets.QLabel(text=self._label))
+        layout = QtWidgets.QBoxLayout(
+            QtWidgets.QBoxLayout.Direction.TopToBottom, widget,
+            contentsMargins=QtCore.QMargins(0, 0, 0, 0),
+            )
+        label = QtWidgets.QLabel(
+            text=self._label,
+            frameShape=QtWidgets.QFrame.Panel,
+            frameShadow=QtWidgets.QFrame.Raised,
+            lineWidth=2,
+            margin=3,
+            )
+        layout.addWidget(label)
         layout.addWidget(base_widget)
         return widget
 
