@@ -1,7 +1,7 @@
 import logging
 import weakref
 
-from PySide6 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from hyperapp.boot.htypes import TRecord
 
@@ -59,7 +59,8 @@ class FormView(View):
         else:
             field_state = {}
         widget = QtWidgets.QWidget()
-        layout = QtWidgets.QVBoxLayout(widget)
+        layout = QtWidgets.QVBoxLayout(
+            widget, contentsMargins=QtCore.QMargins(0, 0, 0, 0))
         for name, t in self._adapter.record_t.fields.items():
             layout.addWidget(QtWidgets.QLabel(text=name))
             field = self._adapter.get_field(name)
