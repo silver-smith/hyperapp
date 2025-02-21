@@ -309,14 +309,15 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
 
     def bind(self, ctx):
         return BoundCrudCommitCommand(
-            self._helpers, self._d, self._model, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
+            self._helpers, self._d, self.properties, self._model, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    def __init__(self, helpers, d, model, args, pick_fn, commit_fn, commit_value_field, ctx):
+    def __init__(self, helpers, d, properties, model, args, pick_fn, commit_fn, commit_value_field, ctx):
         super().__init__(d)
         self._helpers = helpers
+        self._properties = properties
         self._model = model
         self._args = args
         self._pick_fn = pick_fn
@@ -332,6 +333,10 @@ class BoundCrudCommitCommand(BoundCommandBase):
     def disabled_reason(self):
         params = ", ".join(self._missing_params)
         return f"Params not ready: {params}"
+
+    @property
+    def properties(self):
+        return self._properties
 
     @cached_property
     def _missing_params(self):
