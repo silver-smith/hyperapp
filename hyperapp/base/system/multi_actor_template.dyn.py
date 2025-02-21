@@ -48,11 +48,5 @@ class MultiActorTemplate:
         return self._resolve_services(self._fn, system)
 
     def _resolve_services(self, fn, system):
-        if not self._service_params:
-            return fn
-        service_kw = {
-            name: system.resolve_service(name, requester=ActorRequester(self.t))
-            for name in self._service_params
-            }
-        bound_fn = partial(fn, **service_kw)
+        bound_fn = system.bind_services(self._service_params, requester=ActorRequester(self.t))
         return MultiActorItem(self._k, self.t, bound_fn)

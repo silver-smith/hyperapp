@@ -10,12 +10,8 @@ class ContextFn:
     @classmethod
     @mark.actor.system_fn_creg
     def from_piece(cls, piece, system, partial_ref):
-        service_kw = {
-            name: system.resolve_service(name)
-            for name in piece.service_params
-            }
         fn = pyobj_creg.invite(piece.function)
-        bound_fn = partial(fn, **service_kw)
+        bound_fn = system.bind_services(fn, piece.service_params)
         return cls(partial_ref, piece.ctx_params, piece.service_params, fn, bound_fn)
 
     def __init__(self, partial_ref, ctx_params, service_params, raw_fn, bound_fn):

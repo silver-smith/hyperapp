@@ -187,13 +187,7 @@ class ActorTemplate:
         return self._resolve_services(self._fn, system)
 
     def _resolve_services(self, fn, system):
-        if not self._service_params:
-            return fn
-        service_kw = {
-            name: system.resolve_service(name, requester=ActorRequester(self.t))
-            for name in self._service_params
-            }
-        return partial(fn, **service_kw)
+        return system.bind_services(fn, self._service_params, requester=ActorRequester(self.t))
 
 
 class System:
@@ -381,6 +375,13 @@ class System:
             self._resolve_stack.popitem()
         self._name_to_service[name] = service
         return service
+
+    def bind_services(self, fn, params, requester=None):
+        service_kw = {
+            name: self.resolve_service(name, requester)
+            for name in params
+            }
+        return partial(fn, **service_kw)
 
     def _raise_service_loop(self, name, requester):
         stack = [
