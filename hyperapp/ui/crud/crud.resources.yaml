@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:properties
 - legacy_type.command:ui_command_enumerator
 - legacy_type.crud:arg
 - legacy_type.crud:open_command_fn
@@ -85,6 +86,7 @@ definitions:
         code.context_view: ui.context_view:context_view.module
         code.mark: base.mark:mark.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
+        htypes.command.properties: legacy_type.command:properties
         htypes.crud.arg: legacy_type.crud:arg
         htypes.crud.view: legacy_type.crud:view
         htypes.form.view: legacy_type.form:view
