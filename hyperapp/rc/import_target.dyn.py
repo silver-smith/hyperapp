@@ -298,14 +298,14 @@ class ImportTarget(Target):
         self._target_set.add(test_target)
         test_target.create_job_target()
 
-    def recorded_python_module(self, tag=''):
+    def recorded_python_module(self, tag):
         assert self._completed
         recorder_piece, module_piece = self._src.recorded_python_module(tag)
         return (self._src.name, recorder_piece, module_piece)
 
     @property
     def python_module_piece(self):
-        recorder_piece, module_piece = self._src.recorded_python_module(tag='')
+        recorder_piece, module_piece = self._src.recorded_python_module(tag='test')
         return module_piece
 
     @property
