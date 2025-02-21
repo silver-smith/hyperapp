@@ -11,6 +11,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.system import UnknownServiceError, System
+from .code.probe import ProbeBase
 
 log = logging.getLogger(__name__)
 
@@ -290,6 +291,14 @@ class SystemProbe(System):
             fixture_cfg = fixture.resolve(self)
             ctl.merge(config, fixture_cfg)
         return self._make_config_probe(service_name, config)
+
+    def bind_services(self, fn, params, requester=None):
+        if inspect.ismethod(fn):
+            probe = fn.__func__
+            if isinstance(probe, ProbeBase):
+                obj = fn.__self__
+                fn = probe.real_fn.__get__(obj)
+        return super().bind_services(fn, params, requester)
 
     def add_constructor(self, ctr):
         ctr_collector = self.resolve_service('ctr_collector')

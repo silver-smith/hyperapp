@@ -25,7 +25,6 @@ from .code.service_req import ServiceReq
 from .code.service_ctr import ServiceTemplateCtr
 from .code.system_probe import SystemProbe
 from .code.requirement_factory import RequirementFactory
-from .code.skip_probe_actor_template import SkipProbeActorTemplate
 from .code.job_result import JobResult
 
 log = logging.getLogger(__name__)
@@ -187,17 +186,6 @@ class SystemJob:
     def _init_recorder(self, system, recorder_piece):
         ImportRecorder.configure_pyobj_creg(system)
         return pyobj_creg.animate(recorder_piece)
-
-    def _job_resources(self, module_piece):
-        template = htypes.system.actor_template(
-            t=pyobj_creg.actor_to_ref(htypes.system.actor_template),
-            function=pyobj_creg.actor_to_ref(SkipProbeActorTemplate.from_piece),
-            service_params=(),
-            )
-        yield ConfigItemResource(
-            service_name='cfg_item_creg',
-            template_ref=mosaic.put(template),
-            )
 
     _system_files = {
         'rc/system_job',

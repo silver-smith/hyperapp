@@ -2,6 +2,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
 - base.system.system:system.module
+- rc.probe:probe.module
 
 definitions:
 
@@ -13,3 +14,4 @@ definitions:
       import_list:
         services.pyobj_creg: builtins:pyobj_creg.service
         code.system: base.system.system:system.module
+        code.probe: rc.probe:probe.module

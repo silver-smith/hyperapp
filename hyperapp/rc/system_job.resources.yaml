@@ -14,7 +14,6 @@ import:
 - rc.requirement_factory:requirement_factory.module
 - rc.service_ctr:service_ctr.module
 - rc.service_req:service_req.module
-- rc.skip_probe_actor_template:skip_probe_actor_template.module
 - rc.system_probe:system_probe.module
 - base.system.config_ctl:config_ctl.module
 - base.system.system:system.module
@@ -42,6 +41,5 @@ definitions:
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.service_req: rc.service_req:service_req.module
-        code.skip_probe_actor_template: rc.skip_probe_actor_template:skip_probe_actor_template.module
         code.system: base.system.system:system.module
         code.system_probe: rc.system_probe:system_probe.module

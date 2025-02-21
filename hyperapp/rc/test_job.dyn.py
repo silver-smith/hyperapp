@@ -293,12 +293,11 @@ class TestJob(SystemJob):
     def run(self):
         resources = [*enum_builtin_resources(self._src.name), *flatten(self._req_to_resources.values())]
         recorder_piece, module_piece = self._src.recorded_python_module(tag='test')
-        system_resources = [*resources, *self._job_resources(module_piece)]
         system = None
         key_to_req = {}
         recorder = None
         try:
-            system = self.convert_errors(self._prepare_system, system_resources)
+            system = self.convert_errors(self._prepare_system, resources)
             cfg_item_creg = system['cfg_item_creg']
             key_to_req = self._make_key_to_req_map(cfg_item_creg)
             ctr_collector = system['ctr_collector']
@@ -312,7 +311,7 @@ class TestJob(SystemJob):
             result = x
         else:
             result = _Succeeded(self._src.name, self._import_reqs)
-        return result.make_result(system_resources, recorder, key_to_req, system)
+        return result.make_result(resources, recorder, key_to_req, system)
 
     def _run_system(self, system):
         rpc_servant_wrapper = system['rpc_servant_wrapper']
