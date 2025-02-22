@@ -19,7 +19,7 @@ import:
 - ui.crud.crud:crud-open_command_fn.actor-template
 - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
 - ui.crud.crud:crud-view.view-template
-- ui.crud.crud:crud_helpers.service
+- ui.crud.crud:crud.service
 - ui.crud.editor_default_reg:editor_default_reg.service
 - ui.crud.editor_defaults:builtin-string.editor_default.cfg-item
 - ui.feed:feed-index_tree_feed_type.actor-template
@@ -249,7 +249,7 @@ definitions:
       - ui.command_creg:command_creg.service
       - ui.controller:canned_ctl_item_factory.service
       - ui.controller:controller_running.service
-      - ui.crud.crud:crud_helpers.service
+      - ui.crud.crud:crud.service
       - ui.crud.editor_default_reg:editor_default_reg.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_type_creg.service

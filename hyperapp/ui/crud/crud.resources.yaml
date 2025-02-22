@@ -47,7 +47,7 @@ definitions:
       service_params:
       - system_fn_creg
       - view_reg
-      - crud_helpers
+      - crud
   CrudOpenFn:
     type: legacy_type.builtin:attribute
     value:
@@ -58,6 +58,11 @@ definitions:
     value:
       object: CrudOpenFn
       attr_name: from_piece
+  crud:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud.module
+      attr_name: crud
   crud-open_command_fn.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -65,10 +70,7 @@ definitions:
       function: CrudOpenFn.from_piece
       service_params:
       - system_fn_creg
-      - visualizer
-      - view_reg
-      - selector_reg
-      - crud_helpers
+      - crud
   crud-view-crud_commit_command_enum.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -100,6 +102,20 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+  crud.service:
+    type: legacy_type.system:service_template
+    value:
+      name: crud
+      ctl: system-dict_config_ctl.ctl
+      function: crud
+      service_params:
+      - canned_ctl_item_factory
+      - system_fn_creg
+      - visualizer
+      - view_reg
+      - selector_reg
+      want_config: false
+      free_params: []
   crud_commit_command_enum:
     type: legacy_type.builtin:attribute
     value:
@@ -116,27 +132,10 @@ definitions:
       - system_fn_creg
       - view_reg
       - visualizer
-      - crud_helpers
   crud_commit_command_enum.ui-command-enumerator:
     type: legacy_type.command:ui_command_enumerator
     value:
       system_fn: crud_commit_command_enum.fn
-  crud_helpers:
-    type: legacy_type.builtin:attribute
-    value:
-      object: crud.module
-      attr_name: crud_helpers
-  crud_helpers.service:
-    type: legacy_type.system:service_template
-    value:
-      name: crud_helpers
-      ctl: system-dict_config_ctl.ctl
-      function: crud_helpers
-      service_params:
-      - canned_ctl_item_factory
-      - system_fn_creg
-      want_config: false
-      free_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
