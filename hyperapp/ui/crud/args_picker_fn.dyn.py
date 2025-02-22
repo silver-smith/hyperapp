@@ -42,7 +42,7 @@ class ArgsPickerFn:
         # return self._required_kw - ctx_kw.keys()
 
     @staticmethod
-    def _make_canned_args(ctx):
+    def _can_crud_args(ctx):
         args = (
             htypes.crud.arg(
                 name='canned_item_piece',
@@ -81,7 +81,7 @@ class ArgsPickerFn:
         else:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
-        args = self._make_canned_args(ctx)
+        args = self._can_crud_args(ctx)
         return htypes.crud.model(
             value_t=pyobj_creg.actor_to_ref(value_t),
             model=None,
