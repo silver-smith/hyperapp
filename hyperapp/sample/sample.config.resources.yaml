@@ -10,6 +10,7 @@ import:
 - sample.sample_list:open_sample_fn_list.d
 - sample.sample_list_arg:show_sample_list_item.commit-d
 - sample.sample_list_arg:show_sample_list_item.open-d
+- sample.sample_list_crud:sample_list-sample_list.edit.commit-command.d
 - sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
 definitions:
   config:
@@ -42,6 +43,11 @@ definitions:
     value:
       key: sample.sample_list_arg:show_sample_list_item.open-d
       value: shortcut_Alt_Shift_S
+  config_item-sample.sample_list_crud-sample_list-sample_list.edit.commit-command.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: sample.sample_list_crud:sample_list-sample_list.edit.commit-command.d
+      value: shortcut_Return
   config_item-sample.sample_list_crud-sample_list-sample_list.edit.open-command.d:
     type: legacy_type.data_service:config_item
     value:
@@ -72,3 +78,4 @@ definitions:
       - config_item-sample.sample_commands-details.d
       - config_item-sample.sample_list_arg-show_sample_list_item.open-d
       - config_item-sample.sample_list_arg-show_sample_list_item.commit-d
+      - config_item-sample.sample_list_crud-sample_list-sample_list.edit.commit-command.d
