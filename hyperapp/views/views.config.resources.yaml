@@ -22,10 +22,10 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: views.local_server_context:open_local_server_context.d
-      value: shortcut_Alt_Shift_L
-  shortcut_Alt_Shift_L:
+      value: shortcut_Alt_Shift_S
+  shortcut_Alt_Shift_S:
     type: legacy_type.builtin:string
-    value: Alt+Shift+L
+    value: Alt+Shift+S
   shortcut_C:
     type: legacy_type.builtin:string
     value: C
