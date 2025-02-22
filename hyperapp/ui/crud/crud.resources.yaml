@@ -65,6 +65,7 @@ definitions:
       function: CrudOpenFn.from_piece
       service_params:
       - system_fn_creg
+      - visualizer
       - view_reg
       - selector_reg
       - crud_helpers

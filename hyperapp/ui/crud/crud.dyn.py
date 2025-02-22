@@ -85,9 +85,10 @@ class CrudOpenFn:
 
     @classmethod
     @mark.actor.system_fn_creg
-    def from_piece(cls, piece, system_fn_creg, view_reg, selector_reg, crud_helpers):
+    def from_piece(cls, piece, system_fn_creg, visualizer, view_reg, selector_reg, crud_helpers):
         return cls(
             system_fn_creg=system_fn_creg,
+            visualizer=visualizer,
             view_reg=view_reg,
             selector_reg=selector_reg,
             helpers=crud_helpers,
@@ -100,9 +101,10 @@ class CrudOpenFn:
             )
 
     def __init__(
-            self, system_fn_creg, view_reg, selector_reg, helpers,
+            self, system_fn_creg, visualizer, view_reg, selector_reg, helpers,
             name, value_t, key_fields, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
         self._system_fn_creg = system_fn_creg
+        self._visualizer = visualizer
         self._view_reg = view_reg
         self._selector_reg = selector_reg
         self._helpers = helpers
@@ -149,11 +151,12 @@ class CrudOpenFn:
             name: getattr(current_item, name)
             for name in self._key_fields
             }
+        value = self._run_init(ctx, model, args)
         if not get_fn:
             # assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
-            new_model, base_view_piece = self._editor_view(ctx, model, args)
+            base_view_piece = self._editor_view(value)
         else:
-            assert 0, 'TODO'
+            base_view_piece = self._selector_view(ctx, get_fn, value)
         # crud_model = htypes.crud.model(
         #     value_t=pyobj_creg.actor_to_ref(self._value_t),
         #     model=mosaic.put(model),
@@ -176,21 +179,19 @@ class CrudOpenFn:
             commit_value_field='value',
             )
         new_ctx = ctx.clone_with(
-            model=new_model,
+            model=value,
             )
         new_view = self._view_reg.animate(new_view_piece, new_ctx)
         navigator_widget = navigator_rec.widget_wr()
         if navigator_widget is None:
             raise RuntimeError("Navigator widget is gone")
-        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget)
+        navigator_rec.view.open(ctx, value, new_view, navigator_widget)
 
-    def _editor_view(self, ctx, model, args):
-        new_model = self._run_init(ctx, model, args)
+    def _editor_view(self, value):
         if isinstance(self._value_t, TPrimitive):
-            view = self._primitive_view(new_model)
+            return self._primitive_view(value)
         else:
-            view = self._form_view()
-        return (new_model, view)
+            return self._form_view()
 
     def _form_view(self):
         adapter = htypes.record_adapter.static_record_adapter(
@@ -203,6 +204,10 @@ class CrudOpenFn:
             adapter = htypes.str_adapter.static_str_adapter()
             return htypes.text.edit_view(mosaic.put(adapter))
         raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type {type(value)}: {value!r}")
+
+    def _selector_view(self, ctx, get_fn, value):
+        selector_model = get_fn.call(ctx, value=value)
+        return self._visualizer(ctx.lcs, ctx, selector_model)
 
     def _run_init(self, ctx, model, args):
         fn = self._system_fn_creg.invite(self._init_action_fn_ref)

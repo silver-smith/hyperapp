@@ -191,7 +191,32 @@ def test_open_command_fn_to_str(run_open_command_fn_test):
     run_open_command_fn_test(value_t, item_id=33)
 
 
-def _test_open_command_fn_to_selector(run_open_command_fn_test):
+@mark.config_fixture('selector_reg')
+def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
+    value_t = htypes.crud_tests.sample_selector
+    selector = Selector(
+        get_fn=_sample_selector_get_fn,
+        pick_fn=_sample_selector_pick_fn,
+        )
+    return {value_t: selector}
+
+
+@mark.config_fixture('model_layout_creg')
+def model_layout_config():
+    return {
+        htypes.crud_tests.sample_selector_model:
+            lambda piece, lcs, ctx: htypes.crud_tests.selector_view(),
+        }
+
+
+@mark.config_fixture('view_reg')
+def view_reg_config():
+    return {
+        htypes.crud_tests.selector_view: Mock(),
+        }
+
+
+def test_open_command_fn_to_selector(run_open_command_fn_test):
     value_t = htypes.crud_tests.sample_selector
     run_open_command_fn_test(value_t, item_id=22)
 
@@ -210,16 +235,6 @@ def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
         commit_value_field='value',
         )
-
-
-@mark.config_fixture('selector_reg')
-def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
-    value_t = htypes.crud_tests.sample_selector
-    selector = Selector(
-        get_fn=_sample_selector_get_fn,
-        pick_fn=_sample_selector_pick_fn,
-        )
-    return {value_t: selector}
 
 
 @mark.fixture
@@ -241,14 +256,6 @@ def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn, _sam
 def _test_record_model_layout(crud_model, lcs, ctx):
     view_piece = crud.crud_model_layout(crud_model, lcs, ctx)
     assert isinstance(view_piece, htypes.form.view)
-
-
-@mark.config_fixture('model_layout_creg')
-def model_layout_config():
-    return {
-        htypes.crud_tests.sample_selector_model:
-            lambda piece, lcs, ctx: htypes.crud_tests.selector_view(),
-        }
 
 
 def _test_selector_model_layout(lcs, ctx, selector_crud_model):
