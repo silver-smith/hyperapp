@@ -65,7 +65,7 @@ def _sample_selector_get(value):
 
 
 def _sample_selector_pick(piece, current_item):
-    # assert isinstance(piece, htypes.crud_tests.sample_selector_model), piece
+    assert isinstance(piece, htypes.crud_tests.sample_selector_model), piece
     assert isinstance(current_item, htypes.crud_tests.sample_selector_item)
     return htypes.crud_tests.sample_selector()
 
@@ -118,7 +118,12 @@ def ctx(lcs, navigator_rec):
 
 
 @mark.fixture
-def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, item_id):
+def model():
+    return htypes.crud_tests.sample_model()
+
+
+@mark.fixture
+def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, item_id, pick_fn):
     base_view_piece = htypes.label.view("Sample label")
     return htypes.crud.view(
         base_view=mosaic.put(base_view_piece),
@@ -126,24 +131,14 @@ def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, item_id):
         model=mosaic.put(model),
         commit_command_d=mosaic.put(htypes.crud.save_d()),
         args=(htypes.crud.arg('id', mosaic.put(item_id)),),
-        pick_fn=None,
+        pick_fn=mosaic.put_opt(pick_fn),
         commit_fn=mosaic.put(_sample_crud_update_fn),
         commit_value_field='value',
         )
 
 
-@mark.fixture
-def form_model():
-    return htypes.crud_tests.sample_model()
-
-
-@mark.fixture
-def selector_model():
-    return htypes.crud_tests.sample_selector_model()
-
-
-def test_context_view(qapp, ctx, view_piece_ctr, form_model):
-    piece = view_piece_ctr(form_model, 11)
+def test_context_view(qapp, ctx, view_piece_ctr):
+    piece = view_piece_ctr(11, pick_fn=None)
     view = crud.CrudContextView.from_piece(piece, ctx)
     state = None
     widget = view.construct_widget(state, ctx)
@@ -221,70 +216,8 @@ def test_open_command_fn_to_selector(run_open_command_fn_test):
     run_open_command_fn_test(value_t, item_id=22)
 
 
-@mark.fixture
-def crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
-    value_t = htypes.crud_tests.sample_record
-    return htypes.crud.model(
-        value_t=pyobj_creg.actor_to_ref(value_t),
-        model=mosaic.put(model),
-        args=(htypes.crud.arg('id', mosaic.put(11)),),
-        init_action_fn=mosaic.put(_sample_crud_get_fn),
-        commit_command_d=mosaic.put(htypes.crud.save_d()),
-        get_fn=None,
-        pick_fn=None,
-        commit_action_fn=mosaic.put(_sample_crud_update_fn),
-        commit_value_field='value',
-        )
-
-
-@mark.fixture
-def selector_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn, _sample_selector_get_fn, _sample_selector_pick_fn):
-    value_t = htypes.crud_tests.sample_selector
-    return htypes.crud.model(
-        value_t=pyobj_creg.actor_to_ref(value_t),
-        model=mosaic.put(model),
-        args=(htypes.crud.arg('id', mosaic.put(22)),),
-        init_action_fn=mosaic.put(_sample_crud_get_fn),
-        commit_command_d=mosaic.put(htypes.crud.save_d()),
-        get_fn=mosaic.put(_sample_selector_get_fn.piece),
-        pick_fn=mosaic.put(_sample_selector_pick_fn.piece),
-        commit_action_fn=mosaic.put(_sample_crud_update_fn),
-        commit_value_field='value',
-        )
-
-
-def _test_record_model_layout(crud_model, lcs, ctx):
-    view_piece = crud.crud_model_layout(crud_model, lcs, ctx)
-    assert isinstance(view_piece, htypes.form.view)
-
-
-def _test_selector_model_layout(lcs, ctx, selector_crud_model):
-    view_piece = crud.crud_model_layout(selector_crud_model, lcs, ctx)
-    assert isinstance(view_piece, htypes.crud_tests.selector_view), view_piece
-
-
-@mark.fixture
-def str_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
-    return htypes.crud.model(
-        value_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
-        model=mosaic.put(model),
-        args=(htypes.crud.arg('id', mosaic.put(33)),),
-        init_action_fn=mosaic.put(_sample_crud_get_fn),
-        commit_command_d=mosaic.put(htypes.crud.save_d()),
-        get_fn=None,
-        pick_fn=None,
-        commit_action_fn=mosaic.put(_sample_crud_update_fn),
-        commit_value_field='value',
-        )
-
-
-def _test_str_model_layout(lcs, ctx, str_crud_model):
-    view_piece = crud.crud_model_layout(str_crud_model, lcs, ctx)
-    assert isinstance(view_piece, htypes.text.edit_view), view_piece
-
-
-async def test_command_enum(view_reg, lcs, ctx, view_piece_ctr, form_model):
-    view_piece = view_piece_ctr(form_model, 11)
+async def test_command_enum_for_form(view_reg, lcs, ctx, view_piece_ctr, model):
+    view_piece = view_piece_ctr(11, pick_fn=None)
     view = view_reg.animate(view_piece, ctx)
     commands = crud.crud_commit_command_enum(view, lcs)
     assert commands
@@ -294,8 +227,8 @@ async def test_command_enum(view_reg, lcs, ctx, view_piece_ctr, form_model):
     input = Mock()
     input.get_value.return_value = value
     command_ctx = ctx.clone_with(
-        model=form_model,
-        piece=form_model,
+        model=model,
+        piece=model,
         input=input,
         )
     bound_cmd = unbound_cmd.bind(command_ctx)
@@ -303,23 +236,20 @@ async def test_command_enum(view_reg, lcs, ctx, view_piece_ctr, form_model):
     await bound_cmd.run()
 
 
-async def _test_model_commands_selector(selector_crud_model):
-    commands = crud.crud_model_commands(selector_crud_model)
+async def test_command_enum_for_selector(view_reg, lcs, ctx, _sample_selector_pick_fn, view_piece_ctr):
+    view_piece = view_piece_ctr(22, pick_fn=_sample_selector_pick_fn.piece)
+    view = view_reg.animate(view_piece, ctx)
+    commands = crud.crud_commit_command_enum(view, lcs)
     assert commands
     [unbound_cmd] = commands
     assert unbound_cmd.properties
-    ctx = Context(
-        model=selector_crud_model,
-        piece=selector_crud_model,
-        current_item=htypes.crud_tests.sample_selector_item(),
+    model = htypes.crud_tests.sample_selector_model()
+    current_item = htypes.crud_tests.sample_selector_item()
+    command_ctx = ctx.clone_with(
+        model=model,
+        piece=model,
+        current_item=current_item,
         )
-    bound_cmd = unbound_cmd.bind(ctx)
+    bound_cmd = unbound_cmd.bind(command_ctx)
     assert bound_cmd.enabled
     await bound_cmd.run()
-
-
-def _test_str_adapter(ctx):
-    piece = htypes.crud.str_adapter()
-    model = Mock()
-    adapter = crud.CrudStrAdapter.from_piece(piece, model, ctx)
-    assert adapter

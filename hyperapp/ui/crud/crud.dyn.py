@@ -157,17 +157,6 @@ class CrudOpenFn:
             base_view_piece = self._editor_view(value)
         else:
             base_view_piece = self._selector_view(ctx, get_fn, value)
-        # crud_model = htypes.crud.model(
-        #     value_t=pyobj_creg.actor_to_ref(self._value_t),
-        #     model=mosaic.put(model),
-        #     args=args,
-        #     init_action_fn=self._init_action_fn_ref,
-        #     commit_command_d=self._commit_command_d_ref,
-        #     get_fn=mosaic.put(get_fn.piece) if get_fn else None,
-        #     pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
-        #     commit_action_fn=self._commit_action_fn_ref,
-        #     commit_value_field='value',
-        #     )
         new_view_piece = htypes.crud.view(
             base_view=mosaic.put(base_view_piece),
             label=self._name,
@@ -255,20 +244,6 @@ class CrudHelpers:
 @mark.service
 def crud_helpers(canned_ctl_item_factory, system_fn_creg):
     return CrudHelpers(canned_ctl_item_factory, system_fn_creg)
-
-
-@mark.actor.model_layout_creg
-def crud_model_layout(piece, lcs, ctx, system_fn_creg, visualizer, selector_reg, crud_helpers):
-    if not piece.get_fn:
-        assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
-        return _editor_view(crud_helpers, ctx, piece)
-    get_fn = system_fn_creg.invite(piece.get_fn)
-    if piece.init_action_fn:
-        value = crud_helpers.run_crud_init(ctx, piece)
-    else:
-        value = None
-    selector_model = get_fn.call(ctx, value=value)
-    return visualizer(lcs, ctx, selector_model)
 
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
