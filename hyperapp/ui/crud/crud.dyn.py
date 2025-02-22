@@ -87,7 +87,6 @@ class CrudOpenFn:
     @mark.actor.system_fn_creg
     def from_piece(cls, piece, system_fn_creg, visualizer, view_reg, selector_reg, crud_helpers):
         return cls(
-            system_fn_creg=system_fn_creg,
             visualizer=visualizer,
             view_reg=view_reg,
             selector_reg=selector_reg,
@@ -95,15 +94,14 @@ class CrudOpenFn:
             name=piece.name,
             value_t=pyobj_creg.invite(piece.value_t),
             key_fields=piece.key_fields,
-            init_action_fn_ref=piece.init_action_fn,
+            init_action_fn=system_fn_creg.invite(piece.init_action_fn),
             commit_command_d_ref=piece.commit_command_d,
             commit_action_fn_ref=piece.commit_action_fn,
             )
 
     def __init__(
-            self, system_fn_creg, visualizer, view_reg, selector_reg, helpers,
-            name, value_t, key_fields, init_action_fn_ref, commit_command_d_ref, commit_action_fn_ref):
-        self._system_fn_creg = system_fn_creg
+            self, visualizer, view_reg, selector_reg, helpers,
+            name, value_t, key_fields, init_action_fn, commit_command_d_ref, commit_action_fn_ref):
         self._visualizer = visualizer
         self._view_reg = view_reg
         self._selector_reg = selector_reg
@@ -111,7 +109,7 @@ class CrudOpenFn:
         self._name = name
         self._value_t = value_t
         self._key_fields = key_fields
-        self._init_action_fn_ref = init_action_fn_ref
+        self._init_action_fn = init_action_fn
         self._commit_command_d_ref = commit_command_d_ref
         self._commit_action_fn_ref = commit_action_fn_ref
 
@@ -192,9 +190,8 @@ class CrudOpenFn:
         return self._visualizer(ctx.lcs, ctx, selector_model)
 
     def _run_init(self, ctx, model, args):
-        fn = self._system_fn_creg.invite(self._init_action_fn_ref)
         fn_ctx = self._helpers.fn_ctx(ctx, model, args)
-        return fn.call(fn_ctx)
+        return self._init_action_fn.call(fn_ctx)
 
 
 class CrudHelpers:
