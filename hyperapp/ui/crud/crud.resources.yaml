@@ -17,10 +17,12 @@ import:
 - legacy_type.crud:view
 - legacy_type.form:view
 - legacy_type.record_adapter:static_record_adapter
+- legacy_type.str_adapter:static_str_adapter
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.text:edit_view
 - ui.command:command.module
 - ui.context_view:context_view.module
 - ui.ui_model_command:ui_model_command.module
@@ -91,6 +93,8 @@ definitions:
         htypes.crud.view: legacy_type.crud:view
         htypes.form.view: legacy_type.form:view
         htypes.record_adapter.static_record_adapter: legacy_type.record_adapter:static_record_adapter
+        htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
+        htypes.text.edit_view: legacy_type.text:edit_view
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

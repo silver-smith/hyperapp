@@ -2,8 +2,6 @@ import logging
 import weakref
 from unittest.mock import Mock
 
-from hyperapp.boot.htypes import tString
-
 from . import htypes
 from .services import (
     mosaic,
@@ -183,12 +181,17 @@ def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_cr
     navigator_rec.view.open.assert_called_once()
 
 
-def test_open_command_fn(run_open_command_fn_test):
+def test_open_command_fn_to_form(run_open_command_fn_test):
     value_t = htypes.crud_tests.sample_record
     run_open_command_fn_test(value_t, item_id=11)
 
 
-def _test_open_command_fn_with_selector(run_open_command_fn_test):
+def test_open_command_fn_to_str(run_open_command_fn_test):
+    value_t = htypes.builtin.string
+    run_open_command_fn_test(value_t, item_id=33)
+
+
+def _test_open_command_fn_to_selector(run_open_command_fn_test):
     value_t = htypes.crud_tests.sample_selector
     run_open_command_fn_test(value_t, item_id=22)
 
@@ -256,7 +259,7 @@ def _test_selector_model_layout(lcs, ctx, selector_crud_model):
 @mark.fixture
 def str_crud_model(model, _sample_crud_get_fn, _sample_crud_update_fn):
     return htypes.crud.model(
-        value_t=pyobj_creg.actor_to_ref(tString),
+        value_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
         model=mosaic.put(model),
         args=(htypes.crud.arg('id', mosaic.put(33)),),
         init_action_fn=mosaic.put(_sample_crud_get_fn),

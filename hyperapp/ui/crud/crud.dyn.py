@@ -185,26 +185,24 @@ class CrudOpenFn:
         navigator_rec.view.open(ctx, new_model, new_view, navigator_widget)
 
     def _editor_view(self, ctx, model, args):
+        new_model = self._run_init(ctx, model, args)
         if isinstance(self._value_t, TPrimitive):
-            return self._primitive_view(ctx)
+            view = self._primitive_view(new_model)
         else:
-            return self._form_view(ctx, model, args)
+            view = self._form_view()
+        return (new_model, view)
 
-    def _form_view(self, ctx, model, args):
-        form_model = self._run_init(ctx, model, args)
+    def _form_view(self):
         adapter = htypes.record_adapter.static_record_adapter(
             record_t=pyobj_creg.actor_to_ref(self._value_t),
             )
-        return (form_model, htypes.form.view(mosaic.put(adapter)))
+        return htypes.form.view(mosaic.put(adapter))
 
-    def _primitive_view(self, ctx):
-        assert 0, 'TODO'
-        value = self._helpers.run_crud_init(ctx)
+    def _primitive_view(self, value):
         if type(value) is str:
-            adapter = htypes.crud.str_adapter()
+            adapter = htypes.str_adapter.static_str_adapter()
             return htypes.text.edit_view(mosaic.put(adapter))
-        else:
-            raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type {type(value)}: {value!r}")
+        raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type {type(value)}: {value!r}")
 
     def _run_init(self, ctx, model, args):
         fn = self._system_fn_creg.invite(self._init_action_fn_ref)
@@ -252,26 +250,6 @@ class CrudHelpers:
 @mark.service
 def crud_helpers(canned_ctl_item_factory, system_fn_creg):
     return CrudHelpers(canned_ctl_item_factory, system_fn_creg)
-
-
-class CrudStrAdapter:
-
-    @classmethod
-    @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, crud_helpers):
-        return cls(crud_helpers, ctx, model)
-
-    def __init__(self, helpers, ctx, crud_model):
-        self._helpers = helpers
-        self._ctx = ctx 
-        self._crud_model = crud_model
-
-    @property
-    def model(self):
-        return self._crud_model
-
-    def get_text(self):
-        return self._helpers.run_crud_init(self._ctx, self._crud_model)
 
 
 @mark.actor.model_layout_creg
