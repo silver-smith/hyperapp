@@ -159,7 +159,7 @@ def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_cr
         )
     fn = crud.CrudOpenFn.from_piece(piece)
 
-    assert fn.missing_params(Context()) == {'view', 'widget', 'navigator', 'model', 'current_item'}
+    assert fn.missing_params(Context()) == {'navigator', 'model', 'current_item'}
     view = Mock()
     view.piece = htypes.label.view("Sample base view")
     view.widget_state.return_value = htypes.label.state()

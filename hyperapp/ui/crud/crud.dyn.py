@@ -81,7 +81,7 @@ class CrudContextView(ContextView):
 
 class CrudOpenFn:
 
-    _required_kw = {'view', 'widget', 'navigator', 'model', 'current_item'}
+    _required_kw = {'navigator', 'model', 'current_item'}
 
     @classmethod
     @mark.actor.system_fn_creg
@@ -124,21 +124,14 @@ class CrudOpenFn:
 
     def call(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
-        view = ctx_kw['view']
-        widget_wr = ctx_kw['widget']
-        widget = widget_wr()
-        if widget is None:
-            raise RuntimeError(f"{self!r}: widget is gone")
         return self._open(
-            view=view,
-            state=view.widget_state(widget),
             navigator_rec=ctx_kw['navigator'],
             model=ctx_kw['model'],
             current_item=ctx_kw['current_item'],
             ctx=ctx,
             )
 
-    def _open(self, view, state, navigator_rec, model, current_item, ctx):
+    def _open(self, navigator_rec, model, current_item, ctx):
         try:
             selector = self._selector_reg[self._value_t]
         except KeyError:
