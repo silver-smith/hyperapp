@@ -12,18 +12,6 @@ view = record:
   commit_fn: ref
   commit_value_field: string
 
-model = record:
-  value_t: ref
-  model: ref opt
-  args: arg list
-  init_action_fn: ref opt
-  commit_command_d: ref
-  get_fn: ref opt
-  pick_fn: ref opt
-  commit_action_fn: ref
-  commit_value_field: string
-
-
 open_command_fn = record:
   name: string
   value_t: ref
@@ -35,10 +23,3 @@ open_command_fn = record:
 init_fn = record:
   model: ref opt
   args: arg list
-  fn: ref opt
-
-
-edit_d = record
-save_d = record
-
-str_adapter = record

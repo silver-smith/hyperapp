@@ -11,3 +11,5 @@ sample_selector = record
 sample_selector_model = record
 sample_selector_item = record
 selector_view = record
+
+save_d = record

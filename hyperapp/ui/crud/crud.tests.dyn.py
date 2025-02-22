@@ -129,7 +129,7 @@ def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, item_id, 
         base_view=mosaic.put(base_view_piece),
         label="Sample CRUD context",
         model=mosaic.put(model),
-        commit_command_d=mosaic.put(htypes.crud.save_d()),
+        commit_command_d=mosaic.put(htypes.crud_tests.save_d()),
         args=(htypes.crud.arg('id', mosaic.put(item_id)),),
         pick_fn=mosaic.put_opt(pick_fn),
         commit_fn=mosaic.put(_sample_crud_update_fn),
@@ -154,19 +154,13 @@ def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_cr
         value_t=pyobj_creg.actor_to_ref(value_t),
         key_fields=('id',),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
-        commit_command_d=mosaic.put(htypes.crud.save_d()),
+        commit_command_d=mosaic.put(htypes.crud_tests.save_d()),
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
         )
     fn = crud.CrudOpenFn.from_piece(piece)
 
     assert fn.missing_params(Context()) == {'navigator', 'model', 'current_item'}
-    view = Mock()
-    view.piece = htypes.label.view("Sample base view")
-    view.widget_state.return_value = htypes.label.state()
-    widget = Mock()
     ctx = ctx.clone_with(
-        view=view,
-        widget=weakref.ref(widget),
         navigator=navigator_rec,
         model=htypes.crud_tests.sample_model(),
         current_item=htypes.crud_tests.sample_item(id=item_id),

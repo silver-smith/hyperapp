@@ -212,7 +212,6 @@ class Crud:
 
     # Override context with original elements, canned by args picker.
     def _canned_kw(self, ctx, args):
-        hook = None
         kw = {}
         try:
             item_piece = args['canned_item_piece']
