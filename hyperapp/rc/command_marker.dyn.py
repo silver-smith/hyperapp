@@ -56,6 +56,17 @@ class CommandProbe(ProbeBase):
             self._raise_error(f"{names_str} argument is expected for command function: {list(params.values)}")
         return deduce_t(piece)
 
+    def _deduce_view_t(self, params, marker):
+        try:
+            view = params.values['view']
+        except KeyError:
+            self._raise_error(f"Use type-specialized variant (@{marker}(my_type)) or add 'view' parameter")
+        try:
+            piece = view.piece
+        except AttributeError:
+            self._raise_error(f"View does not have 'piece' property: {view!r}")
+        return deduce_t(piece)
+
     def _common_ctr_kw(self, params):
         args = {
             name: deduce_t(params.values[name])
@@ -77,10 +88,13 @@ class CommandProbe(ProbeBase):
 class UiCommandProbe(CommandProbe):
 
     def _add_constructor(self, params):
-        # Only type specialized markers are allowed.
+        if self._t:
+            t = self._t
+        else:
+            t = self._deduce_view_t(params, 'ui_command')
         ctr = UiCommandTemplateCtr(
             **self._common_ctr_kw(params),
-            t=self._t,
+            t=t,
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -100,16 +114,7 @@ class UiCommandEnumeratorProbe(CommandProbe):
         if self._t:
             t = self._t
         else:
-            try:
-                view = params.values['view']
-            except KeyError:
-                self._raise_error(f"Use type-specialized variant (@ui_command_enum(my_type)) or add 'view' parameter")
-                pass
-            try:
-                piece = view.piece
-            except AttributeError:
-                self._raise_error(f"View does not have 'piece' property: {view!r}")
-            t = deduce_t(piece)
+            t = self._deduce_view_t(params, 'ui_command_enum')
         ctr = UiCommandEnumeratorTemplateCtr(
             **self._common_ctr_kw(params),
             t=t,
@@ -223,11 +228,16 @@ class CommandMarker:
 
 class UiCommandMarker(CommandMarker):
 
-    def __call__(self, t, *, args=None):
-        if not isinstance(t, Type):
-            raise RuntimeError(f"Use type specialized marker, like '@mark.ui_command(my_type)'")
+    def __call__(self, fn_or_t, *, args=None):
         service_name = 'view_ui_command_reg'
-        return UiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, args, t)
+        if isinstance(fn_or_t, Type):
+            # Type-specialized variant (@mark.ui_command(my_type)).
+            return UiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, args, fn_or_t)
+        else:
+            # Not type-specialized variant  (@mark.ui_command).
+            check_not_classmethod(fn_or_t)
+            check_is_function(fn_or_t)
+            return UiCommandProbe(self._system, self._ctr_collector, self._module_name, service_name, args, fn=fn_or_t)
 
 
 class UiModelCommandMarker(CommandMarker):
@@ -261,7 +271,7 @@ class UiCommandEnumeratorMarker(CommandMarker):
             # Type-specialized variant (@mark.ui_command_enum(my_type)).
             return UiCommandEnumeratorDecorator(self._system, self._ctr_collector, self._module_name, service_name, args=None, t=fn_or_t)
         else:
-            # Not type-specialized variant  (@mark.command_enum).
+            # Not type-specialized variant  (@mark.ui_command_enum).
             check_not_classmethod(fn_or_t)
             check_is_function(fn_or_t)
             return UiCommandEnumeratorProbe(self._system, self._ctr_collector, self._module_name, service_name, args=None, fn=fn_or_t)
