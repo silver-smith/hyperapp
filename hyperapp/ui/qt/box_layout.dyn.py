@@ -144,7 +144,7 @@ def unwrap(view, state, hook, ctx):
 
 
 @mark.view_factory
-def wrap(inner):
+def wrap_box_layout(inner):
     log.info("Wrap box layout: %s", inner)
     return htypes.box_layout.view(
         direction='TopToBottom',

@@ -156,35 +156,35 @@ definitions:
       name: unwrap_d
       base: null
       fields: {}
-  wrap:
+  wrap_box_layout:
     type: legacy_type.builtin:attribute
     value:
       object: box_layout.module
-      attr_name: wrap
-  wrap.k:
-    type: wrap_k
+      attr_name: wrap_box_layout
+  wrap_box_layout.k:
+    type: wrap_box_layout_k
     value: {}
-  wrap.system-fn:
+  wrap_box_layout.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: wrap
+      function: wrap_box_layout
       ctx_params:
       - inner
       service_params: []
-  wrap.view-factory-template:
+  wrap_box_layout.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: wrap.k
+      k: wrap_box_layout.k
       view_t: legacy_type.box_layout:view
       is_wrapper: true
       view_ctx_params:
       - piece
       - ctx
-      system_fn: wrap.system-fn
-  wrap_k:
+      system_fn: wrap_box_layout.system-fn
+  wrap_box_layout_k:
     type: legacy_type.builtin:record_mt
     value:
       module_name: box_layout
-      name: wrap_k
+      name: wrap_box_layout_k
       base: null
       fields: {}
