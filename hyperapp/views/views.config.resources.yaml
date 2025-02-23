@@ -7,6 +7,8 @@ import:
 - legacy_type.system:system_config
 - views.command_layout_context:open_command_layout_context.d
 - views.local_server_context:open_local_server_context.d
+- views.qt.splitter:split_horizontally.d
+- views.qt.splitter:unwrap.d
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -23,15 +25,33 @@ definitions:
     value:
       key: views.local_server_context:open_local_server_context.d
       value: shortcut_Alt_Shift_S
+  config_item-views.qt.splitter-split_horizontally.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.qt.splitter:split_horizontally.d
+      value: shortcut_Ctrl_H
+  config_item-views.qt.splitter-unwrap.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.qt.splitter:unwrap.d
+      value: shortcut_Ctrl_U
   shortcut_Alt_Shift_S:
     type: legacy_type.builtin:string
     value: Alt+Shift+S
   shortcut_C:
     type: legacy_type.builtin:string
     value: C
+  shortcut_Ctrl_H:
+    type: legacy_type.builtin:string
+    value: Ctrl+H
+  shortcut_Ctrl_U:
+    type: legacy_type.builtin:string
+    value: Ctrl+U
   shortcut_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-views.command_layout_context-open_command_layout_context.d
       - config_item-views.local_server_context-open_local_server_context.d
+      - config_item-views.qt.splitter-split_horizontally.d
+      - config_item-views.qt.splitter-unwrap.d
