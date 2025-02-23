@@ -225,9 +225,10 @@ class Crud:
             pass
         else:
             item = self._canned_ctl_item_factory(item_piece, ctx)
-            kw['hook'] = item.hook
-            kw['widget'] = weakref.ref(item.widget)
-            kw['view'] = item.view
+            if item:  # None if view&widget are already gone.
+                kw['hook'] = item.hook
+                kw['widget'] = weakref.ref(item.widget)
+                kw['view'] = item.view
         return kw
 
     def _editor_view(self, value_t, value):

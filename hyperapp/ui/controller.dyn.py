@@ -480,7 +480,8 @@ class Controller:
     def pick_canned_item(self, path, item_id):
         item = self._root_item.pick_child(path)
         if not item or item.id != item_id:
-            raise RuntimeError(f"View item {item_id} at {path} is already gone")
+            log.warning("View item %s at %s is already gone", item_id, path)
+            return None
         return item
 
     def view_items(self, item_id):
