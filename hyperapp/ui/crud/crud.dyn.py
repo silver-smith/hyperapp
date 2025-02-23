@@ -205,7 +205,7 @@ class Crud:
             args=_args_dict_to_tuple(commit_args),
             pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
             commit_fn=commit_action_fn_ref,
-            commit_value_field='value',
+            commit_value_field=commit_value_field,
             )
         new_ctx = ctx.clone_with(
             model=value,
