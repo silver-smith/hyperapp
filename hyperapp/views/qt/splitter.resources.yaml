@@ -1,0 +1,127 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:mosaic.service
+- builtins:web.service
+- common.list_diff:list_diff.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
+- legacy_type.splitter:state
+- legacy_type.splitter:view
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:template
+- ui.view.view:view.module
+definitions:
+  SplitterView:
+    type: legacy_type.builtin:attribute
+    value:
+      object: splitter.module
+      attr_name: SplitterView
+  SplitterView.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: SplitterView
+      attr_name: from_piece
+  SplitterView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: SplitterView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params:
+      - view_reg
+  splitter-view-unwrap.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.splitter:view
+      command: unwrap.ui-command
+  splitter-view.view-template:
+    type: legacy_type.cfg_item:typed_fn_cfg_item
+    value:
+      t: legacy_type.splitter:view
+      system_fn: SplitterView_from_piece.system-fn
+  splitter.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: splitter
+      file_name: splitter.dyn.py
+      import_list:
+        code.list_diff: common.list_diff:list_diff.module
+        code.mark: base.mark:mark.module
+        code.view: ui.view.view:view.module
+        htypes.splitter.state: legacy_type.splitter:state
+        htypes.splitter.view: legacy_type.splitter:view
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+  unwrap:
+    type: legacy_type.builtin:attribute
+    value:
+      object: splitter.module
+      attr_name: unwrap
+  unwrap.d:
+    type: unwrap_d
+    value: {}
+  unwrap.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: unwrap
+      ctx_params:
+      - view
+      - state
+      - hook
+      - ctx
+      service_params: []
+  unwrap.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: unwrap.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: unwrap.fn
+  unwrap_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: splitter
+      name: unwrap_d
+      base: null
+      fields: {}
+  wrap_splitter:
+    type: legacy_type.builtin:attribute
+    value:
+      object: splitter.module
+      attr_name: wrap_splitter
+  wrap_splitter.k:
+    type: wrap_splitter_k
+    value: {}
+  wrap_splitter.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: wrap_splitter
+      ctx_params:
+      - inner
+      service_params: []
+  wrap_splitter.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: wrap_splitter.k
+      view_t: legacy_type.splitter:view
+      is_wrapper: true
+      view_ctx_params:
+      - piece
+      - ctx
+      system_fn: wrap_splitter.system-fn
+  wrap_splitter_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: splitter
+      name: wrap_splitter_k
+      base: null
+      fields: {}

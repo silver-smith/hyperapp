@@ -1,0 +1,8 @@
+
+view = record:
+  orientation: string  # Vertical or Horizontal
+  elements: ref list
+
+state = record:
+  current: int
+  elements: ref list

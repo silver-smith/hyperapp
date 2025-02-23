@@ -8,6 +8,9 @@ import:
 - views.command_layout_context:model_commands-model-open_command_layout_context.command-cfg-item
 - views.local_server_context:local_server_context-view.view-template
 - views.local_server_context:open_local_server_context.global-model-command
+- views.qt.splitter:splitter-view-unwrap.command-cfg-item
+- views.qt.splitter:splitter-view.view-template
+- views.qt.splitter:wrap_splitter.view-factory-template
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -15,7 +18,9 @@ definitions:
       services:
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
+        view_factory_reg: view_factory_reg
         view_reg: view_reg
+        view_ui_command_reg: view_ui_command_reg
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -27,9 +32,20 @@ definitions:
       items:
       - views.command_layout_context:global_commands-model-open_command_layout_context.command-cfg-item
       - views.command_layout_context:model_commands-model-open_command_layout_context.command-cfg-item
+  view_factory_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - views.qt.splitter:wrap_splitter.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - views.command_layout_context:command_layout_context-view.view-template
       - views.local_server_context:local_server_context-view.view-template
+      - views.qt.splitter:splitter-view.view-template
+  view_ui_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - views.qt.splitter:splitter-view-unwrap.command-cfg-item
