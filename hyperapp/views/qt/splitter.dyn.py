@@ -121,6 +121,27 @@ def unwrap(view, state, hook, ctx):
     hook.replace_view(inner_view, inner_state)
 
 
+@mark.ui_command
+def split_horizontally(view, state, hook, ctx, view_reg):
+    log.info("Split horizontally: %s", view)
+    new_view_piece = htypes.splitter.view(
+        orientation='Horizontal',
+        elements=(
+            mosaic.put(view.piece),
+            mosaic.put(view.piece),
+            ),
+        )
+    new_view = view_reg.animate(new_view_piece, ctx)
+    new_state = htypes.splitter.state(
+        current=0,
+        elements=(
+            mosaic.put(state),
+            mosaic.put(state),
+            ),
+        )
+    hook.replace_view(new_view, new_state)
+
+
 @mark.view_factory
 def wrap_splitter(inner):
     log.info("Wrap splitter: %s", inner)

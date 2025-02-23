@@ -36,8 +36,15 @@ def state():
 
 
 @mark.fixture
-def ctx():
-    return Context()
+def lcs():
+    return Mock()
+
+
+@mark.fixture
+def ctx(lcs):
+    return Context(
+        lcs=lcs,
+        )
 
 
 def test_view(qapp, piece, state, ctx):
@@ -52,6 +59,22 @@ def test_unwrap(qapp, piece, state, ctx, view_reg):
     view = view_reg.animate(piece, ctx)
     hook = Mock()
     splitter.unwrap(view, state, hook, ctx)
+    hook.replace_view.assert_called_once()
+
+
+def test_split_horizontally(visualizer, view_reg, lcs, ctx):
+    text = "Sample text"
+    text_view = visualizer(lcs, ctx, text)
+    navigator_piece = htypes.navigator.view(
+        current_view=mosaic.put(text_view),
+        current_model=mosaic.put(text),
+        prev=None,
+        next=None,
+        )
+    view = view_reg.animate(navigator_piece, ctx)
+    state = htypes.text.state("")
+    hook = Mock()
+    splitter.split_horizontally(view, state, hook, ctx)
     hook.replace_view.assert_called_once()
 
 

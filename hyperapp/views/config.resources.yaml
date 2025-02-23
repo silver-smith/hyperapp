@@ -8,6 +8,7 @@ import:
 - views.command_layout_context:model_commands-model-open_command_layout_context.command-cfg-item
 - views.local_server_context:local_server_context-view.view-template
 - views.local_server_context:open_local_server_context.global-model-command
+- views.qt.splitter:navigator-view-split_horizontally.command-cfg-item
 - views.qt.splitter:splitter-view-unwrap.command-cfg-item
 - views.qt.splitter:splitter-view.view-template
 - views.qt.splitter:wrap_splitter.view-factory-template
@@ -48,4 +49,5 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - views.qt.splitter:navigator-view-split_horizontally.command-cfg-item
       - views.qt.splitter:splitter-view-unwrap.command-cfg-item

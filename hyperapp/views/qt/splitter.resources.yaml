@@ -11,6 +11,7 @@ import:
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
+- legacy_type.navigator:view
 - legacy_type.splitter:state
 - legacy_type.splitter:view
 - legacy_type.system_fn:ctx_fn
@@ -36,6 +37,46 @@ definitions:
       - ctx
       service_params:
       - view_reg
+  navigator-view-split_horizontally.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.navigator:view
+      command: split_horizontally.ui-command
+  split_horizontally:
+    type: legacy_type.builtin:attribute
+    value:
+      object: splitter.module
+      attr_name: split_horizontally
+  split_horizontally.d:
+    type: split_horizontally_d
+    value: {}
+  split_horizontally.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: split_horizontally
+      ctx_params:
+      - view
+      - state
+      - hook
+      - ctx
+      service_params:
+      - view_reg
+  split_horizontally.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: split_horizontally.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: split_horizontally.fn
+  split_horizontally_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: splitter
+      name: split_horizontally_d
+      base: null
+      fields: {}
   splitter-view-unwrap.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
