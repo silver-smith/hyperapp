@@ -20,6 +20,8 @@ log = logging.getLogger(__name__)
 
 
 def _args_dict_to_tuple(args):
+    if args is None:
+        return ()
     return tuple(
         htypes.crud.arg(name, mosaic.put(value))
         for name, value in args.items()
@@ -136,7 +138,8 @@ class CrudOpenFn:
             commit_action_fn_ref=self._commit_action_fn_ref,
             commit_value_field='value',
             model=model,
-            args=args,
+            init_args=args,
+            commit_args=args,
             )
 
 
@@ -150,6 +153,8 @@ class Crud:
         self._selector_reg = selector_reg
 
     def fn_ctx(self, ctx, model, args, **kw):
+        if args is None:
+            args = {}
         if model is not None:
             model_kw = {
                 'piece': model,
@@ -175,7 +180,8 @@ class Crud:
             commit_action_fn_ref,
             commit_value_field,
             model,
-            args,
+            init_args=None,
+            commit_args=None,
             ):
         try:
             selector = self._selector_reg[value_t]
@@ -185,7 +191,7 @@ class Crud:
         else:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
-        value = self._run_init(ctx, init_action_fn, model, args)
+        value = self._run_init(ctx, init_action_fn, model, init_args)
         if not get_fn:
             # assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
             base_view_piece = self._editor_view(value_t, value)
@@ -196,7 +202,7 @@ class Crud:
             label=label,
             model=mosaic.put(model),
             commit_command_d=commit_command_d_ref,
-            args=_args_dict_to_tuple(args),
+            args=_args_dict_to_tuple(commit_args),
             pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
             commit_fn=commit_action_fn_ref,
             commit_value_field='value',

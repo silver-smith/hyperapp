@@ -67,7 +67,7 @@ class ArgsPickerFn:
             get_default_fn = self._editor_default_reg[value_t]
         except KeyError:
             get_default_fn = None
-        args = self._can_crud_args(ctx)
+        commit_args = self._can_crud_args(ctx)
         return self._crud.open_view(
             navigator_rec=navigator_rec,
             ctx=ctx,
@@ -78,5 +78,5 @@ class ArgsPickerFn:
             commit_action_fn_ref=self._commit_fn_ref,
             commit_value_field=value_field,
             model=None,
-            args=args,
+            commit_args=commit_args,
             )
