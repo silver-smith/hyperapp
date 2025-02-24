@@ -7,6 +7,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.view_factory import ViewFactory
+from .code.multi_actor_template import MultiActorItem
 from .tested.code import view_factory_list
 
 
@@ -14,8 +15,8 @@ def _sample_fn():
     return 'sample-fn'
 
 
-@mark.config_fixture('view_factory_reg')
-def view_factory_reg_config(partial_ref):
+@mark.fixture
+def factory(partial_ref):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=(),
@@ -23,24 +24,64 @@ def view_factory_reg_config(partial_ref):
         raw_fn=_sample_fn,
         bound_fn=_sample_fn,
         )
-    factory = ViewFactory(
+    return ViewFactory(
         k=htypes.view_factory_list_tests.sample_k(),
         view_t=htypes.view_factory_list_tests.sample_view,
         is_wrapper=False,
         view_ctx_params=[],
         system_fn=system_fn,
         )
+
+
+@mark.config_fixture('view_factory_reg')
+def view_factory_reg_config(factory):
     return {factory.k: factory}
 
 
 @mark.fixture
 def piece():
-    return htypes.view_factory_list.model()
+    return htypes.view_factory_list.model(
+        model_t=None,
+        )
 
 
-def test_view_factory_list(piece):
+def test_view_factory_list(factory, piece):
     items = view_factory_list.view_factory_list(piece)
-    assert items
+    assert items == [factory.item]
+
+
+@mark.config_fixture('visualizer_reg')
+def visualizer_config():
+    ui_t = htypes.model.list_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.view_factory_list_tests.sample_item),
+        )
+    return {
+        htypes.view_factory_list_tests.sample_model: htypes.model.model(
+            ui_t=mosaic.put(ui_t),
+            system_fn=mosaic.put(None),
+            ),
+        }
+
+
+@mark.config_fixture('adapter_creg')
+def adapter_creg_config():
+    return {
+        htypes.model.list_ui_t: [
+            MultiActorItem(
+                k=htypes.view_factory_list_tests.layout_k(),
+                t=htypes.model.list_ui_t,
+                fn=None,
+                ),
+            ],
+        }
+
+
+def test_view_factory_list_with_model(factory):
+    piece = htypes.view_factory_list.model(
+        model_t=pyobj_creg.actor_to_ref(htypes.view_factory_list_tests.sample_model),
+        )
+    items = view_factory_list.view_factory_list(piece)
+    assert items == [factory.item]
 
 
 def test_open():

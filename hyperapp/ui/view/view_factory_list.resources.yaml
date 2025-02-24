@@ -112,6 +112,8 @@ definitions:
       ctx_params:
       - piece
       service_params:
+      - adapter_creg
+      - visualizer_reg
       - view_factory_reg
   view_factory_list.module:
     type: legacy_type.builtin:python_module
