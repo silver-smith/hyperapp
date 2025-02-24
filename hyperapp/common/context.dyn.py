@@ -32,6 +32,9 @@ class Context:
         except KeyError:
             return default_value
 
+    def update(self, **kw):
+        self._items.update(kw)
+
     def clone_with(self, **kw):
         return Context({**self._items, **kw}, self._next)
 

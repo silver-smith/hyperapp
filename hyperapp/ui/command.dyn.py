@@ -55,6 +55,9 @@ class BoundCommandBase:
     def name(self):
         return d_to_name(self._d)
 
+    def update_ctx(self, **kw):
+        self._ctx.update(**kw)
+
     def start(self):
         log.info("Start command: %r", self.name)
         asyncio.create_task(self.run())

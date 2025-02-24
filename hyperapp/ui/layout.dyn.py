@@ -30,6 +30,9 @@ class UnboundLayoutCommand(UnboundCommandBase):
         return {pane_2_d}
 
     def bind(self, ctx):
+        self._ui_command.update_ctx(
+            navigator=ctx.navigator,
+            )
         return BoundLayoutCommand(self._ui_command, self.groups, ctx)
 
 
