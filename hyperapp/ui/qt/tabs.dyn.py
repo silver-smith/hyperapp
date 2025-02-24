@@ -2,7 +2,7 @@ import logging
 from collections import namedtuple
 from functools import partial
 
-from PySide6 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from . import htypes
 from .services import (
@@ -46,6 +46,8 @@ class TabsView(View):
 
     def construct_widget(self, state, ctx):
         tabs = QtWidgets.QTabWidget()
+        # Do not move focus to tabs on tab key.
+        tabs.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         for idx, tab in enumerate(self._tabs):
             if state:
                 tab_state = web.summon(state.tabs[idx])
