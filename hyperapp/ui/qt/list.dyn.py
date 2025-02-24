@@ -80,12 +80,10 @@ class _TableView(QtWidgets.QTableView):
             self.setFocus()
 
     def focusInEvent(self, event):
-        log.info("Focus in: %s", event)
         self.selectRow(self.currentIndex().row())
         return super().focusInEvent(event)
 
     def focusOutEvent(self, event):
-        log.info("Focus out: %s", event)
         self.clearSelection()
         return super().focusOutEvent(event)
 
