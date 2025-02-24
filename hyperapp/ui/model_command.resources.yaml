@@ -8,14 +8,14 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
-- legacy_type.command:typed_config_ctl
-- legacy_type.command:untyped_config_ctl
+- legacy_type.list_config_ctl:dict_list_config_ctl
+- legacy_type.list_config_ctl:flat_list_config_ctl
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.command:command.module
-- ui.command_config_ctl:command_config_ctl.module
 - ui.command_enumerator:command_enumerator.module
+- ui.list_config_ctl:list_config_ctl.module
 definitions:
   command-model_command.actor-template:
     type: legacy_type.system:actor_template
@@ -31,12 +31,6 @@ definitions:
       function: model_command_enumerator_from_piece
       service_params:
       - system_fn_creg
-  command-typed_config_ctl.ctl:
-    type: legacy_type.command:typed_config_ctl
-    value: {}
-  command-untyped_config_ctl.ctl:
-    type: legacy_type.command:untyped_config_ctl
-    value: {}
   get_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -64,11 +58,17 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: global_model_command_reg
-      ctl: command-untyped_config_ctl.ctl
+      ctl: list_config_ctl-flat_list_config_ctl.ctl
       function: global_model_command_reg
       service_params: []
       want_config: true
       free_params: []
+  list_config_ctl-dict_list_config_ctl.ctl:
+    type: legacy_type.list_config_ctl:dict_list_config_ctl
+    value: {}
+  list_config_ctl-flat_list_config_ctl.ctl:
+    type: legacy_type.list_config_ctl:flat_list_config_ctl
+    value: {}
   model_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -76,8 +76,8 @@ definitions:
       file_name: model_command.dyn.py
       import_list:
         code.command: ui.command:command.module
-        code.command_config_ctl: ui.command_config_ctl:command_config_ctl.module
         code.command_enumerator: ui.command_enumerator:command_enumerator.module
+        code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
         code.mark: base.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
         services.web: builtins:web.service
@@ -95,7 +95,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: model_command_enumerator_reg
-      ctl: command-typed_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.ctl
       function: model_command_enumerator_reg
       service_params: []
       want_config: true
@@ -115,7 +115,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: model_command_reg
-      ctl: command-typed_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.ctl
       function: model_command_reg
       service_params: []
       want_config: true

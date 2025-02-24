@@ -8,7 +8,7 @@ from .services import (
 from .code.mark import mark
 from .code.command import UnboundCommand, BoundCommand
 from .code.command_enumerator import UnboundCommandEnumerator
-from .code.command_config_ctl import TypedCommandConfigCtl, UntypedCommandConfigCtl
+from .code.list_config_ctl import DictListConfigCtl, FlatListConfigCtl
 
 log = logging.getLogger(__name__)
 
@@ -65,17 +65,17 @@ def model_command_enumerator_from_piece(piece, system_fn_creg):
         )
 
 
-@mark.service(ctl=UntypedCommandConfigCtl())
+@mark.service(ctl=FlatListConfigCtl())
 def global_model_command_reg(config):
     return config
 
 
-@mark.service(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=DictListConfigCtl())
 def model_command_reg(config, model_t):
     return config.get(model_t, [])
 
 
-@mark.service(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=DictListConfigCtl())
 def model_command_enumerator_reg(config, model_t):
     return config.get(model_t, [])
 

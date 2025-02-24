@@ -9,7 +9,7 @@ from .code.mark import mark
 from .code.command import UnboundCommand, BoundCommand, CommandKind
 from .code.command_enumerator import UnboundCommandEnumerator
 from .code.command_groups import default_command_groups
-from .code.command_config_ctl import TypedCommandConfigCtl, UntypedCommandConfigCtl
+from .code.list_config_ctl import DictListConfigCtl, FlatListConfigCtl
 from .code.ui_model_command import wrap_model_command_to_ui_command
 
 log = logging.getLogger(__name__)
@@ -65,23 +65,23 @@ def ui_command_enumerator_from_piece(piece, system_fn_creg):
         )
 
 
-@mark.service(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=DictListConfigCtl())
 def view_ui_command_reg(config, view_t):
     return config.get(view_t, [])
 
 
 # UI commands returning model.
-@mark.service(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=DictListConfigCtl())
 def view_ui_model_command_reg(config, view_t):
     return config.get(view_t, [])
 
 
-@mark.service(ctl=UntypedCommandConfigCtl())
+@mark.service(ctl=FlatListConfigCtl())
 def universal_ui_command_reg(config):
     return config
 
 
-@mark.service(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=DictListConfigCtl())
 def ui_command_enumerator_reg(config, view_t):
     return config.get(view_t, [])
 

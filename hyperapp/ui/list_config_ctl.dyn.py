@@ -3,7 +3,7 @@ from .code.mark import mark
 from .code.config_ctl import MultiItemConfigCtl, DictConfigCtl
 
 
-class TypedCommandConfigCtl(DictConfigCtl):
+class DictListConfigCtl(DictConfigCtl):
 
     @classmethod
     @mark.actor.config_ctl_creg
@@ -12,7 +12,7 @@ class TypedCommandConfigCtl(DictConfigCtl):
 
     @property
     def piece(self):
-        return htypes.command.typed_config_ctl()
+        return htypes.list_config_ctl.dict_list_config_ctl()
 
     def _config_to_items(self, config):
         items = []
@@ -34,7 +34,7 @@ class TypedCommandConfigCtl(DictConfigCtl):
             ]
 
 
-class UntypedCommandConfigCtl(MultiItemConfigCtl):
+class FlatListConfigCtl(MultiItemConfigCtl):
 
     @classmethod
     @mark.actor.config_ctl_creg
@@ -43,7 +43,7 @@ class UntypedCommandConfigCtl(MultiItemConfigCtl):
 
     @property
     def piece(self):
-        return htypes.command.untyped_config_ctl()
+        return htypes.list_config_ctl.flat_list_config_ctl()
 
     def _config_to_items(self, config):
         return config

@@ -1,0 +1,55 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- base.system.config_ctl:config_ctl.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.list_config_ctl:dict_list_config_ctl
+- legacy_type.list_config_ctl:flat_list_config_ctl
+- legacy_type.system:actor_template
+definitions:
+  DictListConfigCtl:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_config_ctl.module
+      attr_name: DictListConfigCtl
+  DictListConfigCtl.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: DictListConfigCtl
+      attr_name: from_piece
+  FlatListConfigCtl:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_config_ctl.module
+      attr_name: FlatListConfigCtl
+  FlatListConfigCtl.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FlatListConfigCtl
+      attr_name: from_piece
+  list_config_ctl-dict_list_config_ctl.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.list_config_ctl:dict_list_config_ctl
+      function: DictListConfigCtl.from_piece
+      service_params:
+      - cfg_item_creg
+  list_config_ctl-flat_list_config_ctl.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.list_config_ctl:flat_list_config_ctl
+      function: FlatListConfigCtl.from_piece
+      service_params:
+      - cfg_item_creg
+  list_config_ctl.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: list_config_ctl
+      file_name: list_config_ctl.dyn.py
+      import_list:
+        code.config_ctl: base.system.config_ctl:config_ctl.module
+        code.mark: base.mark:mark.module
+        htypes.list_config_ctl.dict_list_config_ctl: legacy_type.list_config_ctl:dict_list_config_ctl
+        htypes.list_config_ctl.flat_list_config_ctl: legacy_type.list_config_ctl:flat_list_config_ctl
