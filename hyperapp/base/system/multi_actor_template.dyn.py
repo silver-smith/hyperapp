@@ -6,6 +6,7 @@ from .services import (
     pyobj_creg,
     web,
     )
+from .code.system import ActorRequester
 
 
 MultiActorItem = namedtuple('MultiActorItem', 'k t fn')
@@ -48,5 +49,5 @@ class MultiActorTemplate:
         return self._resolve_services(self._fn, system)
 
     def _resolve_services(self, fn, system):
-        bound_fn = system.bind_services(self._service_params, requester=ActorRequester(self.t))
+        bound_fn = system.bind_services(self._fn, self._service_params, requester=ActorRequester(self.t))
         return MultiActorItem(self._k, self.t, bound_fn)
