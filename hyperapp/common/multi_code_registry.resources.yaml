@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - legacy_type.builtin:python_module
 definitions:
   multi_code_registry.module:
@@ -8,4 +9,5 @@ definitions:
     value:
       module_name: multi_code_registry
       file_name: multi_code_registry.dyn.py
-      import_list: {}
+      import_list:
+        services.deduce_t: builtins:deduce_t.service
