@@ -105,6 +105,7 @@ class ListView(View):
         widget.setShowGrid(False)
         widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         widget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        widget.setTabKeyNavigation(False)
         font_info = widget.fontInfo()
         widget.verticalHeader().setDefaultSectionSize(font_info.pixelSize() + ROW_HEIGHT_PADDING)
         widget.setCurrentIndex(widget.model().createIndex(0, 0))
