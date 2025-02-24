@@ -290,7 +290,7 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
 class BoundCrudCommitCommand(BoundCommandBase):
 
     def __init__(self, crud, d, properties, model, args, pick_fn, commit_fn, commit_value_field, ctx):
-        super().__init__(d)
+        super().__init__(d, ctx)
         self._crud = crud
         self._properties = properties
         self._model = model
@@ -298,7 +298,6 @@ class BoundCrudCommitCommand(BoundCommandBase):
         self._pick_fn = pick_fn
         self._commit_fn = commit_fn
         self._commit_value_field = commit_value_field
-        self._ctx = ctx
 
     @property
     def enabled(self):

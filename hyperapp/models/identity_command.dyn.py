@@ -39,10 +39,6 @@ class UnboundIdentityModelCommand(UnboundCommandBase):
 
 class BoundIdentityModelCommand(BoundCommandBase):
 
-    def __init__(self, d, ctx):
-        super().__init__(d)
-        self._ctx = ctx
-
     @property
     def enabled(self):
         return not self._missing_params

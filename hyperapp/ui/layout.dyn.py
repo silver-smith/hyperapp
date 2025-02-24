@@ -30,13 +30,13 @@ class UnboundLayoutCommand(UnboundCommandBase):
         return {pane_2_d}
 
     def bind(self, ctx):
-        return BoundLayoutCommand(self._ui_command, self.groups)
+        return BoundLayoutCommand(self._ui_command, self.groups, ctx)
 
 
 class BoundLayoutCommand(BoundCommandBase):
 
-    def __init__(self, ui_command, groups):
-        super().__init__(ui_command.d)
+    def __init__(self, ui_command, groups, ctx):
+        super().__init__(ui_command.d, ctx)
         self._ui_command = ui_command
         self._groups = groups
 

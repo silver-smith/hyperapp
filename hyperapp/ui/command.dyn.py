@@ -40,8 +40,9 @@ class UnboundCommand(UnboundCommandBase):
 
 class BoundCommandBase:
 
-    def __init__(self, d):
+    def __init__(self, d, ctx):
         self._d = d
+        self._ctx = ctx
 
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self.name}>"
@@ -62,9 +63,8 @@ class BoundCommandBase:
 class BoundCommand(BoundCommandBase):
 
     def __init__(self, d, ctx_fn, ctx):
-        super().__init__(d)
+        super().__init__(d, ctx)
         self._ctx_fn = ctx_fn
-        self._ctx = ctx
 
     @property
     def enabled(self):

@@ -58,14 +58,13 @@ class UnboundUiModelCommand(UnboundCommandBase):
 class BoundUiModelCommand(BoundCommandBase):
 
     def __init__(self, view_reg, visualizer, lcs, d, model_command, groups, layout, ctx):
-        super().__init__(d)
+        super().__init__(d, ctx)
         self._view_reg = view_reg
         self._visualizer = visualizer
         self._lcs = lcs
         self._model_command = model_command  # Model command or UI command returning a model.
         self._groups = groups
         self._layout = layout
-        self._ctx = ctx
         self._navigator_rec = ctx.navigator
 
     @property
