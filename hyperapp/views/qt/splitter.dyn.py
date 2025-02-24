@@ -149,5 +149,6 @@ def wrap_splitter(inner):
         orientation='Horizontal',
         elements=(
             mosaic.put(inner),
+            mosaic.put(inner),
             ),
         )
