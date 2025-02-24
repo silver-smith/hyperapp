@@ -79,6 +79,16 @@ class _TableView(QtWidgets.QTableView):
         if visible:
             self.setFocus()
 
+    def focusInEvent(self, event):
+        log.info("Focus in: %s", event)
+        self.selectRow(self.currentIndex().row())
+        return super().focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        log.info("Focus out: %s", event)
+        self.clearSelection()
+        return super().focusOutEvent(event)
+
 
 class ListView(View):
 
@@ -114,6 +124,7 @@ class ListView(View):
         if isinstance(state, htypes.list.state):
             index = model.createIndex(state.current_idx, 0)
             widget.setCurrentIndex(index)
+        widget.clearSelection()
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
