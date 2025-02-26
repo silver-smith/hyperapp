@@ -79,6 +79,7 @@ class _TableView(QtWidgets.QTableView):
         if visible:
             self.setFocus()
 
+    # When opened in splitter, show which pane is active using selection.
     def focusInEvent(self, event):
         self.selectRow(self.currentIndex().row())
         return super().focusInEvent(event)
