@@ -1,6 +1,6 @@
 sample_k = record
 sample_view = record
 sample_model = record
-sample_item = record
 
 layout_k = record
+sample_ui_t = record

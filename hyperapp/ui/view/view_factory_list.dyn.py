@@ -5,6 +5,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.directory import k_to_name
 
 
 @mark.model
@@ -17,9 +18,20 @@ def view_factory_list(piece, adapter_creg, visualizer_reg, view_factory_reg):
         ui_t, unused_system_fn_ref = visualizer_reg(model_t)
     except KeyError:
         return items
-    adapter_items = adapter_creg.ui_type_items(ui_t)
-    assert 0, adapter_items
-    return items
+    adapter_actor_items = adapter_creg.ui_type_items(ui_t)
+    adapter_items = [
+        htypes.view_factory.item(
+            k=mosaic.put(item.k),
+            k_str=k_to_name(item.k),
+            view_t=None,
+            view_t_str="",
+            is_wrapper=False,
+            view_ctx_params=(),
+            system_fn=mosaic.put(None),
+            )
+        for item in adapter_actor_items
+        ]
+    return items + adapter_items
 
 
 @mark.global_command

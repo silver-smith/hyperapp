@@ -8,7 +8,7 @@ template = record:
 item = record:
   k: ref
   k_str: string
-  view_t: ref
+  view_t: ref opt
   view_t_str: string
   is_wrapper: bool
   view_ctx_params: string list

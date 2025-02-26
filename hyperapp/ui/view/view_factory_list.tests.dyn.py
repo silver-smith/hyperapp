@@ -52,9 +52,7 @@ def test_view_factory_list(factory, piece):
 
 @mark.config_fixture('visualizer_reg')
 def visualizer_config():
-    ui_t = htypes.model.list_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.view_factory_list_tests.sample_item),
-        )
+    ui_t = htypes.view_factory_list_tests.sample_ui_t()
     return {
         htypes.view_factory_list_tests.sample_model: htypes.model.model(
             ui_t=mosaic.put(ui_t),
@@ -66,10 +64,10 @@ def visualizer_config():
 @mark.config_fixture('adapter_creg')
 def adapter_creg_config():
     return {
-        htypes.model.list_ui_t: [
+        htypes.view_factory_list_tests.sample_ui_t: [
             MultiActorItem(
                 k=htypes.view_factory_list_tests.layout_k(),
-                t=htypes.model.list_ui_t,
+                t=htypes.view_factory_list_tests.sample_ui_t,
                 fn=None,
                 ),
             ],
@@ -81,7 +79,10 @@ def test_view_factory_list_with_model(factory):
         model_t=pyobj_creg.actor_to_ref(htypes.view_factory_list_tests.sample_model),
         )
     items = view_factory_list.view_factory_list(piece)
-    assert items == [factory.item]
+    assert len(items) == 2
+    assert factory.item in items
+    k = htypes.view_factory_list_tests.layout_k()
+    assert mosaic.put(k) in {item.k for item in items}
 
 
 def test_open():
