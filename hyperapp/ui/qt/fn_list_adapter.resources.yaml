@@ -11,7 +11,8 @@ import:
 - legacy_type.list_adapter:fn_list_adapter
 - legacy_type.model:list_ui_t
 - legacy_type.system:actor_template
-- legacy_type.system:multi_actor_template
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:template
 - ui.qt.list_adapter:list_adapter.module
 definitions:
   FnListAdapter:
@@ -54,13 +55,26 @@ definitions:
   list_ui_type_layout.k:
     type: list_ui_type_layout_k
     value: {}
-  list_ui_type_layout.multi-actor-template:
-    type: legacy_type.system:multi_actor_template
+  list_ui_type_layout.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_ui_type_layout
+      ctx_params:
+      - piece
+      - system_fn_ref
+      service_params: []
+  list_ui_type_layout.view-factory-template:
+    type: legacy_type.view_factory:template
     value:
       k: list_ui_type_layout.k
-      t: legacy_type.model:list_ui_t
-      function: list_ui_type_layout
-      service_params: []
+      ui_t_t: legacy_type.model:list_ui_t
+      view_t: legacy_type.list:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: list_ui_type_layout.system-fn
   list_ui_type_layout_k:
     type: legacy_type.builtin:record_mt
     value:

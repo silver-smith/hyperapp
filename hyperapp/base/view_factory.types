@@ -1,5 +1,6 @@
 template = record:
   k: ref
+  ui_t_t: ref opt
   view_t: ref
   is_wrapper: bool
   view_ctx_params: string list

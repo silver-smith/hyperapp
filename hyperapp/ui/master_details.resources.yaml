@@ -96,6 +96,7 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: master_details.k
+      ui_t_t: null
       view_t: legacy_type.master_details:view
       is_wrapper: true
       view_ctx_params:

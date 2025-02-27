@@ -153,6 +153,7 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: wrap_splitter.k
+      ui_t_t: null
       view_t: legacy_type.splitter:view
       is_wrapper: true
       view_ctx_params:

@@ -66,7 +66,7 @@ import:
 - ui.qt.fn_index_tree_adapter:model-tree_ui_t.actor-template
 - ui.qt.fn_index_tree_adapter:tree_adapter-fn_index_tree_adapter.actor-template
 - ui.qt.fn_list_adapter:list_adapter-fn_list_adapter.actor-template
-- ui.qt.fn_list_adapter:list_ui_type_layout.multi-actor-template
+- ui.qt.fn_list_adapter:list_ui_type_layout.view-factory-template
 - ui.qt.fn_list_adapter:model-list_ui_t.actor-template
 - ui.qt.form:form-view.view-template
 - ui.qt.label:label-view-set_label_text.command-cfg-item
@@ -129,11 +129,6 @@ import:
 - ui.visualizer:visualizer.service
 - ui.visualizer:visualizer_reg.service
 definitions:
-  adapter_creg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - ui.qt.fn_list_adapter:list_ui_type_layout.multi-actor-template
   cfg_item_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -156,7 +151,6 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
-        adapter_creg: adapter_creg
         cfg_item_creg: cfg_item_creg
         command_creg: command_creg
         config_ctl_creg: config_ctl_creg
@@ -326,6 +320,7 @@ definitions:
       items:
       - ui.master_details:master_details.view-factory-template
       - ui.qt.box_layout:wrap_box_layout.view-factory-template
+      - ui.qt.fn_list_adapter:list_ui_type_layout.view-factory-template
       - ui.qt.label:label_view.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config

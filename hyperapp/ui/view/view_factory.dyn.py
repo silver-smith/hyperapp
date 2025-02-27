@@ -9,8 +9,9 @@ from .code.directory import k_to_name
 
 class ViewFactory:
 
-    def __init__(self, k, view_t, is_wrapper, view_ctx_params, system_fn):
+    def __init__(self, k, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
         self._k = k
+        self._ui_t_t = ui_t_t
         self._view_t = view_t
         self._is_wrapper = is_wrapper
         self._view_ctx_params = view_ctx_params

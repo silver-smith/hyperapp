@@ -5,6 +5,7 @@ import:
 - legacy_type.marker:marker_template
 - rc.marker_utils:marker_utils.module
 - rc.view_factory_ctr:view_factory_ctr.module
+- rc.probe:probe.module
 
 definitions:
 
@@ -17,6 +18,7 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         code.marker_utils: rc.marker_utils:marker_utils.module
         code.view_factory_ctr: rc.view_factory_ctr:view_factory_ctr.module
+        code.probe: rc.probe:probe.module
 
   ViewFactoryMarker:
     type: legacy_type.builtin:attribute

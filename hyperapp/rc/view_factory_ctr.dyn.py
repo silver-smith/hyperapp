@@ -16,14 +16,16 @@ class ViewFactoryTemplateCtr(Constructor):
         return cls(
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
+            ui_t_t=pyobj_creg.invite_opt(piece.ui_t_t),
             ctx_params=piece.ctx_params,
             service_params=piece.service_params,
             view_t=pyobj_creg.invite(piece.view_t),
             )
 
-    def __init__(self, module_name, attr_qual_name, ctx_params, service_params, view_t):
+    def __init__(self, module_name, attr_qual_name, ui_t_t, ctx_params, service_params, view_t):
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
+        self._ui_t_t = ui_t_t
         self._ctx_params = ctx_params
         self._service_params = service_params
         self._view_t = view_t
@@ -34,6 +36,7 @@ class ViewFactoryTemplateCtr(Constructor):
         return htypes.view_factory_ctr.ctr(
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
+            ui_t_t=pyobj_creg.actor_to_ref_opt(self._ui_t_t),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
@@ -73,6 +76,7 @@ class ViewFactoryTemplateCtr(Constructor):
         k = k_t()
         template = htypes.view_factory.template(
             k=mosaic.put(k),
+            ui_t_t=pyobj_creg.actor_to_ref_opt(self._ui_t_t),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
             is_wrapper='inner' in self._ctx_params,
             view_ctx_params=self._view_resolved_tgt.constructor.ctx_params,
