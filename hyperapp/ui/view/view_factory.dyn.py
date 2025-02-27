@@ -46,15 +46,31 @@ class ViewFactory:
             )
 
 
+class ViewFactoryReg:
+
+    def __init__(self, visualizer_reg, config):
+        self._visualizer_reg = visualizer_reg
+        self._config = config
+
+    def __getitem__(self, k):
+        return self._config[k]
+
+    def values(self, model_t=None):
+        if model_t is None:
+            ui_t = None
+        else:
+            try:
+                ui_t, unused_system_fn_ref = self._visualizer_reg(model_t)
+            except KeyError:
+                ui_t = None
+        return [
+            factory
+            for factory in self._config.values()
+            if factory.match_model(model_t, ui_t)
+            ]
+
+
 # d -> ViewFactory.
 @mark.service
-def view_factory_reg(config, visualizer_reg, model_t=None):
-    try:
-        ui_t, unused_system_fn_ref = visualizer_reg(model_t)
-    except KeyError:
-        ui_t = None
-    return {
-        k: factory
-        for k, factory in config.items()
-        if factory.match_model(model_t, ui_t)
-        }
+def view_factory_reg(config, visualizer_reg):
+    return ViewFactoryReg(visualizer_reg, config)

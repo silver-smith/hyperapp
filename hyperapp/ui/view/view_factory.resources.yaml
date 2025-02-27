@@ -39,5 +39,4 @@ definitions:
       service_params:
       - visualizer_reg
       want_config: true
-      free_params:
-      - model_t
+      free_params: []

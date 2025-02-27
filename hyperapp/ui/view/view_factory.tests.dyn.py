@@ -8,8 +8,8 @@ def _sample_fn():
 
 
 def test_service(view_factory_reg):
-    factory_dict = view_factory_reg(model_t=None)
-    assert factory_dict == {}
+    factory_reg = view_factory_reg()
+    assert factory_reg.values() == []
 
 
 def test_item(partial_ref):
@@ -21,9 +21,9 @@ def test_item(partial_ref):
         bound_fn=_sample_fn,
         )
     factory = view_factory.ViewFactory(
-        k=htypes.view_factory_list_tests.sample_k(),
+        k=htypes.view_factory_tests.sample_k(),
         ui_t_t=None,
-        view_t=htypes.view_factory_list_tests.sample_view,
+        view_t=htypes.view_factory_tests.sample_view,
         is_wrapper=False,
         view_ctx_params=[],
         system_fn=system_fn,
