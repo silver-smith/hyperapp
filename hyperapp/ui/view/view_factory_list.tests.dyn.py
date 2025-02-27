@@ -114,6 +114,7 @@ def test_selector_pick():
         view_t_str="<unused>",
         is_wrapper=False,
         view_ctx_params=(),
+        model_t=None,
         system_fn=mosaic.put("<unused>"),
         )
     factory = view_factory_list.view_factory_list_pick(piece, current_item)

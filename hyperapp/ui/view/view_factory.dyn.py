@@ -33,6 +33,7 @@ class ViewFactory:
             view_t_str=str(self._view_t),
             is_wrapper=self._is_wrapper,
             view_ctx_params=tuple(self._view_ctx_params),
+            model_t=None,
             system_fn=mosaic.put(self._system_fn.piece),
             )
 

@@ -27,6 +27,7 @@ def view_factory_list(piece, adapter_creg, visualizer_reg, view_factory_reg):
             view_t_str="",
             is_wrapper=False,
             view_ctx_params=(),
+            model_t=piece.model_t,
             system_fn=mosaic.put(None),
             )
         for item in adapter_actor_items
