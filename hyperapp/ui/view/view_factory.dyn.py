@@ -21,6 +21,13 @@ class ViewFactory:
     def k(self):
         return self._k
 
+    def match_model(self, model_t, ui_t):
+        if self._ui_t_t is None:
+            return True
+        if ui_t is None:
+            return False
+        return isinstance(ui_t, self._ui_t_t)
+
     @property
     def fn(self):
         return self._system_fn
@@ -41,5 +48,13 @@ class ViewFactory:
 
 # d -> ViewFactory.
 @mark.service
-def view_factory_reg(config):
-    return config
+def view_factory_reg(config, visualizer_reg, model_t=None):
+    try:
+        ui_t, unused_system_fn_ref = visualizer_reg(model_t)
+    except KeyError:
+        ui_t = None
+    return {
+        k: factory
+        for k, factory in config.items()
+        if factory.match_model(model_t, ui_t)
+        }

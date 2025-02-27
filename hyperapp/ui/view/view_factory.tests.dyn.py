@@ -7,6 +7,11 @@ def _sample_fn():
     return 'sample-fn'
 
 
+def test_service(view_factory_reg):
+    factory_dict = view_factory_reg(model_t=None)
+    assert factory_dict == {}
+
+
 def test_item(partial_ref):
     system_fn = ContextFn(
         partial_ref=partial_ref, 

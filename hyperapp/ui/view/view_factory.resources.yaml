@@ -36,6 +36,8 @@ definitions:
       name: view_factory_reg
       ctl: system-dict_config_ctl.ctl
       function: view_factory_reg
-      service_params: []
+      service_params:
+      - visualizer_reg
       want_config: true
-      free_params: []
+      free_params:
+      - model_t
