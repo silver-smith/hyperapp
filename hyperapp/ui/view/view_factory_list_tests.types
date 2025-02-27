@@ -1,5 +1,8 @@
-sample_k = record
+sample_1_k = record
+sample_2_k = record
+
 sample_view = record
+sample_model_view = record
 sample_model = record
 
 layout_k = record

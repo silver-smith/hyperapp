@@ -25,7 +25,7 @@ def factory(partial_ref):
         bound_fn=_sample_fn,
         )
     return ViewFactory(
-        k=htypes.view_factory_list_tests.sample_k(),
+        k=htypes.view_factory_list_tests.sample_1_k(),
         ui_t_t=None,
         view_t=htypes.view_factory_list_tests.sample_view,
         is_wrapper=False,
@@ -34,9 +34,31 @@ def factory(partial_ref):
         )
 
 
+@mark.fixture
+def model_factory(partial_ref):
+    system_fn = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=(),
+        service_params=(),
+        raw_fn=_sample_fn,
+        bound_fn=_sample_fn,
+        )
+    return ViewFactory(
+        k=htypes.view_factory_list_tests.sample_2_k(),
+        ui_t_t=htypes.view_factory_list_tests.sample_ui_t,
+        view_t=htypes.view_factory_list_tests.sample_model_view,
+        is_wrapper=False,
+        view_ctx_params=[],
+        system_fn=system_fn,
+        )
+
+
 @mark.config_fixture('view_factory_reg')
-def view_factory_reg_config(factory):
-    return {factory.k: factory}
+def view_factory_reg_config(factory, model_factory):
+    return {
+        factory.k: factory,
+        model_factory.k: model_factory,
+        }
 
 
 @mark.fixture
@@ -62,28 +84,12 @@ def visualizer_config():
         }
 
 
-@mark.config_fixture('adapter_creg')
-def adapter_creg_config():
-    return {
-        htypes.view_factory_list_tests.sample_ui_t: [
-            MultiActorItem(
-                k=htypes.view_factory_list_tests.layout_k(),
-                t=htypes.view_factory_list_tests.sample_ui_t,
-                fn=None,
-                ),
-            ],
-        }
-
-
-def test_view_factory_list_with_model(factory):
+def test_view_factory_list_with_model(factory, model_factory):
     piece = htypes.view_factory_list.model(
         model_t=pyobj_creg.actor_to_ref(htypes.view_factory_list_tests.sample_model),
         )
     items = view_factory_list.view_factory_list(piece)
-    assert len(items) == 2
-    assert factory.item in items
-    k = htypes.view_factory_list_tests.layout_k()
-    assert mosaic.put(k) in {item.k for item in items}
+    assert set(items) == {factory.item, model_factory.item}
 
 
 def test_open():
@@ -97,7 +103,7 @@ def test_editor_default():
 
 
 def test_selector_get():
-    k = htypes.view_factory_list_tests.sample_k(),
+    k = htypes.view_factory_list_tests.sample_1_k(),
     value = htypes.view_factory.factory(
         model_t=None,
         k=mosaic.put(k),
@@ -107,7 +113,7 @@ def test_selector_get():
 
 
 def test_selector_pick():
-    k = htypes.view_factory_list_tests.sample_k(),
+    k = htypes.view_factory_list_tests.sample_1_k(),
     current_item = htypes.view_factory.item(
         k=mosaic.put(k),
         k_str="<unused>",
