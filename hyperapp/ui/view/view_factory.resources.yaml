@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
@@ -23,6 +24,7 @@ definitions:
         code.directory: ui.directory:directory.module
         code.mark: base.mark:mark.module
         htypes.view_factory.item: legacy_type.view_factory:item
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
   view_factory_reg:

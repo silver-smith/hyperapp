@@ -167,6 +167,6 @@ def add_child_element(view, widget, view_factory, ctx, view_reg, view_factory_re
     fn_ctx = ctx.clone_with(
         inner=last_child.piece,
         )
-    elt_piece = factory.fn.call(ctx=fn_ctx)
+    elt_piece = factory.call(fn_ctx)
     elt_view = view_reg.animate(elt_piece, ctx)
     view.add_child(ctx, widget, elt_view)

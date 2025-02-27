@@ -1,5 +1,6 @@
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
     pyobj_creg,
     )
@@ -9,7 +10,8 @@ from .code.directory import k_to_name
 
 class ViewFactory:
 
-    def __init__(self, k, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+    def __init__(self, visualizer_reg, k, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+        self._visualizer_reg = visualizer_reg
         self._k = k
         self._ui_t_t = ui_t_t
         self._view_t = view_t
@@ -28,9 +30,17 @@ class ViewFactory:
             return False
         return isinstance(ui_t, self._ui_t_t)
 
-    @property
-    def fn(self):
-        return self._system_fn
+    def call(self, ctx):
+        if self._ui_t_t is not None:
+            model_t = deduce_t(ctx.model)
+            ui_t, system_fn_ref = self._visualizer_reg(model_t)
+            fn_ctx = ctx.clone_with(
+                piece=ui_t,
+                system_fn_ref=system_fn_ref,
+            )
+        else:
+            fn_ctx = ctx
+        return self._system_fn.call(fn_ctx)
 
     @property
     def item(self):

@@ -12,7 +12,7 @@ def test_service(view_factory_reg):
     assert factory_reg.values() == []
 
 
-def test_item(partial_ref):
+def test_item(partial_ref, visualizer_reg):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=(),
@@ -21,6 +21,7 @@ def test_item(partial_ref):
         bound_fn=_sample_fn,
         )
     factory = view_factory.ViewFactory(
+        visualizer_reg=visualizer_reg,
         k=htypes.view_factory_tests.sample_k(),
         ui_t_t=None,
         view_t=htypes.view_factory_tests.sample_view,

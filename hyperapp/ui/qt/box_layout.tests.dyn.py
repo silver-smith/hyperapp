@@ -73,7 +73,7 @@ def test_wrap():
 def view_factory_reg_config():
     k = htypes.box_layout_tests.sample_k()
     factory = Mock()
-    factory.fn.call.return_value = htypes.label.view("Sample label")
+    factory.call.return_value = htypes.label.view("Sample label")
     return {k: factory}
 
 

@@ -16,7 +16,7 @@ def _sample_fn():
 
 
 @mark.fixture
-def factory(partial_ref):
+def factory(partial_ref, visualizer_reg):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=(),
@@ -25,6 +25,7 @@ def factory(partial_ref):
         bound_fn=_sample_fn,
         )
     return ViewFactory(
+        visualizer_reg=visualizer_reg,
         k=htypes.view_factory_list_tests.sample_1_k(),
         ui_t_t=None,
         view_t=htypes.view_factory_list_tests.sample_view,
@@ -35,7 +36,7 @@ def factory(partial_ref):
 
 
 @mark.fixture
-def model_factory(partial_ref):
+def model_factory(partial_ref, visualizer_reg):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=(),
@@ -44,6 +45,7 @@ def model_factory(partial_ref):
         bound_fn=_sample_fn,
         )
     return ViewFactory(
+        visualizer_reg=visualizer_reg,
         k=htypes.view_factory_list_tests.sample_2_k(),
         ui_t_t=htypes.view_factory_list_tests.sample_ui_t,
         view_t=htypes.view_factory_list_tests.sample_model_view,

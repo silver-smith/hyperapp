@@ -33,8 +33,9 @@ class ViewFactoryTemplate:
         return self._k
 
     def resolve(self, system, service_name):
-        system_fn_creg = system.resolve_service('system_fn_creg')
+        system_fn_creg = system['system_fn_creg']
         return ViewFactory(
+            visualizer_reg=system['visualizer_reg'],
             k=self._k,
             ui_t_t=self._ui_t_t,
             view_t=self._view_t,
