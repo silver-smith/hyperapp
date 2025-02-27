@@ -50,7 +50,14 @@ class ViewFactoryProbe:
         self._ctr_collector.add_constructor(ctr)
 
 
-def view_factory_marker(fn, module_name, system, ctr_collector):
-    check_not_classmethod(fn)
-    check_is_function(fn)
-    return ViewFactoryProbe(system, ctr_collector, module_name, fn)
+class ViewFactoryMarker:
+
+    def __init__(self, module_name, system, ctr_collector):
+        self._module_name = module_name
+        self._system = system
+        self._ctr_collector = ctr_collector
+
+    def __call__(self, fn):
+        check_not_classmethod(fn)
+        check_is_function(fn)
+        return ViewFactoryProbe(self._system, self._ctr_collector, self._module_name, fn)

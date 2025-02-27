@@ -18,17 +18,17 @@ definitions:
         code.marker_utils: rc.marker_utils:marker_utils.module
         code.view_factory_ctr: rc.view_factory_ctr:view_factory_ctr.module
 
-  view_factory_marker:
+  ViewFactoryMarker:
     type: legacy_type.builtin:attribute
     value:
       object: view_factory_marker.module
-      attr_name: view_factory_marker
+      attr_name: ViewFactoryMarker
 
   view_factory.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: view_factory
-      function: view_factory_marker
+      function: ViewFactoryMarker
       service_params:
       - system
       - ctr_collector
