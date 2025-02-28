@@ -40,7 +40,6 @@ class _Item:
     id: int
     parent: Self | None
     ctx: Context
-    rctx: Context  # Parent-context from children.
     name: str
     view: View
     focusable: bool
@@ -80,7 +79,7 @@ class _Item:
     def _make_child_item(self, rec):
         item_id = next(self._meta.counter)
         ctx = rec.view.children_context(self.ctx)
-        item = _Item(self._meta, item_id, self, ctx, None, rec.name, rec.view, rec.focusable)
+        item = _Item(self._meta, item_id, self, ctx, rec.name, rec.view, rec.focusable)
         item.view.set_controller_hook(item.hook)
         self._meta.id_to_item[item_id] = item
         return item
@@ -116,46 +115,48 @@ class _Item:
     def get_child_widget(self, idx):
         return self.view.item_widget(self.widget, idx)
 
-    def navigator_rec(self, rctx):
-        rctx = self.view.primary_parent_context(rctx, self.widget)
-        try:
-            return rctx.navigator
-        except KeyError:
-            pass
-        return self.parent.navigator_rec(rctx)
+    def children_changed(self):
+        self.parent.children_changed()
 
-    def schedule_init_children_reverse_context(self):
-        asyncio.create_task(self.init_children_reverse_context())
-
-    async def init_children_reverse_context(self):
-        is_leaf = True
-        for item in self.children:
-            if item.focusable:
-                await item.init_children_reverse_context()
-                is_leaf = False
-        if is_leaf:
-            await self.update_parents_context()
-
-    def schedule_update_parents_context(self):
-        asyncio.create_task(self.update_parents_context())
-
-    async def update_parents_context(self):
+    async def update_children(self):
         kid = self.current_child
-        if kid and kid.rctx:
-            rctx = kid.rctx
+        if kid:
+            rctx = await kid.update_children()
         else:
-            rctx = Context(command_recs=[], commands=[])
+            rctx = Context()
         await self.view.children_context_changed(self.ctx, rctx, self.widget)
-        self.view_commands, rctx = await self._reverse_context(rctx)
-        for idx, item in enumerate(self.children):
-            if item.focusable:
+        self.view_commands, rctx = self._my_reverse_context(rctx)
+        rctx = await self.update_other_children(rctx)
+        return rctx
+
+    async def update_other_children(self, rctx):
+        for kid in self.children:
+            if kid is self.current_child:
                 continue
-            await item.view.children_context_changed(item.ctx, rctx, item.widget)
-            rctx = item.view.secondary_parent_context(rctx, item.widget)
-            item.rctx = rctx
-        self.rctx = rctx
-        if self.parent and self.parent.current_child is self:
-            await self.parent.update_parents_context()
+            rctx = await kid.update_other_children(rctx)
+            await kid.view.children_context_changed(kid.ctx, rctx, kid.widget)
+            rctx = kid.view.secondary_parent_context(rctx, kid.widget)
+        return rctx
+
+    def _my_reverse_context(self, rctx):
+        my_rctx = self.view.primary_parent_context(rctx, self.widget)
+        command_ctx = self._command_context(my_rctx)
+        unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.ctx.lcs, self.view)
+        commands = view_commands = self._bind_commands(unbound_view_commands, command_ctx)
+        if 'model' in self.ctx.diffs(self.parent.ctx):  # Added or replaced by self.view.children_context.
+            model_t = deduce_t(command_ctx.model)
+            unbound_model_commands = self._meta.svc.get_ui_model_commands(
+                self.ctx.lcs, model_t, command_ctx)
+            model_commands = self._bind_commands(unbound_model_commands, command_ctx)
+            commands = commands + model_commands
+        commands_rctx = my_rctx.clone_with(
+            commands=rctx.get('commands', []) + commands,
+            )
+        return (view_commands, commands_rctx)
+
+    @staticmethod
+    def _bind_commands(commands, ctx):
+        return [cmd.bind(ctx) for cmd in commands]
 
     def _command_context(self, rctx):
         ctx = self.ctx.clone_with(
@@ -175,33 +176,22 @@ class _Item:
             ctx = ctx.clone_with(**ctx.attributes(ctx.model_state))
         return ctx
 
-    async def _reverse_context(self, rctx):
-        my_rctx = self.view.primary_parent_context(rctx, self.widget)
-        command_ctx = self._command_context(my_rctx)
-        unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.ctx.lcs, self.view)
-        commands = view_commands = [cmd.bind(command_ctx) for cmd in unbound_view_commands]
-        d_to_context = {}
-        if 'model' in my_rctx.diffs(rctx):
-            # model is added or one from a child is replaced.
-            model_t = deduce_t(command_ctx.model)
-            unbound_model_commands = self._meta.svc.get_ui_model_commands(
-                self.ctx.lcs, model_t, command_ctx)
-            model_commands = [cmd.bind(command_ctx) for cmd in unbound_model_commands]
-            commands = commands + model_commands
-        commands_rctx = my_rctx.clone_with(
-            command_recs=rctx.command_recs + commands,
-            commands=rctx.commands + commands,
-            )
-        return (view_commands, commands_rctx)
+    def navigator_rec(self, rctx):
+        rctx = self.view.primary_parent_context(rctx, self.widget)
+        try:
+            return rctx.navigator
+        except KeyError:
+            pass
+        return self.parent.navigator_rec(rctx)
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
-        self.schedule_update_parents_context()
+        self.children_changed()
 
     def current_changed_hook(self):
         log.info("Controller: current changed from: %s", self)
         self._current_child_idx = None
-        self.schedule_update_parents_context()
+        self.children_changed()
         self.save_state()
 
     # Should be on stack for proper module for feed constructor be picked up.
@@ -212,7 +202,7 @@ class _Item:
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
         self._children[idx] = item
-        item.schedule_init_children_reverse_context()
+        self.children_changed()
         self.save_state()
         model_diff = TreeDiff.Replace(self.path, self.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
@@ -234,7 +224,7 @@ class _Item:
         item = self._make_child_item(view_items[idx])
         self._children.insert(idx, item)
         self._current_child_idx = None
-        item.schedule_init_children_reverse_context()
+        self.children_changed()
         self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
@@ -242,13 +232,13 @@ class _Item:
     def element_removed_hook(self, idx):
         del self._children[idx]
         self._current_child_idx = None
-        self.schedule_update_parents_context()
+        self.children_changed()
         self.save_state()
 
     def elements_changed_hook(self):
         self._children = None
         self._current_child_idx = None
-        self.schedule_update_parents_context()
+        self.children_changed()
         self.save_state()
 
     def removed_hook(self):
@@ -282,7 +272,7 @@ class _WindowItem(_Item):
         view = meta.svc.view_reg.invite(view_ref, ctx)
         state = web.summon(state_ref)
         item_id = next(meta.counter)
-        self = cls(meta, item_id, parent, ctx, None, f"window#{item_id}", view, focusable=True)
+        self = cls(meta, item_id, parent, ctx, f"window#{item_id}", view, focusable=True)
         self._init(state)
         return self
 
@@ -292,6 +282,9 @@ class _WindowItem(_Item):
         self.view.set_controller_hook(self.hook)
         self._meta.id_to_item[self.id] = self
         self._window_widget = widget  # Prevent windows refs from be gone.
+
+    def children_changed(self):
+        asyncio.create_task(self.update_children())
 
     def save_state(self):
         self.parent.save_state()
@@ -306,7 +299,7 @@ class _RootItem(_Item):
     @classmethod
     def from_piece(cls, meta, show, ctx, layout_bundle, layout):
         item_id = 0
-        self = cls(meta, item_id, None, ctx, None, "root",
+        self = cls(meta, item_id, None, ctx, "root",
                    view=None, focusable=False, _layout_bundle=layout_bundle, _show=show)
         self.ctx = self.ctx.clone_with(
             root=Root(root_item=self),
@@ -334,6 +327,9 @@ class _RootItem(_Item):
     @property
     def current_child_idx(self):
         return None
+
+    def children_changed(self):
+        pass
 
     def save_state(self):
         # TODO: Find out real active window.
@@ -369,10 +365,10 @@ class _RootItem(_Item):
         view = self._meta.svc.view_reg.animate(piece, self.ctx)
         item_id = next(self._meta.counter)
         ctx = view.children_context(self.ctx)
-        item = _WindowItem(self._meta, item_id, self, ctx, None, f"window#{item_id}", view, focusable=True)
+        item = _WindowItem(self._meta, item_id, self, ctx, f"window#{item_id}", view, focusable=True)
         item._init(state)
         self._children.append(item)
-        await item.init_children_reverse_context()
+        await item.update_children()
         if self._show:
             item.widget.show()
         self.save_state()
@@ -381,10 +377,6 @@ class _RootItem(_Item):
 
     def navigator_rec(self, rctx):
         return None
-
-    def schedule_update_parents_context(self):
-        # This is window open/close event. No context is changed for other windows.
-        pass
 
     def element_removed_hook(self, idx):
         if len(self.children) > 1:
@@ -472,7 +464,8 @@ class Controller:
         self._root_item = _RootItem.from_piece(meta, show, root_ctx, layout_bundle, layout)
 
     async def async_init(self):
-        await self._root_item.init_children_reverse_context()
+        for kid in self._root_item.children:
+            await kid.update_children()
 
     def show(self):
         self._root_item.show()

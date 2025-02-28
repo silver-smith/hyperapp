@@ -53,6 +53,9 @@ class NavigatorView(View):
     def get_current(self, widget):
         return 0
 
+    def children_context(self, ctx):
+        return ctx.clone_with(model=self._model)
+
     def primary_parent_context(self, rctx, widget):
         state = self.widget_state(widget)
         return rctx.clone_with(

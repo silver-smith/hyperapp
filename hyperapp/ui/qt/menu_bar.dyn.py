@@ -41,7 +41,7 @@ class MenuBarView(View):
         return htypes.menu_bar.state()
 
     async def children_context_changed(self, ctx, rctx, widget):
-        commands = rctx.commands
+        commands = rctx.get('commands', [])
         used_shortcuts = rctx.get('used_shortcuts', set())
         global_d = htypes.command_groups.global_d()
         view_d = htypes.command_groups.view_d()
