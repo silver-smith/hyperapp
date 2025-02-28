@@ -184,6 +184,15 @@ class _Item:
             pass
         return self.parent.navigator_rec(rctx)
 
+    def update_context(self, parent_ctx):
+        self.ctx = self.view.children_context(parent_ctx)
+        for kid in self.children:
+            kid.update_context(self.ctx)
+
+    def context_changed_hook(self):
+        log.info("Controller: context changed from: %s", self)
+        self.update_context(self.parent.ctx)
+
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
         self.children_changed()
@@ -413,6 +422,9 @@ class CtlHook:
 
     def current_changed(self):
         self._item.current_changed_hook()
+
+    def context_changed(self):
+        self._item.context_changed_hook()
 
     def parent_context_changed(self):
         self._item.parent_context_changed_hook()
