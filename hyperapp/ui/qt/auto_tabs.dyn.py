@@ -41,10 +41,11 @@ class AutoTabsView(TabsView):
 
     async def children_context_changed(self, ctx, rctx, widget):
         try:
-            model = rctx.model
+            model = rctx.current_model
         except KeyError:
-            return
-        text = tab_piece_label(model)
+            text = "Unknown"
+        else:
+            text = tab_piece_label(model)
         idx = super().get_current(widget)
         super().set_tab_text(widget, idx, text)
 
