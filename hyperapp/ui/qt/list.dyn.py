@@ -136,7 +136,6 @@ class ListView(View):
 
     def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
-            model=self._adapter.model,
             model_state=self._model_state(widget),
             )
 
