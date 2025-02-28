@@ -78,7 +78,7 @@ class _Item:
 
     def _make_child_item(self, rec):
         item_id = next(self._meta.counter)
-        ctx = rec.view.children_context(self.ctx)
+        ctx = self.view.children_context(self.ctx)
         item = _Item(self._meta, item_id, self, ctx, rec.name, rec.view, rec.focusable)
         item.view.set_controller_hook(item.hook)
         self._meta.id_to_item[item_id] = item
@@ -184,14 +184,15 @@ class _Item:
             pass
         return self.parent.navigator_rec(rctx)
 
-    def update_context(self, parent_ctx):
-        self.ctx = self.view.children_context(parent_ctx)
+    def update_context(self):
+        ctx = self.view.children_context(self.ctx)
         for kid in self.children:
-            kid.update_context(self.ctx)
+            kid.ctx = ctx
+            kid.update_context()
 
     def context_changed_hook(self):
         log.info("Controller: context changed from: %s", self)
-        self.update_context(self.parent.ctx)
+        self.update_context()
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
@@ -373,8 +374,7 @@ class _RootItem(_Item):
     async def create_window(self, piece, state):
         view = self._meta.svc.view_reg.animate(piece, self.ctx)
         item_id = next(self._meta.counter)
-        ctx = view.children_context(self.ctx)
-        item = _WindowItem(self._meta, item_id, self, ctx, f"window#{item_id}", view, focusable=True)
+        item = _WindowItem(self._meta, item_id, self, self.ctx, f"window#{item_id}", view, focusable=True)
         item._init(state)
         self._children.append(item)
         await item.update_children()
