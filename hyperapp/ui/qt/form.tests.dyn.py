@@ -45,6 +45,18 @@ def lcs():
     return lcs
 
 
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config():
+    return {
+        htypes.builtin.int: htypes.text.edit_view(
+            adapter=mosaic.put(htypes.int_adapter.int_adapter()),
+            ),
+        htypes.builtin.string: htypes.text.edit_view(
+            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
+            ),
+        }
+
+
 def test_form(qapp, lcs, piece):
     ctx = Context(lcs=lcs)
     model = htypes.form_tests.sample_form()

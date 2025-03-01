@@ -15,23 +15,6 @@ from .code.mark import mark
 log = logging.getLogger(__name__)
 
 
-@mark.service
-def model_layout_creg(config):
-    return code_registry_ctr('model_layout_creg', config)
-
-
-@mark.actor.model_layout_creg
-def string_layout(piece, lcs, ctx):
-    adapter = htypes.str_adapter.static_str_adapter()
-    return htypes.text.edit_view(mosaic.put(adapter))
-
-
-@mark.actor.model_layout_creg
-def int_layout(piece, lcs, ctx):
-    adapter = htypes.int_adapter.int_adapter()
-    return htypes.text.edit_view(mosaic.put(adapter))
-
-
 def _primitive_value_layout(t):
     if isinstance(t, TList):
         adapter = htypes.list_adapter.static_list_adapter()
@@ -56,41 +39,16 @@ def ui_type_creg(config):
 
 
 @mark.service
-def get_custom_layout(lcs, t):
-    t_res = pyobj_creg.actor_to_piece(t)
-    d = {
-        htypes.ui.model_view_layout_d(),
-        t_res,
-        }
-    return lcs.get(d)
-
-
-@mark.service
-def set_custom_layout(lcs, t, layout):
-    log.info("Save layout for %s: %s", t, layout)
-    t_res = pyobj_creg.actor_to_piece(t)
-    d = {
-        htypes.ui.model_view_layout_d(),
-        t_res,
-        }
-    lcs.set(d, layout)
-
-
-@mark.service
-def visualizer(model_layout_creg, visualizer_reg, ui_type_creg, get_custom_layout, lcs, ctx, model):
+def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, lcs, ctx, model):
+    model_t = deduce_t(model)
     try:
-        return model_layout_creg.animate(model, lcs, ctx)
+        return model_layout_reg[model_t]
     except KeyError:
         pass
-    model_t = deduce_t(model)
     try:
         return _primitive_value_layout(model_t)
     except KeyError:
         pass
-    view = get_custom_layout(lcs, model_t)
-    if view is not None:
-        log.info("Using configured layout for %s: %s", model_t, view)
-        return view
     try:
         ui_t, system_fn_ref = visualizer_reg(model_t)
     except KeyError:

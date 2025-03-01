@@ -3,10 +3,22 @@ from pathlib import Path
 
 from PySide6 import QtWidgets
 
+from . import htypes
 from .services import (
+    mosaic,
     project_factory,
     )
+from .code.mark import mark
 from .tested.code import client
+
+
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config():
+    return {
+        htypes.builtin.string: htypes.text.edit_view(
+            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
+            ),
+        }
 
 
 def test_client(client_main):

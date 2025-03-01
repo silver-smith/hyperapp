@@ -1,5 +1,5 @@
 import logging
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 from . import htypes
 from .services import (
@@ -170,7 +170,12 @@ def test_opener_commands_list(adapter_piece, model_state):
     assert web.summon_opt(item.command_d) == htypes.list_as_tree_tests.open_2_d()
 
 
-async def test_set_root_open_command(root_item_t, fn_1, model_state):
+@mark.fixture.obj
+def model_layout_reg():
+    return MagicMock()
+
+
+async def test_set_root_open_command(model_layout_reg, root_item_t, fn_1, model_state):
     ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece = root_piece
@@ -178,6 +183,11 @@ async def test_set_root_open_command(root_item_t, fn_1, model_state):
         root_piece=mosaic.put(root_piece),
         layer_piece=mosaic.put(layer_piece),
         model_state=mosaic.put(model_state),
+        )
+    current_item = htypes.list_as_tree.opener_command_item(
+        command_d=mosaic.put(htypes.list_as_tree_tests.open_1_d()),
+        name="<unused>",
+        is_opener=False,
         )
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
@@ -188,18 +198,13 @@ async def test_set_root_open_command(root_item_t, fn_1, model_state):
     view = htypes.tree.view(
         adapter=mosaic.put(adapter_piece),
         )
-    current_item = htypes.list_as_tree.opener_command_item(
-        command_d=mosaic.put(htypes.list_as_tree_tests.open_1_d()),
-        name="<unused>",
-        is_opener=False,
-        )
+    model_layout_reg.get.return_value = view
     lcs = Mock()
-    lcs.get.return_value = view
     result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx, lcs)
-    lcs.set.assert_called_once()
+    model_layout_reg.__setitem__.assert_called_once()
 
 
-async def test_set_non_root_open_command(root_item_t, fn_1, model_state):
+async def test_set_non_root_open_command(model_layout_reg, root_item_t, fn_1, model_state):
     ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece_t = htypes.list_as_tree_tests.sample_list_2
@@ -225,12 +230,12 @@ async def test_set_non_root_open_command(root_item_t, fn_1, model_state):
     view = htypes.tree.view(
         adapter=mosaic.put(adapter_piece),
         )
+    model_layout_reg.get.return_value = view
     current_item = htypes.list_as_tree.opener_command_item(
         command_d=mosaic.put(htypes.list_as_tree_tests.open_1_d()),
         name="<unused>",
         is_opener=False,
         )
     lcs = Mock()
-    lcs.get.return_value = view
     result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx, lcs)
-    lcs.set.assert_called_once()
+    model_layout_reg.__setitem__.assert_called_once()

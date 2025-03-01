@@ -91,6 +91,15 @@ def test_view(qapp, piece, state, model, ctx):
     assert isinstance(state, htypes.master_details.state)
 
 
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config():
+    return {
+        htypes.builtin.string: htypes.text.edit_view(
+            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
+            ),
+        }
+
+
 async def test_run_details_command(qapp, piece, state, model, ctx):
     view = master_details.MasterDetailsView.from_piece(piece, model, ctx)
     rctx = Context(

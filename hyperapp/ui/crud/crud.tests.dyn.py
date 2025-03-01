@@ -190,11 +190,10 @@ def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
     return {value_t: selector}
 
 
-@mark.config_fixture('model_layout_creg')
-def model_layout_config():
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config():
     return {
-        htypes.crud_tests.sample_selector_model:
-            lambda piece, lcs, ctx: htypes.crud_tests.selector_view(),
+        htypes.crud_tests.sample_selector_model: htypes.crud_tests.selector_view(),
         }
 
 

@@ -36,7 +36,7 @@ definitions:
       - ctx
       service_params:
       - view_reg
-      - set_custom_layout
+      - model_layout_reg
   go_back:
     type: legacy_type.builtin:attribute
     value:

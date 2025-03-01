@@ -8,88 +8,12 @@ import:
 - builtins:pyobj_creg.service
 - builtins:web.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:int
 - legacy_type.builtin:python_module
-- legacy_type.builtin:string
-- legacy_type.int_adapter:int_adapter
 - legacy_type.list:view
 - legacy_type.list_adapter:static_list_adapter
-- legacy_type.str_adapter:static_str_adapter
-- legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
-- legacy_type.text:edit_view
-- legacy_type.ui:model_view_layout_d
 definitions:
-  builtin-int.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.builtin:int
-      function: int_layout
-      service_params: []
-  builtin-string.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.builtin:string
-      function: string_layout
-      service_params: []
-  get_custom_layout:
-    type: legacy_type.builtin:attribute
-    value:
-      object: visualizer.module
-      attr_name: get_custom_layout
-  get_custom_layout.service:
-    type: legacy_type.system:service_template
-    value:
-      name: get_custom_layout
-      ctl: system-dict_config_ctl.ctl
-      function: get_custom_layout
-      service_params: []
-      want_config: false
-      free_params:
-      - lcs
-      - t
-  int_layout:
-    type: legacy_type.builtin:attribute
-    value:
-      object: visualizer.module
-      attr_name: int_layout
-  model_layout_creg:
-    type: legacy_type.builtin:attribute
-    value:
-      object: visualizer.module
-      attr_name: model_layout_creg
-  model_layout_creg.service:
-    type: legacy_type.system:service_template
-    value:
-      name: model_layout_creg
-      ctl: system-dict_config_ctl.ctl
-      function: model_layout_creg
-      service_params: []
-      want_config: true
-      free_params: []
-  set_custom_layout:
-    type: legacy_type.builtin:attribute
-    value:
-      object: visualizer.module
-      attr_name: set_custom_layout
-  set_custom_layout.service:
-    type: legacy_type.system:service_template
-    value:
-      name: set_custom_layout
-      ctl: system-dict_config_ctl.ctl
-      function: set_custom_layout
-      service_params: []
-      want_config: false
-      free_params:
-      - lcs
-      - t
-      - layout
-  string_layout:
-    type: legacy_type.builtin:attribute
-    value:
-      object: visualizer.module
-      attr_name: string_layout
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
@@ -119,12 +43,8 @@ definitions:
       file_name: visualizer.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        htypes.int_adapter.int_adapter: legacy_type.int_adapter:int_adapter
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
-        htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
-        htypes.text.edit_view: legacy_type.text:edit_view
-        htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
@@ -137,10 +57,9 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: visualizer
       service_params:
-      - model_layout_creg
+      - model_layout_reg
       - visualizer_reg
       - ui_type_creg
-      - get_custom_layout
       want_config: false
       free_params:
       - lcs

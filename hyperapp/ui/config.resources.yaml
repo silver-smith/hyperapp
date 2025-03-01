@@ -52,6 +52,7 @@ import:
 - ui.model_command:global_model_command_reg.service
 - ui.model_command:model_command_enumerator_reg.service
 - ui.model_command:model_command_reg.service
+- ui.model_layout_reg:model_layout_reg.service
 - ui.navigator:navigator-view-go_back.command-cfg-item
 - ui.navigator:navigator-view-go_forward.command-cfg-item
 - ui.navigator:navigator-view.view-template
@@ -120,11 +121,6 @@ import:
 - ui.view.view_factory_list:view_factory_list-model.model-cfg-item
 - ui.view.view_registry:view_reg.service
 - ui.view.wrap_view:wrap_view.universal-ui-command
-- ui.visualizer:builtin-int.actor-template
-- ui.visualizer:builtin-string.actor-template
-- ui.visualizer:get_custom_layout.service
-- ui.visualizer:model_layout_creg.service
-- ui.visualizer:set_custom_layout.service
 - ui.visualizer:ui_type_creg.service
 - ui.visualizer:visualizer.service
 - ui.visualizer:visualizer_reg.service
@@ -160,7 +156,6 @@ definitions:
         global_model_command_reg: global_model_command_reg
         model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
-        model_layout_creg: model_layout_creg
         resource_name_creg: resource_name_creg
         selector_reg: selector_reg
         system: system
@@ -218,12 +213,6 @@ definitions:
       - ui.layout:layout-command_list-set_shortcut.command-cfg-item
       - ui.layout:layout-view-open_view_item_commands.command-cfg-item
       - ui.list_as_tree:list_as_tree-opener_commands-toggle_open_command.command-cfg-item
-  model_layout_creg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - ui.visualizer:builtin-int.actor-template
-      - ui.visualizer:builtin-string.actor-template
   resource_name_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -253,6 +242,7 @@ definitions:
       - ui.model_command:global_model_command_reg.service
       - ui.model_command:model_command_enumerator_reg.service
       - ui.model_command:model_command_reg.service
+      - ui.model_layout_reg:model_layout_reg.service
       - ui.selector:selector_reg.service
       - ui.shortcut_reg:shortcut_reg.service
       - ui.system_fn_creg:system_fn_creg.service
@@ -269,9 +259,6 @@ definitions:
       - ui.ui_model_command:ui_model_command_items.service
       - ui.view.view_factory:view_factory_reg.service
       - ui.view.view_registry:view_reg.service
-      - ui.visualizer:get_custom_layout.service
-      - ui.visualizer:model_layout_creg.service
-      - ui.visualizer:set_custom_layout.service
       - ui.visualizer:ui_type_creg.service
       - ui.visualizer:visualizer.service
       - ui.visualizer:visualizer_reg.service

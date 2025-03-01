@@ -107,11 +107,11 @@ def _amend_adapter(root_piece_t, layer_piece_t, adapter, new_command_d):
 
 
 @mark.model
-def opener_command_list(piece, lcs, ctx, get_model_commands, get_custom_layout):
+def opener_command_list(piece, lcs, ctx, get_model_commands, model_layout_reg):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
     model_state = web.summon(piece.model_state)
-    view = get_custom_layout(lcs, root_piece_t)
+    view = model_layout_reg.get(root_piece_t)
     current_command_d = None
     if isinstance(view, htypes.tree.view):
         adapter = web.summon(view.adapter)
@@ -128,13 +128,13 @@ def opener_command_list(piece, lcs, ctx, get_model_commands, get_custom_layout):
 @mark.command
 async def toggle_open_command(
         piece, current_idx, current_item, ctx, lcs,
-        feed_factory, get_model_commands, get_custom_layout, set_custom_layout):
+        feed_factory, get_model_commands, model_layout_reg):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
     model_state = web.summon(piece.model_state)
-    view = get_custom_layout(lcs, root_piece_t)
+    view = model_layout_reg.get(root_piece_t)
     if not isinstance(view, htypes.tree.view):
-        log.info("View for %s is not a tree: %s", model_t, view)
+        log.info("View for %s is not a tree: %s", root_piece_t, view)
         return
     adapter = web.summon(view.adapter)
     if not isinstance(adapter, htypes.list_as_tree_adapter.adapter):
@@ -156,7 +156,7 @@ async def toggle_open_command(
     new_view = htypes.tree.view(
         adapter=mosaic.put(new_adapter),
         )
-    set_custom_layout(lcs, root_piece_t, new_view)
+    model_layout_reg[root_piece_t] = new_view
     feed = feed_factory(piece)
     try:
         idx, prev_command = idx_command_by_d[prev_command_d]

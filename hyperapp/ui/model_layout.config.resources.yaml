@@ -1,0 +1,54 @@
+import:
+- legacy_type.builtin:int
+- legacy_type.builtin:string
+- legacy_type.data_service:config_item
+- legacy_type.int_adapter:int_adapter
+- legacy_type.str_adapter:static_str_adapter
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- legacy_type.text:edit_view
+
+definitions:
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        model_layout_reg: model_layout_reg.config
+
+  model_layout_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-int.layout
+      - config_item-string.layout
+
+  config_item-int.layout:
+    type: legacy_type.data_service:config_item
+    value:
+      key: legacy_type.builtin:int
+      value: edit_view-int.layout
+
+  edit_view-int.layout:
+    type: legacy_type.text:edit_view
+    value:
+      adapter: static_int_adapter
+
+  static_int_adapter:
+    type: legacy_type.int_adapter:int_adapter
+    value: {}
+
+  config_item-string.layout:
+    type: legacy_type.data_service:config_item
+    value:
+      key: legacy_type.builtin:string
+      value: edit_view-string.layout
+
+  edit_view-string.layout:
+    type: legacy_type.text:edit_view
+    value:
+      adapter: static_str_adapter
+
+  static_str_adapter:
+    type: legacy_type.str_adapter:static_str_adapter
+    value: {}

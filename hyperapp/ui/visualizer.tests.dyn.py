@@ -26,37 +26,26 @@ def ctx():
     return Context()
 
 
-@mark.config_fixture('model_layout_creg')
-def model_layout_creg_config():
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config():
     return {
-        tString: visualizer_module.string_layout,
-        tInt: visualizer_module.int_layout,
+        htypes.builtin.int: htypes.text.edit_view(
+            adapter=mosaic.put(htypes.int_adapter.int_adapter()),
+            ),
+        htypes.builtin.string: htypes.text.edit_view(
+            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
+            ),
         }
-
-
-def test_model_layout_creg(model_layout_creg, lcs, ctx):
-    layout = model_layout_creg.animate("Some string", lcs, ctx)
-    assert isinstance(layout, htypes.text.edit_view)
-
-
-def test_string_layout(lcs, ctx):
-    layout = visualizer_module.string_layout("<unused>", lcs, ctx)
-    assert isinstance(layout, htypes.text.edit_view)
-
-
-def test_int_layout(lcs, ctx):
-    layout = visualizer_module.int_layout(12345, lcs, ctx)
-    assert isinstance(layout, htypes.text.edit_view)
 
 
 def test_string(visualizer, lcs, ctx):
     layout = visualizer(lcs, ctx, "Sample text")
-    assert layout
+    assert isinstance(layout, htypes.text.edit_view)
 
 
 def test_int(visualizer, lcs, ctx):
     layout = visualizer(lcs, ctx, 12345)
-    assert layout
+    assert isinstance(layout, htypes.text.edit_view)
 
 
 def test_list(visualizer, lcs, ctx):
@@ -65,7 +54,7 @@ def test_list(visualizer, lcs, ctx):
         htypes.list_tests.item(2, "Second"),
         )
     layout = visualizer(lcs, ctx, value)
-    assert layout
+    assert isinstance(layout, htypes.list.view)
 
 
 def sample_fn():
@@ -102,10 +91,3 @@ def test_sample_list(visualizer, lcs, ctx):
     piece = htypes.visualizer_tests.sample_list()
     layout = visualizer(lcs, ctx, piece)
     assert isinstance(layout, htypes.list.view)
-
-
-def test_set_custom_layout(set_custom_layout, lcs):
-    piece = htypes.visualizer_tests.sample_piece
-    layout = htypes.visualizer_tests.sample_layout()
-    set_custom_layout(lcs, piece, layout)
-    lcs.set.assert_called_once()

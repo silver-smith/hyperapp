@@ -82,6 +82,15 @@ def test_list_model_commands(lcs, piece):
     assert 'sample_command_2' in [item.name for item in item_list]
 
 
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config():
+    return {
+        htypes.builtin.string: htypes.text.edit_view(
+            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
+            ),
+        }
+
+
 async def test_run_command(lcs, piece):
     navigator = Mock()
     current_item = htypes.command_list_model.item(

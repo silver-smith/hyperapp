@@ -62,6 +62,15 @@ def test_unwrap(qapp, piece, state, ctx, view_reg):
     hook.replace_view.assert_called_once()
 
 
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config():
+    return {
+        htypes.builtin.string: htypes.text.edit_view(
+            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
+            ),
+        }
+
+
 def test_split_horizontally(visualizer, view_reg, lcs, ctx):
     text = "Sample text"
     text_view = visualizer(lcs, ctx, text)
