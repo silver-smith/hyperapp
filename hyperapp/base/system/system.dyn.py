@@ -271,6 +271,7 @@ class System:
 
     def load_config_layer(self, layer_name, layer):
         # layer.config is expected to be ordered with service_config_order.
+        log.debug("Load config layer: %r; services: %s", layer_name, list(layer.config))
         self._name_to_layer[layer_name] = layer
         self.invalidate_config_cache()
 
