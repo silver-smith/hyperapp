@@ -3,7 +3,6 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
-- ui.adapter_creg:adapter_creg.service
 - ui.column_resource_name:column-column_k.actor-template
 - ui.column_visible_reg:column_visible_reg.service
 - ui.command_cfg_item:command-cfg_item.actor-template
@@ -216,7 +215,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.adapter_creg:adapter_creg.service
       - ui.column_visible_reg:column_visible_reg.service
       - ui.command_creg:command_creg.service
       - ui.controller:canned_ctl_item_factory.service
