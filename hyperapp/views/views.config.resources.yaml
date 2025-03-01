@@ -7,6 +7,7 @@ import:
 - legacy_type.system:system_config
 - views.command_layout_context:open_command_layout_context.d
 - views.local_server_context:open_local_server_context.d
+- views.master_details:unwrap_master_details.d
 - views.qt.splitter:split_horizontally.d
 - views.qt.splitter:unwrap.d
 definitions:
@@ -25,6 +26,11 @@ definitions:
     value:
       key: views.local_server_context:open_local_server_context.d
       value: shortcut_Alt_Shift_S
+  config_item-views.master_details-unwrap_master_details.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.master_details:unwrap_master_details.d
+      value: shortcut_U
   config_item-views.qt.splitter-split_horizontally.d:
     type: legacy_type.data_service:config_item
     value:
@@ -47,11 +53,15 @@ definitions:
   shortcut_Ctrl_U:
     type: legacy_type.builtin:string
     value: Ctrl+U
+  shortcut_U:
+    type: legacy_type.builtin:string
+    value: U
   shortcut_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-views.command_layout_context-open_command_layout_context.d
       - config_item-views.local_server_context-open_local_server_context.d
+      - config_item-views.master_details-unwrap_master_details.d
       - config_item-views.qt.splitter-split_horizontally.d
       - config_item-views.qt.splitter-unwrap.d
