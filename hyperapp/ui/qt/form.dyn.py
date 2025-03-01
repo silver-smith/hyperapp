@@ -35,15 +35,14 @@ class FormView(View):
     @mark.view
     def from_piece(cls, piece, model, ctx, visualizer, ui_adapter_creg, view_reg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
-        return cls(visualizer, view_reg, piece.adapter, adapter, ctx.lcs)
+        return cls(visualizer, view_reg, piece.adapter, adapter)
 
-    def __init__(self, visualizer, view_reg, adapter_ref, adapter, lcs):
+    def __init__(self, visualizer, view_reg, adapter_ref, adapter):
         super().__init__()
         self._visualizer = visualizer
         self._view_reg = view_reg
         self._adapter_ref = adapter_ref
         self._adapter = adapter
-        self._lcs = lcs
         self._fields = {}  # name -> view
 
     @property
@@ -64,7 +63,7 @@ class FormView(View):
         for name, t in self._adapter.record_t.fields.items():
             layout.addWidget(QtWidgets.QLabel(text=name))
             field = self._adapter.get_field(name)
-            view_piece = self._visualizer(self._lcs, ctx, field)
+            view_piece = self._visualizer(ctx, field)
             model_ctx = ctx.clone_with(model=field)
             view = self._view_reg.animate(view_piece, model_ctx)
             fs = field_state.get(name)

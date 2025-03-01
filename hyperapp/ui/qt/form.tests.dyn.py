@@ -37,14 +37,6 @@ def piece(adapter_piece):
     return htypes.form.view(mosaic.put(adapter_piece))
 
 
-@mark.fixture
-def lcs():
-    lcs = Mock()
-    # Fall thru to default layout.
-    lcs.get.return_value = None
-    return lcs
-
-
 @mark.config_fixture('model_layout_reg')
 def model_layout_reg_config():
     return {
@@ -57,8 +49,8 @@ def model_layout_reg_config():
         }
 
 
-def test_form(qapp, lcs, piece):
-    ctx = Context(lcs=lcs)
+def test_form(qapp, piece):
+    ctx = Context()
     model = htypes.form_tests.sample_form()
     state = None
     view = form.FormView.from_piece(piece, model, ctx)

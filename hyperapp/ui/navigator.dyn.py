@@ -22,16 +22,14 @@ class NavigatorView(View):
     @classmethod
     @mark.view
     def from_piece(cls, piece, ctx, view_reg, model_layout_reg):
-        lcs = ctx.lcs
         model = web.summon(piece.current_model)
         model_ctx = ctx.clone_with(model=model)
         current_view = view_reg.invite(piece.current_view, model_ctx)
-        return cls(model_layout_reg, lcs, current_view, model, piece.prev, piece.next)
+        return cls(model_layout_reg, current_view, model, piece.prev, piece.next)
 
-    def __init__(self, model_layout_reg, lcs, current_view, model, prev, next):
+    def __init__(self, model_layout_reg, current_view, model, prev, next):
         super().__init__()
         self._model_layout_reg = model_layout_reg
-        self._lcs = lcs
         self._current_view = current_view
         self._model = model  # piece
         self._prev = prev  # ref opt

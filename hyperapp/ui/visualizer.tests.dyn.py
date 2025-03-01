@@ -14,14 +14,6 @@ from .tested.code import visualizer as visualizer_module
 
 
 @mark.fixture
-def lcs():
-    lcs = Mock()
-    # Fall thru to default layout.
-    lcs.get.return_value = None
-    return lcs
-
-
-@mark.fixture
 def ctx():
     return Context()
 
@@ -38,22 +30,22 @@ def model_layout_reg_config():
         }
 
 
-def test_string(visualizer, lcs, ctx):
-    layout = visualizer(lcs, ctx, "Sample text")
+def test_string(visualizer, ctx):
+    layout = visualizer(ctx, "Sample text")
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_int(visualizer, lcs, ctx):
-    layout = visualizer(lcs, ctx, 12345)
+def test_int(visualizer, ctx):
+    layout = visualizer(ctx, 12345)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_list(visualizer, lcs, ctx):
+def test_list(visualizer, ctx):
     value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = visualizer(lcs, ctx, value)
+    layout = visualizer(ctx, value)
     assert isinstance(layout, htypes.list.view)
 
 
@@ -87,7 +79,7 @@ def ui_type_creg_config():
         }
 
 
-def test_sample_list(visualizer, lcs, ctx):
+def test_sample_list(visualizer, ctx):
     piece = htypes.visualizer_tests.sample_list()
-    layout = visualizer(lcs, ctx, piece)
+    layout = visualizer(ctx, piece)
     assert isinstance(layout, htypes.list.view)

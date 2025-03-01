@@ -39,7 +39,7 @@ def ui_type_creg(config):
 
 
 @mark.service
-def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, lcs, ctx, model):
+def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model):
     model_t = deduce_t(model)
     try:
         return model_layout_reg[model_t]

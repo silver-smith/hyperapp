@@ -251,7 +251,7 @@ class Crud:
 
     def _selector_view(self, ctx, get_fn, value):
         selector_model = get_fn.call(ctx, value=value)
-        return self._visualizer(ctx.lcs, ctx, selector_model)
+        return self._visualizer(ctx, selector_model)
 
     def _run_init(self, ctx, init_action_fn, model, args):
         fn_ctx = self.fn_ctx(ctx, model, args)

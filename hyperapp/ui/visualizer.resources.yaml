@@ -62,7 +62,6 @@ definitions:
       - ui_type_creg
       want_config: false
       free_params:
-      - lcs
       - ctx
       - model
   visualizer_reg:
