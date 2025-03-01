@@ -1,4 +1,5 @@
 config_ctl = record
+type_key_config_ctl = record
 
 config_item = record:
   key: ref

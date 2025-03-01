@@ -3,6 +3,7 @@
 import:
 - common.data_service:data_service-config_ctl.actor-template
 - common.data_service:data_service-config_item.actor-template
+- common.data_service:data_service-type_key_config_ctl.actor-template
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -17,6 +18,7 @@ definitions:
     value:
       items:
       - common.data_service:data_service-config_ctl.actor-template
+      - common.data_service:data_service-type_key_config_ctl.actor-template
   resource_name_creg:
     type: legacy_type.system:item_list_config
     value:

@@ -1,6 +1,7 @@
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -50,6 +51,30 @@ class DataServiceConfigCtl(ConfigCtl):
     def _item_piece(key, value):
         return htypes.data_service.config_item(
             key=mosaic.put(key),
+            value=mosaic.put(value),
+            )
+
+
+class TypeKeyDataServiceConfigCtl(DataServiceConfigCtl):
+
+    @classmethod
+    @mark.actor.config_ctl_creg
+    def from_piece(cls, piece):
+        return cls()
+
+    @property
+    def piece(self):
+        return htypes.data_service.type_key_config_ctl()
+
+    @staticmethod
+    def _update_config(config_template, key, value):
+        t = pyobj_creg.animate(key)
+        config_template[t] = value
+
+    @staticmethod
+    def _item_piece(key, value):
+        return htypes.data_service.config_item(
+            key=pyobj_creg.actor_to_ref(key),
             value=mosaic.put(value),
             )
 
