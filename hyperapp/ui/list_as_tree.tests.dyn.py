@@ -14,7 +14,7 @@ from .code.model_command import UnboundModelCommand
 from .code.list_adapter import list_model_state_t
 from .code.list_as_tree_adapter import ListAsTreeAdapter
 from .code.tree import TreeView
-from .fixtures import feed_fixtures, lcs_fixtures
+from .fixtures import feed_fixtures
 from .tested.code import list_as_tree
 
 log = logging.getLogger(__name__)
@@ -30,10 +30,8 @@ def sample_fn_1(piece):
         ]
 
 
-def test_switch_list_as_tree(ui_adapter_creg, lcs):
-    ctx = Context(
-        lcs=lcs,
-        )
+def test_switch_list_as_tree(ui_adapter_creg):
+    ctx = Context()
     model = htypes.list_as_tree_tests.sample_list_1()
     fn_1 = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_fn_1),
@@ -153,8 +151,6 @@ def test_opener_commands_list(adapter_piece, model_state):
     tree_view = htypes.tree.view(
         adapter=mosaic.put(adapter_piece),
         )
-    lcs = Mock()
-    lcs.get.return_value = tree_view
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece = htypes.list_as_tree_tests.sample_list_2(base_id=0)
     piece = htypes.list_as_tree.opener_commands(
@@ -162,7 +158,7 @@ def test_opener_commands_list(adapter_piece, model_state):
         layer_piece=mosaic.put(layer_piece),
         model_state=mosaic.put(model_state),
         )
-    result = list_as_tree.opener_command_list(piece, lcs, ctx)
+    result = list_as_tree.opener_command_list(piece, ctx)
     assert type(result) is list
     assert len(result) == 1
     [item] = result
@@ -199,8 +195,7 @@ async def test_set_root_open_command(model_layout_reg, root_item_t, fn_1, model_
         adapter=mosaic.put(adapter_piece),
         )
     model_layout_reg.get.return_value = view
-    lcs = Mock()
-    result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx, lcs)
+    result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx)
     model_layout_reg.__setitem__.assert_called_once()
 
 
@@ -236,6 +231,5 @@ async def test_set_non_root_open_command(model_layout_reg, root_item_t, fn_1, mo
         name="<unused>",
         is_opener=False,
         )
-    lcs = Mock()
-    result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx, lcs)
+    result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx)
     model_layout_reg.__setitem__.assert_called_once()

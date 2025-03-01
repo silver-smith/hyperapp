@@ -71,7 +71,6 @@ definitions:
       function: opener_command_list
       ctx_params:
       - piece
-      - lcs
       - ctx
       service_params:
       - get_model_commands
@@ -173,7 +172,6 @@ definitions:
       - current_idx
       - current_item
       - ctx
-      - lcs
       service_params:
       - feed_factory
       - get_model_commands

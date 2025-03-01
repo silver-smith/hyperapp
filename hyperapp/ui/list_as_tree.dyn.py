@@ -107,7 +107,7 @@ def _amend_adapter(root_piece_t, layer_piece_t, adapter, new_command_d):
 
 
 @mark.model
-def opener_command_list(piece, lcs, ctx, get_model_commands, model_layout_reg):
+def opener_command_list(piece, ctx, get_model_commands, model_layout_reg):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
     model_state = web.summon(piece.model_state)
@@ -127,7 +127,7 @@ def opener_command_list(piece, lcs, ctx, get_model_commands, model_layout_reg):
 
 @mark.command
 async def toggle_open_command(
-        piece, current_idx, current_item, ctx, lcs,
+        piece, current_idx, current_item, ctx,
         feed_factory, get_model_commands, model_layout_reg):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
