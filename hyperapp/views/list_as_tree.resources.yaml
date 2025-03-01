@@ -30,7 +30,7 @@ import:
 - ui.directory:directory.module
 - ui.model_command:model_command.module
 - ui.qt.fn_list_adapter:fn_list_adapter.module
-- ui.qt.list_as_tree_adapter:list_as_tree_adapter.module
+- views.list_as_tree_adapter:list_as_tree_adapter.module
 definitions:
   list-view-switch_list_to_tree.command-cfg-item:
     type: legacy_type.command:cfg_item
@@ -83,7 +83,7 @@ definitions:
       import_list:
         code.directory: ui.directory:directory.module
         code.fn_list_adapter: ui.qt.fn_list_adapter:fn_list_adapter.module
-        code.list_as_tree_adapter: ui.qt.list_as_tree_adapter:list_as_tree_adapter.module
+        code.list_as_tree_adapter: views.list_as_tree_adapter:list_as_tree_adapter.module
         code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module

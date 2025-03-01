@@ -11,6 +11,7 @@ import:
 - views.list_as_tree:list_as_tree-opener_commands.feed-template
 - views.list_as_tree:list_as_tree-opener_commands.model-cfg-item
 - views.list_as_tree:tree-view-open_opener_commands.command-cfg-item
+- views.list_as_tree_adapter:list_as_tree_adapter-adapter.actor-template
 - views.local_server_context:local_server_context-view.view-template
 - views.local_server_context:open_local_server_context.global-model-command
 - views.master_details:master_details-view-unwrap_master_details.command-cfg-item
@@ -28,6 +29,7 @@ definitions:
         feed_factory: feed_factory
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
+        ui_adapter_creg: ui_adapter_creg
         view_factory_reg: view_factory_reg
         view_reg: view_reg
         view_ui_command_reg: view_ui_command_reg
@@ -50,6 +52,11 @@ definitions:
       - views.command_layout_context:global_commands-model-open_command_layout_context.command-cfg-item
       - views.command_layout_context:model_commands-model-open_command_layout_context.command-cfg-item
       - views.list_as_tree:list_as_tree-opener_commands-toggle_open_command.command-cfg-item
+  ui_adapter_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - views.list_as_tree_adapter:list_as_tree_adapter-adapter.actor-template
   view_factory_reg:
     type: legacy_type.system:item_list_config
     value:
