@@ -30,14 +30,26 @@ def sample_fn_1(piece):
         ]
 
 
-def test_switch_list_as_tree(ui_adapter_creg):
-    ctx = Context()
-    model = htypes.list_as_tree_tests.sample_list_1()
-    fn_1 = htypes.system_fn.ctx_fn(
+def fn_1():
+    return  htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_fn_1),
         ctx_params=('piece',),
         service_params=(),
         )
+
+
+def test_ui_type_layout(fn_1):
+    system_fn_ref = mosaic.put(fn_1)
+    piece = htypes.model.list_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
+        )
+    layout = list_as_tree.list_as_tree_ui_type_layout(piece, system_fn_ref)
+    assert isinstance(layout, htypes.tree.view)
+
+
+def test_switch_list_as_tree(ui_adapter_creg, fn_1):
+    ctx = Context()
+    model = htypes.list_as_tree_tests.sample_list_1()
     piece = htypes.list_adapter.fn_list_adapter(
         item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
         system_fn=mosaic.put(fn_1),

@@ -9,6 +9,7 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -27,6 +28,7 @@ import:
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tree:view
+- legacy_type.view_factory:template
 - ui.directory:directory.module
 - ui.model_command:model_command.module
 - ui.qt.fn_list_adapter:fn_list_adapter.module
@@ -97,6 +99,41 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+  list_as_tree_ui_type_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_as_tree.module
+      attr_name: list_as_tree_ui_type_layout
+  list_as_tree_ui_type_layout.k:
+    type: list_as_tree_ui_type_layout_k
+    value: {}
+  list_as_tree_ui_type_layout.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_as_tree_ui_type_layout
+      ctx_params:
+      - piece
+      - system_fn_ref
+      service_params: []
+  list_as_tree_ui_type_layout.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: list_as_tree_ui_type_layout.k
+      ui_t_t: legacy_type.model:list_ui_t
+      view_t: legacy_type.tree:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: list_as_tree_ui_type_layout.system-fn
+  list_as_tree_ui_type_layout_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: list_as_tree
+      name: list_as_tree_ui_type_layout_k
+      base: null
+      fields: {}
   open_opener_commands:
     type: legacy_type.builtin:attribute
     value:

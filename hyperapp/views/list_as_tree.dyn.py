@@ -17,6 +17,19 @@ from .code.model_command import model_command_ctx
 log = logging.getLogger(__name__)
 
 
+@mark.view_factory.ui_t
+def list_as_tree_ui_type_layout(piece, system_fn_ref):
+    adapter = htypes.list_as_tree_adapter.adapter(
+        root_item_t=piece.item_t,
+        root_function=system_fn_ref,
+        root_open_children_command_d=None,
+        layers=(),
+        )
+    return htypes.tree.view(
+        adapter=mosaic.put(adapter),
+        )
+
+
 @mark.ui_command(htypes.list.view)
 def switch_list_to_tree(piece, view, hook, ctx, view_reg):
     list_adapter = view.adapter
