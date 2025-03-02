@@ -17,3 +17,6 @@ class IntAdapter:
 
     def get_text(self):
         return str(self._value)
+
+    def text_to_value(self, text):
+        return int(text)

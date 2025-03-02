@@ -55,13 +55,14 @@ class ViewTextView(View):
             )
 
     def _model_state(self, widget):
-        return self.get_plain_text(widget)
+        return self.get_value(widget)
 
     def get_plain_text(self, widget):
         return widget.toPlainText()
 
     def get_value(self, widget):
-        return self.get_plain_text(widget)
+        text = self.get_plain_text(widget)
+        return self._adapter.text_to_value(text)
 
 
 class EditTextView(View):
@@ -100,10 +101,11 @@ class EditTextView(View):
             )
 
     def _model_state(self, widget):
-        return self.get_text(widget)
+        return self.get_value(widget)
 
     def get_text(self, widget):
         return widget.toPlainText()
 
     def get_value(self, widget):
-        return self.get_text(widget)
+        text = self.get_text(widget)
+        return self._adapter.text_to_value(text)

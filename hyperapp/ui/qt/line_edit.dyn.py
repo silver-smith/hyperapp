@@ -65,7 +65,8 @@ class EditLineView(View):
         return widget.text()
 
     def get_value(self, widget):
-        return self.get_text(widget)
+        text = self.get_text(widget)
+        return self._adapter.text_to_value(text)
 
 
 class ViewLineView(EditLineView):
