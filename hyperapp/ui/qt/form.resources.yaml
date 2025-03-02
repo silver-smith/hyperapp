@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -51,5 +52,6 @@ definitions:
         htypes.form.field: legacy_type.form:field
         htypes.form.state: legacy_type.form:state
         htypes.form.view: legacy_type.form:view
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service

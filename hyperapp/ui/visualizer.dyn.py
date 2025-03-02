@@ -39,8 +39,7 @@ def ui_type_creg(config):
 
 
 @mark.service
-def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model):
-    model_t = deduce_t(model)
+def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model_t):
     try:
         return model_layout_reg[model_t]
     except KeyError:

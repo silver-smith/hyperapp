@@ -4,6 +4,7 @@ from hyperapp.boot.htypes import tString, tInt
 
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
     pyobj_creg,
     )
@@ -31,12 +32,12 @@ def model_layout_reg_config():
 
 
 def test_string(visualizer, ctx):
-    layout = visualizer(ctx, "Sample text")
+    layout = visualizer(ctx, htypes.builtin.string)
     assert isinstance(layout, htypes.text.edit_view)
 
 
 def test_int(visualizer, ctx):
-    layout = visualizer(ctx, 12345)
+    layout = visualizer(ctx, htypes.builtin.int)
     assert isinstance(layout, htypes.text.edit_view)
 
 
@@ -45,7 +46,7 @@ def test_list(visualizer, ctx):
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = visualizer(ctx, value)
+    layout = visualizer(ctx, deduce_t(value))
     assert isinstance(layout, htypes.list.view)
 
 
@@ -80,6 +81,6 @@ def ui_type_creg_config():
 
 
 def test_sample_list(visualizer, ctx):
-    piece = htypes.visualizer_tests.sample_list()
-    layout = visualizer(ctx, piece)
+    model_t = htypes.visualizer_tests.sample_list
+    layout = visualizer(ctx, model_t)
     assert isinstance(layout, htypes.list.view)

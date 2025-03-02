@@ -107,7 +107,8 @@ class MasterDetailsView(BoxLayoutView):
         return piece
 
     def _model_to_view(self, ctx, piece):
-        details_view_piece = self._visualizer(ctx, piece)
+        piece_t = deduce_t(piece)
+        details_view_piece = self._visualizer(ctx, piece_t)
         model_ctx = ctx.clone_with(model=piece)
         return self._view_reg.animate(details_view_piece, model_ctx)
 
