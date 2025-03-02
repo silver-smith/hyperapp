@@ -139,7 +139,7 @@ class Grammar:
 
     def p_import_def_as(self, p):
         'import_def : FROM NAME IMPORT NAME AS NAME'
-        p[0] = [type_import_t(p[2], source_name=p[4], target_name=p[6])]
+        p[0] = [TypeImport(p[2], source_name=p[4], target_name=p[6])]
         p.parser.known_name_set.add(p[6])
 
     def p_name_list_1(self, p):
