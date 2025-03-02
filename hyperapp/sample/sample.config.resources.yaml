@@ -13,6 +13,7 @@ import:
 - sample.sample_list_arg:show_sample_list_item.open-d
 - sample.sample_list_crud:sample_list-sample_list.edit.commit-command.d
 - sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
+- sample.sample_record:open_sample_fn_record.d
 - sample.sample_tree:open_feed_sample_fn_tree.d
 - sample.sample_tree:open_sample_fn_tree.d
 definitions:
@@ -61,6 +62,11 @@ definitions:
     value:
       key: sample.sample_list_crud:sample_list-sample_list.edit.open-command.d
       value: shortcut_Space
+  config_item-sample.sample_record-open_sample_fn_record.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: sample.sample_record:open_sample_fn_record.d
+      value: shortcut_F7
   config_item-sample.sample_tree-open_feed_sample_fn_tree.d:
     type: legacy_type.data_service:config_item
     value:
@@ -86,6 +92,9 @@ definitions:
   shortcut_F6:
     type: legacy_type.builtin:string
     value: F6
+  shortcut_F7:
+    type: legacy_type.builtin:string
+    value: F7
   shortcut_Return:
     type: legacy_type.builtin:string
     value: Return
@@ -109,3 +118,4 @@ definitions:
       - config_item-sample.sample_list-open_feed_sample_fn_list.d
       - config_item-sample.sample_tree-open_feed_sample_fn_tree.d
       - config_item-sample.sample_tree-open_sample_fn_tree.d
+      - config_item-sample.sample_record-open_sample_fn_record.d
