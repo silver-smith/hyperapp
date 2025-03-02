@@ -78,9 +78,8 @@ class BoxLayoutView(View):
         layout = widget.layout()
         for idx in range(layout.count()):
             w = layout.itemAt(idx).widget()
-            if not w.focusPolicy():  # Qt.NoFocus == 0
-                continue
-            return idx
+            if w.hasFocus():
+                return idx
         return 0
 
     def widget_state(self, widget):
