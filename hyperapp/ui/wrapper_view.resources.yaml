@@ -1,0 +1,13 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+- ui.view.view:view.module
+definitions:
+  wrapper_view.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: wrapper_view
+      file_name: wrapper_view.dyn.py
+      import_list:
+        code.view: ui.view.view:view.module
