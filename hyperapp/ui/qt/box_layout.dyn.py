@@ -22,16 +22,20 @@ class BoxLayoutView(View):
     @classmethod
     @mark.view
     def from_piece(cls, piece, ctx, view_reg):
-        elements = [
+        direction = cls._direction_to_qt(piece.direction)
+        elements = cls._data_to_elements(piece.elements, ctx, view_reg)
+        return cls(direction, elements)
+
+    @classmethod
+    def _data_to_elements(cls, elements, ctx, view_reg):
+        return [
             cls._Element(
                 view=view_reg.invite(elt.view, ctx) if elt.view else None,
                 focusable=elt.focusable,
                 stretch=elt.stretch,
                 )
-            for elt in piece.elements
+            for elt in elements
             ]
-        direction = cls._direction_to_qt(piece.direction)
-        return cls(direction, elements)
 
     @staticmethod
     def _direction_to_qt(direction):
@@ -44,7 +48,14 @@ class BoxLayoutView(View):
 
     @property
     def piece(self):
-        elements = tuple(
+        return htypes.box_layout.view(
+            direction=self._direction.name,
+            elements=self._piece_elements,
+            )
+
+    @property
+    def _piece_elements(self):
+        return tuple(
             htypes.box_layout.element(
                 view=mosaic.put(elt.view.piece),
                 focusable=elt.focusable,
@@ -52,7 +63,6 @@ class BoxLayoutView(View):
                 )
             for elt in self._elements
             )
-        return htypes.box_layout.view(self._direction.name, elements)
 
     def construct_widget(self, state, ctx):
         widget = QtWidgets.QWidget()
