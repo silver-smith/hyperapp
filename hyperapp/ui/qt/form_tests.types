@@ -1,5 +1,5 @@
 sample_form = record
 
-item = record:
+value = record:
   id: int
   text: string

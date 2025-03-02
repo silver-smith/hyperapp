@@ -1,10 +1,5 @@
+from box_layout import view as box_layout_view
 
-view = record:
+
+view = record(box_layout_view):
   adapter: ref
-
-field = record:
-  name: string
-  value: ref
-
-state = record:
-  fields: field list

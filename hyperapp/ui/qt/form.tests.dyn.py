@@ -15,12 +15,19 @@ from .tested.code import form
 
 def _sample_form_fn(piece):
     assert isinstance(piece, htypes.form_tests.sample_form), repr(piece)
-    return htypes.form_tests.item(123, "Sample  item")
+    return htypes.form_tests.value(123, "Sample  text")
+
+
+@mark.fixture
+def ctx():
+    return Context(
+        model = htypes.form_tests.sample_form(),
+        )
 
 
 @mark.fixture
 def adapter_piece():
-    item_t_res = pyobj_creg.actor_to_piece(htypes.form_tests.item)
+    item_t_res = pyobj_creg.actor_to_piece(htypes.form_tests.value)
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_form_fn),
         ctx_params=('piece',),
@@ -33,8 +40,8 @@ def adapter_piece():
 
 
 @mark.fixture
-def piece(adapter_piece):
-    return htypes.form.view(mosaic.put(adapter_piece))
+def piece(visualizer, ctx, adapter_piece):
+    return form.construct_default_form(visualizer, ctx, adapter_piece, htypes.form_tests.value)
 
 
 @mark.config_fixture('model_layout_reg')
@@ -49,9 +56,7 @@ def model_layout_reg_config():
         }
 
 
-def test_form(qapp, piece):
-    ctx = Context()
-    model = htypes.form_tests.sample_form()
+def test_form(qapp, ctx, piece):
     state = None
     view = form.FormView.from_piece(piece, model, ctx)
     view.set_controller_hook(Mock())
