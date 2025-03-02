@@ -24,7 +24,7 @@ import:
 - legacy_type.system_fn:ctx_fn
 - legacy_type.text:edit_view
 - ui.command:command.module
-- ui.context_view:context_view.module
+- ui.qt.context_view:context_view.module
 - ui.ui_model_command:ui_model_command.module
 definitions:
   CrudContextView:
@@ -88,7 +88,7 @@ definitions:
       file_name: crud.dyn.py
       import_list:
         code.command: ui.command:command.module
-        code.context_view: ui.context_view:context_view.module
+        code.context_view: ui.qt.context_view:context_view.module
         code.mark: base.mark:mark.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.command.properties: legacy_type.command:properties
