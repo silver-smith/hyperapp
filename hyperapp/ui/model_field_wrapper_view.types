@@ -1,0 +1,3 @@
+view = record:
+  base_view: ref
+  field_name: string

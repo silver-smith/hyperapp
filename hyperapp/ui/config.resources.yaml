@@ -43,6 +43,7 @@ import:
 - ui.model_command:global_model_command_reg.service
 - ui.model_command:model_command_enumerator_reg.service
 - ui.model_command:model_command_reg.service
+- ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
 - ui.model_layout_reg:model_layout_reg.service
 - ui.navigator:navigator-view-go_back.command-cfg-item
 - ui.navigator:navigator-view-go_forward.command-cfg-item
@@ -299,6 +300,7 @@ definitions:
     value:
       items:
       - ui.crud.crud:crud-view.view-template
+      - ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
       - ui.navigator:navigator-view.view-template
       - ui.qt.auto_tabs:auto_tabs-view.view-template
       - ui.qt.box_layout:box_layout-view.view-template
