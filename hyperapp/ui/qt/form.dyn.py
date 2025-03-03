@@ -9,7 +9,6 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
-    web,
     )
 from .code.mark import mark
 from .code.view import Item, View
@@ -64,29 +63,33 @@ class FormView(BoxLayoutView):
         return self.get_value(widget)
 
     def get_value(self, widget):
-        name_to_value = {}
-        for idx, (name, view) in enumerate(self._fields.items()):
-            w = self.item_widget(widget, idx)
-            name_to_value[name] = view.get_value(w)
-        return self._adapter.record_t(**name_to_value)
+        return self._adapter.value
 
 
-def construct_default_form(visualizer, ctx, adapter, record_t):
+def construct_default_form(visualizer, ctx, record_adapter, record_t):
     element_list = []
     for name, t in record_t.fields.items():
-        field_view = visualizer(ctx, t)
-        wrapped_view = htypes.model_field_wrapper_view.view(
-            base_view=mosaic.put(field_view),
+        label_view = htypes.label.view(name)
+        label_element = htypes.box_layout.element(
+            view=mosaic.put(label_view),
+            focusable=False,
+            stretch=0,
+            )
+        field_adapter = htypes.record_field_adapter.record_field_adapter(
+            record_adapter=mosaic.put(record_adapter),
             field_name=name,
             )
-        element = htypes.box_layout.element(
-            view=mosaic.put(wrapped_view),
-            focusable=True,
-            stretch=1,
+        field_view = htypes.line_edit.edit_view(
+            adapter=mosaic.put(field_adapter),
             )
-        element_list.append(element)
+        element = htypes.box_layout.element(
+            view=mosaic.put(field_view),
+            focusable=True,
+            stretch=0,
+            )
+        element_list += [label_element, element]
     return htypes.form.view(
         direction='TopToBottom',
         elements=tuple(element_list),
-        adapter=mosaic.put(adapter),
+        adapter=mosaic.put(record_adapter),
         )

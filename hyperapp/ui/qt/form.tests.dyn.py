@@ -19,9 +19,14 @@ def _sample_form_fn(piece):
 
 
 @mark.fixture
-def ctx():
+def model():
+    return htypes.form_tests.sample_form()
+
+
+@mark.fixture
+def ctx(model):
     return Context(
-        model = htypes.form_tests.sample_form(),
+        model=model,
         )
 
 
@@ -56,12 +61,11 @@ def model_layout_reg_config():
         }
 
 
-def test_form(qapp, ctx, piece):
+def test_form(qapp, model, ctx, piece):
     state = None
     view = form.FormView.from_piece(piece, model, ctx)
     view.set_controller_hook(Mock())
     widget = view.construct_widget(state, ctx)
-    assert view.piece
+    assert view.piece == piece
     state = view.widget_state(widget)
     assert state
-    assert hash(state)  # Check it is hashable.
