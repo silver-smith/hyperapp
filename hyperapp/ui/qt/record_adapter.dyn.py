@@ -57,21 +57,29 @@ class StaticRecordAdapter(RecordAdapter):
 class EditValue:
 
     # TODO: Add async lock for populating when populate method will become async.
-    def __init__(self):
+    def __init__(self, value_t):
+        self._value_t = value_t
         self.value = None
         self._subscribers = weakref.WeakSet()
+
+    def set_field(self, field_name, new_value):
+        kw = {
+            **self.value._asdict(),
+            **{field_name: new_value},
+            }
+        self.value = self._value_t(**kw)
 
 
 class FnRecordAdapter(RecordAdapter):
 
-    _piece_to_value = weakref.WeakValueDictionary()
+    _model_to_value = weakref.WeakValueDictionary()
 
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory):
         record_t = pyobj_creg.invite(piece.record_t)
         fn = system_fn_creg.invite(piece.system_fn)
-        value = cls._piece_to_value.setdefault(piece, EditValue())
+        value = cls._model_to_value.setdefault(model, EditValue(record_t))
         return cls(feed_factory, model, record_t, ctx, fn, value)
 
     def __init__(self, feed_factory, model, record_t, ctx, ctx_fn, value):
@@ -91,6 +99,9 @@ class FnRecordAdapter(RecordAdapter):
         if self._value.value is None:
             self._populate()
         return self._value.value
+
+    def field_changed(self, field_name, new_value):
+        self._value.set_field(field_name, new_value)
 
     def _populate(self):
         additional_kw = {

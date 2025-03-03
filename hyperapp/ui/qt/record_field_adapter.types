@@ -1,0 +1,3 @@
+record_field_adapter = record:
+  record_adapter: ref
+  field_name: string
