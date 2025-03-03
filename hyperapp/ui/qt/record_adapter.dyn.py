@@ -54,20 +54,31 @@ class StaticRecordAdapter(RecordAdapter):
         return self._model
 
 
+class EditValue:
+
+    # TODO: Add async lock for populating when populate method will become async.
+    def __init__(self):
+        self.value = None
+        self._subscribers = weakref.WeakSet()
+
+
 class FnRecordAdapter(RecordAdapter):
+
+    _piece_to_value = weakref.WeakValueDictionary()
 
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory):
         record_t = pyobj_creg.invite(piece.record_t)
         fn = system_fn_creg.invite(piece.system_fn)
-        return cls(feed_factory, model, record_t, ctx, fn)
+        value = cls._piece_to_value.setdefault(piece, EditValue())
+        return cls(feed_factory, model, record_t, ctx, fn, value)
 
-    def __init__(self, feed_factory, model, record_t, ctx, ctx_fn):
+    def __init__(self, feed_factory, model, record_t, ctx, ctx_fn, value):
         super().__init__(model, record_t)
         self._ctx = ctx
         self._ctx_fn = ctx_fn
-        self._record = None
+        self._value = value
         try:
             self._feed = feed_factory(model)
         except KeyError:
@@ -77,9 +88,9 @@ class FnRecordAdapter(RecordAdapter):
 
     @property
     def value(self):
-        if self._record is None:
+        if self._value.value is None:
             self._populate()
-        return self._record
+        return self._value.value
 
     def _populate(self):
         additional_kw = {
@@ -87,7 +98,7 @@ class FnRecordAdapter(RecordAdapter):
             'piece': self._model,
             'feed': self._feed,
             }
-        self._record = self._call_fn(**additional_kw)
+        self._value.value = self._call_fn(**additional_kw)
 
     def _call_fn(self, **kw):
         return self._ctx_fn.call(self._ctx, **kw)
