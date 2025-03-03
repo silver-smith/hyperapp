@@ -1,0 +1,23 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- legacy_type.box_layout:element
+- legacy_type.builtin:python_module
+- legacy_type.form:view
+- legacy_type.label:view
+- legacy_type.line_edit:edit_view
+- legacy_type.record_field_adapter:record_field_adapter
+definitions:
+  construct_default_form.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: construct_default_form
+      file_name: construct_default_form.dyn.py
+      import_list:
+        htypes.box_layout.element: legacy_type.box_layout:element
+        htypes.form.view: legacy_type.form:view
+        htypes.label.view: legacy_type.label:view
+        htypes.line_edit.edit_view: legacy_type.line_edit:edit_view
+        htypes.record_field_adapter.record_field_adapter: legacy_type.record_field_adapter:record_field_adapter
+        services.mosaic: builtins:mosaic.service

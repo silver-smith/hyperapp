@@ -9,6 +9,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.construct_default_form import construct_default_form
 from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import form
 
@@ -45,8 +46,8 @@ def adapter_piece():
 
 
 @mark.fixture
-def piece(visualizer, ctx, adapter_piece):
-    return form.construct_default_form(visualizer, ctx, adapter_piece, htypes.form_tests.value)
+def piece(adapter_piece):
+    return construct_default_form(adapter_piece, htypes.form_tests.value)
 
 
 @mark.config_fixture('model_layout_reg')
