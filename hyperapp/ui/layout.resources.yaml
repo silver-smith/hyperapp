@@ -4,6 +4,7 @@ import:
 - base.mark:mark.module
 - builtins:mosaic.service
 - builtins:web.service
+- common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
@@ -11,6 +12,8 @@ import:
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
 - legacy_type.command_groups:pane_2_d
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.layout:add_view_command_d
 - legacy_type.layout:command_item
 - legacy_type.layout:command_list
@@ -86,6 +89,15 @@ definitions:
     value:
       t: legacy_type.layout:command_list
       command: set_shortcut.model-command
+  layout-command_list.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.layout:command_list
+      feed_type: layout-command_list.feed-type
+  layout-command_list.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.layout:command_item
   layout-command_list.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -152,6 +164,7 @@ definitions:
         code.command: ui.command:command.module
         code.directory: ui.directory:directory.module
         code.key_input_dialog: ui.qt.key_input_dialog:key_input_dialog.module
+        code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         htypes.command_groups.pane_2_d: legacy_type.command_groups:pane_2_d
         htypes.layout.command_item: legacy_type.layout:command_item
@@ -226,9 +239,11 @@ definitions:
       function: set_escape_shortcut
       ctx_params:
       - piece
+      - current_idx
       - current_item
       service_params:
       - shortcut_reg
+      - feed_factory
   set_escape_shortcut.model-command:
     type: legacy_type.command:model_command
     value:
@@ -252,9 +267,11 @@ definitions:
       function: set_shortcut
       ctx_params:
       - piece
+      - current_idx
       - current_item
       service_params:
       - shortcut_reg
+      - feed_factory
   set_shortcut.model-command:
     type: legacy_type.command:model_command
     value:

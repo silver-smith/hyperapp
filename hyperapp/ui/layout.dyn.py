@@ -7,6 +7,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.list_diff import ListDiff
 from .code.directory import d_to_name
 from .code.command import BoundCommandBase, UnboundCommandBase
 from .code.key_input_dialog import run_key_input_dialog
@@ -122,20 +123,36 @@ def view_item_commands(piece, controller, ctx, shortcut_reg):
     return command_list
 
 
+def _view_item(item, shortcut):
+    return htypes.layout.command_item(
+        name=item.name,
+        shortcut=shortcut,
+        groups=item.groups,
+        wrapped_groups=item.wrapped_groups,
+        command_d=item.command_d,
+        )
+
+
 @mark.command
-def set_shortcut(piece, current_item, shortcut_reg):
+async def set_shortcut(piece, current_idx, current_item, shortcut_reg, feed_factory):
+    feed = feed_factory(piece)
     command_d = web.summon(current_item.command_d)
     shortcut = run_key_input_dialog()
     log.info("Set shortcut for %s: %r", command_d, shortcut)
     shortcut_reg[command_d] = shortcut
+    new_item = _view_item(current_item, shortcut=shortcut)
+    await feed.send(ListDiff.Replace(current_idx, new_item))
 
 
 @mark.command
-def set_escape_shortcut(piece, current_item, shortcut_reg):
+async def set_escape_shortcut(piece, current_idx, current_item, shortcut_reg, feed_factory):
+    feed = feed_factory(piece)
     command_d = web.summon(current_item.command_d)
     shortcut = 'Esc'
     log.info("Set shortcut for %s: %r", command_d, shortcut)
     shortcut_reg[command_d] = shortcut
+    new_item = _view_item(current_item, shortcut=shortcut)
+    await feed.send(ListDiff.Replace(current_idx, new_item))
 
 
 @mark.command

@@ -28,6 +28,7 @@ import:
 - ui.layout:layout-command_list-add_view_command.command-cfg-item
 - ui.layout:layout-command_list-set_escape_shortcut.command-cfg-item
 - ui.layout:layout-command_list-set_shortcut.command-cfg-item
+- ui.layout:layout-command_list.feed-template
 - ui.layout:layout-command_list.model-cfg-item
 - ui.layout:layout-view-enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout-view-open_view_item_commands.command-cfg-item
@@ -180,6 +181,7 @@ definitions:
     value:
       items:
       - ui.controller:layout-view.feed-template
+      - ui.layout:layout-command_list.feed-template
   feed_type_creg:
     type: legacy_type.system:item_list_config
     value:
