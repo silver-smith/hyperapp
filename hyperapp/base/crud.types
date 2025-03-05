@@ -19,7 +19,3 @@ open_command_fn = record:
   init_action_fn: ref
   commit_command_d: ref
   commit_action_fn: ref
-
-init_fn = record:
-  model: ref opt
-  args: arg list
