@@ -27,6 +27,12 @@ def construct_default_form(record_adapter, record_t):
             stretch=0,
             )
         element_list += [label_element, element]
+    stretch = htypes.box_layout.element(
+        view=None,
+        focusable=False,
+        stretch=0,
+        )
+    element_list.append(stretch)
     return htypes.form.view(
         direction='TopToBottom',
         elements=tuple(element_list),
