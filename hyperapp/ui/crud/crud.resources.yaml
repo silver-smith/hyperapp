@@ -25,7 +25,7 @@ import:
 - legacy_type.system_fn:ctx_fn
 - legacy_type.text:edit_view
 - ui.command:command.module
-- ui.qt.construct_default_form:construct_default_form.module
+- ui.construct_default_form:construct_default_form.module
 - ui.qt.context_view:context_view.module
 - ui.qt.record_adapter:record_adapter.module
 - ui.ui_model_command:ui_model_command.module
@@ -110,7 +110,7 @@ definitions:
       file_name: crud.dyn.py
       import_list:
         code.command: ui.command:command.module
-        code.construct_default_form: ui.qt.construct_default_form:construct_default_form.module
+        code.construct_default_form: ui.construct_default_form:construct_default_form.module
         code.context_view: ui.qt.context_view:context_view.module
         code.mark: base.mark:mark.module
         code.record_adapter: ui.qt.record_adapter:record_adapter.module

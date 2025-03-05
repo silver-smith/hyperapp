@@ -10,7 +10,7 @@ import:
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.record_adapter:static_record_adapter
 - legacy_type.system:actor_template
-- ui.qt.construct_default_form:construct_default_form.module
+- ui.construct_default_form:construct_default_form.module
 definitions:
   FnRecordAdapter:
     type: legacy_type.builtin:attribute
@@ -58,7 +58,7 @@ definitions:
       module_name: record_adapter
       file_name: record_adapter.dyn.py
       import_list:
-        code.construct_default_form: ui.qt.construct_default_form:construct_default_form.module
+        code.construct_default_form: ui.construct_default_form:construct_default_form.module
         code.mark: base.mark:mark.module
         htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
         services.mosaic: builtins:mosaic.service
