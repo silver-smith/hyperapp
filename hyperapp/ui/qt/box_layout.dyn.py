@@ -30,7 +30,7 @@ class BoxLayoutView(View):
     def _data_to_elements(cls, elements, ctx, view_reg):
         return [
             cls._Element(
-                view=view_reg.invite(elt.view, ctx) if elt.view else None,
+                view=view_reg.invite_opt(elt.view, ctx),
                 focusable=elt.focusable,
                 stretch=elt.stretch,
                 )
@@ -57,7 +57,7 @@ class BoxLayoutView(View):
     def _piece_elements(self):
         return tuple(
             htypes.box_layout.element(
-                view=mosaic.put(elt.view.piece),
+                view=mosaic.put(elt.view.piece) if elt.view else None,
                 focusable=elt.focusable,
                 stretch=elt.stretch,
                 )
@@ -68,13 +68,18 @@ class BoxLayoutView(View):
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QBoxLayout(self._direction, widget)
         for idx, elt in enumerate(self._elements):
-            if state:
+            if state and elt.view:
                 elt_state = web.summon(state.elements[idx])
             else:
                 elt_state = None
-            layout.addWidget(elt.view.construct_widget(elt_state, ctx))
+            if elt.view:
+                layout.addWidget(elt.view.construct_widget(elt_state, ctx), stretch=elt.stretch)
+            else:
+                layout.addStretch(stretch=elt.stretch)
         if state and state.current < len(self._elements):
-            layout.itemAt(state.current).widget().setFocus()
+            w = layout.itemAt(state.current).widget()
+            if w:  # None for a stretch.
+                w.setFocus()
         return widget
 
     def replace_child_widget(self, widget, idx, new_child_widget):
@@ -88,7 +93,7 @@ class BoxLayoutView(View):
         layout = widget.layout()
         for idx in range(layout.count()):
             w = layout.itemAt(idx).widget()
-            if w.hasFocus():
+            if w and w.hasFocus():
                 return idx
         return 0
 
@@ -97,8 +102,11 @@ class BoxLayoutView(View):
         elements = []
         for idx, elt in enumerate(self._elements):
             w = layout.itemAt(idx).widget()
-            elt_state = elt.view.widget_state(w)
-            elements.append(mosaic.put(elt_state))
+            if elt.view:
+                elt_state = elt.view.widget_state(w)
+            else:
+                elt_state = None
+            elements.append(mosaic.put_opt(elt_state))
         return htypes.box_layout.state(
             current=layout.count() - 1,  # TODO
             elements=tuple(elements),
@@ -124,6 +132,7 @@ class BoxLayoutView(View):
         return [
             Item(f"Item#{idx}", elt.view, focusable=elt.focusable)
             for idx, elt in enumerate(self._elements)
+            if elt.view is not None
             ]
 
     def item_widget(self, widget, idx):

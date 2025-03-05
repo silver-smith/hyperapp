@@ -1,6 +1,6 @@
 
 element = record:
-  view: ref opt  # a stretch if none.
+  view: ref opt  # A stretch if none.
   focusable: bool
   stretch: int
 
@@ -10,4 +10,4 @@ view = record:
 
 state = record:
   current: int
-  elements: ref list
+  elements: ref opt list  # None for stretch elements.
