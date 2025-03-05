@@ -31,6 +31,7 @@ class NavigatorView(View):
         super().__init__()
         self._model_layout_reg = model_layout_reg
         self._current_view = current_view
+        self._current_layout = current_view.piece
         self._model = model  # piece
         self._prev = prev  # ref opt
         self._next = next  # ref opt
@@ -83,6 +84,7 @@ class NavigatorView(View):
     def open(self, ctx, model, view, widget):
         history_rec = self._history_rec(widget)
         self._current_view = view
+        self._current_layout = view.piece
         self._model = model
         self._prev = mosaic.put(history_rec)
         self._next = None
@@ -98,6 +100,7 @@ class NavigatorView(View):
         prev_state = web.summon(prev.state)
         model_ctx = ctx.pop().clone_with(model=prev_model)
         self._current_view = view_reg.invite(prev.view, model_ctx)
+        self._current_layout = self._current_view.piece
         self._model = web.summon(prev.model)
         self._prev = prev.prev
         self._next = mosaic.put(history_rec)
@@ -112,21 +115,32 @@ class NavigatorView(View):
         next_state = web.summon(next.state)
         model_ctx = ctx.pop().clone_with(model=next_model)
         self._current_view = view_reg.invite(next.view, model_ctx)
+        self._current_layout = self._current_view.piece
         self._model = web.summon(next.model)
         self._prev = mosaic.put(history_rec)
         self._next = next.next
         self._replace_widget(ctx, next_state)
 
     def _set_layout(self, layout):
-        t = deduce_t(self._model)
-        self._model_layout_reg[t] = layout
+        model_t = deduce_t(self._model)
+        self._model_layout_reg[model_t] = layout
 
     def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
         assert idx == 0
         self._current_view = new_child_view
         self._ctl_hook.replace_parent_widget(new_child_widget)
+        self._update_layout(ctx, new_child_view.piece)
+
+    def _update_layout(self, ctx, layout):
         set_layout = ctx.get('set_layout', self._set_layout)
-        set_layout(new_child_view.piece)
+        set_layout(layout)
+        self._current_layout = self._current_view.piece
+
+    async def children_context_changed(self, ctx, rctx, widget):
+        layout = self._current_view.piece
+        if layout != self._current_layout:
+            log.info("Navigator: children layout changed: %s", layout)
+            self._update_layout(ctx, layout)
 
     def items(self):
         return [Item('current', self._current_view)]
