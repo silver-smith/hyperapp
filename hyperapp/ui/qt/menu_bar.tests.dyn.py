@@ -32,4 +32,4 @@ async def test_widget(qapp):
     state = view.widget_state(widget)
     assert state
     rctx = Context(commands=[command])
-    await view.children_context_changed(ctx, rctx, widget)
+    await view.children_changed(ctx, rctx, widget)

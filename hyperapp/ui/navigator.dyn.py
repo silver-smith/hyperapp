@@ -136,7 +136,7 @@ class NavigatorView(View):
         set_layout(layout)
         self._current_layout = self._current_view.piece
 
-    async def children_context_changed(self, ctx, rctx, widget):
+    async def children_changed(self, ctx, rctx, widget):
         layout = self._current_view.piece
         if layout != self._current_layout:
             log.info("Navigator: children layout changed: %s", layout)

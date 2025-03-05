@@ -39,7 +39,7 @@ class View(metaclass=abc.ABCMeta):
     def secondary_parent_context(self, rctx, widget):
         return rctx
 
-    async def children_context_changed(self, ctx, rctx, widget):
+    async def children_changed(self, ctx, rctx, widget):
         pass
 
     @abc.abstractmethod

@@ -86,7 +86,7 @@ class MasterDetailsView(BoxLayoutView):
             )
         return super().construct_widget(base_state, ctx)
 
-    async def children_context_changed(self, ctx, rctx, widget):
+    async def children_changed(self, ctx, rctx, widget):
         log.info("Master-details: children context changed: %s", widget)
         try:
             model_state = rctx.model_state

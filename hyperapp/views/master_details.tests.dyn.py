@@ -106,7 +106,7 @@ async def test_run_details_command(qapp, piece, state, model, ctx):
     widget = Mock()
     ctl_hook = Mock()
     view.set_controller_hook(ctl_hook)
-    await view.children_context_changed(ctx, rctx, widget)
+    await view.children_changed(ctx, rctx, widget)
     ctl_hook.element_replaced.assert_called_once()
 
 
