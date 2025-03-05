@@ -1,5 +1,6 @@
 import logging
 import weakref
+from functools import partial
 
 from PySide6 import QtWidgets
 
@@ -89,6 +90,7 @@ class EditTextView(View):
         else:
             text = self._adapter.get_text()
         w.setPlainText(text)
+        w.textChanged.connect(partial(self._on_text_changed, w))
         return w
 
     def widget_state(self, widget):
@@ -109,3 +111,7 @@ class EditTextView(View):
     def get_value(self, widget):
         text = self.get_text(widget)
         return self._adapter.text_to_value(text)
+
+    def _on_text_changed(self, widget):
+        text = self.get_text(widget)
+        self._adapter.value_changed(text)

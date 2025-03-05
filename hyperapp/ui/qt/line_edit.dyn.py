@@ -47,6 +47,7 @@ class EditLineView(View):
         else:
             text = self._adapter.get_text()
         w.setText(text)
+        w.textEdited.connect(self._on_text_edited)
         return w
 
     def widget_state(self, widget):
@@ -67,6 +68,9 @@ class EditLineView(View):
     def get_value(self, widget):
         text = self.get_text(widget)
         return self._adapter.text_to_value(text)
+
+    def _on_text_edited(self, text):
+        self._adapter.value_changed(text)
 
 
 class ViewLineView(EditLineView):
