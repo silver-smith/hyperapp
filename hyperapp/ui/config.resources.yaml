@@ -14,6 +14,7 @@ import:
 - ui.controller:layout-view.feed-template
 - ui.crud.args_picker_fn:command-args_picker_command_fn.actor-template
 - ui.crud.crud:crud-open_command_fn.actor-template
+- ui.crud.crud:crud-record_adapter.actor-template
 - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
 - ui.crud.crud:crud-view.view-template
 - ui.crud.crud:crud.service
@@ -266,6 +267,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.crud.crud:crud-record_adapter.actor-template
       - ui.int_adapter:int_adapter-int_adapter.actor-template
       - ui.qt.fn_index_tree_adapter:tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.fn_list_adapter:list_adapter-fn_list_adapter.actor-template

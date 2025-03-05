@@ -71,22 +71,17 @@ class EditValue:
         self.value = self._value_t(**kw)
 
 
-class FnRecordAdapter(RecordAdapter):
+class FnRecordAdapterBase(RecordAdapter):
 
     _model_to_value = weakref.WeakValueDictionary()
 
     @classmethod
-    @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory):
-        record_t = pyobj_creg.invite(piece.record_t)
-        fn = system_fn_creg.invite(piece.system_fn)
-        value = cls._model_to_value.setdefault(model, EditValue(record_t))
-        return cls(feed_factory, model, record_t, ctx, fn, value)
+    def _get_edit_value(cls, model, record_t):
+        return cls._model_to_value.setdefault(model, EditValue(record_t))
 
-    def __init__(self, feed_factory, model, record_t, ctx, ctx_fn, value):
+    def __init__(self, feed_factory, model, record_t, ctx, value):
         super().__init__(model, record_t)
         self._ctx = ctx
-        self._ctx_fn = ctx_fn
         self._value = value
         try:
             self._feed = feed_factory(model)
@@ -105,12 +100,34 @@ class FnRecordAdapter(RecordAdapter):
         self._value.set_field(field_name, new_value)
 
     def _populate(self):
+        self._value.value = self._get_value()
+
+
+class FnRecordAdapter(FnRecordAdapterBase):
+
+    @classmethod
+    @mark.actor.ui_adapter_creg
+    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory):
+        record_t = pyobj_creg.invite(piece.record_t)
+        fn = system_fn_creg.invite(piece.system_fn)
+        value = cls._get_edit_value(model, record_t)
+        return cls(feed_factory, model, record_t, ctx, value, fn)
+
+    @classmethod
+    def _get_edit_value(cls, model, record_t):
+        return cls._model_to_value.setdefault(model, EditValue(record_t))
+
+    def __init__(self, feed_factory, model, record_t, ctx, value, ctx_fn):
+        super().__init__(feed_factory, model, record_t, ctx, value)
+        self._ctx_fn = ctx_fn
+
+    def _get_value(self):
         additional_kw = {
             'model': self._model,
             'piece': self._model,
             'feed': self._feed,
             }
-        self._value.value = self._call_fn(**additional_kw)
+        return self._call_fn(**additional_kw)
 
     def _call_fn(self, **kw):
         return self._ctx_fn.call(self._ctx, **kw)

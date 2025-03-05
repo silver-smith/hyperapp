@@ -147,6 +147,21 @@ def test_context_view(qapp, ctx, view_piece_ctr):
     assert state
 
 
+def test_record_adapter(_sample_crud_get_fn, model, ctx):
+    value_t = htypes.crud_tests.sample_record
+    item_id = 11
+    piece = htypes.crud.record_adapter(
+        record_t=pyobj_creg.actor_to_ref(value_t),
+        init_fn=mosaic.put(_sample_crud_get_fn),
+        args=(htypes.crud.arg('id', mosaic.put(item_id)),),
+        )
+    adapter = crud.CrudRecordAdapter.from_piece(piece, model, ctx)
+
+    assert adapter.record_t == value_t
+    assert adapter.get_field('id') == 11
+    assert adapter.get_field('text') == "item#11"
+
+
 @mark.fixture
 def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id):
     piece = htypes.crud.open_command_fn(

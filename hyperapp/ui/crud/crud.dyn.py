@@ -15,6 +15,8 @@ from .code.mark import mark
 from .code.command import BoundCommandBase, UnboundCommandBase
 from .code.ui_model_command import wrap_model_command_to_ui_command
 from .code.context_view import ContextView
+from .code.record_adapter import FnRecordAdapterBase
+from .code.construct_default_form import construct_default_form
 
 log = logging.getLogger(__name__)
 
@@ -143,6 +145,28 @@ class CrudOpenFn:
             )
 
 
+class CrudRecordAdapter(FnRecordAdapterBase):
+
+    @classmethod
+    @mark.actor.ui_adapter_creg
+    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, crud):
+        record_t = pyobj_creg.invite(piece.record_t)
+        value = cls._get_edit_value(model, record_t)
+        init_fn = system_fn_creg.invite(piece.init_fn)
+        args = _args_tuple_to_dict(piece.args)
+        return cls(feed_factory, model, record_t, ctx, value, crud, init_fn, args)
+
+    def __init__(self, feed_factory, model, record_t, ctx, value, crud, init_fn, args):
+        super().__init__(feed_factory, model, record_t, ctx, value)
+        self._crud = crud
+        self._args = args
+        self._init_fn = init_fn
+
+    def _get_value(self):
+        fn_ctx = self._crud.fn_ctx(self._ctx, self._model, self._args)
+        return self._init_fn.call(fn_ctx)
+
+
 class Crud:
 
     def __init__(self, canned_ctl_item_factory, system_fn_creg, visualizer, view_reg, selector_reg):
@@ -191,12 +215,17 @@ class Crud:
         else:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
-        value = self._run_init(ctx, init_action_fn, model, init_args)
         if not get_fn:
-            # assert piece.init_action_fn  # Init action fn may be omitted only for selectors.
-            base_view_piece = self._editor_view(value_t, value)
+            # assert init_action_fn  # Init action fn may be omitted only for selectors.
+            if isinstance(value_t, TPrimitive):
+                base_view_piece = self._primitive_view(value_t)
+                new_model = self._run_init(ctx, init_action_fn, model, init_args)
+            else:
+                base_view_piece = self._form_view(value_t, init_action_fn, init_args)
+                new_model = htypes.crud.crud_form_model()
         else:
-            base_view_piece = self._selector_view(ctx, get_fn, value)
+            new_model = self._run_init(ctx, init_action_fn, model, init_args)
+            base_view_piece = self._selector_view(ctx, get_fn, new_model)
         new_view_piece = htypes.crud.view(
             base_view=mosaic.put(base_view_piece),
             label=label,
@@ -208,13 +237,13 @@ class Crud:
             commit_value_field=commit_value_field,
             )
         new_ctx = ctx.clone_with(
-            model=value,
+            model=new_model,
             )
         new_view = self._view_reg.animate(new_view_piece, new_ctx)
         navigator_widget = navigator_rec.widget_wr()
         if navigator_widget is None:
             raise RuntimeError("Navigator widget is gone")
-        navigator_rec.view.open(ctx, value, new_view, navigator_widget)
+        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget)
 
     # Override context with original elements, canned by args picker.
     def _canned_kw(self, ctx, args):
@@ -231,23 +260,19 @@ class Crud:
                 kw['view'] = item.view
         return kw
 
-    def _editor_view(self, value_t, value):
-        if isinstance(value_t, TPrimitive):
-            return self._primitive_view(value)
-        else:
-            return self._form_view(value_t)
-
-    def _form_view(self, value_t):
-        adapter = htypes.record_adapter.static_record_adapter(
+    def _form_view(self, value_t, init_action_fn, init_args):
+        adapter = htypes.crud.record_adapter(
             record_t=pyobj_creg.actor_to_ref(value_t),
+            init_fn=mosaic.put(init_action_fn.piece),
+            args=_args_dict_to_tuple(init_args),
             )
-        return htypes.form.view(mosaic.put(adapter))
+        return construct_default_form(adapter, value_t)
 
-    def _primitive_view(self, value):
-        if type(value) is str:
+    def _primitive_view(self, value_t):
+        if value_t is htypes.builtin.string:
             adapter = htypes.str_adapter.static_str_adapter()
             return htypes.text.edit_view(mosaic.put(adapter))
-        raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type {type(value)}: {value!r}")
+        raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type: {value_t}")
 
     def _selector_view(self, ctx, get_fn, value):
         selector_model = get_fn.call(ctx, value=value)
