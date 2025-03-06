@@ -38,7 +38,7 @@ class Mosaic:
 
     def put(self, piece, t=None):
         try:
-            return self._piece_to_ref[piece]
+            return self._piece_to_ref[piece, type(piece)]
         except TypeError as x:
             raise RuntimeError(f"{x}: {piece}")
         except KeyError:
@@ -50,7 +50,7 @@ class Mosaic:
         with self._lock:
             try:
                 # Check it is not added by another thread.
-                return self._piece_to_ref[piece]
+                return self._piece_to_ref[piece, type(piece)]
             except KeyError:
                 pass
             log.debug('Registering piece %r: %s', t.name, piece)
@@ -60,7 +60,7 @@ class Mosaic:
 
     def _register_capsule(self, piece, t, ref, type_ref, capsule):
         self._ref_to_rec[ref] = self._Rec(capsule, type_ref, t, piece)
-        self._piece_to_ref[piece] = ref
+        self._piece_to_ref[piece, type(piece)] = ref
 
     def add_to_cache(self, piece, t, ref):
         with self._lock:
