@@ -25,7 +25,10 @@ record_adapter = record:
   init_fn: ref
   args: arg list
 
-form_model = record
+# model value should be different for all values or record adapter will pick wrong cached value.
+form_model = record:
+  commit_command_d: ref
+  args: arg list
 
 layout_k = record:
   commit_command_d: ref

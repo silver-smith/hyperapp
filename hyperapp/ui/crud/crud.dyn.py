@@ -222,7 +222,10 @@ class Crud:
                 new_model = self._run_init(ctx, init_action_fn, model, init_args)
             else:
                 base_view_piece = self._form_view(value_t, init_action_fn, init_args)
-                new_model = htypes.crud.form_model()
+                new_model = htypes.crud.form_model(
+                    commit_command_d=commit_command_d_ref,
+                    args=_args_dict_to_tuple(commit_args),
+                    )
         else:
             new_model = self._run_init(ctx, init_action_fn, model, init_args)
             base_view_piece = self._selector_view(ctx, get_fn, new_model)
