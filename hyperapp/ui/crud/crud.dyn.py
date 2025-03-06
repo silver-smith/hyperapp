@@ -216,7 +216,7 @@ class Crud:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
         if not get_fn:
-            # assert init_action_fn  # Init action fn may be omitted only for selectors.
+            assert init_action_fn  # Init action fn may be omitted only for selectors.
             if isinstance(value_t, TPrimitive):
                 base_view_piece = self._primitive_view(value_t)
                 new_model = self._run_init(ctx, init_action_fn, model, init_args)
