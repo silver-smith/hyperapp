@@ -83,7 +83,7 @@ class _Marker:
         self._ctr_collector = ctr_collector
 
 
-class ViewFactoryUitMarker(_Marker):
+class ViewFactoryUiTMarker(_Marker):
 
     def __call__(self, fn):
         check_not_classmethod(fn)
@@ -101,4 +101,4 @@ class ViewFactoryMarker(_Marker):
 
     @property
     def ui_t(self):
-        return ViewFactoryUitMarker(self._module_name, self._system, self._ctr_collector)
+        return ViewFactoryUiTMarker(self._module_name, self._system, self._ctr_collector)
