@@ -5,7 +5,6 @@ import:
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
-- views.command_layout_context:open_command_layout_context.d
 - views.local_server_context:open_local_server_context.d
 - views.master_details:unwrap_master_details.d
 - views.qt.splitter:split_horizontally.d
@@ -16,11 +15,6 @@ definitions:
     value:
       services:
         shortcut_reg: shortcut_reg.config
-  config_item-views.command_layout_context-open_command_layout_context.d:
-    type: legacy_type.data_service:config_item
-    value:
-      key: views.command_layout_context:open_command_layout_context.d
-      value: shortcut_C
   config_item-views.local_server_context-open_local_server_context.d:
     type: legacy_type.data_service:config_item
     value:
@@ -44,9 +38,6 @@ definitions:
   shortcut_Alt_Shift_S:
     type: legacy_type.builtin:string
     value: Alt+Shift+S
-  shortcut_C:
-    type: legacy_type.builtin:string
-    value: C
   shortcut_Ctrl_H:
     type: legacy_type.builtin:string
     value: Ctrl+H
@@ -60,7 +51,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - config_item-views.command_layout_context-open_command_layout_context.d
       - config_item-views.local_server_context-open_local_server_context.d
       - config_item-views.master_details-unwrap_master_details.d
       - config_item-views.qt.splitter-split_horizontally.d
