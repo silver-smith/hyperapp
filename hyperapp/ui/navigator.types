@@ -3,12 +3,14 @@ history_rec = record:
   view: ref
   model: ref
   state: ref
+  layout_k: ref opt
   prev: ref opt
   next: ref opt
 
 view = record:
   current_view: ref
   current_model: ref
+  layout_k: ref opt
   prev: ref opt
   next: ref opt
 

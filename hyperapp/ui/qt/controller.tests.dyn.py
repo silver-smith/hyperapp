@@ -20,6 +20,7 @@ def default_piece():
     navigator = htypes.navigator.view(
         current_view=mosaic.put(text),
         current_model=mosaic.put("Sample model"),
+        layout_k=None,
         prev=None,
         next=None,
         )

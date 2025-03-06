@@ -27,6 +27,7 @@ def make_default_piece(visualizer, ctx):
     navigator = htypes.navigator.view(
         current_view=mosaic.put(text_view),
         current_model=mosaic.put(text),
+        layout_k=None,
         prev=None,
         next=None,
         )

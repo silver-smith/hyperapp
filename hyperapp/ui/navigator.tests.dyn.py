@@ -27,6 +27,7 @@ def piece(model):
         view=mosaic.put(text_piece),
         model=mosaic.put(model),
         state=mosaic.put(htypes.text.state('')),
+        layout_k=None,
         prev=None,
         next=None,
         )
@@ -34,12 +35,14 @@ def piece(model):
         view=mosaic.put(text_piece),
         model=mosaic.put(model),
         state=mosaic.put(htypes.text.state('')),
+        layout_k=None,
         prev=None,
         next=None,
         )
     return htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put(model),
+        layout_k=None,
         prev=mosaic.put(prev_rec),
         next=mosaic.put(next_rec),
         )
