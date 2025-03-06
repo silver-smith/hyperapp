@@ -25,4 +25,4 @@ record_adapter = record:
   init_fn: ref
   args: arg list
 
-crud_form_model = record
+form_model = record
