@@ -54,5 +54,5 @@ def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model_t):
     try:
         ui_t, system_fn_ref = visualizer_reg(model_t)
     except KeyError:
-        raise RuntimeError(f"No view for model is known: {model!r}")
+        raise RuntimeError(f"No view for model is known: {model_t!r}")
     return ui_type_creg.animate(ui_t, system_fn_ref)
