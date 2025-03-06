@@ -207,8 +207,10 @@ def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
 
 @mark.config_fixture('model_layout_reg')
 def model_layout_reg_config():
+    def k(t):
+        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
     return {
-        htypes.crud_tests.sample_selector_model: htypes.crud_tests.selector_view(),
+        k(htypes.crud_tests.sample_selector_model): htypes.crud_tests.selector_view(),
         }
 
 

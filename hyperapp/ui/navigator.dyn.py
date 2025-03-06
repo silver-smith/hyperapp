@@ -6,6 +6,7 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -123,7 +124,10 @@ class NavigatorView(View):
 
     def _set_layout(self, layout):
         model_t = deduce_t(self._model)
-        self._model_layout_reg[model_t] = layout
+        model_layout_k = htypes.ui.model_layout_k(
+            model_t=pyobj_creg.actor_to_ref(model_t),
+            )
+        self._model_layout_reg[model_layout_k] = layout
 
     def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
         assert idx == 0

@@ -11,3 +11,8 @@ external_ui_model_command_impl = record:
 # For storing command list in lcs.
 ui_model_command_list = record:
   commands: ref list
+
+
+# model_layout_reg key.
+model_layout_k = record:
+  model_t: ref

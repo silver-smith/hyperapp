@@ -13,6 +13,7 @@ import:
 - legacy_type.list_adapter:static_list_adapter
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
+- legacy_type.ui:model_layout_k
 definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
@@ -45,6 +46,7 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
+        htypes.ui.model_layout_k: legacy_type.ui:model_layout_k
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service

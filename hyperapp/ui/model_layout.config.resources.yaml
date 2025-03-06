@@ -7,6 +7,7 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.text:edit_view
+- legacy_type.ui:model_layout_k
 
 definitions:
 
@@ -26,8 +27,13 @@ definitions:
   config_item-int.layout:
     type: legacy_type.data_service:config_item
     value:
-      key: legacy_type.builtin:int
+      key: model_layout_k-int
       value: edit_view-int.layout
+
+  model_layout_k-int:
+    type: legacy_type.ui:model_layout_k
+    value:
+      model_t: legacy_type.builtin:int
 
   edit_view-int.layout:
     type: legacy_type.text:edit_view
@@ -41,8 +47,13 @@ definitions:
   config_item-string.layout:
     type: legacy_type.data_service:config_item
     value:
-      key: legacy_type.builtin:string
+      key: model_layout_k-string
       value: edit_view-string.layout
+
+  model_layout_k-string:
+    type: legacy_type.ui:model_layout_k
+    value:
+      model_t: legacy_type.builtin:string
 
   edit_view-string.layout:
     type: legacy_type.text:edit_view

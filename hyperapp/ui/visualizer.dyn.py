@@ -40,8 +40,11 @@ def ui_type_creg(config):
 
 @mark.service
 def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model_t):
+    layout_k = htypes.ui.model_layout_k(
+        model_t=pyobj_creg.actor_to_ref(model_t),
+        )
     try:
-        return model_layout_reg[model_t]
+        return model_layout_reg[layout_k]
     except KeyError:
         pass
     try:

@@ -180,14 +180,14 @@ class Crud:
         if args is None:
             args = {}
         if model is not None:
-            model_kw = {
+            model_layout_kw = {
                 'piece': model,
                 'model': model,
                 }
         else:
-            model_kw = {}
+            model_layout_kw = {}
         return ctx.clone_with(
-            **model_kw,
+            **model_layout_kw,
             **args,
             **self._canned_kw(ctx, args),
             **kw,

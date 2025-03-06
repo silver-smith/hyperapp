@@ -28,6 +28,7 @@ import:
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tree:view
+- legacy_type.ui:model_layout_k
 - legacy_type.view_factory:template
 - ui.directory:directory.module
 - ui.model_command:model_command.module
@@ -95,6 +96,7 @@ definitions:
         htypes.list_as_tree_adapter.adapter: legacy_type.list_as_tree_adapter:adapter
         htypes.list_as_tree_adapter.layer: legacy_type.list_as_tree_adapter:layer
         htypes.tree.view: legacy_type.tree:view
+        htypes.ui.model_layout_k: legacy_type.ui:model_layout_k
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
