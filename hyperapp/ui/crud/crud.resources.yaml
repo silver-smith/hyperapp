@@ -15,6 +15,7 @@ import:
 - legacy_type.command:ui_command_enumerator
 - legacy_type.crud:arg
 - legacy_type.crud:form_model
+- legacy_type.crud:layout_k
 - legacy_type.crud:open_command_fn
 - legacy_type.crud:record_adapter
 - legacy_type.crud:view
@@ -119,6 +120,7 @@ definitions:
         htypes.command.properties: legacy_type.command:properties
         htypes.crud.arg: legacy_type.crud:arg
         htypes.crud.form_model: legacy_type.crud:form_model
+        htypes.crud.layout_k: legacy_type.crud:layout_k
         htypes.crud.record_adapter: legacy_type.crud:record_adapter
         htypes.crud.view: legacy_type.crud:view
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter

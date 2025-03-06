@@ -243,7 +243,10 @@ class Crud:
         navigator_widget = navigator_rec.widget_wr()
         if navigator_widget is None:
             raise RuntimeError("Navigator widget is gone")
-        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget)
+        layout_k = htypes.crud.layout_k(
+            commit_command_d=commit_command_d_ref,
+            )
+        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget, layout_k=layout_k)
 
     # Override context with original elements, canned by args picker.
     def _canned_kw(self, ctx, args):

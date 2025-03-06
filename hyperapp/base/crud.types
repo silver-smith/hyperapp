@@ -26,3 +26,6 @@ record_adapter = record:
   args: arg list
 
 form_model = record
+
+layout_k = record:
+  commit_command_d: ref
