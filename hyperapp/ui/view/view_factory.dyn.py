@@ -10,9 +10,11 @@ from .code.directory import k_to_name
 
 class ViewFactory:
 
-    def __init__(self, visualizer_reg, k, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+    def __init__(self, visualizer_reg, k, model_t, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+        assert not (model_t is not None and ui_t_t is not None)  # Not both.
         self._visualizer_reg = visualizer_reg
         self._k = k
+        self._model_t = model_t
         self._ui_t_t = ui_t_t
         self._view_t = view_t
         self._is_wrapper = is_wrapper
@@ -24,11 +26,11 @@ class ViewFactory:
         return self._k
 
     def match_model(self, model_t, ui_t):
-        if self._ui_t_t is None:
-            return True
-        if ui_t is None:
-            return False
-        return isinstance(ui_t, self._ui_t_t)
+        if self._model_t is not None:
+            return model_t is self._model_t
+        if self._ui_t_t is not None:
+            return isinstance(ui_t, self._ui_t_t)
+        return True
 
     def call(self, ctx):
         if self._ui_t_t is not None:

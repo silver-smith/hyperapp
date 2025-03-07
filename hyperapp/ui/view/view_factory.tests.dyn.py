@@ -23,6 +23,7 @@ def test_item(partial_ref, visualizer_reg):
     factory = view_factory.ViewFactory(
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_tests.sample_k(),
+        model_t=None,
         ui_t_t=None,
         view_t=htypes.view_factory_tests.sample_view,
         is_wrapper=False,

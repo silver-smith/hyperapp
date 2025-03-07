@@ -13,6 +13,7 @@ class ViewFactoryTemplate:
     def from_piece(cls, piece):
         return cls(
             k=web.summon(piece.k),
+            model_t=pyobj_creg.invite_opt(piece.model_t),
             ui_t_t=pyobj_creg.invite_opt(piece.ui_t_t),
             view_t=pyobj_creg.invite(piece.view_t),
             is_wrapper=piece.is_wrapper,
@@ -20,8 +21,10 @@ class ViewFactoryTemplate:
             system_fn=web.summon(piece.system_fn),
             )
 
-    def __init__(self, k, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+    def __init__(self, k, model_t, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+        assert not (model_t is not None and ui_t_t is not None)  # Not both.
         self._k = k
+        self._model_t = model_t
         self._ui_t_t = ui_t_t
         self._view_t = view_t
         self._is_wrapper = is_wrapper
@@ -37,6 +40,7 @@ class ViewFactoryTemplate:
         return ViewFactory(
             visualizer_reg=system['visualizer_reg'],
             k=self._k,
+            model_t=self._model_t,
             ui_t_t=self._ui_t_t,
             view_t=self._view_t,
             is_wrapper=self._is_wrapper,
