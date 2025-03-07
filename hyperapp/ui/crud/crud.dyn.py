@@ -167,18 +167,20 @@ class CrudRecordAdapter(FnRecordAdapterBase):
     def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, crud):
         record_t = pyobj_creg.invite(piece.record_t)
         value = cls._get_edit_value(model, record_t)
-        init_fn = system_fn_creg.invite(piece.init_fn)
-        args = _args_tuple_to_dict(piece.args)
-        return cls(feed_factory, model, record_t, ctx, value, crud, init_fn, args)
+        real_model = web.summon(model.model)
+        init_fn = system_fn_creg.invite(model.init_fn)
+        args = _args_tuple_to_dict(model.args)
+        return cls(feed_factory, model, record_t, ctx, value, crud, real_model, init_fn, args)
 
-    def __init__(self, feed_factory, model, record_t, ctx, value, crud, init_fn, args):
+    def __init__(self, feed_factory, model, record_t, ctx, value, crud, real_model, init_fn, args):
         super().__init__(feed_factory, model, record_t, ctx, value)
         self._crud = crud
+        self._real_model = real_model
         self._args = args
         self._init_fn = init_fn
 
     def _get_value(self):
-        fn_ctx = self._crud.fn_ctx(self._ctx, self._model, self._args)
+        fn_ctx = self._crud.fn_ctx(self._ctx, self._real_model, self._args)
         return self._init_fn.call(fn_ctx)
 
 
@@ -236,9 +238,11 @@ class Crud:
                 base_view_piece = self._primitive_view(value_t)
                 new_model = self._run_init(ctx, init_action_fn, model, init_args)
             else:
-                base_view_piece = self._form_view(value_t, init_action_fn, init_args)
+                base_view_piece = self._form_view(value_t)
                 new_model = htypes.crud.form_model(
+                    model=mosaic.put(model),
                     commit_command_d=commit_command_d_ref,
+                    init_fn=mosaic.put(init_action_fn.piece),
                     args=_args_dict_to_tuple(commit_args),
                     )
         else:
@@ -278,11 +282,9 @@ class Crud:
                 kw['view'] = item.view
         return kw
 
-    def _form_view(self, value_t, init_action_fn, init_args):
+    def _form_view(self, value_t):
         adapter = htypes.crud.record_adapter(
             record_t=pyobj_creg.actor_to_ref(value_t),
-            init_fn=mosaic.put(init_action_fn.piece),
-            args=_args_dict_to_tuple(init_args),
             )
         return construct_default_form(adapter, value_t)
 

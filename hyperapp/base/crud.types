@@ -5,7 +5,7 @@ arg = record:
 view = record:
   base_view: ref
   label: string
-  model: ref opt
+  model: ref opt  # Real model - base model for crud get and post commands.
   commit_command_d: ref
   args: arg list
   pick_fn: ref opt
@@ -22,12 +22,12 @@ open_command_fn = record:
 
 record_adapter = record:
   record_t: ref
-  init_fn: ref
-  args: arg list
 
 # model value should be different for all values or record adapter will pick wrong cached value.
 form_model = record:
+  model: ref opt
   commit_command_d: ref
+  init_fn: ref
   args: arg list
 
 layout_k = record:

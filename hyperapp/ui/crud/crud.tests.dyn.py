@@ -168,15 +168,19 @@ async def test_context_view(view_reg, model_layout_reg, qapp, ctx, view_piece_ct
     assert isinstance(model_layout_reg.__setitem__.call_args.args[0], htypes.crud.layout_k)
 
 
-def test_record_adapter(_sample_crud_get_fn, model, ctx):
+def test_record_adapter(_sample_crud_get_fn, ctx, model):
     value_t = htypes.crud_tests.sample_record
     item_id = 11
-    piece = htypes.crud.record_adapter(
-        record_t=pyobj_creg.actor_to_ref(value_t),
+    form_model = htypes.crud.form_model(
+        model=mosaic.put(model),
+        commit_command_d=mosaic.put(htypes.crud_tests.save_d()),
         init_fn=mosaic.put(_sample_crud_get_fn),
         args=(htypes.crud.arg('id', mosaic.put(item_id)),),
         )
-    adapter = crud.CrudRecordAdapter.from_piece(piece, model, ctx)
+    piece = htypes.crud.record_adapter(
+        record_t=pyobj_creg.actor_to_ref(value_t),
+        )
+    adapter = crud.CrudRecordAdapter.from_piece(piece, form_model, ctx)
 
     assert adapter.record_t == value_t
     assert adapter.get_field('id') == 11
