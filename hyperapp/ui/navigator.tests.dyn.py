@@ -2,7 +2,9 @@ from unittest.mock import MagicMock, Mock
 
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
+    pyobj_creg,
     )
 from .code.mark import mark
 from .code.context import Context
@@ -39,10 +41,14 @@ def piece(model):
         prev=None,
         next=None,
         )
+    model_t = deduce_t(model)
+    layout_k = htypes.ui.model_layout_k(
+        model_t=pyobj_creg.actor_to_ref(model_t),
+        )
     return htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put(model),
-        layout_k=None,
+        layout_k=mosaic.put(layout_k),
         prev=mosaic.put(prev_rec),
         next=mosaic.put(next_rec),
         )
@@ -77,6 +83,15 @@ def test_widget(qapp, state, ctx, view):
 @mark.fixture.obj
 def model_layout_reg():
     return MagicMock()
+
+
+def test_open_with_default_model_layout(view_reg, qapp, model, state, ctx, view):
+    widget = view.construct_widget(state, ctx)
+    adapter_piece = htypes.str_adapter.static_str_adapter()
+    text_piece = htypes.text.edit_view(mosaic.put(adapter_piece))
+    new_child_view = view_reg.animate(text_piece, ctx)
+    new_child_widget = new_child_view.construct_widget(None, ctx)
+    view.open(ctx, model, new_child_view, new_child_widget)
 
 
 def test_set_layout(view_reg, model_layout_reg, qapp, state, ctx, view):

@@ -86,11 +86,16 @@ class NavigatorView(View):
             next=self._next,
             )
 
-    def open(self, ctx, model, view, widget, layout_k=None):
+    def open(self, ctx, model, view, widget, layout_k=None, set_layout=True):
         history_rec = self._history_rec(widget)
         self._current_view = view
         self._current_layout = view.piece
         self._model = model
+        if set_layout and layout_k is None:
+            model_t = deduce_t(model)
+            layout_k = htypes.ui.model_layout_k(
+                model_t=pyobj_creg.actor_to_ref(model_t),
+                )
         self._layout_k = layout_k
         self._prev = mosaic.put(history_rec)
         self._next = None
@@ -130,14 +135,9 @@ class NavigatorView(View):
         self._replace_widget(ctx, next_state)
 
     def _set_layout(self, layout):
-        model_t = deduce_t(self._model)
         if self._layout_k is not None:
-            layout_k = self._layout_k
-        else:
-            layout_k = htypes.ui.model_layout_k(
-                model_t=pyobj_creg.actor_to_ref(model_t),
-                )
-        self._model_layout_reg[layout_k] = layout
+            log.info("Navigator: set new layout: %s -> %s", self._layout_k, layout)
+            self._model_layout_reg[self._layout_k] = layout
         self._current_layout = self._current_view.piece
 
     def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
@@ -149,7 +149,6 @@ class NavigatorView(View):
     async def children_changed(self, ctx, rctx, widget):
         layout = self._current_view.piece
         if layout != self._current_layout:
-            log.info("Navigator: children layout changed: %s", layout)
             self._set_layout(layout)
 
     def items(self):
