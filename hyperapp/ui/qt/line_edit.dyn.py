@@ -59,7 +59,7 @@ class EditLineView(View):
     def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
             model_state=self._model_state(widget),
-            input=TextInput(self, widget),
+            input=LineInput(self, widget),
             )
 
     def _model_state(self, widget):
