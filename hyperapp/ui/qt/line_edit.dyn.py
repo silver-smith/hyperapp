@@ -4,6 +4,9 @@ import weakref
 from PySide6 import QtWidgets
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 from .code.view import View
 
@@ -89,3 +92,19 @@ class ViewLineView(EditLineView):
         w = super().construct_widget(state, ctx)
         w.setReadOnly(True)
         return w
+
+
+@mark.view_factory.model_t
+def line_edit(piece):
+    adapter = htypes.str_adapter.static_str_adapter()
+    return htypes.line_edit.edit_view(
+        adapter=mosaic.put(adapter),
+        )
+
+
+@mark.view_factory.model_t
+def line_view(piece):
+    adapter = htypes.str_adapter.static_str_adapter()
+    return htypes.line_edit.readonly_view(
+        adapter=mosaic.put(adapter),
+        )

@@ -50,3 +50,15 @@ def test_readonly_view(qapp, ctx, view_piece, state):
     assert view.piece == view_piece
     state = view.widget_state(widget)
     assert state
+
+
+def test_edit_factory():
+    model = "Sample text"
+    piece = line_edit.line_edit(model)
+    assert piece
+
+
+def test_view_factory():
+    model = "Sample text"
+    piece = line_edit.line_view(model)
+    assert piece
