@@ -41,26 +41,28 @@ class CrudContextView(ContextView):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, system_fn_creg, view_reg, crud):
+    def from_piece(cls, piece, ctx, system_fn_creg, view_reg, model_layout_reg, crud):
         base_view = view_reg.invite(piece.base_view, ctx)
         model = web.summon_opt(piece.model)
         command_d = web.summon(piece.commit_command_d)
         return cls(
-            system_fn_creg, crud, base_view, piece.label, model,
+            system_fn_creg, model_layout_reg, crud, base_view, piece.label, model,
             command_d, _args_tuple_to_dict(piece.args), piece.pick_fn, piece.commit_fn, piece.commit_value_field)
 
     def __init__(
-            self, system_fn_creg, crud, base_view, label, model,
-            command_d, args, pick_fn_ref, commit_fn_ref, commit_value_field):
+            self, system_fn_creg, model_layout_reg, crud, base_view, label, model,
+            commit_command_d, args, pick_fn_ref, commit_fn_ref, commit_value_field):
         super().__init__(base_view, label)
         self._system_fn_creg = system_fn_creg
+        self._model_layout_reg = model_layout_reg
         self._crud = crud
         self._model = model
-        self._command_d = command_d
+        self._commit_command_d = commit_command_d
         self._args = args
         self._pick_fn_ref = pick_fn_ref
         self._commit_fn_ref = commit_fn_ref
         self._commit_value_field = commit_value_field
+        self._current_layout = self._base_view.piece
 
     @property
     def piece(self):
@@ -68,19 +70,32 @@ class CrudContextView(ContextView):
             base_view=mosaic.put(self._base_view.piece),
             label=self._label,
             model=mosaic.put_opt(self._model),
-            commit_command_d=mosaic.put(self._command_d),
+            commit_command_d=mosaic.put(self._commit_command_d),
             args=_args_dict_to_tuple(self._args),
             pick_fn=self._pick_fn_ref,
             commit_fn=self._commit_fn_ref,
             commit_value_field=self._commit_value_field,
             )
 
+    async def children_changed(self, ctx, rctx, widget):
+        layout = self._base_view.piece
+        if layout != self._current_layout:
+            self._set_layout(layout)
+
+    def _set_layout(self, layout):
+        layout_k = htypes.crud.layout_k(
+            commit_command_d=mosaic.put(self._commit_command_d),
+            )
+        log.info("CRUD context view: set new layout: %s -> %s", layout_k, layout)
+        self._model_layout_reg[layout_k] = layout
+        self._current_layout = self._base_view.piece
+
     @property
     def unbound_commit_command(self):
         pick_fn = self._system_fn_creg.invite_opt(self._pick_fn_ref)
         commit_fn = self._system_fn_creg.invite(self._commit_fn_ref)
         return UnboundCrudCommitCommand(
-            self._crud, self._command_d, self._model, self._args, pick_fn, commit_fn, self._commit_value_field)
+            self._crud, self._commit_command_d, self._model, self._args, pick_fn, commit_fn, self._commit_value_field)
 
 
 class CrudOpenFn:
@@ -246,10 +261,7 @@ class Crud:
         navigator_widget = navigator_rec.widget_wr()
         if navigator_widget is None:
             raise RuntimeError("Navigator widget is gone")
-        layout_k = htypes.crud.layout_k(
-            commit_command_d=commit_command_d_ref,
-            )
-        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget, layout_k=layout_k)
+        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget, set_layout=False)
 
     # Override context with original elements, canned by args picker.
     def _canned_kw(self, ctx, args):

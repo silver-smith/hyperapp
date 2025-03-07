@@ -1,6 +1,6 @@
 import logging
 import weakref
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 from . import htypes
 from .services import (
@@ -137,7 +137,20 @@ def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, item_id, 
         )
 
 
-def test_context_view(qapp, ctx, view_piece_ctr):
+@mark.fixture.obj
+def model_layout_reg():
+    def getitem(self, layout_k):
+        def k(t):
+            return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
+        if layout_k == k(htypes.crud_tests.sample_selector_model):
+            return htypes.crud_tests.selector_view()
+        raise RuntimeError(f"Mock model_layout_reg: __getitem__ with {layout_k} was not expected")
+    reg = MagicMock()
+    reg.__getitem__ = getitem
+    return reg
+
+
+async def test_context_view(view_reg, model_layout_reg, qapp, ctx, view_piece_ctr):
     piece = view_piece_ctr(11, pick_fn=None)
     view = crud.CrudContextView.from_piece(piece, ctx)
     state = None
@@ -145,6 +158,14 @@ def test_context_view(qapp, ctx, view_piece_ctr):
     assert view.piece == piece
     state = view.widget_state(widget)
     assert state
+
+    # Hack: Replace base view to change layout.
+    new_label = htypes.label.view("Another sample label")
+    view._base_view = view_reg.animate(new_label, ctx)
+    rctx = Context()
+    await view.children_changed(ctx, rctx, widget)
+    model_layout_reg.__setitem__.assert_called_once()
+    assert isinstance(model_layout_reg.__setitem__.call_args.args[0], htypes.crud.layout_k)
 
 
 def test_record_adapter(_sample_crud_get_fn, model, ctx):
@@ -203,15 +224,6 @@ def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
         pick_fn=_sample_selector_pick_fn,
         )
     return {value_t: selector}
-
-
-@mark.config_fixture('model_layout_reg')
-def model_layout_reg_config():
-    def k(t):
-        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
-    return {
-        k(htypes.crud_tests.sample_selector_model): htypes.crud_tests.selector_view(),
-        }
 
 
 @mark.config_fixture('view_reg')

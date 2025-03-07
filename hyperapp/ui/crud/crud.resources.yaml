@@ -51,6 +51,7 @@ definitions:
       service_params:
       - system_fn_creg
       - view_reg
+      - model_layout_reg
       - crud
   CrudOpenFn:
     type: legacy_type.builtin:attribute
