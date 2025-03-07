@@ -18,9 +18,10 @@ class ViewFactoryProbe(ProbeBase):
 
     class Kind(Enum):
         view = 'view'
+        model_t = 'model_t'
         ui_t = 'ui_t'
 
-    def __init__(self, system_probe, ctr_collector, module_name, fn, kind=Kind.view):
+    def __init__(self, system_probe, ctr_collector, module_name, fn, kind):
         self._system = system_probe
         self._ctr_collector = ctr_collector
         self._module_name = module_name
@@ -38,15 +39,26 @@ class ViewFactoryProbe(ProbeBase):
             name: self._system.resolve_service(name)
             for name in params.service_names
             }
+        model_t = None
+        ui_t_t = None
         if self._kind == self.Kind.view:
-            ui_t_t = None
+            pass
+        elif self._kind == self.Kind.model_t:
+            model_t = self._deduce_model_t(params)
         elif self._kind == self.Kind.ui_t:
             ui_t_t = self._deduce_ui_t_t(params)
         else:
             assert False, self._kind
         result = self._fn(*args, **kw, **service_kw)
-        self._add_constructor(params, ui_t_t, result)
+        self._add_constructor(params, model_t, ui_t_t, result)
         return result
+
+    def _deduce_model_t(self, params):
+        if len(params.ctx_names) < 1 or params.ctx_names[0] != 'piece':
+            raise RuntimeError(
+                "First parameter for model_t view factory expected to be a 'piece':"
+                f" {self.real_fn!r}: {params.ctx_names!r}")
+        return deduce_t(params.values['piece'])
 
     def _deduce_ui_t_t(self, params):
         if len(params.ctx_names) < 1 or params.ctx_names[0] != 'piece':
@@ -59,7 +71,7 @@ class ViewFactoryProbe(ProbeBase):
                 f" {self.real_fn!r}: {params.ctx_names!r}")
         return deduce_t(params.values['piece'])
 
-    def _add_constructor(self, params, ui_t_t, result):
+    def _add_constructor(self, params, model_t, ui_t_t, result):
         try:
             result_t = deduce_t(result)
         except DeduceTypeError as x:
@@ -67,6 +79,7 @@ class ViewFactoryProbe(ProbeBase):
         ctr = ViewFactoryTemplateCtr(
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
+            model_t=model_t,
             ui_t_t=ui_t_t,
             ctx_params=params.ctx_names,
             service_params=params.service_names,
@@ -75,30 +88,30 @@ class ViewFactoryProbe(ProbeBase):
         self._ctr_collector.add_constructor(ctr)
 
 
-class _Marker:
+class Marker:
 
-    def __init__(self, module_name, system, ctr_collector):
+    def __init__(self, module_name, system, ctr_collector, kind):
         self._module_name = module_name
         self._system = system
         self._ctr_collector = ctr_collector
-
-
-class ViewFactoryUiTMarker(_Marker):
+        self._kind = kind
 
     def __call__(self, fn):
         check_not_classmethod(fn)
         check_is_function(fn)
         return ViewFactoryProbe(
-            self._system, self._ctr_collector, self._module_name, fn, kind=ViewFactoryProbe.Kind.ui_t)
+            self._system, self._ctr_collector, self._module_name, fn, self._kind)
 
 
-class ViewFactoryMarker(_Marker):
+class ViewFactoryMarker(Marker):
 
-    def __call__(self, fn):
-        check_not_classmethod(fn)
-        check_is_function(fn)
-        return ViewFactoryProbe(self._system, self._ctr_collector, self._module_name, fn)
+    def __init__(self, module_name, system, ctr_collector):
+        super().__init__(module_name, system, ctr_collector, kind=ViewFactoryProbe.Kind.view)
+
+    @property
+    def model_t(self):
+        return Marker(self._module_name, self._system, self._ctr_collector, kind=ViewFactoryProbe.Kind.model_t)
 
     @property
     def ui_t(self):
-        return ViewFactoryUiTMarker(self._module_name, self._system, self._ctr_collector)
+        return Marker(self._module_name, self._system, self._ctr_collector, kind=ViewFactoryProbe.Kind.ui_t)

@@ -72,6 +72,7 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: label_view.k
+      model_t: null
       ui_t_t: null
       view_t: legacy_type.label:view
       is_wrapper: false

@@ -1,6 +1,7 @@
 ctr = record:
   module_name: string
   attr_qual_name: string list
+  model_t: ref opt
   ui_t_t: ref opt
   ctx_params: string list
   service_params: string list

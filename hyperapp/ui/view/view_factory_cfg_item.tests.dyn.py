@@ -21,6 +21,7 @@ def template_piece():
         )
     return htypes.view_factory.template(
         k=mosaic.put(htypes.view_factory_cfg_item_tests.sample_k()),
+        model_t=None,
         ui_t_t=None,
         view_t=pyobj_creg.actor_to_ref(htypes.view_factory_cfg_item_tests.sample_view),
         is_wrapper=False,

@@ -69,6 +69,8 @@ import:
 - ui.qt.label:label_view.view-factory-template
 - ui.qt.line_edit:line_edit-edit_view.view-template
 - ui.qt.line_edit:line_edit-readonly_view.view-template
+- ui.qt.line_edit:line_edit.view-factory-template
+- ui.qt.line_edit:line_view.view-factory-template
 - ui.qt.list:list-view.view-template
 - ui.qt.menu_bar:menu_bar-view.view-template
 - ui.qt.record_adapter:model-record_ui_t.actor-template
@@ -303,6 +305,8 @@ definitions:
       - ui.qt.box_layout:wrap_box_layout.view-factory-template
       - ui.qt.fn_list_adapter:list_ui_type_layout.view-factory-template
       - ui.qt.label:label_view.view-factory-template
+      - ui.qt.line_edit:line_edit.view-factory-template
+      - ui.qt.line_edit:line_view.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:

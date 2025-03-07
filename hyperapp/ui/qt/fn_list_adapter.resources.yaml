@@ -67,6 +67,7 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: list_ui_type_layout.k
+      model_t: null
       ui_t_t: legacy_type.model:list_ui_t
       view_t: legacy_type.list:view
       is_wrapper: false
