@@ -165,7 +165,7 @@ class CrudRecordAdapter(FnRecordAdapterBase):
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, crud):
-        record_t = pyobj_creg.invite(piece.record_t)
+        record_t = pyobj_creg.invite(model.record_t)
         value = cls._get_edit_value(model, record_t)
         real_model = web.summon(model.model)
         init_fn = system_fn_creg.invite(model.init_fn)
@@ -241,6 +241,7 @@ class Crud:
                 base_view_piece = self._form_view(value_t)
                 new_model = htypes.crud.form_model(
                     model=mosaic.put(model),
+                    record_t=pyobj_creg.actor_to_ref(value_t),
                     commit_command_d=commit_command_d_ref,
                     init_fn=mosaic.put(init_action_fn.piece),
                     args=_args_dict_to_tuple(commit_args),
@@ -283,9 +284,7 @@ class Crud:
         return kw
 
     def _form_view(self, value_t):
-        adapter = htypes.crud.record_adapter(
-            record_t=pyobj_creg.actor_to_ref(value_t),
-            )
+        adapter = htypes.crud.record_adapter()
         return construct_default_form(adapter, value_t)
 
     def _primitive_view(self, value_t):

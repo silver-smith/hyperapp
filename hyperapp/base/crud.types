@@ -20,12 +20,12 @@ open_command_fn = record:
   commit_command_d: ref
   commit_action_fn: ref
 
-record_adapter = record:
-  record_t: ref
+record_adapter = record
 
 # model value should be different for all values or record adapter will pick wrong cached value.
 form_model = record:
   model: ref opt
+  record_t: ref
   commit_command_d: ref
   init_fn: ref
   args: arg list
