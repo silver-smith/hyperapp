@@ -43,7 +43,7 @@ def make_default_piece(visualizer, ctx):
             htypes.box_layout.element(
                 view=mosaic.put(command_pane),
                 focusable=False,
-                stretch=1,
+                stretch=0,
                 ),
             ),
         )
