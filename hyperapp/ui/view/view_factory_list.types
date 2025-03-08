@@ -1,2 +1,2 @@
 model = record:
-  model_t: ref opt
+  model: ref opt

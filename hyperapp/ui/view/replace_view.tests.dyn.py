@@ -25,7 +25,7 @@ def test_replace_view():
     ctx = Context()
     k = htypes.replace_view_tests.sample_k()
     view_factory = htypes.view_factory.factory(
-        model_t=None,
+        model=None,
         k=mosaic.put(k),
         )
     hook = Mock()

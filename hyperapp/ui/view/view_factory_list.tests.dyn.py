@@ -1,6 +1,5 @@
 from . import htypes
 from .services import (
-    pyobj_creg,
     mosaic,
     )
 from .code.mark import mark
@@ -90,7 +89,7 @@ def view_factory_reg_config(factory, model_factory, ui_t_factory):
 @mark.fixture
 def piece():
     return htypes.view_factory_list.model(
-        model_t=None,
+        model=None,
         )
 
 
@@ -112,7 +111,7 @@ def visualizer_config():
 
 def test_view_factory_list_with_model(factory, model_factory):
     piece = htypes.view_factory_list.model(
-        model_t=pyobj_creg.actor_to_ref(htypes.view_factory_list_tests.sample_model_1),
+        model=mosaic.put(htypes.view_factory_list_tests.sample_model_1()),
         )
     items = view_factory_list.view_factory_list(piece)
     assert set(items) == {factory.item, model_factory.item}
@@ -120,7 +119,7 @@ def test_view_factory_list_with_model(factory, model_factory):
 
 def test_view_factory_list_with_ui_t(factory, ui_t_factory):
     piece = htypes.view_factory_list.model(
-        model_t=pyobj_creg.actor_to_ref(htypes.view_factory_list_tests.sample_model_2),
+        model=mosaic.put(htypes.view_factory_list_tests.sample_model_2()),
         )
     items = view_factory_list.view_factory_list(piece)
     assert set(items) == {factory.item, ui_t_factory.item}
@@ -139,7 +138,7 @@ def test_editor_default():
 def test_selector_get():
     k = htypes.view_factory_list_tests.sample_1_k(),
     value = htypes.view_factory.factory(
-        model_t=None,
+        model=None,
         k=mosaic.put(k),
         )
     piece = view_factory_list.view_factory_list_get(value)

@@ -9,7 +9,7 @@ def _sample_fn():
 
 def test_service(view_factory_reg):
     factory_reg = view_factory_reg()
-    assert factory_reg.values() == []
+    assert factory_reg.items(model=None) == []
 
 
 def test_item(partial_ref, visualizer_reg):

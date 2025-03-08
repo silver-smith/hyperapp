@@ -57,6 +57,9 @@ class ViewFactory:
             system_fn=mosaic.put(self._system_fn.piece),
             )
 
+    def get_item_list(self, model):
+        return [self.item]
+
 
 class ViewMultiFactory:
 
@@ -86,6 +89,9 @@ class ViewMultiFactory:
             fn_ctx = ctx
         return self._system_fn.call(fn_ctx)
 
+    def get_item_list(self, model):
+        pass
+
 
 class ViewFactoryReg:
 
@@ -96,19 +102,21 @@ class ViewFactoryReg:
     def __getitem__(self, k):
         return self._config[k]
 
-    def values(self, model_t=None):
-        if model_t is None:
+    def items(self, model=None):
+        if model is None:
+            model_t = None
             ui_t = None
         else:
+            model_t = deduce_t(model)
             try:
                 ui_t, unused_system_fn_ref = self._visualizer_reg(model_t)
             except KeyError:
                 ui_t = None
-        return [
-            factory
-            for factory in self._config.values()
-            if factory.match_model(model_t, ui_t)
-            ]
+        item_list = []
+        for factory in self._config.values():
+            if factory.match_model(model_t, ui_t):
+                item_list += factory.get_item_list(model)
+        return item_list
 
 
 # d -> ViewFactory.
