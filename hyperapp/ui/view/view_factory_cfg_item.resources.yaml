@@ -7,9 +7,20 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_template
+- legacy_type.view_factory:multi_template
 - legacy_type.view_factory:template
 - ui.view.view_factory:view_factory.module
 definitions:
+  ViewFactoryMultiTemplate:
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_factory_cfg_item.module
+      attr_name: ViewFactoryMultiTemplate
+  ViewFactoryMultiTemplate.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ViewFactoryMultiTemplate
+      attr_name: from_piece
   ViewFactoryTemplate:
     type: legacy_type.builtin:attribute
     value:
@@ -20,6 +31,12 @@ definitions:
     value:
       object: ViewFactoryTemplate
       attr_name: from_piece
+  view_factory-multi_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.view_factory:multi_template
+      function: ViewFactoryMultiTemplate.from_piece
+      service_params: []
   view_factory-template.actor-template:
     type: legacy_type.system:actor_template
     value:

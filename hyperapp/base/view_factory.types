@@ -7,6 +7,12 @@ template = record:
   view_ctx_params: string list
   system_fn: ref
 
+multi_template = record:
+  k: ref
+  model_t: ref opt
+  ui_t_t: ref opt
+  list_fn: ref
+
 item = record:
   k: ref
   k_str: string

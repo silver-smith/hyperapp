@@ -1,0 +1,57 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:record_mt
+- legacy_type.crud:form_model
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:multi_template
+- ui.record_field_view_factory:record_field_view_factory.module
+
+definitions:
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        view_factory_reg: view_factory_reg.config
+
+  view_factory_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - record_field_list.view-factory-template
+
+  record_field_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui.record_field_view_factory:record_field_view_factory.module
+      attr_name: record_field_list
+
+  record_field_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: record_field_list
+      ctx_params:
+      - piece
+      service_params: []
+
+  record_field_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: record_field_view_factory
+      name: record_field_k
+      base: null
+      fields: {}
+
+  record_field.k:
+    type: record_field_k
+    value: {}
+
+  record_field_list.view-factory-template:
+    type: legacy_type.view_factory:multi_template
+    value:
+      k: record_field.k
+      model_t: legacy_type.crud:form_model
+      ui_t_t: null
+      list_fn: record_field_list.system-fn

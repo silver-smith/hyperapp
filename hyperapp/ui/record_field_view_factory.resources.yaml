@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:deduce_t.service
+- legacy_type.builtin:python_module
+- legacy_type.record_field_view_factory:factory_k
+definitions:
+  record_field_view_factory.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: record_field_view_factory
+      file_name: record_field_view_factory.dyn.py
+      import_list:
+        htypes.record_field_view_factory.factory_k: legacy_type.record_field_view_factory:factory_k
+        services.deduce_t: builtins:deduce_t.service

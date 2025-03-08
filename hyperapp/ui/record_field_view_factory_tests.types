@@ -1,0 +1,2 @@
+sample_model = record:
+  str_field: string

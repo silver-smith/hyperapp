@@ -112,6 +112,7 @@ import:
 - ui.ui_model_command:ui_model_command_items.service
 - ui.view.replace_view:replace_view.universal-ui-command
 - ui.view.view_factory:view_factory_reg.service
+- ui.view.view_factory_cfg_item:view_factory-multi_template.actor-template
 - ui.view.view_factory_cfg_item:view_factory-template.actor-template
 - ui.view.view_factory_list:open_view_factory_list.global-model-command
 - ui.view.view_factory_list:view_factory-factory.editor_default.cfg-item
@@ -132,6 +133,7 @@ definitions:
       - ui.command_cfg_item:command-ui_command.actor-template
       - ui.feed_type_template:feed-feed_template.actor-template
       - ui.selector:selector-template.actor-template
+      - ui.view.view_factory_cfg_item:view_factory-multi_template.actor-template
       - ui.view.view_factory_cfg_item:view_factory-template.actor-template
   command_creg:
     type: legacy_type.system:item_list_config

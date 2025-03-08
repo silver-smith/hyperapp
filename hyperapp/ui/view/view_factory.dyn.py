@@ -58,6 +58,35 @@ class ViewFactory:
             )
 
 
+class ViewMultiFactory:
+
+    def __init__(self, visualizer_reg, model_t, ui_t_t, list_fn):
+        assert not (model_t is not None and ui_t_t is not None)  # Not both.
+        self._visualizer_reg = visualizer_reg
+        self._model_t = model_t
+        self._ui_t_t = ui_t_t
+        self._list_fn = list_fn
+
+    def match_model(self, model_t, ui_t):
+        if self._model_t is not None:
+            return model_t is self._model_t
+        if self._ui_t_t is not None:
+            return isinstance(ui_t, self._ui_t_t)
+        return True
+
+    def call(self, ctx):
+        if self._ui_t_t is not None:
+            model_t = deduce_t(ctx.model)
+            ui_t, system_fn_ref = self._visualizer_reg(model_t)
+            fn_ctx = ctx.clone_with(
+                piece=ui_t,
+                system_fn_ref=system_fn_ref,
+            )
+        else:
+            fn_ctx = ctx
+        return self._system_fn.call(fn_ctx)
+
+
 class ViewFactoryReg:
 
     def __init__(self, visualizer_reg, config):
