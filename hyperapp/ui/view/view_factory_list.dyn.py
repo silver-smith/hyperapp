@@ -9,9 +9,9 @@ from .code.directory import k_to_name
 
 
 @mark.model
-def view_factory_list(piece, view_factory_reg):
+def view_factory_list(piece, ctx, view_factory_reg):
     model = web.summon_opt(piece.model)
-    return view_factory_reg.items(model)
+    return view_factory_reg.items(ctx, model)
 
 
 @mark.global_command

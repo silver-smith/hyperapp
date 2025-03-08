@@ -54,10 +54,9 @@ class ViewFactory:
             is_wrapper=self._is_wrapper,
             view_ctx_params=tuple(self._view_ctx_params),
             model_t=None,
-            system_fn=mosaic.put(self._system_fn.piece),
             )
 
-    def get_item_list(self, model):
+    def get_item_list(self, ctx, model):
         return [self.item]
 
 
@@ -89,8 +88,25 @@ class ViewMultiFactory:
             fn_ctx = ctx
         return self._system_fn.call(fn_ctx)
 
-    def get_item_list(self, model):
-        pass
+    def get_item_list(self, ctx, model):
+        model_ctx = ctx.clone_with(
+            model=model,
+            piece=model,
+            )
+        k_list = self._list_fn.call(model_ctx)
+        item_list = []
+        for k in k_list:
+            item = htypes.view_factory.item(
+                k=mosaic.put(k),
+                k_str=str(k),
+                view_t=None,
+                view_t_str="",
+                is_wrapper=False,
+                view_ctx_params=(),
+                model_t=None,
+                )
+            item_list.append(item)
+        return item_list
 
 
 class ViewFactoryReg:
@@ -102,7 +118,7 @@ class ViewFactoryReg:
     def __getitem__(self, k):
         return self._config[k]
 
-    def items(self, model=None):
+    def items(self, ctx, model=None):
         if model is None:
             model_t = None
             ui_t = None
@@ -115,7 +131,7 @@ class ViewFactoryReg:
         item_list = []
         for factory in self._config.values():
             if factory.match_model(model_t, ui_t):
-                item_list += factory.get_item_list(model)
+                item_list += factory.get_item_list(ctx, model)
         return item_list
 
 

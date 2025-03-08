@@ -21,7 +21,6 @@ item = record:
   is_wrapper: bool
   view_ctx_params: string list
   model_t: ref opt
-  system_fn: ref
 
 factory = record:
   model: ref opt

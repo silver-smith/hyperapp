@@ -1,4 +1,6 @@
 from . import htypes
+from .code.mark import mark
+from .code.context import Context
 from .code.system_fn import ContextFn
 from .tested.code import view_factory
 
@@ -7,9 +9,14 @@ def _sample_fn():
     return 'sample-fn'
 
 
-def test_service(view_factory_reg):
+@mark.fixture
+def ctx():
+    return Context()
+
+
+def test_service(view_factory_reg, ctx):
     factory_reg = view_factory_reg()
-    assert factory_reg.items(model=None) == []
+    assert factory_reg.items(ctx, model=None) == []
 
 
 def test_item(partial_ref, visualizer_reg):

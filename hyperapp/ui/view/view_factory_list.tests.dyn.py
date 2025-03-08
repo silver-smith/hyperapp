@@ -15,6 +15,11 @@ def _sample_fn():
 
 
 @mark.fixture
+def ctx():
+    return Context()
+
+
+@mark.fixture
 def factory(partial_ref, visualizer_reg):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
@@ -93,8 +98,8 @@ def piece():
         )
 
 
-def test_view_factory_list(factory, piece):
-    items = view_factory_list.view_factory_list(piece)
+def test_view_factory_list(ctx, factory, piece):
+    items = view_factory_list.view_factory_list(piece, ctx)
     assert items == [factory.item]
 
 
@@ -109,19 +114,19 @@ def visualizer_config():
         }
 
 
-def test_view_factory_list_with_model(factory, model_factory):
+def test_view_factory_list_with_model(ctx, factory, model_factory):
     piece = htypes.view_factory_list.model(
         model=mosaic.put(htypes.view_factory_list_tests.sample_model_1()),
         )
-    items = view_factory_list.view_factory_list(piece)
+    items = view_factory_list.view_factory_list(piece, ctx)
     assert set(items) == {factory.item, model_factory.item}
 
 
-def test_view_factory_list_with_ui_t(factory, ui_t_factory):
+def test_view_factory_list_with_ui_t(ctx, factory, ui_t_factory):
     piece = htypes.view_factory_list.model(
         model=mosaic.put(htypes.view_factory_list_tests.sample_model_2()),
         )
-    items = view_factory_list.view_factory_list(piece)
+    items = view_factory_list.view_factory_list(piece, ctx)
     assert set(items) == {factory.item, ui_t_factory.item}
 
 
@@ -130,8 +135,7 @@ def test_open():
     assert isinstance(piece, htypes.view_factory_list.model)
 
 
-def test_editor_default():
-    ctx = Context()
+def test_editor_default(ctx):
     context = view_factory_list.pick_view_factory_context(ctx)
 
 
@@ -155,7 +159,6 @@ def test_selector_pick():
         is_wrapper=False,
         view_ctx_params=(),
         model_t=None,
-        system_fn=mosaic.put("<unused>"),
         )
     factory = view_factory_list.view_factory_list_pick(piece, current_item)
     assert isinstance(factory, htypes.view_factory.factory)

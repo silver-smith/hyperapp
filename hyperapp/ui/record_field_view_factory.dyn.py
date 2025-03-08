@@ -1,13 +1,13 @@
 from . import htypes
 from .services import (
-    deduce_t,
+    pyobj_creg,
     )
 
 
 def record_field_list(piece):
-    model_t = deduce_t(piece)
+    record_t = pyobj_creg.invite(piece.record_t)
     k_list = []
-    for name in model_t.fields:
+    for name in record_t.fields:
         k = htypes.record_field_view_factory.factory_k(
             field_name=name,
             )

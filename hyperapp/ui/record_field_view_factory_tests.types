@@ -1,2 +1,6 @@
-sample_model = record:
+sample_model = record
+
+sample_value = record:
   str_field: string
+
+sample_d = record

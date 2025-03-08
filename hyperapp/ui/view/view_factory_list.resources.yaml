@@ -112,6 +112,7 @@ definitions:
       function: view_factory_list
       ctx_params:
       - piece
+      - ctx
       service_params:
       - view_factory_reg
   view_factory_list.module:
