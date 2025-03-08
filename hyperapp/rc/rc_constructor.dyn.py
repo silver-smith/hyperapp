@@ -34,4 +34,4 @@ class ModuleCtr(Constructor):
         self.update_resource_targets(resource_tgt, target_set)
 
     def update_resource_targets(self, resource_tgt, target_set):
-        raise NotImplementedError()
+        raise NotImplementedError(self)
