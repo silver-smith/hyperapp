@@ -73,10 +73,6 @@ import:
 - ui.qt.line_edit:line_view.view-factory-template
 - ui.qt.list:list-view.view-template
 - ui.qt.menu_bar:menu_bar-view.view-template
-- ui.qt.record_adapter:model-record_ui_t.actor-template
-- ui.qt.record_adapter:record_adapter-fn_record_adapter.actor-template
-- ui.qt.record_adapter:record_adapter-static_record_adapter.actor-template
-- ui.qt.record_field_adapter:record_field_adapter-record_field_adapter.actor-template
 - ui.qt.remote_fn_index_tree_adapter:tree_adapter-remote_fn_index_tree_adapter.actor-template
 - ui.qt.remote_fn_list_adapter:list_adapter-remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:list_adapter-static_list_adapter.actor-template
@@ -88,6 +84,10 @@ import:
 - ui.qt.window:window-view.view-template
 - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
 - ui.qt.window_commands:window-view-quit.command-cfg-item
+- ui.record_adapter:model-record_ui_t.actor-template
+- ui.record_adapter:record_adapter-fn_record_adapter.actor-template
+- ui.record_adapter:record_adapter-static_record_adapter.actor-template
+- ui.record_field_adapter:record_field_adapter-record_field_adapter.actor-template
 - ui.selector:selector-template.actor-template
 - ui.selector:selector_reg.service
 - ui.shortcut_reg:shortcut_reg.service
@@ -273,12 +273,12 @@ definitions:
       - ui.int_adapter:int_adapter-int_adapter.actor-template
       - ui.qt.fn_index_tree_adapter:tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.fn_list_adapter:list_adapter-fn_list_adapter.actor-template
-      - ui.qt.record_adapter:record_adapter-fn_record_adapter.actor-template
-      - ui.qt.record_adapter:record_adapter-static_record_adapter.actor-template
-      - ui.qt.record_field_adapter:record_field_adapter-record_field_adapter.actor-template
       - ui.qt.remote_fn_index_tree_adapter:tree_adapter-remote_fn_index_tree_adapter.actor-template
       - ui.qt.remote_fn_list_adapter:list_adapter-remote_fn_list_adapter.actor-template
       - ui.qt.static_list_adapter:list_adapter-static_list_adapter.actor-template
+      - ui.record_adapter:record_adapter-fn_record_adapter.actor-template
+      - ui.record_adapter:record_adapter-static_record_adapter.actor-template
+      - ui.record_field_adapter:record_field_adapter-record_field_adapter.actor-template
       - ui.str_adapter:str_adapter-static_str_adapter.actor-template
   ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
@@ -291,7 +291,7 @@ definitions:
       items:
       - ui.qt.fn_index_tree_adapter:model-tree_ui_t.actor-template
       - ui.qt.fn_list_adapter:model-list_ui_t.actor-template
-      - ui.qt.record_adapter:model-record_ui_t.actor-template
+      - ui.record_adapter:model-record_ui_t.actor-template
   universal_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:
