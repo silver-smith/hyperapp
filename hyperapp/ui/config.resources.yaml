@@ -80,6 +80,8 @@ import:
 - ui.qt.tabs:tabs-view.view-template
 - ui.qt.text:text-edit_view.view-template
 - ui.qt.text:text-readonly_view.view-template
+- ui.qt.text:text_edit.view-factory-template
+- ui.qt.text:text_view.view-factory-template
 - ui.qt.tree:tree-view.view-template
 - ui.qt.window:window-view.view-template
 - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
@@ -309,6 +311,8 @@ definitions:
       - ui.qt.label:label_view.view-factory-template
       - ui.qt.line_edit:line_edit.view-factory-template
       - ui.qt.line_edit:line_view.view-factory-template
+      - ui.qt.text:text_edit.view-factory-template
+      - ui.qt.text:text_view.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:

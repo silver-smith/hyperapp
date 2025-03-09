@@ -5,6 +5,9 @@ from functools import partial
 from PySide6 import QtWidgets
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 from .code.view import View
 
@@ -115,3 +118,19 @@ class EditTextView(View):
     def _on_text_changed(self, widget):
         text = self.get_text(widget)
         self._adapter.value_changed(text)
+
+
+@mark.view_factory.model_t
+def text_view(piece):
+    adapter = htypes.str_adapter.static_str_adapter()
+    return htypes.text.readonly_view(
+        adapter=mosaic.put(adapter),
+        )
+
+
+@mark.view_factory.model_t
+def text_edit(piece):
+    adapter = htypes.str_adapter.static_str_adapter()
+    return htypes.text.edit_view(
+        adapter=mosaic.put(adapter),
+        )

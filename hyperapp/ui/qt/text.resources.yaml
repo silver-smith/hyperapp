@@ -2,13 +2,18 @@
 
 import:
 - base.mark:mark.module
+- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.str_adapter:static_str_adapter
 - legacy_type.system_fn:ctx_fn
 - legacy_type.text:edit_view
 - legacy_type.text:readonly_view
 - legacy_type.text:state
+- legacy_type.view_factory:template
 - ui.view.view:view.module
 definitions:
   EditTextView:
@@ -69,6 +74,78 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
+        htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.readonly_view: legacy_type.text:readonly_view
         htypes.text.state: legacy_type.text:state
+        services.mosaic: builtins:mosaic.service
+  text_edit:
+    type: legacy_type.builtin:attribute
+    value:
+      object: text.module
+      attr_name: text_edit
+  text_edit.k:
+    type: text_edit_k
+    value: {}
+  text_edit.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: text_edit
+      ctx_params:
+      - piece
+      service_params: []
+  text_edit.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: text_edit.k
+      model_t: legacy_type.builtin:string
+      ui_t_t: null
+      view_t: legacy_type.text:edit_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: text_edit.system-fn
+  text_edit_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: text
+      name: text_edit_k
+      base: null
+      fields: {}
+  text_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: text.module
+      attr_name: text_view
+  text_view.k:
+    type: text_view_k
+    value: {}
+  text_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: text_view
+      ctx_params:
+      - piece
+      service_params: []
+  text_view.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: text_view.k
+      model_t: legacy_type.builtin:string
+      ui_t_t: null
+      view_t: legacy_type.text:readonly_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: text_view.system-fn
+  text_view_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: text
+      name: text_view_k
+      base: null
+      fields: {}

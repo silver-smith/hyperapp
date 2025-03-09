@@ -47,3 +47,15 @@ def test_edit_text(qapp):
     assert view.piece
     state = view.widget_state(widget)
     assert state
+
+
+def test_view_factory():
+    model = "Sample text"
+    piece = text.text_view(model)
+    assert piece
+
+
+def test_edit_factory():
+    model = "Sample text"
+    piece = text.text_edit(model)
+    assert piece
