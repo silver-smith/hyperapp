@@ -142,15 +142,16 @@ class _Item:
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self._command_context(my_rctx)
         unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.ctx.lcs, self.view)
-        commands = view_commands = self._bind_commands(unbound_view_commands, command_ctx)
+        view_commands = self._bind_commands(unbound_view_commands, command_ctx)
+        all_commands = view_commands
         if 'model' in self.ctx.diffs(self.parent.ctx):  # Added or replaced by self.view.children_context.
             model_t = deduce_t(command_ctx.model)
             unbound_model_commands = self._meta.svc.get_ui_model_commands(
                 self.ctx.lcs, model_t, command_ctx)
             model_commands = self._bind_commands(unbound_model_commands, command_ctx)
-            commands = commands + model_commands
+            all_commands = all_commands + model_commands
         commands_rctx = my_rctx.clone_with(
-            commands=rctx.get('commands', []) + commands,
+            commands=rctx.get('commands', []) + all_commands,
             )
         return (view_commands, commands_rctx)
 
