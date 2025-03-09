@@ -13,6 +13,10 @@ multi_template = record:
   ui_t_t: ref opt
   list_fn: ref
 
+multi_item_k = record:
+  factory_k: ref
+  item_k: ref
+
 item = record:
   k: ref
   k_str: string

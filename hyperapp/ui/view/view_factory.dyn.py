@@ -62,9 +62,10 @@ class ViewFactory:
 
 class ViewMultiFactory:
 
-    def __init__(self, visualizer_reg, model_t, ui_t_t, list_fn):
+    def __init__(self, visualizer_reg, k, model_t, ui_t_t, list_fn):
         assert not (model_t is not None and ui_t_t is not None)  # Not both.
         self._visualizer_reg = visualizer_reg
+        self._k = k
         self._model_t = model_t
         self._ui_t_t = ui_t_t
         self._list_fn = list_fn
@@ -96,8 +97,12 @@ class ViewMultiFactory:
         k_list = self._list_fn.call(model_ctx)
         item_list = []
         for k in k_list:
+            multi_k = htypes.view_factory.multi_item_k(
+                factory_k=mosaic.put(self._k),
+                item_k=mosaic.put(k),
+                )
             item = htypes.view_factory.item(
-                k=mosaic.put(k),
+                k=mosaic.put(multi_k),
                 k_str=str(k),
                 view_t=None,
                 view_t_str="",

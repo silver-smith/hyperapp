@@ -76,6 +76,7 @@ class ViewFactoryMultiTemplate:
         system_fn_creg = system['system_fn_creg']
         return ViewMultiFactory(
             visualizer_reg=system['visualizer_reg'],
+            k=self._k,
             model_t=self._model_t,
             ui_t_t=self._ui_t_t,
             list_fn=system_fn_creg.animate(self._list_fn),
