@@ -125,7 +125,7 @@ class _Item:
         else:
             rctx = Context()
         await self.view.children_changed(self.ctx, rctx, self.widget)
-        self.view_commands, rctx = self._my_reverse_context(rctx)
+        self.view_commands, rctx = self.my_reverse_context(rctx)
         rctx = await self.update_other_children(rctx)
         return rctx
 
@@ -134,11 +134,12 @@ class _Item:
             if kid is self.current_child:
                 continue
             rctx = await kid.update_other_children(rctx)
+            kid.view_commands, _unused_rctx = kid.my_reverse_context(rctx)
             await kid.view.children_changed(kid.ctx, rctx, kid.widget)
             rctx = kid.view.secondary_parent_context(rctx, kid.widget)
         return rctx
 
-    def _my_reverse_context(self, rctx):
+    def my_reverse_context(self, rctx):
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self._command_context(my_rctx)
         unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.ctx.lcs, self.view)
