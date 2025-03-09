@@ -9,7 +9,7 @@ def record_field_list(piece):
     record_t = pyobj_creg.invite(piece.record_t)
     k_list = []
     for name in record_t.fields:
-        k = htypes.record_field_view_factory.factory_k(
+        k = htypes.crud_field_view_factory.factory_k(
             field_name=name,
             )
         k_list.append(k)

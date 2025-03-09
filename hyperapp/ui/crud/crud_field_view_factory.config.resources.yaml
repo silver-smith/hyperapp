@@ -6,7 +6,7 @@ import:
 - legacy_type.system:system_config
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:multi_template
-- ui.record_field_view_factory:record_field_view_factory.module
+- ui.crud.crud_field_view_factory:crud_field_view_factory.module
 
 definitions:
 
@@ -25,7 +25,7 @@ definitions:
   record_field_list:
     type: legacy_type.builtin:attribute
     value:
-      object: ui.record_field_view_factory:record_field_view_factory.module
+      object: ui.crud.crud_field_view_factory:crud_field_view_factory.module
       attr_name: record_field_list
 
   record_field_list.system-fn:
@@ -39,7 +39,7 @@ definitions:
   record_field_get:
     type: legacy_type.builtin:attribute
     value:
-      object: ui.record_field_view_factory:record_field_view_factory.module
+      object: ui.crud.crud_field_view_factory:crud_field_view_factory.module
       attr_name: record_field_get
 
   record_field_get.system-fn:
@@ -53,7 +53,7 @@ definitions:
   record_field_k:
     type: legacy_type.builtin:record_mt
     value:
-      module_name: record_field_view_factory
+      module_name: crud_field_view_factory
       name: record_field_k
       base: null
       fields: {}

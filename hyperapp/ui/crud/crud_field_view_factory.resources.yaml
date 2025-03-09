@@ -5,19 +5,19 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
 - legacy_type.crud:record_adapter
+- legacy_type.crud_field_view_factory:factory_k
 - legacy_type.line_edit:edit_view
 - legacy_type.record_field_adapter:record_field_adapter
-- legacy_type.record_field_view_factory:factory_k
 definitions:
-  record_field_view_factory.module:
+  crud_field_view_factory.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: record_field_view_factory
-      file_name: record_field_view_factory.dyn.py
+      module_name: crud_field_view_factory
+      file_name: crud_field_view_factory.dyn.py
       import_list:
         htypes.crud.record_adapter: legacy_type.crud:record_adapter
+        htypes.crud_field_view_factory.factory_k: legacy_type.crud_field_view_factory:factory_k
         htypes.line_edit.edit_view: legacy_type.line_edit:edit_view
         htypes.record_field_adapter.record_field_adapter: legacy_type.record_field_adapter:record_field_adapter
-        htypes.record_field_view_factory.factory_k: legacy_type.record_field_view_factory:factory_k
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
