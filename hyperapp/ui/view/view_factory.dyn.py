@@ -9,14 +9,27 @@ from .code.mark import mark
 from .code.directory import k_to_name
 
 
-class ViewFactory:
+class ViewFactoryBase:
 
-    def __init__(self, visualizer_reg, k, model_t, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+    def __init__(self, model_t, ui_t_t):
         assert not (model_t is not None and ui_t_t is not None)  # Not both.
-        self._visualizer_reg = visualizer_reg
-        self._k = k
         self._model_t = model_t
         self._ui_t_t = ui_t_t
+
+    def match_model(self, model_t, ui_t, only_model):
+        if self._model_t is not None:
+            return model_t is self._model_t
+        if self._ui_t_t is not None:
+            return isinstance(ui_t, self._ui_t_t)
+        return not only_model
+
+
+class ViewFactory(ViewFactoryBase):
+
+    def __init__(self, visualizer_reg, k, model_t, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+        super().__init__(model_t, ui_t_t)
+        self._visualizer_reg = visualizer_reg
+        self._k = k
         self._view_t = view_t
         self._is_wrapper = is_wrapper
         self._view_ctx_params = view_ctx_params
@@ -26,14 +39,7 @@ class ViewFactory:
     def k(self):
         return self._k
 
-    def match_model(self, model_t, ui_t):
-        if self._model_t is not None:
-            return model_t is self._model_t
-        if self._ui_t_t is not None:
-            return isinstance(ui_t, self._ui_t_t)
-        return True
-
-    def call(self, ctx):
+    def call(self, ctx, adapter=None):
         if self._ui_t_t is not None:
             model_t = deduce_t(ctx.model)
             ui_t, system_fn_ref = self._visualizer_reg(model_t)
@@ -43,7 +49,7 @@ class ViewFactory:
             )
         else:
             fn_ctx = ctx
-        return self._system_fn.call(fn_ctx)
+        return self._system_fn.call(fn_ctx, adapter=adapter)
 
     @property
     def item(self):
@@ -67,41 +73,23 @@ class ViewMultiFactoryItem:
         self._k = k
         self._get_fn = get_fn
 
-    def call(self, ctx):
-        return self._get_fn.call(ctx, k=self._k)
+    def call(self, ctx, adapter=None):
+        return self._get_fn.call(ctx, k=self._k, adapter=adapter)
 
 
-class ViewMultiFactory:
+class ViewMultiFactory(ViewFactoryBase):
 
     def __init__(self, visualizer_reg, k, model_t, ui_t_t, list_fn, get_fn):
-        assert not (model_t is not None and ui_t_t is not None)  # Not both.
+        super().__init__(model_t, ui_t_t)
         self._visualizer_reg = visualizer_reg
         self._k = k
-        self._model_t = model_t
-        self._ui_t_t = ui_t_t
         self._list_fn = list_fn
         self._get_fn = get_fn
 
-    def match_model(self, model_t, ui_t):
-        if self._model_t is not None:
-            return model_t is self._model_t
-        if self._ui_t_t is not None:
-            return isinstance(ui_t, self._ui_t_t)
-        return True
-
-    def call(self, ctx):
-        if self._ui_t_t is not None:
-            model_t = deduce_t(ctx.model)
-            ui_t, system_fn_ref = self._visualizer_reg(model_t)
-            fn_ctx = ctx.clone_with(
-                piece=ui_t,
-                system_fn_ref=system_fn_ref,
-            )
-        else:
-            fn_ctx = ctx
-        return self._system_fn.call(fn_ctx)
-
     def get_item_list(self, ctx, model):
+        if model is None:
+            # model_factory_reg.items(model_t) variant is not supported by multi factory.
+            return []
         model_ctx = ctx.clone_with(
             model=model,
             piece=model,
@@ -143,19 +131,19 @@ class ViewFactoryReg:
         factory = self._config[factory_k]
         return factory.get_item(item_k)
 
-    def items(self, ctx, model=None):
-        if model is None:
-            model_t = None
+    def items(self, ctx, model=None, model_t=None, only_model=False):
+        if model is None and model_t is None:
             ui_t = None
         else:
-            model_t = deduce_t(model)
+            if model_t is None:
+                model_t = deduce_t(model)
             try:
                 ui_t, unused_system_fn_ref = self._visualizer_reg(model_t)
             except KeyError:
                 ui_t = None
         item_list = []
         for factory in self._config.values():
-            if factory.match_model(model_t, ui_t):
+            if factory.match_model(model_t, ui_t, only_model):
                 item_list += factory.get_item_list(ctx, model)
         return item_list
 

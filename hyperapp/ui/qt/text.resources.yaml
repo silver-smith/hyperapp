@@ -93,6 +93,7 @@ definitions:
       function: text_edit
       ctx_params:
       - piece
+      - adapter
       service_params: []
   text_edit.view-factory-template:
     type: legacy_type.view_factory:template
@@ -128,6 +129,7 @@ definitions:
       function: text_view
       ctx_params:
       - piece
+      - adapter
       service_params: []
   text_view.view-factory-template:
     type: legacy_type.view_factory:template

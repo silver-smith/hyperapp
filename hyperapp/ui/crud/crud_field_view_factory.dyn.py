@@ -2,26 +2,29 @@ from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    web,
     )
 
 
-def record_field_list(model):
+def record_field_list(model, ctx, view_factory_reg):
     record_t = pyobj_creg.invite(model.record_t)
     k_list = []
-    for name in record_t.fields:
-        k = htypes.crud_field_view_factory.factory_k(
-            field_name=name,
-            )
-        k_list.append(k)
+    for name, t in record_t.fields.items():
+        for item in view_factory_reg.items(ctx, model_t=t, only_model=True):
+            k = htypes.crud_field_view_factory.factory_k(
+                field_name=name,
+                base_factory_k=item.k
+                )
+            k_list.append(k)
     return k_list
 
 
-def record_field_get(k):
+def record_field_get(k, ctx, view_factory_reg):
+    base_factory_k = web.summon(k.base_factory_k)
+    base_factory = view_factory_reg[base_factory_k]
     record_adapter = htypes.crud.record_adapter()
     adapter = htypes.record_field_adapter.record_field_adapter(
         record_adapter=mosaic.put(record_adapter),
         field_name=k.field_name,
         )
-    return htypes.line_edit.edit_view(
-        adapter=mosaic.put(adapter),
-        )
+    return base_factory.call(ctx, adapter=adapter)

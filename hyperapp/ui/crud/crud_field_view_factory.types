@@ -1,2 +1,3 @@
 factory_k = record:
   field_name: string
+  base_factory_k: ref

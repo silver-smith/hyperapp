@@ -54,11 +54,11 @@ def test_readonly_view(qapp, ctx, view_piece, state):
 
 def test_edit_factory():
     model = "Sample text"
-    piece = line_edit.line_edit(model)
+    piece = line_edit.line_edit(model, adapter=None)
     assert piece
 
 
 def test_view_factory():
     model = "Sample text"
-    piece = line_edit.line_view(model)
+    piece = line_edit.line_view(model, adapter=None)
     assert piece

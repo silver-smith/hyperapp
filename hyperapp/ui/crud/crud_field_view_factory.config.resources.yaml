@@ -34,7 +34,9 @@ definitions:
       function: record_field_list
       ctx_params:
       - model
-      service_params: []
+      - ctx
+      service_params:
+      - view_factory_reg
 
   record_field_get:
     type: legacy_type.builtin:attribute
@@ -48,7 +50,9 @@ definitions:
       function: record_field_get
       ctx_params:
       - k
-      service_params: []
+      - ctx
+      service_params:
+      - view_factory_reg
 
   record_field_k:
     type: legacy_type.builtin:record_mt

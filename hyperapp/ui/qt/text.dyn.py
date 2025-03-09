@@ -121,16 +121,18 @@ class EditTextView(View):
 
 
 @mark.view_factory.model_t
-def text_view(piece):
-    adapter = htypes.str_adapter.static_str_adapter()
+def text_view(piece, adapter=None):
+    if adapter is None:
+        adapter = htypes.str_adapter.static_str_adapter()
     return htypes.text.readonly_view(
         adapter=mosaic.put(adapter),
         )
 
 
 @mark.view_factory.model_t
-def text_edit(piece):
-    adapter = htypes.str_adapter.static_str_adapter()
+def text_edit(piece, adapter=None):
+    if adapter is None:
+        adapter = htypes.str_adapter.static_str_adapter()
     return htypes.text.edit_view(
         adapter=mosaic.put(adapter),
         )
