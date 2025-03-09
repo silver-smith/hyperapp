@@ -52,12 +52,16 @@ class ContextView(View):
         return 0
 
     def replace_child_widget(self, widget, idx, new_child_widget):
-        if idx != 0:
-            return super().replace_child_widget(widget, idx, new_child_widget)
+        assert idx == 0
         layout = widget.layout()
         old_w = layout.itemAt(1).widget()
         layout.replaceWidget(old_w, new_child_widget)
         old_w.deleteLater()
+
+    def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
+        assert idx == 0
+        self._base_view = new_child_view
+        self.replace_child_widget(widget, idx, new_child_widget)
 
     def items(self):
         return [Item('base', self._base_view)]
