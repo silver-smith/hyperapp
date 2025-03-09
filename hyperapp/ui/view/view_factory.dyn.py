@@ -3,6 +3,7 @@ from .services import (
     deduce_t,
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.mark import mark
 from .code.directory import k_to_name
@@ -60,15 +61,26 @@ class ViewFactory:
         return [self.item]
 
 
+class ViewMultiFactoryItem:
+
+    def __init__(self, k, get_fn):
+        self._k = k
+        self._get_fn = get_fn
+
+    def call(self, ctx):
+        return self._get_fn.call(ctx, k=self._k)
+
+
 class ViewMultiFactory:
 
-    def __init__(self, visualizer_reg, k, model_t, ui_t_t, list_fn):
+    def __init__(self, visualizer_reg, k, model_t, ui_t_t, list_fn, get_fn):
         assert not (model_t is not None and ui_t_t is not None)  # Not both.
         self._visualizer_reg = visualizer_reg
         self._k = k
         self._model_t = model_t
         self._ui_t_t = ui_t_t
         self._list_fn = list_fn
+        self._get_fn = get_fn
 
     def match_model(self, model_t, ui_t):
         if self._model_t is not None:
@@ -113,6 +125,9 @@ class ViewMultiFactory:
             item_list.append(item)
         return item_list
 
+    def get_item(self, k):
+        return ViewMultiFactoryItem(k, self._get_fn)
+
 
 class ViewFactoryReg:
 
@@ -121,7 +136,12 @@ class ViewFactoryReg:
         self._config = config
 
     def __getitem__(self, k):
-        return self._config[k]
+        if not isinstance(k, htypes.view_factory.multi_item_k):
+            return self._config[k]
+        factory_k = web.summon(k.factory_k)
+        item_k = web.summon(k.item_k)
+        factory = self._config[factory_k]
+        return factory.get_item(item_k)
 
     def items(self, ctx, model=None):
         if model is None:

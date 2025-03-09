@@ -41,6 +41,7 @@ def multi_template_piece(sample_fn):
         model_t=None,
         ui_t_t=None,
         list_fn=mosaic.put(sample_fn),
+        get_fn=mosaic.put(sample_fn),
         )
 
 

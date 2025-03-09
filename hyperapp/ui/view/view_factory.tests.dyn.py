@@ -47,6 +47,10 @@ def _sample_list():
     return [htypes.view_factory_tests.sample_item_k()]
 
 
+def _sample_get(k):
+    assert isinstance(k, htypes.view_factory_tests.sample_item_k)
+
+
 def test_multi_key(partial_ref, visualizer_reg, ctx):
     list_fn = ContextFn(
         partial_ref=partial_ref, 
@@ -55,12 +59,20 @@ def test_multi_key(partial_ref, visualizer_reg, ctx):
         raw_fn=_sample_list,
         bound_fn=_sample_list,
         )
+    get_fn = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=(),
+        service_params=(),
+        raw_fn=_sample_get,
+        bound_fn=_sample_get,
+        )
     factory = view_factory.ViewMultiFactory(
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_tests.sample_k(),
         model_t=None,
         ui_t_t=None,
         list_fn=list_fn,
+        get_fn=get_fn,
         )
     model = "Sample model"
     item_list = factory.get_item_list(ctx, model)

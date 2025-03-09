@@ -16,6 +16,7 @@ def record_field_list(piece):
 
 
 def record_field_get(k):
+    assert 0, k
     adapter = htypes.record_field_adapter.record_field_adapter(
         record_adapter=None,
         field_name=k.field_name,

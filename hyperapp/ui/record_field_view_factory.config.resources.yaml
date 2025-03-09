@@ -36,6 +36,20 @@ definitions:
       - piece
       service_params: []
 
+  record_field_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui.record_field_view_factory:record_field_view_factory.module
+      attr_name: record_field_get
+
+  record_field_get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: record_field_get
+      ctx_params:
+      - k
+      service_params: []
+
   record_field_k:
     type: legacy_type.builtin:record_mt
     value:
@@ -55,3 +69,4 @@ definitions:
       model_t: legacy_type.crud:form_model
       ui_t_t: null
       list_fn: record_field_list.system-fn
+      get_fn: record_field_get.system-fn

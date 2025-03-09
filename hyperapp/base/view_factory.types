@@ -12,6 +12,7 @@ multi_template = record:
   model_t: ref opt
   ui_t_t: ref opt
   list_fn: ref
+  get_fn: ref
 
 multi_item_k = record:
   factory_k: ref

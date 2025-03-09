@@ -59,14 +59,16 @@ class ViewFactoryMultiTemplate:
             model_t=pyobj_creg.invite_opt(piece.model_t),
             ui_t_t=pyobj_creg.invite_opt(piece.ui_t_t),
             list_fn=web.summon(piece.list_fn),
+            get_fn=web.summon(piece.get_fn),
             )
 
-    def __init__(self, k, model_t, ui_t_t, list_fn):
+    def __init__(self, k, model_t, ui_t_t, list_fn, get_fn):
         assert not (model_t is not None and ui_t_t is not None)  # Not both.
         self._k = k
         self._model_t = model_t
         self._ui_t_t = ui_t_t
         self._list_fn = list_fn
+        self._get_fn = get_fn
 
     @property
     def key(self):
@@ -80,4 +82,5 @@ class ViewFactoryMultiTemplate:
             model_t=self._model_t,
             ui_t_t=self._ui_t_t,
             list_fn=system_fn_creg.animate(self._list_fn),
+            get_fn=system_fn_creg.animate(self._get_fn),
             )
