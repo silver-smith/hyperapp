@@ -33,7 +33,7 @@ definitions:
     value:
       function: record_field_list
       ctx_params:
-      - piece
+      - model
       service_params: []
 
   record_field_get:

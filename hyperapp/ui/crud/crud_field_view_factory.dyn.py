@@ -5,8 +5,8 @@ from .services import (
     )
 
 
-def record_field_list(piece):
-    record_t = pyobj_creg.invite(piece.record_t)
+def record_field_list(model):
+    record_t = pyobj_creg.invite(model.record_t)
     k_list = []
     for name in record_t.fields:
         k = htypes.crud_field_view_factory.factory_k(
