@@ -1,5 +1,6 @@
 from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 
@@ -16,8 +17,11 @@ def record_field_list(piece):
 
 
 def record_field_get(k):
-    assert 0, k
+    record_adapter = htypes.crud.record_adapter()
     adapter = htypes.record_field_adapter.record_field_adapter(
-        record_adapter=None,
+        record_adapter=mosaic.put(record_adapter),
         field_name=k.field_name,
+        )
+    return htypes.line_edit.edit_view(
+        adapter=mosaic.put(adapter),
         )

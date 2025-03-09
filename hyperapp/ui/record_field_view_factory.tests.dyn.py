@@ -17,3 +17,11 @@ def test_list():
         )
     k_list = record_field_view_factory.record_field_list(form_model)
     assert k_list
+
+
+def test_get():
+    k = htypes.record_field_view_factory.factory_k(
+        field_name='str_field',
+        )
+    view = record_field_view_factory.record_field_get(k)
+    assert view
