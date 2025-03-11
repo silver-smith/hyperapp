@@ -232,7 +232,10 @@ class Crud:
         else:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
-        if not get_fn:
+        if get_fn:
+            new_model = self._run_init(ctx, init_action_fn, model, init_args)
+            base_view_piece = self._selector_view(ctx, get_fn, new_model)
+        else:
             assert init_action_fn  # Init action fn may be omitted only for selectors.
             if isinstance(value_t, TPrimitive):
                 base_view_piece = self._primitive_view(value_t)
@@ -246,9 +249,6 @@ class Crud:
                     init_fn=mosaic.put(init_action_fn.piece),
                     args=_args_dict_to_tuple(commit_args),
                     )
-        else:
-            new_model = self._run_init(ctx, init_action_fn, model, init_args)
-            base_view_piece = self._selector_view(ctx, get_fn, new_model)
         new_view_piece = htypes.crud.view(
             base_view=mosaic.put(base_view_piece),
             label=label,
