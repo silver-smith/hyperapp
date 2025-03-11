@@ -153,7 +153,7 @@ def test_selector_pick():
     k = htypes.view_factory_list_tests.sample_1_k(),
     current_item = htypes.view_factory.item(
         k=mosaic.put(k),
-        k_str="<unused>",
+        title="<unused>",
         view_t=mosaic.put("<unused>"),
         view_t_str="<unused>",
         is_wrapper=False,

@@ -20,7 +20,7 @@ multi_item_k = record:
 
 item = record:
   k: ref
-  k_str: string
+  title: string
   view_t: ref opt
   view_t_str: string
   is_wrapper: bool

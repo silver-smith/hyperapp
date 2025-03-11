@@ -55,7 +55,7 @@ class ViewFactory(ViewFactoryBase):
     def item(self):
         return htypes.view_factory.item(
             k=mosaic.put(self._k),
-            k_str=k_to_name(self._k),
+            title=k_to_name(self._k),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
             view_t_str=str(self._view_t),
             is_wrapper=self._is_wrapper,
@@ -103,7 +103,7 @@ class ViewMultiFactory(ViewFactoryBase):
                 )
             item = htypes.view_factory.item(
                 k=mosaic.put(multi_k),
-                k_str=str(k),
+                title=str(k),
                 view_t=None,
                 view_t_str="",
                 is_wrapper=False,
