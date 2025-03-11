@@ -24,10 +24,10 @@ def move_tab_to_new_group(view, widget, state, ctx, view_reg):
         log.warning("Current tab group has only one item")
         return
     tab_idx = group.get_current(group_widget)
-    tab = group.tabs[tab_idx].view
+    tab = group.tabs[tab_idx]
     tab_state_ref = group_state.tabs[tab_idx]
     new_group_piece = htypes.auto_tabs.view(
-        tabs=(mosaic.put(tab.piece),),
+        tabs=(htypes.tabs.tab(tab.label, mosaic.put(tab.view.piece)),),
         )
     new_group_state = htypes.tabs.state(
         current_tab=0,

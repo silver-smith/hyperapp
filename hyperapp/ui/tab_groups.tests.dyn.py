@@ -14,8 +14,8 @@ def test_move_tab_to_new_group(qapp, view_reg):
     label = htypes.label.view("Sample label")
     inner_tabs_piece = htypes.auto_tabs.view(
         tabs=(
-            mosaic.put(label),
-            mosaic.put(label),
+            htypes.tabs.tab("One", mosaic.put(label)),
+            htypes.tabs.tab("Two", mosaic.put(label)),
             ),
         )
     outer_tabs_piece = htypes.tabs.view(

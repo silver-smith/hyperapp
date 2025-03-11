@@ -15,7 +15,9 @@ from .tested.code import auto_tabs
 def piece():
     label = htypes.label.view("Sample label")
     return htypes.auto_tabs.view(
-        tabs=(mosaic.put(label),),
+        tabs=(
+            htypes.tabs.tab("One", mosaic.put(label)),
+            ),
         )
 
 
@@ -46,15 +48,15 @@ def test_duplicate(qapp, piece, state):
     auto_tabs.duplicate_tab(ctx, view, widget, state)
     assert len(view.piece.tabs) == 2
     assert view.piece.tabs[0] == piece.tabs[0]
-    assert view.piece.tabs[0] == view.piece.tabs[1]
+    assert view.piece.tabs[0].view == view.piece.tabs[1].view
 
 
 def test_close(qapp):
     label = htypes.label.view("Sample label")
     piece = htypes.auto_tabs.view(
         tabs=(
-            mosaic.put(label),
-            mosaic.put(label),
+            htypes.tabs.tab("One", mosaic.put(label)),
+            htypes.tabs.tab("Two", mosaic.put(label)),
             ),
         )
     label_state = htypes.label.state()

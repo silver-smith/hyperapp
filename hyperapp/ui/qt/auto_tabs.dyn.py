@@ -25,19 +25,12 @@ class AutoTabsView(TabsView):
     @classmethod
     @mark.view
     def from_piece(cls, piece, ctx, view_reg):
-        tabs = [
-            cls._Tab(
-                view=view_reg.invite(view_ref, ctx),
-                label=tab_piece_ref_label(view_ref),
-                )
-            for view_ref in piece.tabs
-            ]
+        tabs = cls._data_to_tabs(piece.tabs, ctx, view_reg)
         return cls(tabs)
 
     @property
     def piece(self):
-        tabs = tuple(tab.view for tab in super().piece.tabs)
-        return htypes.auto_tabs.view(tabs)
+        return htypes.auto_tabs.view(self._tabs_data)
 
     async def children_changed(self, ctx, rctx, widget):
         try:

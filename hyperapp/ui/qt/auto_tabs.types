@@ -1,6 +1,8 @@
+from tabs import view as tabs_view
+
+
 close_tab_d = record
 duplicate_tab_d = record
 tab_piece_label_d = record
 
-view = record:
-  tabs: ref list
+view = record(tabs_view)

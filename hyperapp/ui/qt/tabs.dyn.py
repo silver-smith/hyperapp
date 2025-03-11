@@ -22,11 +22,15 @@ class TabsView(View):
     @classmethod
     @mark.view
     def from_piece(cls, piece, ctx, view_reg):
-        tabs = [
-            cls._Tab(view_reg.invite(rec.view, ctx), rec.label)
-            for rec in piece.tabs
-            ]
+        tabs = cls._data_to_tabs(piece.tabs, ctx, view_reg)
         return cls(tabs)
+
+    @classmethod
+    def _data_to_tabs(cls, tabs, ctx, view_reg):
+        return [
+            cls._Tab(view_reg.invite(rec.view, ctx), rec.label)
+            for rec in tabs
+            ]
 
     def __init__(self, tabs):
         super().__init__()
@@ -35,14 +39,17 @@ class TabsView(View):
 
     @property
     def piece(self):
-        tabs = tuple(
+        return htypes.tabs.view(self._tabs_data)
+
+    @property
+    def _tabs_data(self):
+        return tuple(
             htypes.tabs.tab(
                 label=tab.label,
                 view=mosaic.put(tab.view.piece),
                 )
             for tab in self._tabs
             )
-        return htypes.tabs.view(tabs)
 
     def construct_widget(self, state, ctx):
         tabs = QtWidgets.QTabWidget()
@@ -143,6 +150,8 @@ class TabsView(View):
         return widget.widget(idx)
 
     def set_tab_text(self, widget, idx, text):
+        tab = self._tabs[idx]
+        self._tabs[idx] = self._Tab(tab.view, text)
         widget.setTabText(idx, text)
 
 

@@ -25,7 +25,7 @@ def default_piece():
         next=None,
         )
     tabs_piece = htypes.auto_tabs.view(
-        tabs=(mosaic.put(navigator),),
+        tabs=(htypes.tabs.tab("One", mosaic.put(navigator)),),
         )
     window_piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.view()),

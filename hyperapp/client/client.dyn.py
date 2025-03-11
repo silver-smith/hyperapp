@@ -48,9 +48,7 @@ def make_default_piece(visualizer, ctx):
             ),
         )
     inner_tabs_piece = htypes.auto_tabs.view(
-        tabs=(
-            mosaic.put(box_layout),
-            ),
+        tabs=(htypes.tabs.tab("Inner", mosaic.put(box_layout)),),
         )
     outer_tabs_piece = htypes.tabs.view(
         tabs=(
