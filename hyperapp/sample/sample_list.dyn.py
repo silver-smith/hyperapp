@@ -38,3 +38,13 @@ def feed_sample_list(piece, feed):
 @mark.global_command
 async def open_feed_sample_fn_list():
     return htypes.sample_list.feed_sample_list()
+
+
+@mark.actor.formatter_creg
+def format_model(piece):
+    return "Sample list"
+
+
+@mark.actor.formatter_creg
+def format_feed_model(piece):
+    return "Sample feed list"

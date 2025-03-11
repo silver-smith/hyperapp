@@ -24,3 +24,15 @@ async def test_feed_sample_list(feed_factory):
     value = sample_list.feed_sample_list(piece, feed)
     assert value
     await feed.wait_for_diffs(count=1)
+
+
+def test_format_model():
+    piece = htypes.sample_list.sample_list()
+    title = sample_list.format_model(piece)
+    assert type(title) is str
+
+
+def test_format_feed_model():
+    piece = htypes.sample_list.feed_sample_list()
+    title = sample_list.format_feed_model(piece)
+    assert type(title) is str

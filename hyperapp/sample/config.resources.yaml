@@ -13,8 +13,10 @@ import:
 - sample.sample_feed:sample_feed-sample_tree_feed.feed-template
 - sample.sample_list:open_feed_sample_fn_list.global-model-command
 - sample.sample_list:open_sample_fn_list.global-model-command
+- sample.sample_list:sample_list-feed_sample_list.actor-template
 - sample.sample_list:sample_list-feed_sample_list.feed-template
 - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
+- sample.sample_list:sample_list-sample_list.actor-template
 - sample.sample_list:sample_list-sample_list.model-cfg-item
 - sample.sample_list_arg:sample_list_selector-item.editor_default.cfg-item
 - sample.sample_list_arg:show_sample_list_item.global-model-command
@@ -34,6 +36,7 @@ definitions:
       services:
         editor_default_reg: editor_default_reg
         feed_factory: feed_factory
+        formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
         selector_reg: selector_reg
@@ -51,6 +54,12 @@ definitions:
       - sample.sample_feed:sample_feed-sample_tree_feed.feed-template
       - sample.sample_list:sample_list-feed_sample_list.feed-template
       - sample.sample_tree:sample_tree-feed_sample_tree.feed-template
+  formatter_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - sample.sample_list:sample_list-feed_sample_list.actor-template
+      - sample.sample_list:sample_list-sample_list.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
