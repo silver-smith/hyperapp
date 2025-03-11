@@ -233,8 +233,11 @@ class Crud:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
         if get_fn:
-            new_model = self._run_init(ctx, init_action_fn, model, init_args)
-            base_view_piece = self._selector_view(ctx, get_fn, new_model)
+            value = self._run_init(ctx, init_action_fn, model, init_args)
+            selector_model = get_fn.call(ctx, value=value)
+            selector_model_t = deduce_t(selector_model)
+            base_view_piece = self._visualizer(ctx, selector_model_t)
+            new_model = selector_model
         else:
             assert init_action_fn  # Init action fn may be omitted only for selectors.
             if isinstance(value_t, TPrimitive):
@@ -292,11 +295,6 @@ class Crud:
             adapter = htypes.str_adapter.static_str_adapter()
             return htypes.text.edit_view(mosaic.put(adapter))
         raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type: {value_t}")
-
-    def _selector_view(self, ctx, get_fn, value):
-        selector_model = get_fn.call(ctx, value=value)
-        selector_model_t = deduce_t(selector_model)
-        return self._visualizer(ctx, selector_model_t)
 
     def _run_init(self, ctx, init_action_fn, model, args):
         fn_ctx = self.fn_ctx(ctx, model, args)
