@@ -22,7 +22,7 @@ def test_service(view_factory_reg, ctx):
     assert factory_reg.items(ctx, model=None) == []
 
 
-def test_item(partial_ref, visualizer_reg):
+def test_item(partial_ref, format, visualizer_reg):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=(),
@@ -31,6 +31,7 @@ def test_item(partial_ref, visualizer_reg):
         bound_fn=_sample_fn,
         )
     factory = view_factory.ViewFactory(
+        format=format,
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_tests.sample_k(),
         model_t=None,
@@ -51,7 +52,7 @@ def _sample_get(k):
     assert isinstance(k, htypes.view_factory_tests.sample_item_k)
 
 
-def test_multi_key(partial_ref, visualizer_reg, ctx):
+def test_multi_key(partial_ref, format, visualizer_reg, ctx):
     list_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=(),
@@ -67,6 +68,7 @@ def test_multi_key(partial_ref, visualizer_reg, ctx):
         bound_fn=_sample_get,
         )
     factory = view_factory.ViewMultiFactory(
+        format=format,
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_tests.sample_k(),
         model_t=None,

@@ -6,7 +6,6 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.directory import k_to_name
 
 
 class ViewFactoryBase:
@@ -26,8 +25,9 @@ class ViewFactoryBase:
 
 class ViewFactory(ViewFactoryBase):
 
-    def __init__(self, visualizer_reg, k, model_t, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+    def __init__(self, format, visualizer_reg, k, model_t, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
         super().__init__(model_t, ui_t_t)
+        self._format = format
         self._visualizer_reg = visualizer_reg
         self._k = k
         self._view_t = view_t
@@ -55,7 +55,7 @@ class ViewFactory(ViewFactoryBase):
     def item(self):
         return htypes.view_factory.item(
             k=mosaic.put(self._k),
-            title=k_to_name(self._k),
+            title=self._format(self._k),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
             view_t_str=str(self._view_t),
             is_wrapper=self._is_wrapper,
@@ -79,8 +79,9 @@ class ViewMultiFactoryItem:
 
 class ViewMultiFactory(ViewFactoryBase):
 
-    def __init__(self, visualizer_reg, k, model_t, ui_t_t, list_fn, get_fn):
+    def __init__(self, format, visualizer_reg, k, model_t, ui_t_t, list_fn, get_fn):
         super().__init__(model_t, ui_t_t)
+        self._format = format
         self._visualizer_reg = visualizer_reg
         self._k = k
         self._list_fn = list_fn
@@ -103,7 +104,7 @@ class ViewMultiFactory(ViewFactoryBase):
                 )
             item = htypes.view_factory.item(
                 k=mosaic.put(multi_k),
-                title=str(k),
+                title=self._format(k),
                 view_t=None,
                 view_t_str="",
                 is_wrapper=False,

@@ -12,7 +12,6 @@ import:
 - legacy_type.system:service_template
 - legacy_type.view_factory:item
 - legacy_type.view_factory:multi_item_k
-- ui.directory:directory.module
 definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
@@ -23,7 +22,6 @@ definitions:
       module_name: view_factory
       file_name: view_factory.dyn.py
       import_list:
-        code.directory: ui.directory:directory.module
         code.mark: base.mark:mark.module
         htypes.view_factory.item: legacy_type.view_factory:item
         htypes.view_factory.multi_item_k: legacy_type.view_factory:multi_item_k

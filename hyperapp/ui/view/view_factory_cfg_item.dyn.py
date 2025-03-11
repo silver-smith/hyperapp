@@ -38,6 +38,7 @@ class ViewFactoryTemplate:
     def resolve(self, system, service_name):
         system_fn_creg = system['system_fn_creg']
         return ViewFactory(
+            format=system['format'],
             visualizer_reg=system['visualizer_reg'],
             k=self._k,
             model_t=self._model_t,
@@ -77,6 +78,7 @@ class ViewFactoryMultiTemplate:
     def resolve(self, system, service_name):
         system_fn_creg = system['system_fn_creg']
         return ViewMultiFactory(
+            format=system['format'],
             visualizer_reg=system['visualizer_reg'],
             k=self._k,
             model_t=self._model_t,
