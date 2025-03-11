@@ -36,7 +36,7 @@ class AutoTabsView(TabsView):
 
     @property
     def piece(self):
-        tabs = tuple(tab.ctl for tab in super().piece.tabs)
+        tabs = tuple(tab.view for tab in super().piece.tabs)
         return htypes.auto_tabs.view(tabs)
 
     async def children_changed(self, ctx, rctx, widget):

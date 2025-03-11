@@ -23,7 +23,7 @@ class TabsView(View):
     @mark.view
     def from_piece(cls, piece, ctx, view_reg):
         tabs = [
-            cls._Tab(view_reg.invite(rec.ctl, ctx), rec.label)
+            cls._Tab(view_reg.invite(rec.view, ctx), rec.label)
             for rec in piece.tabs
             ]
         return cls(tabs)
@@ -38,7 +38,7 @@ class TabsView(View):
         tabs = tuple(
             htypes.tabs.tab(
                 label=tab.label,
-                ctl=mosaic.put(tab.view.piece),
+                view=mosaic.put(tab.view.piece),
                 )
             for tab in self._tabs
             )

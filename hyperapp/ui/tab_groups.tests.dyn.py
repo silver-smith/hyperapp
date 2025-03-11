@@ -42,5 +42,5 @@ def test_move_tab_to_new_group(qapp, view_reg):
     widget = view.construct_widget(outer_tabs_state, ctx)
     tab_groups.move_tab_to_new_group(view, widget, outer_tabs_state, ctx)
     assert len(view.piece.tabs) == 2
-    new_inner_piece = web.summon(view.piece.tabs[0].ctl)
+    new_inner_piece = web.summon(view.piece.tabs[0].view)
     assert len(new_inner_piece.tabs) == 1

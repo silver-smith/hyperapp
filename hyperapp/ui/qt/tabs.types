@@ -1,6 +1,6 @@
 tab = record:
   label: string
-  ctl: ref
+  view: ref
 
 view = record:
   tabs: tab list
