@@ -4,6 +4,14 @@ from .services import (
     pyobj_creg,
     web,
     )
+from .code.mark import mark
+
+
+@mark.actor.formatter_creg
+def format_factory_k(piece, format):
+    base_factory_k = web.summon(piece.base_factory_k)
+    base = format(base_factory_k)
+    return f"{piece.field_name}: {base}"
 
 
 def record_field_list(model, ctx, view_factory_reg):

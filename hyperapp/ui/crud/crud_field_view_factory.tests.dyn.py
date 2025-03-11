@@ -20,6 +20,17 @@ def view_factory_reg():
     return MagicMock()
 
 
+def test_format():
+    base_factory_k = htypes.crud_field_view_factory_tests.base_factory_k()
+    k = htypes.crud_field_view_factory.factory_k(
+        field_name='str_field',
+        field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+        base_factory_k=mosaic.put(base_factory_k),
+        )
+    result = crud_field_view_factory.format_factory_k(k)
+    assert result.startswith('str_field:')
+
+
 def test_list(view_factory_reg, ctx):
     base_factory_k = htypes.crud_field_view_factory_tests.base_factory_k()
     view_factory_reg.items.return_value = [
