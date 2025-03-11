@@ -13,6 +13,7 @@ def record_field_list(model, ctx, view_factory_reg):
         for item in view_factory_reg.items(ctx, model_t=t, only_model=True):
             k = htypes.crud_field_view_factory.factory_k(
                 field_name=name,
+                field_t=pyobj_creg.actor_to_ref(t),
                 base_factory_k=item.k
                 )
             k_list.append(k)
@@ -26,5 +27,6 @@ def record_field_get(k, ctx, view_factory_reg):
     adapter = htypes.record_field_adapter.record_field_adapter(
         record_adapter=mosaic.put(record_adapter),
         field_name=k.field_name,
+        field_t=k.field_t,
         )
     return base_factory.call(ctx, adapter=adapter)

@@ -41,6 +41,7 @@ def test_get(view_factory_reg, ctx):
     base_factory_k = htypes.crud_field_view_factory_tests.base_factory_k()
     k = htypes.crud_field_view_factory.factory_k(
         field_name='str_field',
+        field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
         base_factory_k=mosaic.put(base_factory_k),
         )
     view = crud_field_view_factory.record_field_get(k, ctx, view_factory_reg)

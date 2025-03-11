@@ -1,6 +1,7 @@
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     )
 
 
@@ -16,6 +17,7 @@ def construct_default_form(record_adapter, record_t):
         field_adapter = htypes.record_field_adapter.record_field_adapter(
             record_adapter=mosaic.put(record_adapter),
             field_name=name,
+            field_t=pyobj_creg.actor_to_ref(t),
             )
         # TODO: Investigate how to amend and use visualizer.
         field_view = htypes.line_edit.edit_view(

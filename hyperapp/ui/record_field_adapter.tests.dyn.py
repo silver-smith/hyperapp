@@ -34,6 +34,7 @@ def test_adapter(ui_adapter_creg):
     adapter_piece = htypes.record_field_adapter.record_field_adapter(
         record_adapter=mosaic.put(record_adapter_piece),
         field_name='text',
+        field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
         )
     adapter = record_field_adapter.RecordFieldAdapter.from_piece(adapter_piece, model, ctx)
     assert adapter.value == "Sample fn item"
