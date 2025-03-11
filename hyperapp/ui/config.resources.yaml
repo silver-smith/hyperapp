@@ -25,6 +25,7 @@ import:
 - ui.feed:feed_factory.service
 - ui.feed_creg:feed_type_creg.service
 - ui.feed_type_template:feed-feed_template.actor-template
+- ui.formatter_creg:formatter_creg.service
 - ui.int_adapter:int_adapter-int_adapter.actor-template
 - ui.layout:layout-command_list-add_view_command.command-cfg-item
 - ui.layout:layout-command_list-set_escape_shortcut.command-cfg-item
@@ -236,6 +237,7 @@ definitions:
       - ui.crud.editor_default_reg:editor_default_reg.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_type_creg.service
+      - ui.formatter_creg:formatter_creg.service
       - ui.local_server:local_server_peer.service
       - ui.local_server:local_server_peer_path.service
       - ui.model_command:get_model_commands.service
