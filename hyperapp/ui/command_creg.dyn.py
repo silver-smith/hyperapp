@@ -1,7 +1,5 @@
 from .services import (
     code_registry_ctr,
-    mosaic,
-    web,
     )
 from .code.mark import mark
 
