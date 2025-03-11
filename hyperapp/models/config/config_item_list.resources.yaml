@@ -108,6 +108,7 @@ definitions:
       - piece
       service_params:
       - system
+      - format
   config_item_list.module:
     type: legacy_type.builtin:python_module
     value:

@@ -13,7 +13,7 @@ from .code.data_browser import data_browser
 
 
 @mark.model
-def config_item_list(piece, system):
+def config_item_list(piece, system, format):
 
     def enum_items(config):
         if type(config) in {list, set}:
@@ -52,7 +52,7 @@ def config_item_list(piece, system):
         layers = item_layers(key, value)
         item = htypes.config_item_list.item(
             key=mosaic.put(key_data),
-            key_str=str(key),
+            key_str=format(key),
             value_str=str(value),
             layers=tuple(layers),
             layers_str=", ".join(layers),
