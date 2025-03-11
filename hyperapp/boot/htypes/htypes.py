@@ -56,6 +56,9 @@ class TPrimitive(Type):
     def __instancecheck__(self, value):
         return isinstance(value, self.get_type())
 
+    def __call__(self, value):
+        return self.type(value)
+
     def get_type(self):
         return self.type
 
