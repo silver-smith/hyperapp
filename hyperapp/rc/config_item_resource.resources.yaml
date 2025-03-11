@@ -1,5 +1,4 @@
 import:
-- builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -18,7 +17,6 @@ definitions:
       import_list:
         htypes.config_item_resource.config_item_resource: legacy_type.config_item_resource:config_item_resource
         htypes.config_item_resource.config_item_resource_override: legacy_type.config_item_resource:config_item_resource_override
-        services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
         code.rc_resource: rc.rc_resource:rc_resource.module
 

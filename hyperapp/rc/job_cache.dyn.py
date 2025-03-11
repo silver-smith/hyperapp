@@ -3,7 +3,6 @@ from hyperapp.boot.config_item_missing import ConfigItemMissingError
 from . import htypes
 from .services import (
     mosaic,
-    web,
     )
 from .code.python_src import PythonModuleSrc
 

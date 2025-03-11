@@ -8,7 +8,6 @@ from hyperapp.boot.htypes import TRecord
 from . import htypes
 from .services import (
     deduce_t,
-    mosaic,
     )
 from .code.mark import mark
 from .code.view import Item, View

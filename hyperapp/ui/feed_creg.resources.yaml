@@ -3,8 +3,6 @@
 import:
 - base.mark:mark.module
 - builtins:cached_code_registry_ctr.service
-- builtins:mosaic.service
-- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:dict_config_ctl
@@ -18,8 +16,6 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         services.cached_code_registry_ctr: builtins:cached_code_registry_ctr.service
-        services.mosaic: builtins:mosaic.service
-        services.web: builtins:web.service
   feed_type_creg:
     type: legacy_type.builtin:attribute
     value:

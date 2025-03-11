@@ -3,7 +3,6 @@ import weakref
 
 from . import htypes
 from .services import (
-    mosaic,
     pyobj_creg,
     )
 from .code.mark import mark

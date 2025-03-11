@@ -6,7 +6,6 @@ from hyperapp.boot.resource.resource_module import AUTO_GEN_LINE
 from .services import (
     code_registry_ctr,
     hyperapp_dir,
-    web,
     )
 from .code.target_set import TargetSet
 from .code.python_src import PythonModuleSrc

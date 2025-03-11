@@ -1,7 +1,6 @@
 import:
 - builtins:hyperapp_dir.service
 - builtins:project_factory.service
-- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.rpc:server_error
@@ -26,7 +25,6 @@ definitions:
         htypes.rpc.server_error: legacy_type.rpc:server_error
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.project_factory: builtins:project_factory.service
-        services.web: builtins:web.service
         code.init_targets: rc.init_targets:init_targets.module
         code.job_cache: rc.job_cache:job_cache.module
         code.reconstructors: base.reconstructors:reconstructors.module

@@ -3,7 +3,6 @@
 import:
 - base.mark:mark.module
 - builtins:deduce_t.service
-- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_fn_cfg_item
@@ -49,4 +48,3 @@ definitions:
         code.view: ui.view.view:view.module
         htypes.form.view: legacy_type.form:view
         services.deduce_t: builtins:deduce_t.service
-        services.mosaic: builtins:mosaic.service

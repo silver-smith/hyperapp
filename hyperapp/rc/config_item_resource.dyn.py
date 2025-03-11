@@ -1,6 +1,5 @@
 from . import htypes
 from .services import (
-    mosaic,
     web,
     )
 from .code.rc_resource import Resource

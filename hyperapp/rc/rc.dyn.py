@@ -12,7 +12,6 @@ from . import htypes
 from .services import (
     hyperapp_dir,
     project_factory,
-    web,
     )
 from .code.reconstructors import register_reconstructors
 from .code.rc_constants import JobStatus

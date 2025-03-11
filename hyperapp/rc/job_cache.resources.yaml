@@ -1,7 +1,6 @@
 import:
 - base.system.system:dict_config_ctl
 - builtins:mosaic.service
-- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.job_cache:cache
@@ -22,7 +21,6 @@ definitions:
         htypes.job_cache.dep: legacy_type.job_cache:dep
         htypes.job_cache.entry: legacy_type.job_cache:entry
         services.mosaic: builtins:mosaic.service
-        services.web: builtins:web.service
         code.python_src: rc.python_src:python_src.module
 
   JobCache:

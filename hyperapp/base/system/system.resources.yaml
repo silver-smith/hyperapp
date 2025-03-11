@@ -2,7 +2,6 @@ import:
 - builtins:cached_code_registry_ctr.service
 - builtins:code_registry_ctr.service
 - builtins:pyobj_creg.service
-- builtins:web.service
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
@@ -26,7 +25,6 @@ definitions:
         services.cached_code_registry_ctr: builtins:cached_code_registry_ctr.service
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        services.web: builtins:web.service
         code.config_ctl: base.system.config_ctl:config_ctl.module
         code.config_layer: base.system.config_layer:config_layer.module
 

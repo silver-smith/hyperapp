@@ -3,7 +3,6 @@ from unittest.mock import Mock
 from . import htypes
 from .services import (
     mosaic,
-    web,
     )
 from .code.list_diff import ListDiff
 from .code.context import Context

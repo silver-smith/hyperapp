@@ -11,7 +11,6 @@ from .services import (
     cached_code_registry_ctr,
     code_registry_ctr,
     pyobj_creg,
-    web,
     )
 from .code.config_ctl import DictConfigCtl, service_pieces_to_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer

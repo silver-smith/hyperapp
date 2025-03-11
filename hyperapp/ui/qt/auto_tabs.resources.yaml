@@ -2,7 +2,6 @@
 
 import:
 - base.mark:mark.module
-- builtins:web.service
 - common.list_diff:list_diff.module
 - legacy_type.auto_tabs:close_tab_d
 - legacy_type.auto_tabs:duplicate_tab_d
@@ -60,7 +59,6 @@ definitions:
         code.mark: base.mark:mark.module
         code.tabs: ui.qt.tabs:tabs.module
         htypes.auto_tabs.view: legacy_type.auto_tabs:view
-        services.web: builtins:web.service
   close_tab:
     type: legacy_type.builtin:attribute
     value:
