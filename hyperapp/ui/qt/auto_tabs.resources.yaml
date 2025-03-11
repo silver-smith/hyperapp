@@ -33,6 +33,7 @@ definitions:
       - piece
       - ctx
       service_params:
+      - format
       - view_reg
   auto_tabs-view-close_tab.command-cfg-item:
     type: legacy_type.command:cfg_item

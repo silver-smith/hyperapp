@@ -11,22 +11,17 @@ from .code.tabs import TabsView
 log = logging.getLogger(__name__)
 
 
-def tab_piece_label(piece):
-    return str(piece)[:40]
-
-
-def tab_piece_ref_label(piece_ref):
-    piece = web.summon(piece_ref)
-    return tab_piece_label(piece)
-
-
 class AutoTabsView(TabsView):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, view_reg):
+    def from_piece(cls, piece, ctx, format, view_reg):
         tabs = cls._data_to_tabs(piece.tabs, ctx, view_reg)
-        return cls(tabs)
+        return cls(format, tabs)
+
+    def __init__(self, format, tabs):
+        super().__init__(tabs)
+        self._format = format
 
     @property
     def piece(self):
@@ -38,13 +33,17 @@ class AutoTabsView(TabsView):
         except KeyError:
             text = "Unknown"
         else:
-            text = tab_piece_label(model)
+            text = self._tab_label(model)
         idx = super().get_current(widget)
         super().set_tab_text(widget, idx, text)
 
     def insert_tab(self, ctx, widget, idx, tab_view, tab_state):
-        label = tab_piece_label(tab_view.piece)
+        label = self._tab_label(tab_view.piece)
         super().insert_tab(ctx, widget, idx, label, tab_view, tab_state)
+
+    def _tab_label(self, piece):
+        title = self._format(piece)
+        return title[:40]
 
 
 @mark.ui_command(htypes.auto_tabs.view)
