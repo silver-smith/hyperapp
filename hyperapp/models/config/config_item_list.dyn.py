@@ -95,3 +95,8 @@ def config_item_move_to_another_layer(piece, key, layers, value, system):
     target_layer.set(piece.service_name, key_piece, value_template)
     source_layer.remove(piece.service_name, key_piece)
     return piece
+
+
+@mark.actor.formatter_creg
+def format_model(piece):
+    return f"Config for service: {piece.service_name}"

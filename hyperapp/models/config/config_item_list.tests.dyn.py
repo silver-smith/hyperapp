@@ -78,3 +78,8 @@ def test_move(system, piece):
     config_item_list.config_item_move_to_another_layer(piece, key_ref, layers, value)
     source_layer.remove.assert_called_once()
     target_layer.set.assert_called_once()
+
+
+def test_format_model(piece):
+    title = config_item_list.format_model(piece)
+    assert type(title) is str
