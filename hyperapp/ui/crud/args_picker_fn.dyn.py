@@ -51,6 +51,8 @@ class ArgsPickerFn:
             args['model'] = ctx.model
         if 'model_state' in ctx:
             args['model_state'] = ctx.model_state
+        if 'element_idx' in ctx:
+            args['element_idx'] = ctx.element_idx
         return args
 
     def call(self, ctx, **kw):
