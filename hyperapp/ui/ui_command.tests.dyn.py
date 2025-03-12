@@ -80,6 +80,11 @@ async def test_view_commands(get_view_commands, view, widget):
     assert result == 'sample-fn: a-state, a-service', repr(result)
 
 
+async def test_view_element_commands(get_view_element_commands, view, widget):
+    command_list = get_view_element_commands(view)
+    assert type(command_list) is list
+
+
 def test_ui_command_from_piece():
     d = htypes.ui_command_tests.sample_command_d()
     system_fn = htypes.system_fn.ctx_fn(

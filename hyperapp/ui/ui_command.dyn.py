@@ -70,6 +70,11 @@ def view_ui_command_reg(config, view_t):
     return config.get(view_t, [])
 
 
+@mark.service(ctl=DictListConfigCtl())
+def view_element_ui_command_reg(config, view_t):
+    return config.get(view_t, [])
+
+
 # UI commands returning model.
 @mark.service(ctl=DictListConfigCtl())
 def view_ui_model_command_reg(config, view_t):
@@ -111,3 +116,9 @@ def get_view_commands(
     for enumerator in ui_command_enumerator_reg(view_t):
         command_list += enumerator.enum_commands(ctx)
     return command_list
+
+
+@mark.service
+def get_view_element_commands(view_element_ui_command_reg, view):
+    view_t = deduce_t(view.piece)
+    return view_element_ui_command_reg(view_t)

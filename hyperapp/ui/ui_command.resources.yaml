@@ -56,6 +56,22 @@ definitions:
       - ctx
       - lcs
       - view
+  get_view_element_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command.module
+      attr_name: get_view_element_commands
+  get_view_element_commands.service:
+    type: legacy_type.system:service_template
+    value:
+      name: get_view_element_commands
+      ctl: system-dict_config_ctl.ctl
+      function: get_view_element_commands
+      service_params:
+      - view_element_ui_command_reg
+      want_config: false
+      free_params:
+      - view
   list_config_ctl-dict_list_config_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
     value: {}
@@ -118,6 +134,21 @@ definitions:
       service_params: []
       want_config: true
       free_params: []
+  view_element_ui_command_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command.module
+      attr_name: view_element_ui_command_reg
+  view_element_ui_command_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: view_element_ui_command_reg
+      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      function: view_element_ui_command_reg
+      service_params: []
+      want_config: true
+      free_params:
+      - view_t
   view_ui_command_reg:
     type: legacy_type.builtin:attribute
     value:
