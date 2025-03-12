@@ -96,6 +96,11 @@ definitions:
     value:
       t: legacy_type.box_layout:view
       command: insert_element.ui-command
+  box_layout-view-remove_element.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.box_layout:view
+      command: remove_element.ui-command
   box_layout-view-unwrap.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -180,6 +185,39 @@ definitions:
     value:
       module_name: box_layout
       name: open_insert_element_d
+      base: null
+      fields: {}
+  remove_element:
+    type: legacy_type.builtin:attribute
+    value:
+      object: box_layout.module
+      attr_name: remove_element
+  remove_element.d:
+    type: remove_element_d
+    value: {}
+  remove_element.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: remove_element
+      ctx_params:
+      - view
+      - widget
+      - element_idx
+      service_params: []
+  remove_element.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: remove_element.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: remove_element.fn
+  remove_element_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: box_layout
+      name: remove_element_d
       base: null
       fields: {}
   unwrap:

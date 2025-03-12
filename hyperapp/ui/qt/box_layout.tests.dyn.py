@@ -112,3 +112,9 @@ def test_insert_element(qapp, ctx, ctl_hook, view, widget, view_factory):
     element_idx = 0
     box_layout.insert_element(view, widget, element_idx, view_factory, ctx)
     ctl_hook.elements_changed.assert_called_once()
+
+
+def test_remove_element(qapp, ctl_hook, view, widget):
+    element_idx = 0
+    box_layout.remove_element(view, widget, element_idx)
+    ctl_hook.elements_changed.assert_called_once()

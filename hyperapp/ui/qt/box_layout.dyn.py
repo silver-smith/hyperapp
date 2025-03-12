@@ -127,6 +127,14 @@ class BoxLayoutView(View):
         log.info("Box layout: insert child @ #%d: %s", idx, child_view)
         self._insert_child(idx, ctx, widget, child_view)
 
+    def remove_child(self, idx, widget):
+        log.info("Box layout: remove child @ #%d", idx)
+        layout = widget.layout()
+        item = layout.itemAt(idx)
+        del self._elements[idx]
+        layout.removeItem(item)
+        self._ctl_hook.elements_changed()
+
     def _insert_child(self, idx, ctx, widget, child_view):
         elt_widget = child_view.construct_widget(None, ctx)
         elt = self._Element(child_view, focusable=False, stretch=0)
@@ -209,3 +217,8 @@ def insert_element(view, widget, element_idx, view_factory, ctx, view_reg, view_
     elt_piece = factory.call(fn_ctx)
     elt_view = view_reg.animate(elt_piece, ctx)
     view.insert_child(element_idx, ctx, widget, elt_view)
+
+
+@mark.ui_command
+def remove_element(view, widget, element_idx):
+    view.remove_child(element_idx, widget)

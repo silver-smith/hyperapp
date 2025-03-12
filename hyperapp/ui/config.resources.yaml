@@ -59,6 +59,7 @@ import:
 - ui.qt.auto_tabs:auto_tabs-view.view-template
 - ui.qt.box_layout:box_layout-view-add_element.command-cfg-item
 - ui.qt.box_layout:box_layout-view-insert_element.command-cfg-item
+- ui.qt.box_layout:box_layout-view-remove_element.command-cfg-item
 - ui.qt.box_layout:box_layout-view-unwrap.command-cfg-item
 - ui.qt.box_layout:box_layout-view.view-template
 - ui.qt.box_layout:wrap_box_layout.view-factory-template
@@ -362,6 +363,7 @@ definitions:
       - ui.qt.auto_tabs:auto_tabs-view-duplicate_tab.command-cfg-item
       - ui.qt.box_layout:box_layout-view-add_element.command-cfg-item
       - ui.qt.box_layout:box_layout-view-insert_element.command-cfg-item
+      - ui.qt.box_layout:box_layout-view-remove_element.command-cfg-item
       - ui.qt.box_layout:box_layout-view-unwrap.command-cfg-item
       - ui.qt.label:label-view-set_label_text.command-cfg-item
       - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
