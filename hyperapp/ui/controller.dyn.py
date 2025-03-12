@@ -261,6 +261,8 @@ class _Item:
         self._current_child_idx = None
         self.children_changed()
         self.save_state()
+        model_diff = TreeDiff.Remove(self.path)
+        asyncio.create_task(self._send_model_diff(model_diff))
 
     def elements_changed_hook(self):
         self._children = None
