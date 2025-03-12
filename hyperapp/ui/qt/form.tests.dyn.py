@@ -50,6 +50,11 @@ def piece(adapter_piece):
     return construct_default_form(adapter_piece, htypes.form_tests.value)
 
 
+@mark.fixture
+def state():
+    return None
+
+
 @mark.config_fixture('model_layout_reg')
 def model_layout_reg_config():
     def k(t):
@@ -72,3 +77,54 @@ def test_form(qapp, model, ctx, piece):
     assert view.piece == piece
     state = view.widget_state(widget)
     assert state
+
+
+@mark.config_fixture('view_factory_reg')
+def view_factory_reg_config():
+    k = htypes.form_tests.sample_k()
+    factory = Mock()
+    factory.call.return_value = htypes.label.view("Sample label")
+    return {k: factory}
+
+
+@mark.fixture
+def view_factory():
+    k = htypes.form_tests.sample_k()
+    return htypes.view_factory.factory(
+        model=None,
+        k=mosaic.put(k),
+        )
+
+
+@mark.fixture
+def ctl_hook():
+    return Mock()
+
+
+@mark.fixture
+def view(view_reg, piece, ctx, ctl_hook):
+    view = view_reg.animate(piece, ctx)
+    view.set_controller_hook(ctl_hook)
+    return view
+
+
+@mark.fixture
+def widget(view, state, ctx):
+    return  view.construct_widget(state, ctx)
+
+
+def test_add_element(qapp, ctx, ctl_hook, view, widget, view_factory):
+    form.add_element(view, widget, view_factory, ctx)
+    ctl_hook.elements_changed.assert_called_once()
+
+
+def test_insert_element(qapp, ctx, ctl_hook, view, widget, view_factory):
+    element_idx = 0
+    form.insert_element(view, widget, element_idx, view_factory, ctx)
+    ctl_hook.elements_changed.assert_called_once()
+
+
+def test_remove_element(qapp, ctl_hook, view, widget):
+    element_idx = 0
+    form.remove_element(view, widget, element_idx)
+    ctl_hook.elements_changed.assert_called_once()

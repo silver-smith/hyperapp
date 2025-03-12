@@ -3,3 +3,5 @@ sample_form = record
 value = record:
   id: int
   text: string
+
+sample_k = record
