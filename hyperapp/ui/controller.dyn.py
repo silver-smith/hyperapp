@@ -27,7 +27,14 @@ log = logging.getLogger(__name__)
 
 
 # Services used by controller and it's items.
-CtlServices = namedtuple('CtlServices', 'feed_factory view_reg get_view_commands get_ui_model_commands')
+CtlServices = namedtuple(
+    'CtlServices', [
+        'feed_factory',
+        'view_reg',
+        'get_view_commands',
+        'get_view_element_commands',
+        'get_ui_model_commands',
+        ])
 
 # attributes shared by all items.
 ItemMeta = namedtuple('ItemMeta', 'svc counter id_to_item feed')
@@ -141,9 +148,17 @@ class _Item:
 
     def my_reverse_context(self, rctx):
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
-        command_ctx = self._command_context(my_rctx)
+        command_ctx = self.command_context(my_rctx)
         unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.ctx.lcs, self.view)
         view_commands = self._bind_commands(unbound_view_commands, command_ctx)
+        if self.parent.view:
+            unbound_element_commands = self._meta.svc.get_view_element_commands(self.parent.view)
+            parent_command_ctx = self.parent.command_context(my_rctx)
+            element_command_ctx = parent_command_ctx.clone_with(
+                element_idx=self.idx,
+                )
+            element_commands = self._bind_commands(unbound_element_commands, element_command_ctx)
+            view_commands = [*view_commands, *element_commands]
         all_commands = view_commands
         if 'model' in self.ctx.diffs(self.parent.ctx):  # Added or replaced by self.view.children_context.
             model_t = deduce_t(command_ctx.model)
@@ -160,7 +175,7 @@ class _Item:
     def _bind_commands(commands, ctx):
         return [cmd.bind(ctx) for cmd in commands]
 
-    def _command_context(self, rctx):
+    def command_context(self, rctx):
         ctx = self.ctx.clone_with(
             navigator=self.navigator_rec(rctx),
             )
@@ -520,11 +535,23 @@ def canned_ctl_item_factory(piece, ctx):
 
 @mark.service
 @asynccontextmanager
-async def controller_running(feed_factory, view_reg, get_view_commands, get_ui_model_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
+async def controller_running(
+        feed_factory,
+        view_reg,
+        get_view_commands,
+        get_view_element_commands,
+        get_ui_model_commands,
+        layout_bundle,
+        default_layout,
+        ctx,
+        show=False,
+        load_state=False,
+        ):
     svc = CtlServices(
         feed_factory=feed_factory,
         view_reg=view_reg,
         get_view_commands=get_view_commands,
+        get_view_element_commands=get_view_element_commands,
         get_ui_model_commands=get_ui_model_commands,
         )
     ctl = Controller(svc, layout_bundle, default_layout, ctx, show, load_state)

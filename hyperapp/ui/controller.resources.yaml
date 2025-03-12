@@ -71,6 +71,7 @@ definitions:
       - feed_factory
       - view_reg
       - get_view_commands
+      - get_view_element_commands
       - get_ui_model_commands
       want_config: false
       free_params:
