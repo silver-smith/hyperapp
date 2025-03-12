@@ -24,11 +24,15 @@ import:
 - sample.sample_list_selector:sample_list_selector-item.selector-template
 - sample.sample_record:open_sample_fn_record.global-model-command
 - sample.sample_record:sample_record-sample_record.model-cfg-item
+- sample.sample_tree:get_sample_tree_items.service
 - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
 - sample.sample_tree:open_sample_fn_tree.global-model-command
 - sample.sample_tree:sample_tree-feed_sample_tree.feed-template
 - sample.sample_tree:sample_tree-feed_sample_tree.model-cfg-item
+- sample.sample_tree:sample_tree-sample_tree-remove_tree_item.command-cfg-item
+- sample.sample_tree:sample_tree-sample_tree.feed-template
 - sample.sample_tree:sample_tree-sample_tree.model-cfg-item
+- sample.sample_tree:sample_tree_data.service
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -40,6 +44,7 @@ definitions:
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
         selector_reg: selector_reg
+        system: system
         visualizer_reg: visualizer_reg
   editor_default_reg:
     type: legacy_type.system:item_list_config
@@ -54,6 +59,7 @@ definitions:
       - sample.sample_feed:sample_feed-sample_tree_feed.feed-template
       - sample.sample_list:sample_list-feed_sample_list.feed-template
       - sample.sample_tree:sample_tree-feed_sample_tree.feed-template
+      - sample.sample_tree:sample_tree-sample_tree.feed-template
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -81,11 +87,18 @@ definitions:
       - sample.sample_commands:sample_list-sample_list-details.command-cfg-item
       - sample.sample_commands:sample_tree-sample_tree-sample_tree_info.command-cfg-item
       - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
+      - sample.sample_tree:sample_tree-sample_tree-remove_tree_item.command-cfg-item
   selector_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - sample.sample_list_selector:sample_list_selector-item.selector-template
+  system:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - sample.sample_tree:get_sample_tree_items.service
+      - sample.sample_tree:sample_tree_data.service
   visualizer_reg:
     type: legacy_type.system:item_list_config
     value:
