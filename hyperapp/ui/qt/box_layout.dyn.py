@@ -183,7 +183,7 @@ def wrap_box_layout(inner):
         )
 
 
-@mark.ui_command(htypes.box_layout.view, args=['view_factory'])
+@mark.ui_command(args=['view_factory'])
 def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
     k = web.summon(view_factory.k)
     factory = view_factory_reg[k]
@@ -197,7 +197,7 @@ def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
     view.add_child(ctx, widget, elt_view)
 
 
-@mark.ui_command(htypes.box_layout.view, args=['view_factory'])
+@mark.ui_command(args=['view_factory'])
 def insert_element(view, widget, element_idx, view_factory, ctx, view_reg, view_factory_reg):
     k = web.summon(view_factory.k)
     factory = view_factory_reg[k]

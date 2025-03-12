@@ -228,11 +228,10 @@ class CommandMarker:
 
 class UiCommandMarker(CommandMarker):
 
-    def __call__(self, fn_or_t, *, args=None):
+    def __call__(self, fn_or_t=None, *, args=None):
         service_name = 'view_ui_command_reg'
-        if isinstance(fn_or_t, Type):
-            # Type-specialized variant (@mark.ui_command(my_type)).
-            return UiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, args, fn_or_t)
+        if isinstance(fn_or_t, Type) or fn_or_t is None:
+            return UiCommandDecorator(self._system, self._ctr_collector, self._module_name, service_name, args, t=fn_or_t)
         else:
             # Not type-specialized variant  (@mark.ui_command).
             check_not_classmethod(fn_or_t)
