@@ -90,10 +90,14 @@ class UiCommandProbe(CommandProbe):
             t = self._t
         else:
             t = self._deduce_view_t(params, 'ui_command')
+        if 'element_idx' in params.ctx_names:
+            service_name = 'view_element_ui_command_reg'
+        else:
+            service_name = 'view_ui_command_reg'
         ctr = UiCommandTemplateCtr(
             **self._common_ctr_kw(params),
-            service_name='view_ui_command_reg',
             t=t,
+            service_name=service_name,
             )
         self._ctr_collector.add_constructor(ctr)
 
