@@ -133,7 +133,7 @@ class BoxLayoutView(View):
         item = layout.itemAt(idx)
         del self._elements[idx]
         layout.removeItem(item)
-        self._ctl_hook.elements_changed()
+        self._ctl_hook.element_removed(idx)
 
     def _insert_child(self, idx, ctx, widget, child_view):
         elt_widget = child_view.construct_widget(None, ctx)
@@ -141,7 +141,7 @@ class BoxLayoutView(View):
         layout = widget.layout()
         self._elements.insert(idx, elt)
         layout.insertWidget(idx, elt_widget, elt.stretch)
-        self._ctl_hook.elements_changed()
+        self._ctl_hook.element_inserted(idx)
 
     def items(self):
         return [
