@@ -77,16 +77,38 @@ def view_factory_reg_config():
     return {k: factory}
 
 
-def test_add_element(qapp, view_reg, piece, state, ctx):
-    ctx = Context()
+@mark.fixture
+def view_factory():
     k = htypes.box_layout_tests.sample_k()
-    view_factory = htypes.view_factory.factory(
+    return htypes.view_factory.factory(
         model=None,
         k=mosaic.put(k),
         )
+
+
+@mark.fixture
+def ctl_hook():
+    return Mock()
+
+
+@mark.fixture
+def view(view_reg, piece, ctx, ctl_hook):
     view = view_reg.animate(piece, ctx)
-    hook = Mock()
-    view.set_controller_hook(hook)
-    widget = view.construct_widget(state, ctx)
-    box_layout.add_child_element(view, widget, view_factory, ctx)
-    hook.elements_changed.assert_called_once()
+    view.set_controller_hook(ctl_hook)
+    return view
+
+
+@mark.fixture
+def widget(view, state, ctx):
+    return  view.construct_widget(state, ctx)
+
+
+def test_add_element(qapp, ctx, ctl_hook, view, widget, view_factory):
+    box_layout.add_element(view, widget, view_factory, ctx)
+    ctl_hook.elements_changed.assert_called_once()
+
+
+def test_insert_element(qapp, ctx, ctl_hook, view, widget, view_factory):
+    element_idx = 0
+    box_layout.insert_element(view, widget, element_idx, view_factory, ctx)
+    ctl_hook.elements_changed.assert_called_once()

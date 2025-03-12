@@ -121,11 +121,18 @@ class BoxLayoutView(View):
     def add_child(self, ctx, widget, child_view):
         log.info("Box layout: add child: %s", child_view)
         idx = len(self._elements)
+        self._insert_child(idx, ctx, widget, child_view)
+
+    def insert_child(self, idx, ctx, widget, child_view):
+        log.info("Box layout: insert child @ #%d: %s", idx, child_view)
+        self._insert_child(idx, ctx, widget, child_view)
+
+    def _insert_child(self, idx, ctx, widget, child_view):
         elt_widget = child_view.construct_widget(None, ctx)
         elt = self._Element(child_view, focusable=False, stretch=0)
-        self._elements.insert(idx, elt)
         layout = widget.layout()
-        layout.addWidget(elt_widget, elt.stretch)
+        self._elements.insert(idx, elt)
+        layout.insertWidget(idx, elt_widget, elt.stretch)
         self._ctl_hook.elements_changed()
 
     def items(self):
@@ -177,7 +184,7 @@ def wrap_box_layout(inner):
 
 
 @mark.ui_command(htypes.box_layout.view, args=['view_factory'])
-def add_child_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
+def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
     k = web.summon(view_factory.k)
     factory = view_factory_reg[k]
     last_child = view.child_view(view.children_count - 1)
@@ -188,3 +195,17 @@ def add_child_element(view, widget, view_factory, ctx, view_reg, view_factory_re
     elt_piece = factory.call(fn_ctx)
     elt_view = view_reg.animate(elt_piece, ctx)
     view.add_child(ctx, widget, elt_view)
+
+
+@mark.ui_command(htypes.box_layout.view, args=['view_factory'])
+def insert_element(view, widget, element_idx, view_factory, ctx, view_reg, view_factory_reg):
+    k = web.summon(view_factory.k)
+    factory = view_factory_reg[k]
+    first_child = view.child_view(0)
+    # Just in case we want to add a wrapper.
+    fn_ctx = ctx.clone_with(
+        inner=first_child.piece,
+        )
+    elt_piece = factory.call(fn_ctx)
+    elt_view = view_reg.animate(elt_piece, ctx)
+    view.insert_child(element_idx, ctx, widget, elt_view)

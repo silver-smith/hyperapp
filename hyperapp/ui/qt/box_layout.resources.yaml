@@ -39,18 +39,18 @@ definitions:
       - ctx
       service_params:
       - view_reg
-  add_child_element:
+  add_element:
     type: legacy_type.builtin:attribute
     value:
       object: box_layout.module
-      attr_name: add_child_element
-  add_child_element.commit-d:
-    type: add_child_element_d
+      attr_name: add_element
+  add_element.commit-d:
+    type: add_element_d
     value: {}
-  add_child_element.commit-fn:
+  add_element.commit-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: add_child_element
+      function: add_element
       ctx_params:
       - view
       - widget
@@ -59,38 +59,43 @@ definitions:
       service_params:
       - view_reg
       - view_factory_reg
-  add_child_element.open-d:
-    type: open_add_child_element_d
+  add_element.open-d:
+    type: open_add_element_d
     value: {}
-  add_child_element.open-fn:
+  add_element.open-fn:
     type: legacy_type.command:args_picker_command_fn
     value:
-      name: add_child_element
+      name: add_element
       args:
         view_factory: legacy_type.view_factory:factory
-      commit_command_d: add_child_element.commit-d
-      commit_fn: add_child_element.commit-fn
-  add_child_element.ui-command:
+      commit_command_d: add_element.commit-d
+      commit_fn: add_element.commit-fn
+  add_element.ui-command:
     type: legacy_type.command:ui_command
     value:
-      d: add_child_element.open-d
+      d: add_element.open-d
       properties:
         is_global: false
         uses_state: false
         remotable: false
-      system_fn: add_child_element.open-fn
-  add_child_element_d:
+      system_fn: add_element.open-fn
+  add_element_d:
     type: legacy_type.builtin:record_mt
     value:
       module_name: box_layout
-      name: add_child_element_d
+      name: add_element_d
       base: null
       fields: {}
-  box_layout-view-add_child_element.command-cfg-item:
+  box_layout-view-add_element.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.box_layout:view
-      command: add_child_element.ui-command
+      command: add_element.ui-command
+  box_layout-view-insert_element.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.box_layout:view
+      command: insert_element.ui-command
   box_layout-view-unwrap.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -115,11 +120,66 @@ definitions:
         htypes.box_layout.view: legacy_type.box_layout:view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  open_add_child_element_d:
+  insert_element:
+    type: legacy_type.builtin:attribute
+    value:
+      object: box_layout.module
+      attr_name: insert_element
+  insert_element.commit-d:
+    type: insert_element_d
+    value: {}
+  insert_element.commit-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: insert_element
+      ctx_params:
+      - view
+      - widget
+      - element_idx
+      - view_factory
+      - ctx
+      service_params:
+      - view_reg
+      - view_factory_reg
+  insert_element.open-d:
+    type: open_insert_element_d
+    value: {}
+  insert_element.open-fn:
+    type: legacy_type.command:args_picker_command_fn
+    value:
+      name: insert_element
+      args:
+        view_factory: legacy_type.view_factory:factory
+      commit_command_d: insert_element.commit-d
+      commit_fn: insert_element.commit-fn
+  insert_element.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: insert_element.open-d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: insert_element.open-fn
+  insert_element_d:
     type: legacy_type.builtin:record_mt
     value:
       module_name: box_layout
-      name: open_add_child_element_d
+      name: insert_element_d
+      base: null
+      fields: {}
+  open_add_element_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: box_layout
+      name: open_add_element_d
+      base: null
+      fields: {}
+  open_insert_element_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: box_layout
+      name: open_insert_element_d
       base: null
       fields: {}
   unwrap:

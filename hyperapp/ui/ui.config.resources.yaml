@@ -15,8 +15,8 @@ import:
 - ui.navigator:go_forward.d
 - ui.qt.auto_tabs:close_tab.d
 - ui.qt.auto_tabs:duplicate_tab.d
-- ui.qt.box_layout:add_child_element.commit-d
-- ui.qt.box_layout:add_child_element.open-d
+- ui.qt.box_layout:add_element.commit-d
+- ui.qt.box_layout:add_element.open-d
 - ui.qt.box_layout:unwrap.d
 - ui.qt.label:set_label_text.commit-d
 - ui.qt.label:set_label_text.open-d
@@ -112,12 +112,12 @@ definitions:
   config_item-ui.qt.box_layout-add_child_element.commit-d:
     type: legacy_type.data_service:config_item
     value:
-      key: ui.qt.box_layout:add_child_element.commit-d
+      key: ui.qt.box_layout:add_element.commit-d
       value: shortcut_Return
   config_item-ui.qt.box_layout-add_child_element.open-d:
     type: legacy_type.data_service:config_item
     value:
-      key: ui.qt.box_layout:add_child_element.open-d
+      key: ui.qt.box_layout:add_element.open-d
       value: shortcut_Ins
   config_item-ui.qt.box_layout-unwrap.d:
     type: legacy_type.data_service:config_item
