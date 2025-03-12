@@ -101,6 +101,18 @@ class FeedDiscoverer:
             else:
                 self.ctr = ctr
                 log.info("Feed: Deduced feed type: %s [%s]", self.ctr, item_t)
+        elif isinstance(diff, TreeDiff.Remove):
+            ctr = IndexTreeFeedCtr(
+                module_name=module_name,
+                t=self._piece_t,
+                item_t=None,
+                )
+            if self.ctr:
+                if ctr != self.ctr:
+                    raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and {feed}")
+            else:
+                self.ctr = ctr
+                log.info("Feed: Unknown item type: %s", self.ctr)
         elif self.ctr and isinstance(diff, (
                 TreeDiff.Remove,
                 TreeDiff.Modify,
