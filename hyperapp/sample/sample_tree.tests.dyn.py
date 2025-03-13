@@ -7,7 +7,7 @@ from .tested.code import sample_tree
 
 async def test_remove_item():
     piece = htypes.sample_tree.sample_tree()
-    current_item = htypes.sample_tree.item(100, "Some item")
+    current_item = htypes.sample_tree.item(100, "<unused>")
     await sample_tree.remove_tree_item(piece, current_item)
 
 

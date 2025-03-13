@@ -21,7 +21,7 @@ async def schedule_sample_list_feed(feed_factory, piece):
 
 async def _send_tree_diff(feed):
     log.info("Sending tree diff")
-    item = htypes.sample_tree.item(44, "Sample item #4")
+    item = htypes.sample_tree.item(55, "Sample item #4")
     await feed.send(TreeDiff.Append([], item))
 
 
