@@ -3,6 +3,7 @@ import inspect
 import logging
 import weakref
 from collections import defaultdict
+from enum import Enum
 from functools import partial
 
 from hyperapp.boot.config_item_missing import ConfigItemMissingError
@@ -66,20 +67,20 @@ def resolve_service_fn(system, service_name, fn, fn_params, service_params, args
         system.resolve_service(name)
         for name in service_params
         ]
-    service = fn(*config_args, *service_args, *args, **kw)
+    result = fn(*config_args, *service_args, *args, **kw)
     if inspect.isgeneratorfunction(fn) and not free_params:
-        gen = service
-        service = next(gen)
+        gen = result
+        result = next(gen)
         system.add_finalizer(service_name, partial(service_finalize, fn, gen))
         is_gen = True
     else:
         is_gen = False
     if inspect.isasyncgenfunction(fn):
-        gen = service
+        gen = result
         check_no_running_loop(fn)
-        service = system.run_async_coroutine(anext(gen))
+        result = system.run_async_coroutine(anext(gen))
         system.add_finalizer(service_name, partial(service_async_finalize, system, fn, gen))
-    return (want_config, service_params, free_params, is_gen, service)
+    return (want_config, service_params, free_params, is_gen, result, service_args)
 
 
 class ServiceConfigProbe:
@@ -158,6 +159,10 @@ class ConfigFixture:
 
 class Probe:
 
+    class _Kind(Enum):
+        function = 'function'
+        object = 'object'
+
     def __init__(self, system_probe, service_name, fn, params):
         self._system = system_probe
         self._name = service_name
@@ -165,6 +170,7 @@ class Probe:
         self._params = params
         self._resolved = False
         self._service = None
+        self._service_kind = None 
 
     def apply_if_no_params(self):
         if self._params:
@@ -220,13 +226,21 @@ class Probe:
 
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
-            return self._service
-        want_config, service_params, free_params, is_gen, service = resolve_service_fn(
+            if self._service_kind == self._Kind.object:
+                return self._service
+            else:
+                return self._service(*args, **kw)
+        want_config, service_params, free_params, is_gen, result, service_args = resolve_service_fn(
             self._system, self._name, self._fn, self._params, service_params, args, kw)
-        self._service = service
+        if free_params:
+            self._service = partial(self._fn, *service_args)
+            self._service_kind = self._Kind.function
+        else:
+            self._service = result
+            self._service_kind = self._Kind.object
         self._add_service_constructor(want_config, service_params, is_gen)
         self._resolved = True
-        return service
+        return result
 
     def _apply_obj(self, service_params, *args, **kw):
         service = self._apply(service_params, *args, **kw)
