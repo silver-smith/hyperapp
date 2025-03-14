@@ -257,11 +257,12 @@ class _Item:
         asyncio.create_task(self._send_model_diff(model_diff))
 
     def element_removed_hook(self, idx):
+        kid = self._children[idx]
+        model_diff = TreeDiff.Remove(kid.path)
         del self._children[idx]
         self._current_child_idx = None
         self.children_changed()
         self.save_state()
-        model_diff = TreeDiff.Remove(self.path)
         asyncio.create_task(self._send_model_diff(model_diff))
 
     def elements_changed_hook(self):
