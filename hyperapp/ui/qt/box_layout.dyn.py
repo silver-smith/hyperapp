@@ -95,7 +95,10 @@ class BoxLayoutView(View):
             w = layout.itemAt(idx).widget()
             if w and w.hasFocus():
                 return idx
-        return 0
+        for idx in range(layout.count()):
+            if self._elements[idx].focusable:
+                return idx
+        return None
 
     def widget_state(self, widget):
         layout = widget.layout()
