@@ -25,11 +25,11 @@ import:
 - sample.sample_record:open_sample_fn_record.global-model-command
 - sample.sample_record:sample_record-sample_record.model-cfg-item
 - sample.sample_tree:get_sample_tree_items.service
-- sample.sample_tree:open_feed_sample_fn_tree.global-model-command
 - sample.sample_tree:open_sample_fn_tree.global-model-command
-- sample.sample_tree:sample_tree-feed_sample_tree.feed-template
-- sample.sample_tree:sample_tree-feed_sample_tree.model-cfg-item
+- sample.sample_tree:sample_tree-sample_tree-append_tree_item.command-cfg-item
+- sample.sample_tree:sample_tree-sample_tree-insert_tree_item.command-cfg-item
 - sample.sample_tree:sample_tree-sample_tree-remove_tree_item.command-cfg-item
+- sample.sample_tree:sample_tree-sample_tree.actor-template
 - sample.sample_tree:sample_tree-sample_tree.feed-template
 - sample.sample_tree:sample_tree-sample_tree.model-cfg-item
 - sample.sample_tree:sample_tree_data.service
@@ -58,7 +58,6 @@ definitions:
       - sample.sample_feed:sample_feed-sample_list_feed.feed-template
       - sample.sample_feed:sample_feed-sample_tree_feed.feed-template
       - sample.sample_list:sample_list-feed_sample_list.feed-template
-      - sample.sample_tree:sample_tree-feed_sample_tree.feed-template
       - sample.sample_tree:sample_tree-sample_tree.feed-template
   formatter_creg:
     type: legacy_type.system:item_list_config
@@ -66,6 +65,7 @@ definitions:
       items:
       - sample.sample_list:sample_list-feed_sample_list.actor-template
       - sample.sample_list:sample_list-sample_list.actor-template
+      - sample.sample_tree:sample_tree-sample_tree.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -78,7 +78,6 @@ definitions:
       - sample.sample_list:open_sample_fn_list.global-model-command
       - sample.sample_list_arg:show_sample_list_item.global-model-command
       - sample.sample_record:open_sample_fn_record.global-model-command
-      - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
       - sample.sample_tree:open_sample_fn_tree.global-model-command
   model_command_reg:
     type: legacy_type.system:item_list_config
@@ -87,6 +86,8 @@ definitions:
       - sample.sample_commands:sample_list-sample_list-details.command-cfg-item
       - sample.sample_commands:sample_tree-sample_tree-sample_tree_info.command-cfg-item
       - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
+      - sample.sample_tree:sample_tree-sample_tree-append_tree_item.command-cfg-item
+      - sample.sample_tree:sample_tree-sample_tree-insert_tree_item.command-cfg-item
       - sample.sample_tree:sample_tree-sample_tree-remove_tree_item.command-cfg-item
   selector_reg:
     type: legacy_type.system:item_list_config
@@ -106,5 +107,4 @@ definitions:
       - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
       - sample.sample_list:sample_list-sample_list.model-cfg-item
       - sample.sample_record:sample_record-sample_record.model-cfg-item
-      - sample.sample_tree:sample_tree-feed_sample_tree.model-cfg-item
       - sample.sample_tree:sample_tree-sample_tree.model-cfg-item

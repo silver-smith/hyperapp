@@ -13,20 +13,52 @@ import:
 - legacy_type.feed:index_tree_feed_type
 - legacy_type.model:model
 - legacy_type.model:tree_ui_t
-- legacy_type.sample_tree:feed_sample_tree
 - legacy_type.sample_tree:item
-- legacy_type.sample_tree:open_feed_sample_fn_tree_d
-- legacy_type.sample_tree:open_sample_fn_tree_d
 - legacy_type.sample_tree:sample_tree
+- legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
 definitions:
-  feed_sample_tree:
+  append_tree_item:
     type: legacy_type.builtin:attribute
     value:
       object: sample_tree.module
-      attr_name: feed_sample_tree
+      attr_name: append_tree_item
+  append_tree_item.d:
+    type: append_tree_item_d
+    value: {}
+  append_tree_item.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: append_tree_item
+      ctx_params:
+      - piece
+      - current_item
+      service_params:
+      - feed_factory
+      - get_sample_tree_items
+  append_tree_item.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: append_tree_item.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: append_tree_item.fn
+  append_tree_item_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_tree
+      name: append_tree_item_d
+      base: null
+      fields: {}
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_tree.module
+      attr_name: format_model
   get_sample_tree_items:
     type: legacy_type.builtin:attribute
     value:
@@ -43,36 +75,47 @@ definitions:
       want_config: false
       free_params:
       - parent_id
-  open_feed_sample_fn_tree:
+  insert_tree_item:
     type: legacy_type.builtin:attribute
     value:
       object: sample_tree.module
-      attr_name: open_feed_sample_fn_tree
-  open_feed_sample_fn_tree.d:
-    type: legacy_type.sample_tree:open_feed_sample_fn_tree_d
+      attr_name: insert_tree_item
+  insert_tree_item.d:
+    type: insert_tree_item_d
     value: {}
-  open_feed_sample_fn_tree.fn:
+  insert_tree_item.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: open_feed_sample_fn_tree
-      ctx_params: []
-      service_params: []
-  open_feed_sample_fn_tree.global-model-command:
+      function: insert_tree_item
+      ctx_params:
+      - piece
+      - current_item
+      service_params:
+      - feed_factory
+      - get_sample_tree_items
+  insert_tree_item.model-command:
     type: legacy_type.command:model_command
     value:
-      d: open_feed_sample_fn_tree.d
+      d: insert_tree_item.d
       properties:
-        is_global: true
-        uses_state: false
+        is_global: false
+        uses_state: true
         remotable: true
-      system_fn: open_feed_sample_fn_tree.fn
+      system_fn: insert_tree_item.fn
+  insert_tree_item_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_tree
+      name: insert_tree_item_d
+      base: null
+      fields: {}
   open_sample_fn_tree:
     type: legacy_type.builtin:attribute
     value:
       object: sample_tree.module
       attr_name: open_sample_fn_tree
   open_sample_fn_tree.d:
-    type: legacy_type.sample_tree:open_sample_fn_tree_d
+    type: open_sample_fn_tree_d
     value: {}
   open_sample_fn_tree.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -89,6 +132,13 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_fn_tree.fn
+  open_sample_fn_tree_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_tree
+      name: open_sample_fn_tree_d
+      base: null
+      fields: {}
   remove_tree_item:
     type: legacy_type.builtin:attribute
     value:
@@ -128,43 +178,27 @@ definitions:
     value:
       object: sample_tree.module
       attr_name: sample_tree
-  sample_tree-feed_sample_tree.feed-template:
-    type: legacy_type.feed:feed_template
+  sample_tree-sample_tree-append_tree_item.command-cfg-item:
+    type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.sample_tree:feed_sample_tree
-      feed_type: sample_tree-feed_sample_tree.feed-type
-  sample_tree-feed_sample_tree.feed-type:
-    type: legacy_type.feed:index_tree_feed_type
+      t: legacy_type.sample_tree:sample_tree
+      command: append_tree_item.model-command
+  sample_tree-sample_tree-insert_tree_item.command-cfg-item:
+    type: legacy_type.command:cfg_item
     value:
-      item_t: legacy_type.sample_tree:item
-  sample_tree-feed_sample_tree.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: sample_tree-feed_sample_tree.tree-ui-t
-      system_fn: sample_tree-feed_sample_tree.system-fn
-  sample_tree-feed_sample_tree.model-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.sample_tree:feed_sample_tree
-      value: sample_tree-feed_sample_tree.model
-  sample_tree-feed_sample_tree.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: feed_sample_tree
-      ctx_params:
-      - piece
-      - parent
-      - feed
-      service_params: []
-  sample_tree-feed_sample_tree.tree-ui-t:
-    type: legacy_type.model:tree_ui_t
-    value:
-      item_t: legacy_type.sample_tree:item
+      t: legacy_type.sample_tree:sample_tree
+      command: insert_tree_item.model-command
   sample_tree-sample_tree-remove_tree_item.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.sample_tree:sample_tree
       command: remove_tree_item.model-command
+  sample_tree-sample_tree.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.sample_tree:sample_tree
+      function: format_model
+      service_params: []
   sample_tree-sample_tree.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -205,7 +239,6 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.tree_diff: common.tree_diff:tree_diff.module
-        htypes.sample_tree.feed_sample_tree: legacy_type.sample_tree:feed_sample_tree
         htypes.sample_tree.item: legacy_type.sample_tree:item
         htypes.sample_tree.sample_tree: legacy_type.sample_tree:sample_tree
   sample_tree_data:
