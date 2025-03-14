@@ -8,18 +8,24 @@ from PySide6 import QtCore, QtWidgets
 from . import htypes
 from .code.mark import mark
 from .code.view import View
-from .code.tree_visual_diff import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace
+from .code.tree_visual_diff import (
+    VisualTreeDiffAppend,
+    VisualTreeDiffInsert,
+    VisualTreeDiffReplace,
+    VisualTreeDiffRemove,
+    )
 
 log = logging.getLogger(__name__)
 
 
 class _Model(QtCore.QAbstractItemModel):
 
-    def __init__(self, adapter):
+    def __init__(self, view, adapter):
         super().__init__()
+        self._view = view
         self.adapter = adapter
-        self.adapter.subscribe(self)
         self._id_to_index = {}
+        self.adapter.subscribe(self)
 
     # Qt methods  -------------------------------------------------------------------------------------------------------
 
@@ -33,8 +39,12 @@ class _Model(QtCore.QAbstractItemModel):
 
     def index(self, row, column, parent):
         parent_id = parent.internalId() or 0
-        id = self.adapter.row_id(parent_id, row)
-        return self.createIndex(row, column, id)
+        try:
+            id = self.adapter.row_id(parent_id, row)
+            return self.createIndex(row, column, id)
+        except KeyError as x:
+            log.warning("Exception in _Model.index: %s", x)
+            return QtCore.QModelIndex()
 
     def parent(self, index):
         id = index.internalId() or 0
@@ -69,28 +79,30 @@ class _Model(QtCore.QAbstractItemModel):
 
     def process_diff(self, diff):
         log.info("Tree: process diff: %s", diff)
-        if not isinstance(diff, (VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace)):
+        if not isinstance(diff, (VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace, VisualTreeDiffRemove)):
             raise NotImplementedError(diff)
         if isinstance(diff, VisualTreeDiffAppend):
             row = self.adapter.row_count(diff.parent_id)
         else:
             row = diff.idx
         if diff.parent_id:
-            parent_idx = self.createIndex(row + 1, 0, diff.parent_id)
+            parent_idx = self.createIndex(row, 0, diff.parent_id)
         else:
             parent_idx = QtCore.QModelIndex()
         # VisualTreeDiffReplace: self.dataChanged.emit does not cause qt to recheck rowCount.
-        log.info("Tree: insert rows: %s", parent_idx)
-        if isinstance(diff, VisualTreeDiffReplace):
-            self.beginRemoveRows(parent_idx, 0, 0)
+        log.info("Tree: insert/remove rows: %s", parent_idx)
+        if isinstance(diff, (VisualTreeDiffReplace, VisualTreeDiffRemove)):
+            self.beginRemoveRows(parent_idx, row, row)
             self.endRemoveRows()
         else:
             # When inserting children into items having none, this is required for them to appear:
             self.layoutAboutToBeChanged.emit()
-        self.beginInsertRows(parent_idx, 0, 0)
-        self.endInsertRows()
-        if not isinstance(diff, VisualTreeDiffReplace):
+        if not isinstance(diff, VisualTreeDiffRemove):
+            self.beginInsertRows(parent_idx, row, row)
+            self.endInsertRows()
+        if not isinstance(diff, (VisualTreeDiffReplace, VisualTreeDiffRemove)):
             self.layoutChanged.emit()
+        self._view._ctl_hook.parent_context_changed()
 
 
 class _TreeWidget(QtWidgets.QTreeView):
@@ -178,6 +190,22 @@ class _TreeWidget(QtWidgets.QTreeView):
         asyncio.get_running_loop().call_soon(select)
         return succeeded  # If true, we are fully expanded and selected.
 
+    def rowsAboutToBeRemoved(self, parent, start, end):
+        log.info("Tree widget: rowsAboutToBeRemoved: %s: %s -> %s", parent, start, end)
+        super().rowsAboutToBeRemoved(parent, start, end)
+        idx = self.currentIndex()
+        if idx.parent().internalId() != parent.internalId():
+            return
+        if start <= self.currentIndex().row() <= end:
+            row_count = self.model().rowCount(parent)
+            if row_count == 0:
+                new_idx = parent
+            elif start < row_count:
+                new_idx = self.model().index(start, 0, parent)
+            else:
+                new_idx = self.model().index(start - 1, 0, parent)
+            self.setCurrentIndex(new_idx)
+
 
 class TreeView(View):
 
@@ -202,7 +230,7 @@ class TreeView(View):
         else:
             current_path = None
         widget = _TreeWidget(current_path)
-        model = _Model(self._adapter)
+        model = _Model(self, self._adapter)
         widget.setModel(model)
         widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         widget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)

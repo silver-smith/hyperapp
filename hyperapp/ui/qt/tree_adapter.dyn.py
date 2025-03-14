@@ -7,7 +7,12 @@ from functools import cached_property
 from hyperapp.boot.htypes import tInt, TList, TOptional, TRecord
 
 from .code.tree_diff import TreeDiff
-from .code.tree_visual_diff import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace
+from .code.tree_visual_diff import (
+    VisualTreeDiffAppend,
+    VisualTreeDiffInsert,
+    VisualTreeDiffReplace,
+    VisualTreeDiffRemove,
+    )
 
 log = logging.getLogger(__name__)
 
@@ -39,10 +44,11 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
         return self._model
 
     def row_id(self, parent_id, row):
+        id_list = self._get_id_list(parent_id)
         try:
-            return self._get_id_list(parent_id)[row]
+            return id_list[row]
         except IndexError as x:
-            raise RuntimeError(f"{x}: {parent_id} / {row} : {self._id_to_children_id_list}")
+            raise KeyError(f"{x}: {parent_id} / {row} : {id_list}")
 
     def parent_id(self, id):
         if id == 0:
@@ -59,7 +65,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
     def process_diff(self, diff):
         log.info("Tree adapter: process diff: %s", diff)
-        if not isinstance(diff, (TreeDiff.Append, TreeDiff.Insert, TreeDiff.Replace)):
+        if not isinstance(diff, (TreeDiff.Append, TreeDiff.Insert, TreeDiff.Replace, TreeDiff.Remove)):
             raise NotImplementedError(diff)
         if isinstance(diff, TreeDiff.Append):
             parent_path = diff.path
@@ -72,10 +78,13 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
             self._append_item(parent_id, diff.item)
             return
         item_id_list = self._get_id_list(parent_id)
+        idx = diff.path[-1]
+        if isinstance(diff, TreeDiff.Remove):
+            self._remove_item(parent_id, item_id_list, idx)
+            return
         item_id = next(self._id_counter)
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = diff.item
-        idx = diff.path[-1]
         if isinstance(diff, TreeDiff.Insert):
             item_id_list.insert(idx, item_id)
             visual_diff = VisualTreeDiffInsert(parent_id, idx)
@@ -91,6 +100,14 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_to_item[item_id] = item
         item_id_list.append(item_id)
         visual_diff = VisualTreeDiffAppend(parent_id)
+        self._send_view_diff(visual_diff)
+
+    def _remove_item(self, parent_id, item_id_list, idx):
+        item_id = item_id_list[idx]
+        del item_id_list[idx]
+        # del self._id_to_item[item_id]
+        # del self._id_to_parent_id[item_id]
+        visual_diff = VisualTreeDiffRemove(parent_id, idx)
         self._send_view_diff(visual_diff)
 
     def _send_view_diff(self, visual_diff):
