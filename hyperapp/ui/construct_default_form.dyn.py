@@ -32,7 +32,7 @@ def construct_default_form(record_adapter, record_t):
     stretch = htypes.box_layout.element(
         view=None,
         focusable=False,
-        stretch=0,
+        stretch=1,
         )
     element_list.append(stretch)
     return htypes.form.view(
