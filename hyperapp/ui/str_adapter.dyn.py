@@ -29,3 +29,8 @@ class StaticStrAdapter:
         if new_value == self._text:
             return
         log.debug("Static str adapter: Ignoring new value: %r", new_value)
+
+
+@mark.actor.resource_name_creg
+def static_str_adapter_resource_name(piece, gen):
+    return 'static_str_adapter'
