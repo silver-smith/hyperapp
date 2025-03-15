@@ -17,6 +17,7 @@ import:
 - ui.qt.auto_tabs:duplicate_tab.d
 - ui.qt.box_layout:add_element.commit-d
 - ui.qt.box_layout:add_element.open-d
+- ui.qt.box_layout:add_stretch.d
 - ui.qt.box_layout:insert_element.commit-d
 - ui.qt.box_layout:insert_element.open-d
 - ui.qt.box_layout:remove_element.d
@@ -122,6 +123,11 @@ definitions:
     value:
       key: ui.qt.box_layout:add_element.open-d
       value: shortcut_Ins
+  config_item-ui.qt.box_layout-add_stretch.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.box_layout:add_stretch.d
+      value: shortcut_S
   config_item-ui.qt.box_layout-insert_element.commit-d:
     type: legacy_type.data_service:config_item
     value:
@@ -223,6 +229,9 @@ definitions:
   shortcut_Return:
     type: legacy_type.builtin:string
     value: Return
+  shortcut_S:
+    type: legacy_type.builtin:string
+    value: S
   shortcut_Shift_F4:
     type: legacy_type.builtin:string
     value: Shift+F4
@@ -261,3 +270,4 @@ definitions:
       - config_item-ui.qt.box_layout-insert_element.open-d
       - config_item-ui.qt.box_layout-remove_element.d
       - config_item-ui.qt.box_layout-insert_element.commit-d
+      - config_item-ui.qt.box_layout-add_stretch.d
