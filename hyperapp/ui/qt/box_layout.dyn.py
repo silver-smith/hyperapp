@@ -158,9 +158,17 @@ class BoxLayoutView(View):
 
     def items(self):
         return [
-            Item(f"Item#{idx}", elt.view, focusable=elt.focusable)
+            Item(self._item_desc(elt), elt.view, focusable=elt.focusable)
             for idx, elt in enumerate(self._elements)
             ]
+
+    def _item_desc(self, elt):
+        desc = f"stretch={elt.stretch}"
+        if elt.focusable:
+            desc += ", focusable"
+        if not elt.view:
+            return f"stretch: {desc}"
+        return desc
 
     def item_widget(self, widget, idx):
         layout = widget.layout()
