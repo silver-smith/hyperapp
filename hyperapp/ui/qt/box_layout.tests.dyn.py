@@ -108,6 +108,11 @@ def test_add_element(qapp, ctx, ctl_hook, view, widget, view_factory):
     ctl_hook.element_inserted.assert_called_once()
 
 
+def test_add_stretch(qapp, ctx, ctl_hook, view, widget):
+    box_layout.add_stretch(view, widget, ctx)
+    ctl_hook.element_inserted.assert_called_once()
+
+
 def test_insert_element(qapp, ctx, ctl_hook, view, widget, view_factory):
     element_idx = 0
     box_layout.insert_element(view, widget, element_idx, view_factory, ctx)

@@ -86,11 +86,49 @@ definitions:
       name: add_element_d
       base: null
       fields: {}
+  add_stretch:
+    type: legacy_type.builtin:attribute
+    value:
+      object: box_layout.module
+      attr_name: add_stretch
+  add_stretch.d:
+    type: add_stretch_d
+    value: {}
+  add_stretch.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: add_stretch
+      ctx_params:
+      - view
+      - widget
+      - ctx
+      service_params: []
+  add_stretch.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: add_stretch.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: add_stretch.fn
+  add_stretch_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: box_layout
+      name: add_stretch_d
+      base: null
+      fields: {}
   box_layout-view-add_element.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.box_layout:view
       command: add_element.ui-command
+  box_layout-view-add_stretch.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.box_layout:view
+      command: add_stretch.ui-command
   box_layout-view-insert_element.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

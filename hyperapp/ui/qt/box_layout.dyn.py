@@ -126,6 +126,15 @@ class BoxLayoutView(View):
         idx = len(self._elements)
         self._insert_child(idx, ctx, widget, child_view)
 
+    def add_stretch(self, ctx, widget):
+        log.info("Box layout: add stretch")
+        idx = len(self._elements)
+        elt = self._Element(None, focusable=False, stretch=1)
+        layout = widget.layout()
+        self._elements.insert(idx, elt)
+        layout.addStretch(stretch=elt.stretch)
+        self._ctl_hook.element_inserted(idx)
+
     def insert_child(self, idx, ctx, widget, child_view):
         log.info("Box layout: insert child @ #%d: %s", idx, child_view)
         self._insert_child(idx, ctx, widget, child_view)
@@ -207,6 +216,11 @@ def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
     elt_piece = factory.call(fn_ctx)
     elt_view = view_reg.animate(elt_piece, ctx)
     view.add_child(ctx, widget, elt_view)
+
+
+@mark.ui_command()
+def add_stretch(view, widget, ctx):
+    view.add_stretch(ctx, widget)
 
 
 @mark.ui_command(args=['view_factory'])
