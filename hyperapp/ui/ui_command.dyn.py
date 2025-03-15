@@ -1,6 +1,8 @@
 import logging
 from functools import partial
 
+from hyperapp.boot.htypes import TRecord
+
 from .services import (
     deduce_t,
     web,
@@ -65,14 +67,24 @@ def ui_command_enumerator_from_piece(piece, system_fn_creg):
         )
 
 
+def _commands_with_bases(config, view_t):
+    command_list = []
+    while view_t:
+        command_list += config.get(view_t, [])
+        if not isinstance(view_t, TRecord):
+            break
+        view_t = view_t.base
+    return command_list
+
+
 @mark.service(ctl=DictListConfigCtl())
 def view_ui_command_reg(config, view_t):
-    return config.get(view_t, [])
+    return _commands_with_bases(config, view_t)
 
 
 @mark.service(ctl=DictListConfigCtl())
 def view_element_ui_command_reg(config, view_t):
-    return config.get(view_t, [])
+    return _commands_with_bases(config, view_t)
 
 
 # UI commands returning model.

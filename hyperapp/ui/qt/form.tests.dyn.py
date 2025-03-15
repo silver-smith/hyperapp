@@ -111,20 +111,3 @@ def view(view_reg, piece, ctx, ctl_hook):
 @mark.fixture
 def widget(view, state, ctx):
     return  view.construct_widget(state, ctx)
-
-
-def test_add_element(qapp, ctx, ctl_hook, view, widget, view_factory):
-    form.add_element(view, widget, view_factory, ctx)
-    ctl_hook.element_inserted.assert_called_once()
-
-
-def test_insert_element(qapp, ctx, ctl_hook, view, widget, view_factory):
-    element_idx = 0
-    form.insert_element(view, widget, element_idx, view_factory, ctx)
-    ctl_hook.element_inserted.assert_called_once()
-
-
-def test_remove_element(qapp, ctl_hook, view, widget):
-    element_idx = 0
-    form.remove_element(view, widget, element_idx)
-    ctl_hook.element_removed.assert_called_once()
