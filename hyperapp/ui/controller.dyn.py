@@ -70,9 +70,10 @@ class _Item:
     def children(self):
         if self._children is None:
             self._children = []
-            for rec in self.view.items():
-                item = self._make_child_item(rec)
-                self._children.append(item)
+            if self.view:
+                for rec in self.view.items():
+                    item = self._make_child_item(rec)
+                    self._children.append(item)
         return self._children
 
     def pick_child(self, path):
@@ -87,7 +88,8 @@ class _Item:
         item_id = next(self._meta.counter)
         ctx = self.view.children_context(self.ctx)
         item = _Item(self._meta, item_id, self, ctx, rec.name, rec.view, rec.focusable)
-        item.view.set_controller_hook(item.hook)
+        if item.view:
+            item.view.set_controller_hook(item.hook)
         self._meta.id_to_item[item_id] = item
         return item
 
@@ -142,11 +144,14 @@ class _Item:
                 continue
             rctx = await kid.update_other_children(rctx)
             kid.view_commands, _unused_rctx = kid.my_reverse_context(rctx)
-            await kid.view.children_changed(kid.ctx, rctx, kid.widget)
-            rctx = kid.view.secondary_parent_context(rctx, kid.widget)
+            if kid.view:
+                await kid.view.children_changed(kid.ctx, rctx, kid.widget)
+                rctx = kid.view.secondary_parent_context(rctx, kid.widget)
         return rctx
 
     def my_reverse_context(self, rctx):
+        if not self.view:
+            return ([], rctx)
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self.command_context(my_rctx)
         unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.ctx.lcs, self.view)
@@ -202,6 +207,8 @@ class _Item:
         return self.parent.navigator_rec(rctx)
 
     def update_context(self):
+        if not self.view:
+            return
         ctx = self.view.children_context(self.ctx)
         for kid in self.children:
             kid.ctx = ctx
@@ -289,7 +296,11 @@ class _Item:
 
     @property
     def model_item(self):
-        return htypes.layout.item(self.id, self.name, self.focusable, _description(self.view.piece))
+        if self.view:
+            desc = _description(self.view.piece)
+        else:
+            desc = '-'
+        return htypes.layout.item(self.id, self.name, self.focusable, desc)
 
 
 @dataclass(repr=False)

@@ -160,7 +160,6 @@ class BoxLayoutView(View):
         return [
             Item(f"Item#{idx}", elt.view, focusable=elt.focusable)
             for idx, elt in enumerate(self._elements)
-            if elt.view is not None
             ]
 
     def item_widget(self, widget, idx):
