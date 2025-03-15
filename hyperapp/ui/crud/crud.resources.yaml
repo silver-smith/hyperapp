@@ -142,6 +142,7 @@ definitions:
       - visualizer
       - view_reg
       - selector_reg
+      - model_layout_reg
       want_config: false
       free_params: []
   crud_commit_command_enum:

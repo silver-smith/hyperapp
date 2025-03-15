@@ -44,10 +44,10 @@ class CrudContextView(ContextView):
     def from_piece(cls, piece, ctx, system_fn_creg, view_reg, model_layout_reg, crud):
         base_view = view_reg.invite(piece.base_view, ctx)
         model = web.summon_opt(piece.model)
-        command_d = web.summon(piece.commit_command_d)
+        commit_command_d = web.summon(piece.commit_command_d)
         return cls(
             system_fn_creg, model_layout_reg, crud, base_view, piece.label, model,
-            command_d, _args_tuple_to_dict(piece.args), piece.pick_fn, piece.commit_fn, piece.commit_value_field)
+            commit_command_d, _args_tuple_to_dict(piece.args), piece.pick_fn, piece.commit_fn, piece.commit_value_field)
 
     def __init__(
             self, system_fn_creg, model_layout_reg, crud, base_view, label, model,
@@ -83,9 +83,7 @@ class CrudContextView(ContextView):
             self._set_layout(layout)
 
     def _set_layout(self, layout):
-        layout_k = htypes.crud.layout_k(
-            commit_command_d=mosaic.put(self._commit_command_d),
-            )
+        layout_k = self._crud.layout_k(self._commit_command_d)
         log.info("CRUD context view: set new layout: %s -> %s", layout_k, layout)
         self._model_layout_reg[layout_k] = layout
         self._current_layout = self._base_view.piece
@@ -111,17 +109,17 @@ class CrudOpenFn:
             value_t=pyobj_creg.invite(piece.value_t),
             key_fields=piece.key_fields,
             init_action_fn=system_fn_creg.invite(piece.init_action_fn),
-            commit_command_d_ref=piece.commit_command_d,
+            commit_command_d=web.summon(piece.commit_command_d),
             commit_action_fn_ref=piece.commit_action_fn,
             )
 
-    def __init__(self, crud, name, value_t, key_fields, init_action_fn, commit_command_d_ref, commit_action_fn_ref):
+    def __init__(self, crud, name, value_t, key_fields, init_action_fn, commit_command_d, commit_action_fn_ref):
         self._crud = crud
         self._name = name
         self._value_t = value_t
         self._key_fields = key_fields
         self._init_action_fn = init_action_fn
-        self._commit_command_d_ref = commit_command_d_ref
+        self._commit_command_d = commit_command_d
         self._commit_action_fn_ref = commit_action_fn_ref
 
     def __repr__(self):
@@ -151,7 +149,7 @@ class CrudOpenFn:
             value_t=self._value_t,
             label=self._name,
             init_action_fn=self._init_action_fn,
-            commit_command_d_ref=self._commit_command_d_ref,
+            commit_command_d=self._commit_command_d,
             commit_action_fn_ref=self._commit_action_fn_ref,
             commit_value_field='value',
             model=model,
@@ -186,12 +184,13 @@ class CrudRecordAdapter(FnRecordAdapterBase):
 
 class Crud:
 
-    def __init__(self, canned_ctl_item_factory, system_fn_creg, visualizer, view_reg, selector_reg):
+    def __init__(self, canned_ctl_item_factory, system_fn_creg, visualizer, view_reg, selector_reg, model_layout_reg):
         self._canned_ctl_item_factory = canned_ctl_item_factory
         self._system_fn_creg = system_fn_creg
         self._visualizer = visualizer
         self._view_reg = view_reg
         self._selector_reg = selector_reg
+        self._model_layout_reg = model_layout_reg
 
     def fn_ctx(self, ctx, model, args, **kw):
         if args is None:
@@ -210,6 +209,11 @@ class Crud:
             **kw,
             )
 
+    def layout_k(self, commit_command_d):
+        return htypes.crud.layout_k(
+            commit_command_d=mosaic.put(commit_command_d),
+            )
+
     def open_view(
             self,
             navigator_rec,
@@ -217,7 +221,7 @@ class Crud:
             value_t,
             label,
             init_action_fn,
-            commit_command_d_ref,
+            commit_command_d,
             commit_action_fn_ref,
             commit_value_field,
             model,
@@ -240,15 +244,21 @@ class Crud:
             new_model = selector_model
         else:
             assert init_action_fn  # Init action fn may be omitted only for selectors.
+            layout_k = self.layout_k(commit_command_d)
+            try:
+                base_view_piece = self._model_layout_reg[layout_k]
+            except KeyError:
+                if isinstance(value_t, TPrimitive):
+                    base_view_piece = self._primitive_view(value_t)
+                else:
+                    base_view_piece = self._form_view(value_t)
             if isinstance(value_t, TPrimitive):
-                base_view_piece = self._primitive_view(value_t)
                 new_model = self._run_init(ctx, init_action_fn, model, init_args)
             else:
-                base_view_piece = self._form_view(value_t)
                 new_model = htypes.crud.form_model(
                     model=mosaic.put(model),
                     record_t=pyobj_creg.actor_to_ref(value_t),
-                    commit_command_d=commit_command_d_ref,
+                    commit_command_d=mosaic.put(commit_command_d),
                     init_fn=mosaic.put(init_action_fn.piece),
                     args=_args_dict_to_tuple(commit_args),
                     )
@@ -256,7 +266,7 @@ class Crud:
             base_view=mosaic.put(base_view_piece),
             label=label,
             model=mosaic.put(model),
-            commit_command_d=commit_command_d_ref,
+            commit_command_d=mosaic.put(commit_command_d),
             args=_args_dict_to_tuple(commit_args),
             pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
             commit_fn=commit_action_fn_ref,
@@ -302,8 +312,8 @@ class Crud:
 
 
 @mark.service
-def crud(canned_ctl_item_factory, system_fn_creg, visualizer, view_reg, selector_reg):
-    return Crud(canned_ctl_item_factory, system_fn_creg, visualizer, view_reg, selector_reg)
+def crud(canned_ctl_item_factory, system_fn_creg, visualizer, view_reg, selector_reg, model_layout_reg):
+    return Crud(canned_ctl_item_factory, system_fn_creg, visualizer, view_reg, selector_reg, model_layout_reg)
 
 
 class UnboundCrudCommitCommand(UnboundCommandBase):

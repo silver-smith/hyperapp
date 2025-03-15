@@ -76,7 +76,7 @@ class ArgsPickerFn:
             value_t=value_t,
             label=f"{value_field} for: {self._name}",
             init_action_fn=self._system_fn_creg.animate(get_default_fn),
-            commit_command_d_ref=mosaic.put(self._commit_command_d),
+            commit_command_d=self._commit_command_d,
             commit_action_fn_ref=self._commit_fn_ref,
             commit_value_field=value_field,
             model=None,

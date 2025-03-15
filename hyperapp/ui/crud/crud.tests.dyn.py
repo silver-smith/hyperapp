@@ -123,13 +123,18 @@ def model():
 
 
 @mark.fixture
-def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, item_id, pick_fn):
+def commit_command_d():
+    return htypes.crud_tests.save_d()
+
+
+@mark.fixture
+def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, commit_command_d, item_id, pick_fn):
     base_view_piece = htypes.label.view("Sample label")
     return htypes.crud.view(
         base_view=mosaic.put(base_view_piece),
         label="Sample CRUD context",
         model=mosaic.put(model),
-        commit_command_d=mosaic.put(htypes.crud_tests.save_d()),
+        commit_command_d=mosaic.put(commit_command_d),
         args=(htypes.crud.arg('id', mosaic.put(item_id)),),
         pick_fn=mosaic.put_opt(pick_fn),
         commit_fn=mosaic.put(_sample_crud_update_fn),
@@ -138,12 +143,17 @@ def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, item_id, 
 
 
 @mark.fixture.obj
-def model_layout_reg():
+def model_layout_reg(commit_command_d):
     def getitem(self, layout_k):
         def k(t):
             return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
         if layout_k == k(htypes.crud_tests.sample_selector_model):
             return htypes.crud_tests.selector_view()
+        commit_command_layout_k = htypes.crud.layout_k(
+            commit_command_d=mosaic.put(commit_command_d),
+            )
+        if layout_k == commit_command_layout_k:
+            raise KeyError(layout_k)
         raise RuntimeError(f"Mock model_layout_reg: __getitem__ with {layout_k} was not expected")
     reg = MagicMock()
     reg.__getitem__ = getitem
@@ -168,13 +178,13 @@ async def test_context_view(view_reg, model_layout_reg, qapp, ctx, view_piece_ct
     assert isinstance(model_layout_reg.__setitem__.call_args.args[0], htypes.crud.layout_k)
 
 
-def test_record_adapter(_sample_crud_get_fn, ctx, model):
+def test_record_adapter(_sample_crud_get_fn, ctx, model, commit_command_d):
     value_t = htypes.crud_tests.sample_record
     item_id = 11
     form_model = htypes.crud.form_model(
         model=mosaic.put(model),
         record_t=pyobj_creg.actor_to_ref(value_t),
-        commit_command_d=mosaic.put(htypes.crud_tests.save_d()),
+        commit_command_d=mosaic.put(commit_command_d),
         init_fn=mosaic.put(_sample_crud_get_fn),
         args=(htypes.crud.arg('id', mosaic.put(item_id)),),
         )
@@ -187,13 +197,13 @@ def test_record_adapter(_sample_crud_get_fn, ctx, model):
 
 
 @mark.fixture
-def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_crud_update_fn, value_t, item_id):
+def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_crud_update_fn, commit_command_d, value_t, item_id):
     piece = htypes.crud.open_command_fn(
         name='edit',
         value_t=pyobj_creg.actor_to_ref(value_t),
         key_fields=('id',),
         init_action_fn=mosaic.put(_sample_crud_get_fn),
-        commit_command_d=mosaic.put(htypes.crud_tests.save_d()),
+        commit_command_d=mosaic.put(commit_command_d),
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
         )
     fn = crud.CrudOpenFn.from_piece(piece)
