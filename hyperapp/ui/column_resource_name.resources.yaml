@@ -8,12 +8,6 @@ import:
 - legacy_type.column:column_k
 - legacy_type.system:actor_template
 definitions:
-  column-column_k.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.column:column_k
-      function: column_k_resource_name
-      service_params: []
   column_k_resource_name:
     type: legacy_type.builtin:attribute
     value:
@@ -27,3 +21,9 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         services.pyobj_creg: builtins:pyobj_creg.service
+  resource_name_creg-column-column_k.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.column:column_k
+      function: column_k_resource_name
+      service_params: []

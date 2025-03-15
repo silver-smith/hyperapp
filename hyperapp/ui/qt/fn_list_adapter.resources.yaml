@@ -37,16 +37,6 @@ definitions:
         htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-  list_adapter-fn_list_adapter.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.list_adapter:fn_list_adapter
-      function: FnListAdapter.from_piece
-      service_params:
-      - system_fn_creg
-      - rpc_call_factory
-      - feed_factory
-      - column_visible_reg
   list_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -83,7 +73,17 @@ definitions:
       name: list_ui_type_layout_k
       base: null
       fields: {}
-  model-list_ui_t.actor-template:
+  ui_adapter_creg-list_adapter-fn_list_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.list_adapter:fn_list_adapter
+      function: FnListAdapter.from_piece
+      service_params:
+      - system_fn_creg
+      - rpc_call_factory
+      - feed_factory
+      - column_visible_reg
+  ui_type_creg-model-list_ui_t.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.model:list_ui_t

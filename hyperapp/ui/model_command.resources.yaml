@@ -17,14 +17,14 @@ import:
 - ui.command_enumerator:command_enumerator.module
 - ui.list_config_ctl:list_config_ctl.module
 definitions:
-  command-model_command.actor-template:
+  command_creg-command-model_command.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:model_command
       function: model_command_from_piece
       service_params:
       - system_fn_creg
-  command-model_command_enumerator.actor-template:
+  command_creg-command-model_command_enumerator.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:model_command_enumerator

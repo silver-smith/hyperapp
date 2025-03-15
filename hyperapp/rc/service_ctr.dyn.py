@@ -11,7 +11,7 @@ from .code.service_req import ServiceReq
 class CoreServiceTemplateCtr(Constructor):
 
     @classmethod
-    def from_template_piece(cls, piece):
+    def from_template_piece(cls, piece, service_name):
         return cls(piece.name)
 
     def __init__(self, name):

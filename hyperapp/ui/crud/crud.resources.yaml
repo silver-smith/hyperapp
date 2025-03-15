@@ -78,23 +78,6 @@ definitions:
     value:
       object: crud.module
       attr_name: crud
-  crud-open_command_fn.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.crud:open_command_fn
-      function: CrudOpenFn.from_piece
-      service_params:
-      - system_fn_creg
-      - crud
-  crud-record_adapter.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.crud:record_adapter
-      function: CrudRecordAdapter.from_piece
-      service_params:
-      - system_fn_creg
-      - feed_factory
-      - crud
   crud-view-crud_commit_command_enum.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -168,3 +151,20 @@ definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
+  system_fn_creg-crud-open_command_fn.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.crud:open_command_fn
+      function: CrudOpenFn.from_piece
+      service_params:
+      - system_fn_creg
+      - crud
+  ui_adapter_creg-crud-record_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.crud:record_adapter
+      function: CrudRecordAdapter.from_piece
+      service_params:
+      - system_fn_creg
+      - feed_factory
+      - crud

@@ -8,12 +8,6 @@ import:
 - legacy_type.column:column_k
 - legacy_type.system:actor_template
 definitions:
-  column-column_k.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.column:column_k
-      function: format_column
-      service_params: []
   column_format.module:
     type: legacy_type.builtin:python_module
     value:
@@ -27,3 +21,9 @@ definitions:
     value:
       object: column_format.module
       attr_name: format_column
+  formatter_creg-column-column_k.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.column:column_k
+      function: format_column
+      service_params: []

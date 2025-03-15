@@ -34,13 +34,12 @@ definitions:
         htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-  model-tree_ui_t.actor-template:
-    type: legacy_type.system:actor_template
+  tree_ui_type_layout:
+    type: legacy_type.builtin:attribute
     value:
-      t: legacy_type.model:tree_ui_t
-      function: tree_ui_type_layout
-      service_params: []
-  tree_adapter-fn_index_tree_adapter.actor-template:
+      object: fn_index_tree_adapter.module
+      attr_name: tree_ui_type_layout
+  ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.tree_adapter:fn_index_tree_adapter
@@ -49,8 +48,9 @@ definitions:
       - system_fn_creg
       - feed_factory
       - rpc_call_factory
-  tree_ui_type_layout:
-    type: legacy_type.builtin:attribute
+  ui_type_creg-model-tree_ui_t.actor-template:
+    type: legacy_type.system:actor_template
     value:
-      object: fn_index_tree_adapter.module
-      attr_name: tree_ui_type_layout
+      t: legacy_type.model:tree_ui_t
+      function: tree_ui_type_layout
+      service_params: []

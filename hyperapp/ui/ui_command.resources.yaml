@@ -19,14 +19,14 @@ import:
 - ui.list_config_ctl:list_config_ctl.module
 - ui.ui_model_command:ui_model_command.module
 definitions:
-  command-ui_command.actor-template:
+  command_creg-command-ui_command.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:ui_command
       function: ui_command_from_piece
       service_params:
       - system_fn_creg
-  command-ui_command_enumerator.actor-template:
+  command_creg-command-ui_command_enumerator.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:ui_command_enumerator

@@ -12,18 +12,6 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
-  feed-index_tree_feed_type.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.feed:index_tree_feed_type
-      function: index_tree_feed_from_piece
-      service_params: []
-  feed-list_feed_type.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.feed:list_feed_type
-      function: list_feed_from_piece
-      service_params: []
   feed.module:
     type: legacy_type.builtin:python_module
     value:
@@ -50,6 +38,18 @@ definitions:
       want_config: true
       free_params:
       - piece
+  feed_type_creg-feed-index_tree_feed_type.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.feed:index_tree_feed_type
+      function: index_tree_feed_from_piece
+      service_params: []
+  feed_type_creg-feed-list_feed_type.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.feed:list_feed_type
+      function: list_feed_from_piece
+      service_params: []
   index_tree_feed_from_piece:
     type: legacy_type.builtin:attribute
     value:

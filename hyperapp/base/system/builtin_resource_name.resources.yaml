@@ -24,7 +24,7 @@ definitions:
       object: builtin_resource_name.module
       attr_name: bool_name
 
-  builtin-bool.actor-template:
+  resource_name_creg-builtin-bool.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.builtin:bool
@@ -37,7 +37,7 @@ definitions:
       object: builtin_resource_name.module
       attr_name: string_name
 
-  builtin-string.actor-template:
+  resource_name_creg-builtin-string.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.builtin:string
@@ -50,7 +50,7 @@ definitions:
       object: builtin_resource_name.module
       attr_name: record_mt_name
 
-  builtin-record_mt.actor-template:
+  resource_name_creg-builtin-record_mt.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.builtin:record_mt
@@ -63,7 +63,7 @@ definitions:
       object: builtin_resource_name.module
       attr_name: call_name
 
-  builtin-call.actor-template:
+  resource_name_creg-builtin-call.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.builtin:call

@@ -37,12 +37,6 @@ definitions:
     value:
       t: legacy_type.config_item_list:model
       command: open_config_key.model-command
-  config_item_list-model.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.config_item_list:model
-      function: format_model
-      service_params: []
   config_item_list-model.crud.get_layer.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -145,6 +139,12 @@ definitions:
     value:
       object: config_item_list.module
       attr_name: format_model
+  formatter_creg-config_item_list-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.config_item_list:model
+      function: format_model
+      service_params: []
   move_d:
     type: legacy_type.builtin:record_mt
     value:

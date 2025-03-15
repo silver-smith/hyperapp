@@ -30,19 +30,19 @@ definitions:
     value:
       object: UntypedCommandCfgItem
       attr_name: from_piece
-  command-cfg_item.actor-template:
+  cfg_item_creg-command-cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:cfg_item
       function: TypedCommandCfgItem.from_piece
       service_params: []
-  command-model_command.actor-template:
+  cfg_item_creg-command-model_command.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:model_command
       function: UntypedCommandCfgItem.from_piece
       service_params: []
-  command-ui_command.actor-template:
+  cfg_item_creg-command-ui_command.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:ui_command

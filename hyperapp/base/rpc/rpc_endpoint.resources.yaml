@@ -104,7 +104,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_response
 
-  rpc-response.actor-template:
+  rpc_message_creg-rpc-response.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:response
@@ -118,7 +118,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_error_response
 
-  rpc-error_response.actor-template:
+  rpc_message_creg-rpc-error_response.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:error_response
@@ -148,7 +148,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_request
 
-  rpc-request.actor-template:
+  rpc_message_creg-rpc-request.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:request
@@ -165,7 +165,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: run_function_target
 
-  rpc-function_target.actor-template:
+  rpc_target_creg-rpc-function_target.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:function_target
@@ -178,7 +178,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: run_service_target
 
-  rpc-service_target.actor-template:
+  rpc_target_creg-rpc-service_target.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:service_target

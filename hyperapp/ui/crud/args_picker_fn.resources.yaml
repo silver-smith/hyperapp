@@ -30,7 +30,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  command-args_picker_command_fn.actor-template:
+  system_fn_creg-command-args_picker_command_fn.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:args_picker_command_fn

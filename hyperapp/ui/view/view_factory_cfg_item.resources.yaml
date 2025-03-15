@@ -31,13 +31,13 @@ definitions:
     value:
       object: ViewFactoryTemplate
       attr_name: from_piece
-  view_factory-multi_template.actor-template:
+  cfg_item_creg-view_factory-multi_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.view_factory:multi_template
       function: ViewFactoryMultiTemplate.from_piece
       service_params: []
-  view_factory-template.actor-template:
+  cfg_item_creg-view_factory-template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.view_factory:template

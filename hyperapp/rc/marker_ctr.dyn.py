@@ -4,7 +4,7 @@ from .code.rc_constructor import Constructor
 class MarkerCtr(Constructor):
 
     @classmethod
-    def from_template_piece(cls, piece):
+    def from_template_piece(cls, piece, service_name):
         return cls(piece.name)
 
     def __init__(self, name):

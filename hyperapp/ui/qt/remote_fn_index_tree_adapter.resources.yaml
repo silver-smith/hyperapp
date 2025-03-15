@@ -29,7 +29,7 @@ definitions:
         code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
         htypes.tree_adapter.remote_fn_index_tree_adapter: legacy_type.tree_adapter:remote_fn_index_tree_adapter
         services.pyobj_creg: builtins:pyobj_creg.service
-  tree_adapter-remote_fn_index_tree_adapter.actor-template:
+  ui_adapter_creg-tree_adapter-remote_fn_index_tree_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.tree_adapter:remote_fn_index_tree_adapter

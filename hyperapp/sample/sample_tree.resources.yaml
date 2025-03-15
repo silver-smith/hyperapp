@@ -59,6 +59,12 @@ definitions:
     value:
       object: sample_tree.module
       attr_name: format_model
+  formatter_creg-sample_tree-sample_tree.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.sample_tree:sample_tree
+      function: format_model
+      service_params: []
   get_sample_tree_items:
     type: legacy_type.builtin:attribute
     value:
@@ -193,12 +199,6 @@ definitions:
     value:
       t: legacy_type.sample_tree:sample_tree
       command: remove_tree_item.model-command
-  sample_tree-sample_tree.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.sample_tree:sample_tree
-      function: format_model
-      service_params: []
   sample_tree-sample_tree.feed-template:
     type: legacy_type.feed:feed_template
     value:

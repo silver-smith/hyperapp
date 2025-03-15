@@ -40,7 +40,7 @@ def add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templa
                 assert isinstance(key, Type)
                 key = f'{key.module_name}-{key.name}'
             item_piece = ctl.item_piece(value)  # Expecting only MultiItemConfigCtl ctl instances.
-            ctr = ctr_from_template_creg.animate(item_piece)
+            ctr = ctr_from_template_creg.animate(item_piece, service_name)
             module_name, var_name = project.reverse_resolve(item_piece)
             resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
             assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)

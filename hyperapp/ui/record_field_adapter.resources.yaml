@@ -18,13 +18,6 @@ definitions:
     value:
       object: RecordFieldAdapter
       attr_name: from_piece
-  record_field_adapter-record_field_adapter.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.record_field_adapter:record_field_adapter
-      function: RecordFieldAdapter.from_piece
-      service_params:
-      - ui_adapter_creg
   record_field_adapter.module:
     type: legacy_type.builtin:python_module
     value:
@@ -33,3 +26,10 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         services.pyobj_creg: builtins:pyobj_creg.service
+  ui_adapter_creg-record_field_adapter-record_field_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.record_field_adapter:record_field_adapter
+      function: RecordFieldAdapter.from_piece
+      service_params:
+      - ui_adapter_creg

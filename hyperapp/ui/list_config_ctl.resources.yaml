@@ -29,14 +29,14 @@ definitions:
     value:
       object: FlatListConfigCtl
       attr_name: from_piece
-  list_config_ctl-dict_list_config_ctl.actor-template:
+  config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.list_config_ctl:dict_list_config_ctl
       function: DictListConfigCtl.from_piece
       service_params:
       - cfg_item_creg
-  list_config_ctl-flat_list_config_ctl.actor-template:
+  config_ctl_creg-list_config_ctl-flat_list_config_ctl.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.list_config_ctl:flat_list_config_ctl

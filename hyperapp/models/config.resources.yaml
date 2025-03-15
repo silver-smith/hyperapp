@@ -13,10 +13,10 @@ import:
 - models.command_list_model:model_commands-model-set_shortcut.command-cfg-item
 - models.command_list_model:model_commands-model.edit.command-cfg-item
 - models.config.config_item_list:config_item_list-model-open_config_key.command-cfg-item
-- models.config.config_item_list:config_item_list-model.actor-template
 - models.config.config_item_list:config_item_list-model.model-cfg-item
 - models.config.config_item_list:config_item_list-model.open_move.command-cfg-item
 - models.config.config_item_list:config_service_list-model-open_config_item_list.command-cfg-item
+- models.config.config_item_list:formatter_creg-config_item_list-model.actor-template
 - models.config.config_layer_list:config_layer_list-layer.selector-template
 - models.config.config_layer_list:config_layer_list-model.model-cfg-item
 - models.config.config_layer_list:open_config_layer_list.global-model-command
@@ -36,7 +36,7 @@ import:
 - models.global_commands:global_commands-model-run_command.command-cfg-item
 - models.global_commands:global_commands-model.model-cfg-item
 - models.global_commands:open_global_commands.global-model-command
-- models.identity_command:identity_command-identity_command.actor-template
+- models.identity_command:command_creg-identity_command-identity_command.actor-template
 - models.identity_command:model_commands-model-add_identity_command.command-cfg-item
 - models.identity_command:model_commands-model.feed-template
 - models.model_commands:model_commands-model-run_command.command-cfg-item
@@ -49,7 +49,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - models.identity_command:identity_command-identity_command.actor-template
+      - models.identity_command:command_creg-identity_command-identity_command.actor-template
   config:
     type: legacy_type.system:system_config
     value:
@@ -73,7 +73,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - models.config.config_item_list:config_item_list-model.actor-template
+      - models.config.config_item_list:formatter_creg-config_item_list-model.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:

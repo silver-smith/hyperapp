@@ -21,7 +21,7 @@ definitions:
     value:
       object: SelectorTemplate
       attr_name: from_piece
-  selector-template.actor-template:
+  cfg_item_creg-selector-template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.selector:template

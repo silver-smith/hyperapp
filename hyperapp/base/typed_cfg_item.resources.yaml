@@ -34,7 +34,7 @@ definitions:
       object: TypedCfgItem
       attr_name: from_piece
 
-  cfg_item-typed_cfg_item.actor-template:
+  cfg_item_creg-cfg_item-typed_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.cfg_item:typed_cfg_item
@@ -53,7 +53,7 @@ definitions:
       object: TypedFnCfgItem
       attr_name: from_piece
 
-  cfg_item-typed_fn_cfg_item.actor-template:
+  cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.cfg_item:typed_fn_cfg_item

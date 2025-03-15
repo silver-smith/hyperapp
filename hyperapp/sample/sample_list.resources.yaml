@@ -34,6 +34,18 @@ definitions:
     value:
       object: sample_list.module
       attr_name: format_model
+  formatter_creg-sample_list-feed_sample_list.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.sample_list:feed_sample_list
+      function: format_feed_model
+      service_params: []
+  formatter_creg-sample_list-sample_list.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.sample_list:sample_list
+      function: format_model
+      service_params: []
   open_feed_sample_fn_list:
     type: legacy_type.builtin:attribute
     value:
@@ -85,12 +97,6 @@ definitions:
     value:
       object: sample_list.module
       attr_name: sample_list
-  sample_list-feed_sample_list.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.sample_list:feed_sample_list
-      function: format_feed_model
-      service_params: []
   sample_list-feed_sample_list.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -121,12 +127,6 @@ definitions:
       ctx_params:
       - piece
       - feed
-      service_params: []
-  sample_list-sample_list.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.sample_list:sample_list
-      function: format_model
       service_params: []
   sample_list-sample_list.list-ui-t:
     type: legacy_type.model:list_ui_t

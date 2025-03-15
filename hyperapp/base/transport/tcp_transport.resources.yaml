@@ -117,7 +117,7 @@ definitions:
         htypes.tcp_transport.route: legacy_type.tcp_transport:route
         services.mosaic: builtins:mosaic.service
         services.unbundler: builtins:unbundler.service
-  tcp_transport-route.actor-template:
+  route_registry-tcp_transport-route.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.tcp_transport:route

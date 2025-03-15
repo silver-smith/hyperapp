@@ -18,7 +18,7 @@ definitions:
     value:
       object: FeedTypeTemplate
       attr_name: from_piece
-  feed-feed_template.actor-template:
+  cfg_item_creg-feed-feed_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.feed:feed_template

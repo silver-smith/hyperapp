@@ -64,22 +64,28 @@ class ActorProbeCtr(Constructor):
 
 class ActorTemplateCtrBase(Constructor):
 
-    def __init__(self, t):
+    def __init__(self, service_name, t):
+        self._service_name = service_name
         self._t = t
 
     def get_component(self, name_to_res):
         return name_to_res[f'{self._resource_name}.actor-template']
 
     @property
-    def _resource_name(self):
+    def _type_name(self):
         return f'{self._t.module_name}-{self._t.name}'
+
+    @property
+    def _resource_name(self):
+        return f'{self._service_name}-{self._type_name}'
 
 
 class CoreActorTemplateCtr(ActorTemplateCtrBase):
 
     @classmethod
-    def from_template_piece(cls, piece):
+    def from_template_piece(cls, piece, service_name):
         return cls(
+            service_name=service_name,
             t=pyobj_creg.invite(piece.t),
             )
 
@@ -98,10 +104,9 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
             )
 
     def __init__(self, module_name, attr_qual_name, service_name, t, creg_params, service_params):
-        super().__init__(t)
+        super().__init__(service_name, t)
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
-        self._service_name = service_name
         self._creg_params = creg_params
         self._service_params = service_params
 
@@ -121,7 +126,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
         # Ready target may already have provider set, but when marker is non-typed it have not.
         req = CfgItemReq(self._service_name, self._t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
-            self._service_name, self._resource_name, req,
+            self._service_name, self._type_name, req,
             provider=resource_tgt,
             ctr=self,
             )
