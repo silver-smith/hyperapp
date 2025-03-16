@@ -1,7 +1,12 @@
+peer = record:
+  name: string
+  peer: ref
+
 bundle = record:
-  peer_list: ref list
+  peer_list: peer list
 
 model = record
 
 item = record:
+  name: string
   repr: string

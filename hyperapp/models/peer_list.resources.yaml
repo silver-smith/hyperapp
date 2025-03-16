@@ -16,6 +16,7 @@ import:
 - legacy_type.peer_list:bundle
 - legacy_type.peer_list:item
 - legacy_type.peer_list:model
+- legacy_type.peer_list:peer
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
@@ -106,6 +107,7 @@ definitions:
         htypes.peer_list.bundle: legacy_type.peer_list:bundle
         htypes.peer_list.item: legacy_type.peer_list:item
         htypes.peer_list.model: legacy_type.peer_list:model
+        htypes.peer_list.peer: legacy_type.peer_list:peer
         services.mosaic: builtins:mosaic.service
   peer_list_add:
     type: legacy_type.builtin:attribute

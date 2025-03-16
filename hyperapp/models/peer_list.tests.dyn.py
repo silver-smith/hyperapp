@@ -19,7 +19,12 @@ def file_bundle_factory(generate_rsa_identity, path):
     mock = Mock()
     if 'peer_list' in str(path):
         mock.load_piece.return_value = htypes.peer_list.bundle(
-            peer_list=[mosaic.put(identity.peer.piece)],
+            peer_list=(
+                htypes.peer_list.peer(
+                    name="Sample peer",
+                    peer=mosaic.put(identity.peer.piece),
+                    ),
+                ),
             )
     elif 'server/peer' in str(path):
         mock.load_piece.return_value = identity.peer.piece
