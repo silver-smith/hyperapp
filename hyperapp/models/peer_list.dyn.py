@@ -6,6 +6,7 @@ from pathlib import Path
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     )
 from .code.mark import mark
 
@@ -70,14 +71,15 @@ def peer_list_model(piece, peer_list_reg):
     return [
         htypes.peer_list.item(
             name=rec.name,
-            repr=repr(rec.peer),
+            peer=mosaic.put(rec.peer.piece),
+            peer_repr=repr(rec.peer),
             )
         for rec in peer_list_reg.values()
         ]
 
 
 @mark.command(args=['host'])
-def peer_list_add(piece, host, peer_list_reg, file_bundle_factory, peer_registry):
+def add(piece, host, peer_list_reg, file_bundle_factory, peer_registry):
     log.info("Peer list: Add host: %r", host)
     if host in {'', 'localhost'}:
         path = Path.home() / server_bundle_path
@@ -85,6 +87,13 @@ def peer_list_add(piece, host, peer_list_reg, file_bundle_factory, peer_registry
         peer = peer_registry.animate(peer_bundle.load_piece())
         log.info("Loaded local server peer from: %s", peer_bundle.path)
         peer_list_reg.add('localhost', peer)
+
+
+@mark.command(args=['model'])
+def open_model(piece, current_item, model, peer_registry):
+    model_t = pyobj_creg.invite(model.model_t)
+    peer = peer_registry.invite(current_item.peer)
+    log.info("Peer list: Open model %s @ %s (%s)", model_t, current_item.name, repr(peer))
 
 
 @mark.global_command

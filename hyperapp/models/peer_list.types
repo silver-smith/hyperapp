@@ -9,4 +9,5 @@ model = record
 
 item = record:
   name: string
-  repr: string
+  peer: ref
+  peer_repr: string

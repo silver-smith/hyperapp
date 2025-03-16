@@ -48,7 +48,8 @@ import:
 - models.model_list:open_model_list.global-model-command
 - models.peer_list:formatter_creg-peer_list-model.actor-template
 - models.peer_list:open_peer_list.global-model-command
-- models.peer_list:peer_list-model-peer_list_add.command-cfg-item
+- models.peer_list:peer_list-model-add.command-cfg-item
+- models.peer_list:peer_list-model-open_model.command-cfg-item
 - models.peer_list:peer_list-model.model-cfg-item
 - models.peer_list:peer_list_reg.service
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
@@ -118,7 +119,8 @@ definitions:
       - models.global_commands:global_commands-model-run_command.command-cfg-item
       - models.identity_command:model_commands-model-add_identity_command.command-cfg-item
       - models.model_commands:model_commands-model-run_command.command-cfg-item
-      - models.peer_list:peer_list-model-peer_list_add.command-cfg-item
+      - models.peer_list:peer_list-model-add.command-cfg-item
+      - models.peer_list:peer_list-model-open_model.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
   model_reg:
     type: legacy_type.system:item_list_config

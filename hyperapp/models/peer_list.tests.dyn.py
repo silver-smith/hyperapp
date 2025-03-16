@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     )
 from .tested.code import peer_list
 from .code.mark import mark
@@ -40,7 +41,20 @@ def test_model(piece):
 
 def test_add(piece):
     host = 'localhost'
-    peer_list.peer_list_add(piece, host)
+    peer_list.add(piece, host)
+
+
+def test_open_model(generate_rsa_identity, piece):
+    identity = generate_rsa_identity(fast=True)
+    current_item = htypes.peer_list.item(
+        name="Sample peer",
+        peer=mosaic.put(identity.peer.piece),
+        peer_repr="<unused>",
+        )
+    model = htypes.model_list.model_arg(
+        model_t=pyobj_creg.actor_to_ref(htypes.peer_list_tests.sample_model),
+        )
+    peer_list.open_model(piece, current_item, model)
 
 
 def test_open():
