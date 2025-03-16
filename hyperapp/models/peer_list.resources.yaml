@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
@@ -12,6 +13,7 @@ import:
 - legacy_type.command:model_command
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
+- legacy_type.peer_list:bundle
 - legacy_type.peer_list:item
 - legacy_type.peer_list:model
 - legacy_type.system:actor_template
@@ -101,8 +103,10 @@ definitions:
       file_name: peer_list.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        htypes.peer_list.bundle: legacy_type.peer_list:bundle
         htypes.peer_list.item: legacy_type.peer_list:item
         htypes.peer_list.model: legacy_type.peer_list:model
+        services.mosaic: builtins:mosaic.service
   peer_list_add:
     type: legacy_type.builtin:attribute
     value:
@@ -118,7 +122,10 @@ definitions:
       ctx_params:
       - piece
       - host
-      service_params: []
+      service_params:
+      - peer_list_reg
+      - file_bundle_factory
+      - peer_registry
   peer_list_add.model-command:
     type: legacy_type.command:model_command
     value:

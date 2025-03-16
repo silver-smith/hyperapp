@@ -17,10 +17,14 @@ def piece():
 def file_bundle_factory(generate_rsa_identity, path):
     identity = generate_rsa_identity(fast=True)
     mock = Mock()
-    bundle = htypes.peer_list.bundle(
-        peer_list=[mosaic.put(identity.peer.piece)],
-        )
-    mock.load_piece.return_value = bundle
+    if 'peer_list' in str(path):
+        mock.load_piece.return_value = htypes.peer_list.bundle(
+            peer_list=[mosaic.put(identity.peer.piece)],
+            )
+    elif 'server/peer' in str(path):
+        mock.load_piece.return_value = identity.peer.piece
+    else:
+        assert False, f"Unexpected path: {path!r}"
     return mock
 
 
