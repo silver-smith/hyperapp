@@ -3,6 +3,7 @@
 import:
 - base.mark:mark.module
 - builtins:mosaic.service
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
@@ -12,6 +13,7 @@ import:
 - legacy_type.line_edit:readonly_view
 - legacy_type.line_edit:state
 - legacy_type.str_adapter:static_str_adapter
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:template
 - ui.view.view:view.module
@@ -87,6 +89,7 @@ definitions:
         htypes.line_edit.state: legacy_type.line_edit:state
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   line_edit.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -115,6 +118,11 @@ definitions:
       name: line_edit_k
       base: null
       fields: {}
+  line_edit_resource_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: line_edit.module
+      attr_name: line_edit_resource_name
   line_view:
     type: legacy_type.builtin:attribute
     value:
@@ -151,3 +159,20 @@ definitions:
       name: line_view_k
       base: null
       fields: {}
+  line_view_resource_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: line_edit.module
+      attr_name: line_view_resource_name
+  resource_name_creg-line_edit-edit_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.line_edit:edit_view
+      function: line_edit_resource_name
+      service_params: []
+  resource_name_creg-line_edit-readonly_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.line_edit:readonly_view
+      function: line_view_resource_name
+      service_params: []

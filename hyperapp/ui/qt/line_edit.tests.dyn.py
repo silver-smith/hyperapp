@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -62,3 +64,17 @@ def test_view_factory():
     model = "Sample text"
     piece = line_edit.line_view(model, adapter=None)
     assert piece
+
+
+def test_line_edit_resource_name(edit_piece):
+    gen = Mock()
+    gen.assigned_name.return_value = 'some-adapter'
+    name = line_edit.line_edit_resource_name(edit_piece, gen)
+    assert type(name) is str
+
+
+def test_line_view_resource_name(view_piece):
+    gen = Mock()
+    gen.assigned_name.return_value = 'some-adapter'
+    name = line_edit.line_view_resource_name(view_piece, gen)
+    assert type(name) is str

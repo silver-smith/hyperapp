@@ -6,6 +6,7 @@ from PySide6 import QtWidgets
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code.mark import mark
 from .code.view import View
@@ -110,3 +111,17 @@ def line_view(piece, adapter=None):
     return htypes.line_edit.readonly_view(
         adapter=mosaic.put(adapter),
         )
+
+
+@mark.actor.resource_name_creg
+def line_edit_resource_name(piece, gen):
+    adapter = web.summon(piece.adapter)
+    adapter_name = gen.assigned_name(adapter)
+    return f'line_edit-{adapter_name}'
+
+
+@mark.actor.resource_name_creg
+def line_view_resource_name(piece, gen):
+    adapter = web.summon(piece.adapter)
+    adapter_name = gen.assigned_name(adapter)
+    return f'line_view-{adapter_name}'

@@ -78,6 +78,8 @@ import:
 - ui.qt.line_edit:line_edit-readonly_view.view-template
 - ui.qt.line_edit:line_edit.view-factory-template
 - ui.qt.line_edit:line_view.view-factory-template
+- ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-template
+- ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
 - ui.qt.list:list-view.view-template
 - ui.qt.menu_bar:menu_bar-view.view-template
 - ui.qt.remote_fn_index_tree_adapter:ui_adapter_creg-tree_adapter-remote_fn_index_tree_adapter.actor-template
@@ -237,6 +239,8 @@ definitions:
     value:
       items:
       - ui.column_resource_name:resource_name_creg-column-column_k.actor-template
+      - ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-template
+      - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
       - ui.str_adapter:resource_name_creg-str_adapter-static_str_adapter.actor-template
   selector_reg:
     type: legacy_type.system:item_list_config
