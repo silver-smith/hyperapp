@@ -1,10 +1,14 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_type.box_layout:view
 - legacy_type.builtin:bool
 - legacy_type.builtin:string
 - legacy_type.column:column_k
+- legacy_type.crud:layout_k
 - legacy_type.data_service:config_item
+- legacy_type.line_edit:edit_view
+- legacy_type.str_adapter:static_str_adapter
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.view_factory_list:model
@@ -35,6 +39,17 @@ definitions:
   bool-false:
     type: legacy_type.builtin:bool
     value: false
+  box_layout_view_1:
+    type: legacy_type.box_layout:view
+    value:
+      direction: TopToBottom
+      elements:
+      - view: line_edit-static_str_adapter
+        focusable: true
+        stretch: 1
+      - view: null
+        focusable: false
+        stretch: 1
   column_k-view_factory_list.model-k:
     type: legacy_type.column:column_k
     value:
@@ -63,6 +78,7 @@ definitions:
       services:
         shortcut_reg: shortcut_reg.config
         column_visible_reg: column_visible_reg.config
+        model_layout_reg: model_layout_reg.config
   config_item-column_k-view_factory_list.model-k:
     type: legacy_type.data_service:config_item
     value:
@@ -78,6 +94,11 @@ definitions:
     value:
       key: column_k-view_factory_list.model-view_t
       value: bool-false
+  config_item-crud-layout_k-ui.qt.label-set_label_text:
+    type: legacy_type.data_service:config_item
+    value:
+      key: crud-layout_k-ui.qt.label-set_label_text
+      value: box_layout_view_1
   config_item-ui.layout-open_layout_tree.d:
     type: legacy_type.data_service:config_item
     value:
@@ -193,6 +214,19 @@ definitions:
     value:
       key: ui.view.wrap_view:wrap_view.open-d
       value: shortcut_W
+  crud-layout_k-ui.qt.label-set_label_text:
+    type: legacy_type.crud:layout_k
+    value:
+      commit_command_d: ui.qt.label:set_label_text.commit-d
+  line_edit-static_str_adapter:
+    type: legacy_type.line_edit:edit_view
+    value:
+      adapter: static_str_adapter
+  model_layout_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-crud-layout_k-ui.qt.label-set_label_text
   shortcut_Alt_F:
     type: legacy_type.builtin:string
     value: Alt+F
@@ -271,3 +305,6 @@ definitions:
       - config_item-ui.qt.box_layout-remove_element.d
       - config_item-ui.qt.box_layout-insert_element.commit-d
       - config_item-ui.qt.box_layout-add_stretch.d
+  static_str_adapter:
+    type: legacy_type.str_adapter:static_str_adapter
+    value: {}
