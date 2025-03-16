@@ -398,3 +398,11 @@ def crud_commit_command_enum(view, lcs, system_fn_creg, view_reg, visualizer):
     model_command = view.unbound_commit_command
     ui_command = wrap_model_command_to_ui_command(view_reg, visualizer, lcs, model_command)
     return [ui_command]
+
+
+@mark.actor.resource_name_creg
+def layout_k_resource_name(piece, gen):
+    command = web.summon(piece.commit_command_d)
+    command_name = gen.assigned_name(command)
+    command_stem = command_name.removesuffix('.commit-d').replace(':', '-')
+    return f'crud-layout_k-{command_stem}'

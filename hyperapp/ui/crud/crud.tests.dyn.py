@@ -288,3 +288,13 @@ async def test_command_enum_for_selector(view_reg, lcs, ctx, _sample_selector_pi
     bound_cmd = unbound_cmd.bind(command_ctx)
     assert bound_cmd.enabled
     await bound_cmd.run()
+
+
+def test_layout_k_resource_name(commit_command_d):
+    gen = Mock()
+    gen.assigned_name.return_value = 'some_command'
+    layout_k = htypes.crud.layout_k(
+        commit_command_d=mosaic.put(commit_command_d),
+        )
+    name = crud.layout_k_resource_name(layout_k, gen)
+    assert type(name) is str

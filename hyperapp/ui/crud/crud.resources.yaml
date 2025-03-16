@@ -148,6 +148,17 @@ definitions:
     type: legacy_type.command:ui_command_enumerator
     value:
       system_fn: crud_commit_command_enum.fn
+  layout_k_resource_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud.module
+      attr_name: layout_k_resource_name
+  resource_name_creg-crud-layout_k.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.crud:layout_k
+      function: layout_k_resource_name
+      service_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
