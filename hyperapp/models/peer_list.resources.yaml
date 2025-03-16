@@ -1,0 +1,114 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:model_command
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.peer_list:item
+- legacy_type.peer_list:model
+- legacy_type.system:actor_template
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
+- legacy_type.system_fn:ctx_fn
+definitions:
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: peer_list.module
+      attr_name: format_model
+  formatter_creg-peer_list-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.peer_list:model
+      function: format_model
+      service_params: []
+  open_peer_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: peer_list.module
+      attr_name: open_peer_list
+  open_peer_list.d:
+    type: open_peer_list_d
+    value: {}
+  open_peer_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_peer_list
+      ctx_params: []
+      service_params: []
+  open_peer_list.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_peer_list.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_peer_list.fn
+  open_peer_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: peer_list
+      name: open_peer_list_d
+      base: null
+      fields: {}
+  peer_list-model.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.peer_list:item
+  peer_list-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: peer_list-model.list-ui-t
+      system_fn: peer_list-model.system-fn
+  peer_list-model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.peer_list:model
+      value: peer_list-model.model
+  peer_list-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: peer_list_model
+      ctx_params:
+      - piece
+      service_params:
+      - peer_list_reg
+  peer_list.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: peer_list
+      file_name: peer_list.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.peer_list.item: legacy_type.peer_list:item
+        htypes.peer_list.model: legacy_type.peer_list:model
+  peer_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: peer_list.module
+      attr_name: peer_list_model
+  peer_list_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: peer_list.module
+      attr_name: peer_list_reg
+  peer_list_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: peer_list_reg
+      ctl: system-dict_config_ctl.ctl
+      function: peer_list_reg
+      service_params:
+      - file_bundle
+      - peer_registry
+      want_config: false
+      free_params: []
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}

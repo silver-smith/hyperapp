@@ -42,6 +42,10 @@ import:
 - models.model_commands:model_commands-model-run_command.command-cfg-item
 - models.model_commands:model_commands-model.model-cfg-item
 - models.model_commands:open_model_commands.global-model-command
+- models.peer_list:formatter_creg-peer_list-model.actor-template
+- models.peer_list:open_peer_list.global-model-command
+- models.peer_list:peer_list-model.model-cfg-item
+- models.peer_list:peer_list_reg.service
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 definitions:
@@ -60,6 +64,7 @@ definitions:
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
         selector_reg: selector_reg
+        system: system
         view_ui_model_command_reg: view_ui_model_command_reg
         visualizer_reg: visualizer_reg
   feed_factory:
@@ -74,6 +79,7 @@ definitions:
     value:
       items:
       - models.config.config_item_list:formatter_creg-config_item_list-model.actor-template
+      - models.peer_list:formatter_creg-peer_list-model.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -84,6 +90,7 @@ definitions:
       - models.file_bundles:open_file_bundle_list.global-model-command
       - models.global_commands:open_global_commands.global-model-command
       - models.model_commands:open_model_commands.global-model-command
+      - models.peer_list:open_peer_list.global-model-command
       - models.show_current_context:show_current_context.global-model-command
   model_command_reg:
     type: legacy_type.system:item_list_config
@@ -110,6 +117,11 @@ definitions:
     value:
       items:
       - models.config.config_layer_list:config_layer_list-layer.selector-template
+  system:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.peer_list:peer_list_reg.service
   view_ui_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -130,3 +142,4 @@ definitions:
       - models.file_bundles:file_bundles-view.model-cfg-item
       - models.global_commands:global_commands-model.model-cfg-item
       - models.model_commands:model_commands-model.model-cfg-item
+      - models.peer_list:peer_list-model.model-cfg-item

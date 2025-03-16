@@ -1,0 +1,7 @@
+bundle = record:
+  peer_list: ref list
+
+model = record
+
+item = record:
+  repr: string
