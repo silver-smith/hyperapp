@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:pyobj_creg.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -12,6 +13,8 @@ import:
 - legacy_type.model:model
 - legacy_type.model_list:item
 - legacy_type.model_list:model
+- legacy_type.model_list:model_arg
+- legacy_type.selector:template
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
@@ -48,6 +51,27 @@ definitions:
       - piece
       service_params:
       - model_reg
+  model_list-model_arg.selector-template:
+    type: legacy_type.selector:template
+    value:
+      value_t: legacy_type.model_list:model_arg
+      get_fn: model_list-model_arg.selector.get.system-fn
+      pick_fn: model_list-model_arg.selector.pick.system-fn
+  model_list-model_arg.selector.get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: model_list_get
+      ctx_params:
+      - value
+      service_params: []
+  model_list-model_arg.selector.pick.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: model_list_pick
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   model_list.module:
     type: legacy_type.builtin:python_module
     value:
@@ -57,12 +81,24 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.model_list.item: legacy_type.model_list:item
         htypes.model_list.model: legacy_type.model_list:model
+        htypes.model_list.model_arg: legacy_type.model_list:model_arg
+        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+  model_list_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_list.module
+      attr_name: model_list_get
   model_list_model:
     type: legacy_type.builtin:attribute
     value:
       object: model_list.module
       attr_name: model_list_model
+  model_list_pick:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_list.module
+      attr_name: model_list_pick
   open_model_list:
     type: legacy_type.builtin:attribute
     value:

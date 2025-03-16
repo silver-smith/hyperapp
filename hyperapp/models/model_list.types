@@ -1,6 +1,10 @@
 model = record
 
 item = record:
-  model_t: string
+  model_t: ref
+  model_t_name: string
   ui_t: string
   fn: string
+
+model_arg = record:
+  model_t: ref
