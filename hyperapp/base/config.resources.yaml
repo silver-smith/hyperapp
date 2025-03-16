@@ -4,7 +4,7 @@ import:
 - base.bundler:bundler.service
 - base.data_to_pyobj:data_to_pyobj.service
 - base.data_to_pyobj:data_to_pyobj_ref.service
-- base.file_bundle:file_bundle.service
+- base.file_bundle:file_bundle_factory.service
 - base.mark:marker_ctl.service
 - base.partial_ref:partial_ref.service
 - base.ref_picker:pick_refs.service
@@ -139,7 +139,7 @@ definitions:
       - base.bundler:bundler.service
       - base.data_to_pyobj:data_to_pyobj.service
       - base.data_to_pyobj:data_to_pyobj_ref.service
-      - base.file_bundle:file_bundle.service
+      - base.file_bundle:file_bundle_factory.service
       - base.mark:marker_ctl.service
       - base.partial_ref:partial_ref.service
       - base.ref_picker:pick_refs.service

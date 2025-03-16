@@ -27,7 +27,7 @@ definitions:
       function: local_server_peer
       service_params:
       - peer_registry
-      - file_bundle
+      - file_bundle_factory
       - local_server_peer_path
       want_config: false
       free_params: []

@@ -50,8 +50,8 @@ class CacheEntry:
             
 class JobCache:
 
-    def __init__(self, file_bundle, rc_requirement_creg, rc_resource_creg, rc_job_result_creg, path, load):
-        self._file_bundle_factory = file_bundle
+    def __init__(self, file_bundle_factory, rc_requirement_creg, rc_resource_creg, rc_job_result_creg, path, load):
+        self._file_bundle_factory = file_bundle_factory
         self._rc_requirement_creg = rc_requirement_creg
         self._rc_resource_creg = rc_resource_creg
         self._rc_job_result_creg = rc_job_result_creg

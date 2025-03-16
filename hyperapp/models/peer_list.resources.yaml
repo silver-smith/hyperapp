@@ -163,7 +163,7 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: peer_list_reg
       service_params:
-      - file_bundle
+      - file_bundle_factory
       - peer_registry
       want_config: false
       free_params: []

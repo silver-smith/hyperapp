@@ -5,7 +5,7 @@ import pstats
 from pathlib import Path
 
 path = Path.home() / '.local/share/hyperapp/rc-job-cache.cdr'
-b = file_bundle(path, 'cdr')
+b = file_bundle_factory(path, 'cdr')
 print('bundle:', b)
 
 print("Load - profiling")

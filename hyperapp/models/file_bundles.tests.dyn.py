@@ -25,7 +25,7 @@ class MockBundle:
 
         
 @mark.fixture
-def file_bundle(path, encoding):
+def file_bundle_factory(path, encoding):
     return MockBundle()
 
 

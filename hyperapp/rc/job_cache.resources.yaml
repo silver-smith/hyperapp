@@ -39,7 +39,7 @@ definitions:
       - path
       - load
       service_params:
-      - file_bundle
+      - file_bundle_factory
       - rc_requirement_creg
       - rc_resource_creg
       - rc_job_result_creg

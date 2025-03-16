@@ -73,7 +73,7 @@ definitions:
       - piece
       - current_item
       service_params:
-      - file_bundle
+      - file_bundle_factory
   open.model-command:
     type: legacy_type.command:model_command
     value:

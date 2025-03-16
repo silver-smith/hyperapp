@@ -23,18 +23,18 @@ definitions:
     type: legacy_type.system:dict_config_ctl
     value: {}
 
-  file_bundle:
+  file_bundle_factory:
     type: legacy_type.builtin:attribute
     value:
       object: file_bundle.module
-      attr_name: file_bundle
+      attr_name: file_bundle_factory
 
-  file_bundle.service:
+  file_bundle_factory.service:
     type: legacy_type.system:service_template
     value:
-      name: file_bundle
+      name: file_bundle_factory
       ctl: item-dict-config.ctl
-      function: file_bundle
+      function: file_bundle_factory
       free_params:
       - path
       - encoding

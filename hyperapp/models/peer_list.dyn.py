@@ -29,8 +29,8 @@ class PeerList:
 
 
 @mark.service
-def peer_list_reg(file_bundle, peer_registry):
-    bundle = file_bundle(peer_list_path)
+def peer_list_reg(file_bundle_factory, peer_registry):
+    bundle = file_bundle_factory(peer_list_path)
     return PeerList(bundle, peer_registry, peer_list_path)
 
     

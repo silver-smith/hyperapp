@@ -14,7 +14,7 @@ def piece():
 
 
 @mark.fixture
-def file_bundle(generate_rsa_identity, path):
+def file_bundle_factory(generate_rsa_identity, path):
     identity = generate_rsa_identity(fast=True)
     mock = Mock()
     bundle = htypes.peer_list.bundle(

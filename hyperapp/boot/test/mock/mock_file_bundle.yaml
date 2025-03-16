@@ -1,2 +1,2 @@
 provide:
-  - file_bundle
+  - file_bundle_factory

@@ -116,7 +116,7 @@ async def client_async_main(
         endpoint_registry,
         generate_rsa_identity,
         rpc_endpoint,
-        file_bundle,
+        file_bundle_factory,
         lcs_resource_storage_factory,
         visualizer,
         controller_running,
@@ -137,7 +137,7 @@ async def client_async_main(
         rpc_endpoint=rpc_endpoint,
         )
     default_layout = make_default_layout(visualizer, ctx)
-    layout_bundle = file_bundle(args.layout_path)
+    layout_bundle = file_bundle_factory(args.layout_path)
 
     async with controller_running(layout_bundle, default_layout, ctx, show=not args.test_mode, load_state=not args.clean) as ctl:
         if not args.test_mode:

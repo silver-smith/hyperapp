@@ -49,5 +49,5 @@ class FileBundle:
 
 
 @mark.service
-def file_bundle(bundler, path, encoding=DEFAULT_ENCODING):
+def file_bundle_factory(bundler, path, encoding=DEFAULT_ENCODING):
     return FileBundle(bundler, path, encoding)

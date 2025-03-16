@@ -83,7 +83,7 @@ definitions:
       - endpoint_registry
       - generate_rsa_identity
       - rpc_endpoint
-      - file_bundle
+      - file_bundle_factory
       - lcs_resource_storage_factory
       - visualizer
       - controller_running

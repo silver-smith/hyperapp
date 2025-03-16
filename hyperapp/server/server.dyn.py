@@ -30,7 +30,7 @@ def server_main(
         generate_rsa_identity,
         endpoint_registry,
         rpc_endpoint,
-        file_bundle,
+        file_bundle_factory,
         tcp_server_factory,
         name_to_project,
         sys_argv,
@@ -39,7 +39,7 @@ def server_main(
 
     register_reconstructors()
 
-    identity_bundle = file_bundle(args.identity_path)
+    identity_bundle = file_bundle_factory(args.identity_path)
     try:
         server_identity = identity_registry.animate(identity_bundle.load_piece())
         log.info("Server identity: loaded from: %s", identity_bundle.path)
@@ -55,7 +55,7 @@ def server_main(
     log.info("Tcp route: %r", server.route)
     route_table.add_route(server_peer_ref, server.route)
 
-    peer_bundle = file_bundle(Path.home() / '.local/share/hyperapp/server/peer.json')
+    peer_bundle = file_bundle_factory(Path.home() / '.local/share/hyperapp/server/peer.json')
     peer_bundle.save_piece(server_identity.peer.piece)
     log.info("Server peer: saved to: %s", peer_bundle.path)
 

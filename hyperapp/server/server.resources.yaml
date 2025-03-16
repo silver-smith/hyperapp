@@ -36,7 +36,7 @@ definitions:
       - generate_rsa_identity
       - endpoint_registry
       - rpc_endpoint
-      - file_bundle
+      - file_bundle_factory
       - tcp_server_factory
       want_config: false
       free_params:

@@ -14,8 +14,8 @@ def local_server_peer_path():
 
 
 @mark.service
-def local_server_peer(peer_registry, file_bundle, local_server_peer_path):
-    peer_bundle = file_bundle(local_server_peer_path)
+def local_server_peer(peer_registry, file_bundle_factory, local_server_peer_path):
+    peer_bundle = file_bundle_factory(local_server_peer_path)
     try:
         server_peer = peer_registry.animate(peer_bundle.load_piece())
         log.info("Server peer: loaded from: %s", peer_bundle.path)
