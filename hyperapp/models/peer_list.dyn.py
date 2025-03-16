@@ -1,7 +1,10 @@
+import logging
 from pathlib import Path
 
 from . import htypes
 from .code.mark import mark
+
+log = logging.getLogger(__name__)
 
 
 peer_list_path = Path.home() / '.local/share/hyperapp/client/peer_list.yaml'
@@ -39,6 +42,13 @@ def peer_list_model(piece, peer_list_reg):
             )
         for peer in peer_list_reg.values()
         ]
+
+
+@mark.command(args=['host'])
+def peer_list_add(piece, host):
+    log.info("Peer list: Add host: %r", host)
+    if host in {'', 'localhost'}:
+        pass
 
 
 @mark.global_command

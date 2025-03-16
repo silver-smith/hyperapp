@@ -5,7 +5,10 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:args_picker_command_fn
+- legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
@@ -50,6 +53,13 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_peer_list.fn
+  open_peer_list_add_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: peer_list
+      name: open_peer_list_add_d
+      base: null
+      fields: {}
   open_peer_list_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -57,6 +67,11 @@ definitions:
       name: open_peer_list_d
       base: null
       fields: {}
+  peer_list-model-peer_list_add.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.peer_list:model
+      command: peer_list_add.model-command
   peer_list-model.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -88,6 +103,49 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.peer_list.item: legacy_type.peer_list:item
         htypes.peer_list.model: legacy_type.peer_list:model
+  peer_list_add:
+    type: legacy_type.builtin:attribute
+    value:
+      object: peer_list.module
+      attr_name: peer_list_add
+  peer_list_add.commit-d:
+    type: peer_list_add_d
+    value: {}
+  peer_list_add.commit-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: peer_list_add
+      ctx_params:
+      - piece
+      - host
+      service_params: []
+  peer_list_add.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: peer_list_add.open-d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: peer_list_add.open-fn
+  peer_list_add.open-d:
+    type: open_peer_list_add_d
+    value: {}
+  peer_list_add.open-fn:
+    type: legacy_type.command:args_picker_command_fn
+    value:
+      name: peer_list_add
+      args:
+        host: legacy_type.builtin:string
+      commit_command_d: peer_list_add.commit-d
+      commit_fn: peer_list_add.commit-fn
+  peer_list_add_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: peer_list
+      name: peer_list_add_d
+      base: null
+      fields: {}
   peer_list_model:
     type: legacy_type.builtin:attribute
     value:

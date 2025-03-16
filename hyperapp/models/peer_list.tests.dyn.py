@@ -9,7 +9,7 @@ from .code.mark import mark
 
 
 @mark.fixture
-def model():
+def piece():
     return htypes.peer_list.model()
 
 
@@ -24,16 +24,21 @@ def file_bundle(generate_rsa_identity, path):
     return mock
 
 
-def test_model(model):
-    item_list = peer_list.peer_list_model(model)
+def test_model(piece):
+    item_list = peer_list.peer_list_model(piece)
     assert type(item_list) is list
 
 
+def test_add(piece):
+    host = 'localhost'
+    peer_list.peer_list_add(piece, host)
+
+
 def test_open():
-    model = peer_list.open_peer_list()
-    assert model
+    piece = peer_list.open_peer_list()
+    assert piece
 
 
-def test_format_model(model):
-    title = peer_list.format_model(model)
+def test_format_model(piece):
+    title = peer_list.format_model(piece)
     assert type(title) is str
