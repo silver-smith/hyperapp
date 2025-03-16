@@ -135,6 +135,7 @@ import:
 - ui.view.view_factory_list:view_factory_list-model.model-cfg-item
 - ui.view.view_registry:view_reg.service
 - ui.view.wrap_view:wrap_view.universal-ui-command
+- ui.visualizer:model_reg.service
 - ui.visualizer:ui_type_creg.service
 - ui.visualizer:visualizer.service
 - ui.visualizer:visualizer_reg.service
@@ -172,6 +173,7 @@ definitions:
         global_model_command_reg: global_model_command_reg
         model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
+        model_reg: model_reg
         resource_name_creg: resource_name_creg
         selector_reg: selector_reg
         system: system
@@ -185,7 +187,6 @@ definitions:
         view_reg: view_reg
         view_ui_command_reg: view_ui_command_reg
         view_ui_model_command_reg: view_ui_model_command_reg
-        visualizer_reg: visualizer_reg
   config_ctl_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -235,6 +236,13 @@ definitions:
       - ui.layout:layout-command_list-set_escape_shortcut.command-cfg-item
       - ui.layout:layout-command_list-set_shortcut.command-cfg-item
       - ui.layout:layout-view-open_view_item_commands.command-cfg-item
+  model_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.layout:layout-command_list.model-cfg-item
+      - ui.layout:layout-view.model-cfg-item
+      - ui.view.view_factory_list:view_factory_list-model.model-cfg-item
   resource_name_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -288,6 +296,7 @@ definitions:
       - ui.ui_model_command:ui_model_command_items.service
       - ui.view.view_factory:view_factory_reg.service
       - ui.view.view_registry:view_reg.service
+      - ui.visualizer:model_reg.service
       - ui.visualizer:ui_type_creg.service
       - ui.visualizer:visualizer.service
       - ui.visualizer:visualizer_reg.service
@@ -391,10 +400,3 @@ definitions:
     value:
       items:
       - ui.qt.tabs:tabs-view-open_tab_list.command-cfg-item
-  visualizer_reg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - ui.layout:layout-command_list.model-cfg-item
-      - ui.layout:layout-view.model-cfg-item
-      - ui.view.view_factory_list:view_factory_list-model.model-cfg-item

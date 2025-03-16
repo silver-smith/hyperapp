@@ -106,8 +106,8 @@ def test_view_factory_list(ctx, factory, piece):
     assert items == [factory.item]
 
 
-@mark.config_fixture('visualizer_reg')
-def visualizer_config():
+@mark.config_fixture('model_reg')
+def model_reg_config():
     ui_t = htypes.view_factory_list_tests.sample_ui_t()
     return {
         htypes.view_factory_list_tests.sample_model_2: htypes.model.model(

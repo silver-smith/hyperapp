@@ -64,10 +64,10 @@ definitions:
         formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
+        model_reg: model_reg
         selector_reg: selector_reg
         system: system
         view_ui_model_command_reg: view_ui_model_command_reg
-        visualizer_reg: visualizer_reg
   feed_factory:
     type: legacy_type.system:item_list_config
     value:
@@ -114,22 +114,7 @@ definitions:
       - models.model_commands:model_commands-model-run_command.command-cfg-item
       - models.peer_list:peer_list-model-peer_list_add.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
-  selector_reg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - models.config.config_layer_list:config_layer_list-layer.selector-template
-  system:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - models.peer_list:peer_list_reg.service
-  view_ui_model_command_reg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - models.column_list:list-view-open_column_list.command-cfg-item
-  visualizer_reg:
+  model_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
@@ -145,3 +130,18 @@ definitions:
       - models.global_commands:global_commands-model.model-cfg-item
       - models.model_commands:model_commands-model.model-cfg-item
       - models.peer_list:peer_list-model.model-cfg-item
+  selector_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.config.config_layer_list:config_layer_list-layer.selector-template
+  system:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.peer_list:peer_list_reg.service
+  view_ui_model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.column_list:list-view-open_column_list.command-cfg-item

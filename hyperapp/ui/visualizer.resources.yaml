@@ -15,6 +15,20 @@ import:
 - legacy_type.system:service_template
 - legacy_type.ui:model_layout_k
 definitions:
+  model_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer.module
+      attr_name: model_reg
+  model_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: model_reg
+      ctl: system-dict_config_ctl.ctl
+      function: model_reg
+      service_params: []
+      want_config: true
+      free_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
@@ -77,7 +91,8 @@ definitions:
       name: visualizer_reg
       ctl: system-dict_config_ctl.ctl
       function: visualizer_reg
-      service_params: []
-      want_config: true
+      service_params:
+      - model_reg
+      want_config: false
       free_params:
       - t

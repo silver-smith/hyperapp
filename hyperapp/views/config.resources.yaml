@@ -27,12 +27,12 @@ definitions:
         feed_factory: feed_factory
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
+        model_reg: model_reg
         ui_adapter_creg: ui_adapter_creg
         view_factory_reg: view_factory_reg
         view_reg: view_reg
         view_ui_command_reg: view_ui_command_reg
         view_ui_model_command_reg: view_ui_model_command_reg
-        visualizer_reg: visualizer_reg
   feed_factory:
     type: legacy_type.system:item_list_config
     value:
@@ -48,6 +48,11 @@ definitions:
     value:
       items:
       - views.list_as_tree:list_as_tree-opener_commands-toggle_open_command.command-cfg-item
+  model_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - views.list_as_tree:list_as_tree-opener_commands.model-cfg-item
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -80,8 +85,3 @@ definitions:
     value:
       items:
       - views.list_as_tree:tree-view-open_opener_commands.command-cfg-item
-  visualizer_reg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - views.list_as_tree:list_as_tree-opener_commands.model-cfg-item

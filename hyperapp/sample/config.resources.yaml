@@ -43,9 +43,9 @@ definitions:
         formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
+        model_reg: model_reg
         selector_reg: selector_reg
         system: system
-        visualizer_reg: visualizer_reg
   editor_default_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -89,6 +89,14 @@ definitions:
       - sample.sample_tree:sample_tree-sample_tree-append_tree_item.command-cfg-item
       - sample.sample_tree:sample_tree-sample_tree-insert_tree_item.command-cfg-item
       - sample.sample_tree:sample_tree-sample_tree-remove_tree_item.command-cfg-item
+  model_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
+      - sample.sample_list:sample_list-sample_list.model-cfg-item
+      - sample.sample_record:sample_record-sample_record.model-cfg-item
+      - sample.sample_tree:sample_tree-sample_tree.model-cfg-item
   selector_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -100,11 +108,3 @@ definitions:
       items:
       - sample.sample_tree:get_sample_tree_items.service
       - sample.sample_tree:sample_tree_data.service
-  visualizer_reg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
-      - sample.sample_list:sample_list-sample_list.model-cfg-item
-      - sample.sample_record:sample_record-sample_record.model-cfg-item
-      - sample.sample_tree:sample_tree-sample_tree.model-cfg-item

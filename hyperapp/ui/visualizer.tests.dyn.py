@@ -56,8 +56,8 @@ def sample_fn():
     pass
 
 
-@mark.config_fixture('visualizer_reg')
-def visualizer_config():
+@mark.config_fixture('model_reg')
+def model_reg_config():
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_fn),
         ctx_params=(),

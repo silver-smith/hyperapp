@@ -23,9 +23,14 @@ def _primitive_value_layout(t):
 
 
 @mark.service
-def visualizer_reg(config, t):
+def model_reg(config):
+    return config
+
+
+@mark.service
+def visualizer_reg(model_reg, t):
     try:
-        model = config[t]
+        model = model_reg[t]
     except KeyError:
         raise
     ui_t = web.summon(model.ui_t)

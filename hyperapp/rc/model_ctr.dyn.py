@@ -41,9 +41,10 @@ class ModelCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        req = CfgItemReq('visualizer_reg', self._model_t)
+        service_name = 'model_reg'
+        req = CfgItemReq(service_name, self._model_t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
-            'visualizer_reg', self._resource_name, req, provider=resource_tgt, ctr=self)
+            service_name, self._resource_name, req, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def get_component(self, name_to_res):
