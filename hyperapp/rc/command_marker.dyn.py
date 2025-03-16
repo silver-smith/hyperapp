@@ -300,14 +300,15 @@ class UiCommandEnumeratorMarker(CommandMarker):
 
 class ModelCommandMarker(CommandMarker):
 
-    def __call__(self, fn_or_t):
+    def __call__(self, fn_or_t=None, *, args=None):
+        if fn_or_t is None:
+            return ModelCommandDecorator(self._system, self._ctr_collector, self._module_name, args, t=fn_or_t)
         if isinstance(fn_or_t, Type):
             # Type-specialized variant (@mark.command(my_type)).
-            return ModelCommandDecorator(self._system, self._ctr_collector, self._module_name, args=None, t=fn_or_t)
-        else:
-            # Not type-specialized variant  (@mark.command).
-            check_is_function(fn_or_t)
-            return ModelCommandProbe(self._system, self._ctr_collector, self._module_name, args=None, fn=fn_or_t)
+            return ModelCommandDecorator(self._system, self._ctr_collector, self._module_name, args, t=fn_or_t)
+        # Not type-specialized variant  (@mark.command).
+        check_is_function(fn_or_t)
+        return ModelCommandProbe(self._system, self._ctr_collector, self._module_name, args, fn=fn_or_t)
 
 
 class ModelCommandEnumeratorMarker(CommandMarker):
