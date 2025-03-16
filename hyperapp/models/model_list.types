@@ -1,0 +1,6 @@
+model = record
+
+item = record:
+  model_t: string
+  ui_t: string
+  fn: string

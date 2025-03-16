@@ -25,6 +25,7 @@ import:
 - models.data_browser:record_open.d
 - models.data_browser:ref_list_open.d
 - models.file_bundles:open.d
+- models.model_list:open_model_list.d
 - models.peer_list:open_peer_list.d
 - models.peer_list:peer_list_add.commit-d
 - models.peer_list:peer_list_add.open-d
@@ -147,6 +148,11 @@ definitions:
     value:
       key: models.file_bundles:open.d
       value: shortcut_Return
+  config_item-models.model_list-open_model_list.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.model_list:open_model_list.d
+      value: shortcut_Alt_M
   config_item-models.peer_list-open_peer_list.d:
     type: legacy_type.data_service:config_item
     value:
@@ -183,6 +189,9 @@ definitions:
   shortcut_Alt_L:
     type: legacy_type.builtin:string
     value: Alt+L
+  shortcut_Alt_M:
+    type: legacy_type.builtin:string
+    value: Alt+M
   shortcut_Alt_P:
     type: legacy_type.builtin:string
     value: Alt+P
@@ -231,6 +240,7 @@ definitions:
       - config_item-models.peer_list-open_peer_list.d
       - config_item-models.peer_list-peer_list_add.open-d
       - config_item-models.peer_list-peer_list_add.commit-d
+      - config_item-models.model_list-open_model_list.d
   static_str_adapter:
     type: legacy_type.str_adapter:static_str_adapter
     value: {}

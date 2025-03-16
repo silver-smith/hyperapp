@@ -1,0 +1,95 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:model_command
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.model_list:item
+- legacy_type.model_list:model
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+definitions:
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_list.module
+      attr_name: format_model
+  formatter_creg-model_list-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.model_list:model
+      function: format_model
+      service_params: []
+  model_list-model.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.model_list:item
+  model_list-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: model_list-model.list-ui-t
+      system_fn: model_list-model.system-fn
+  model_list-model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model_list:model
+      value: model_list-model.model
+  model_list-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: model_list_model
+      ctx_params:
+      - piece
+      service_params:
+      - model_reg
+  model_list.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: model_list
+      file_name: model_list.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.model_list.item: legacy_type.model_list:item
+        htypes.model_list.model: legacy_type.model_list:model
+        services.web: builtins:web.service
+  model_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_list.module
+      attr_name: model_list_model
+  open_model_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_list.module
+      attr_name: open_model_list
+  open_model_list.d:
+    type: open_model_list_d
+    value: {}
+  open_model_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_model_list
+      ctx_params: []
+      service_params: []
+  open_model_list.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_model_list.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_model_list.fn
+  open_model_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: model_list
+      name: open_model_list_d
+      base: null
+      fields: {}
