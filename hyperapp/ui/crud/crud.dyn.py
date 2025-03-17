@@ -192,7 +192,7 @@ class Crud:
         self._selector_reg = selector_reg
         self._model_layout_reg = model_layout_reg
 
-    def fn_ctx(self, ctx, model, args, **kw):
+    def fn_ctx(self, ctx, model, args, kw=None):
         if args is None:
             args = {}
         if model is not None:
@@ -202,12 +202,13 @@ class Crud:
                 }
         else:
             model_layout_kw = {}
-        return ctx.clone_with(
+        all_kw = {
             **model_layout_kw,
             **args,
             **self._canned_kw(ctx, args),
-            **kw,
-            )
+            **(kw or {}),
+            }
+        return ctx.clone_with(**all_kw)
 
     def layout_k(self, commit_command_d):
         return htypes.crud.layout_k(
@@ -383,7 +384,7 @@ class BoundCrudCommitCommand(BoundCommandBase):
         log.info("Run CRUD commit command %r: args=%s; %s=%r", self.name, self._args, self._commit_value_field, value)
         fn_ctx = self._crud.fn_ctx(
             self._ctx, self._model, self._args,
-            **{self._commit_value_field: value},
+            kw={self._commit_value_field: value},
             )
         return self._commit_fn.call(fn_ctx)
 
