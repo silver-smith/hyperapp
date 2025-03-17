@@ -12,6 +12,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.context import Context
 from .code.command import BoundCommandBase, UnboundCommandBase
 from .code.ui_model_command import wrap_model_command_to_ui_command
 from .code.context_view import ContextView
@@ -298,6 +299,12 @@ class Crud:
                 kw['hook'] = item.hook
                 kw['widget'] = weakref.ref(item.widget)
                 kw['view'] = item.view
+        try:
+            model_state = args['model_state']
+        except KeyError:
+            pass
+        else:
+            kw.update(Context.attributes(model_state))
         return kw
 
     def _form_view(self, value_t):
