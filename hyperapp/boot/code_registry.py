@@ -32,6 +32,11 @@ class CodeRegistry:
         t = deduce_value_type(piece)
         return self._animate(t, piece, args, kw)
 
+    def animate_opt(self, piece, *args, **kw):
+        if piece is None:
+            return None
+        return self.animate(piece, *args, **kw)
+
     def _animate(self, t, piece, args, kw):
         try:
             fn = self._config[t]
