@@ -237,7 +237,10 @@ class Crud:
             get_fn = selector.get_fn
             pick_fn = selector.pick_fn
         if get_fn:
-            value = self._run_init(ctx, init_action_fn, model, init_args)
+            if init_action_fn is None:
+                value = None
+            else:
+                value = self._run_init(ctx, init_action_fn, model, init_args)
             selector_model = get_fn.call(ctx, value=value)
             selector_model_t = deduce_t(selector_model)
             base_view_piece = self._visualizer(ctx, selector_model_t)
