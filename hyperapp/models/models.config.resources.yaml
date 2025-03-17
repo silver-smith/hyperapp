@@ -9,6 +9,7 @@ import:
 - legacy_type.crud:layout_k
 - legacy_type.data_service:config_item
 - legacy_type.line_edit:edit_view
+- legacy_type.model_list:model
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
@@ -28,6 +29,7 @@ import:
 - models.model_list:open_model_list.d
 - models.peer_list:add.commit-d
 - models.peer_list:add.open-d
+- models.peer_list:open_model.commit-d
 - models.peer_list:open_model.open-d
 - models.peer_list:open_peer_list.d
 - models.show_current_context:show_current_context.d
@@ -56,12 +58,18 @@ definitions:
     value:
       model_t: legacy_type.config_item_list:model
       column_name: layers
+  column_k-model_list.model-model_t:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.model_list:model
+      column_name: model_t
   column_visible_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-column_k-config_item_list.model-key
       - config_item-column_k-config_item_list.model-layers
+      - config_item-column_k-model_list.model-model_t
   config:
     type: legacy_type.system:system_config
     value:
@@ -78,6 +86,11 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: column_k-config_item_list.model-layers
+      value: bool-false
+  config_item-column_k-model_list.model-model_t:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-model_list.model-model_t
       value: bool-false
   config_item-crud-layout_k-models.peer_list-add:
     type: legacy_type.data_service:config_item
@@ -164,6 +177,11 @@ definitions:
     value:
       key: models.peer_list:add.open-d
       value: shortcut_Ins
+  config_item-models.peer_list-open_model.commit-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.peer_list:open_model.commit-d
+      value: shortcut_Return
   config_item-models.peer_list-open_model.open-d:
     type: legacy_type.data_service:config_item
     value:
@@ -248,6 +266,7 @@ definitions:
       - config_item-models.peer_list-add.commit-d
       - config_item-models.model_list-open_model_list.d
       - config_item-models.peer_list-open_model.open-d
+      - config_item-models.peer_list-open_model.commit-d
   static_str_adapter:
     type: legacy_type.str_adapter:static_str_adapter
     value: {}
