@@ -79,6 +79,6 @@ class ArgsPickerFn:
             commit_command_d=self._commit_command_d,
             commit_action_fn_ref=self._commit_fn_ref,
             commit_value_field=value_field,
-            model=None,
+            model=commit_args.get('model'),
             commit_args=commit_args,
             )
