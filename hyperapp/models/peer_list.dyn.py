@@ -1,12 +1,16 @@
 import logging
+import subprocess
 from collections import namedtuple
 from functools import cached_property
 from pathlib import Path
+
+from hyperapp.boot.htypes.packet_coders import packet_coders
 
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    unbundler,
     )
 from .code.mark import mark
 
@@ -78,15 +82,28 @@ def peer_list_model(piece, peer_list_reg):
         ]
 
 
+def _unpack_bundle(json_data):
+    bundle = packet_coders.decode('json', json_data, htypes.builtin.bundle)
+    unbundler.register_bundle(bundle, register_associations=False)
+    return bundle.roots[0]
+
+
 @mark.command(args=['host'])
 def add(piece, host, peer_list_reg, file_bundle_factory, peer_registry):
     log.info("Peer list: Add host: %r", host)
     if host in {'', 'localhost'}:
         path = Path.home() / server_bundle_path
-        peer_bundle = file_bundle_factory(path)
-        peer = peer_registry.animate(peer_bundle.load_piece())
-        log.info("Loaded local server peer from: %s", peer_bundle.path)
+        bundle = file_bundle_factory(path)
+        peer = peer_registry.animate(bundle.load_piece())
+        log.info("Loaded local server peer from: %s", bundle.path)
         peer_list_reg.add('localhost', peer)
+        return
+    command = ['ssh', host, 'cat', server_bundle_path]
+    bundle_json = subprocess.check_output(command)
+    peer_ref = _unpack_bundle(bundle_json)
+    peer = peer_registry.invite(peer_ref)
+    log.info("Loaded server %r peer", host)
+    peer_list_reg.add(host, peer)
 
 
 @mark.command(args=['model'])

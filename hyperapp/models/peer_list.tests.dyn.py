@@ -1,4 +1,6 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
+
+from hyperapp.boot.htypes.packet_coders import packet_coders
 
 from . import htypes
 from .services import (
@@ -39,9 +41,19 @@ def test_model(piece):
     assert type(item_list) is list
 
 
-def test_add(piece):
+def test_add_localhost(piece):
     host = 'localhost'
     peer_list.add(piece, host)
+
+
+def test_add_remote(bundler, generate_rsa_identity, piece):
+    host = 'example-host'
+    identity = generate_rsa_identity(fast=True)
+    bundle = bundler([mosaic.put(identity.peer.piece)]).bundle
+    data_json = packet_coders.encode('json', bundle, htypes.builtin.bundle)
+    with patch.object(peer_list, 'subprocess') as subprocess:
+        subprocess.check_output.return_value = data_json
+        peer_list.add(piece, host)
 
 
 def test_open_model(generate_rsa_identity, piece):
