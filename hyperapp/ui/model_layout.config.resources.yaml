@@ -21,10 +21,10 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - config_item-int.layout
-      - config_item-string.layout
+      - config_item-int.layout-item
+      - config_item-string.layout-item
 
-  config_item-int.layout:
+  config_item-int.layout-item:
     type: legacy_type.data_service:config_item
     value:
       key: model_layout_k-int
@@ -44,7 +44,7 @@ definitions:
     type: legacy_type.int_adapter:int_adapter
     value: {}
 
-  config_item-string.layout:
+  config_item-string.layout-item:
     type: legacy_type.data_service:config_item
     value:
       key: model_layout_k-string
