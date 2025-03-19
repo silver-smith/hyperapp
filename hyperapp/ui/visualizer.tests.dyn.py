@@ -86,3 +86,12 @@ def test_sample_list(visualizer, ctx):
     model_t = htypes.visualizer_tests.sample_list
     layout = visualizer(ctx, model_t)
     assert isinstance(layout, htypes.list.view)
+
+
+def test_model_layout_k_resource_name():
+    gen = Mock()
+    piece = htypes.ui.model_layout_k(
+        model_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+        )
+    name = visualizer_module.model_layout_k_resource_name(piece, gen)
+    assert type(name) is str

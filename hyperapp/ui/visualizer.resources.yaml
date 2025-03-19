@@ -11,10 +11,16 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.list:view
 - legacy_type.list_adapter:static_list_adapter
+- legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.ui:model_layout_k
 definitions:
+  model_layout_k_resource_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer.module
+      attr_name: model_layout_k_resource_name
   model_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -29,6 +35,12 @@ definitions:
       service_params: []
       want_config: true
       free_params: []
+  resource_name_creg-ui-model_layout_k.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.ui:model_layout_k
+      function: model_layout_k_resource_name
+      service_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

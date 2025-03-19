@@ -136,6 +136,7 @@ import:
 - ui.view.view_registry:view_reg.service
 - ui.view.wrap_view:wrap_view.universal-ui-command
 - ui.visualizer:model_reg.service
+- ui.visualizer:resource_name_creg-ui-model_layout_k.actor-template
 - ui.visualizer:ui_type_creg.service
 - ui.visualizer:visualizer.service
 - ui.visualizer:visualizer_reg.service
@@ -252,6 +253,7 @@ definitions:
       - ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-template
       - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
       - ui.str_adapter:resource_name_creg-str_adapter-static_str_adapter.actor-template
+      - ui.visualizer:resource_name_creg-ui-model_layout_k.actor-template
   selector_reg:
     type: legacy_type.system:item_list_config
     value:
