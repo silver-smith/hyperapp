@@ -254,7 +254,10 @@ def tcp_client_factory(_tcp_services, address):
     connection = svc.address_to_tcp_client.get(address)
     if not connection:
         sock = socket.socket()
-        sock.connect(address)
+        try:
+            sock.connect(address)
+        except ConnectionRefusedError as x:
+            raise RuntimeError(f"Connecting to %s: %s", address, x)
         sock.setblocking(False)
         connection = Connection(svc, address, sock)
         svc.address_to_tcp_client[address] = connection
