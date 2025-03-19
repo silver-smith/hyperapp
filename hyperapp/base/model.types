@@ -2,6 +2,9 @@ model = record:
   ui_t: ref
   system_fn: ref
 
+remote_model = record:
+  model: ref
+
 
 list_ui_t = record:
   item_t: ref
