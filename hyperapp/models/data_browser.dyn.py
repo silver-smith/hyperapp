@@ -68,6 +68,7 @@ def browse_list(piece):
     return [
         htypes.data_browser.list_item(
             idx=idx,
+            name=f"{data_t.element_t.name}#{idx}",
             type=str(data_t.element_t),
             value=str(elt),
             )
@@ -90,6 +91,7 @@ def browse_ref_list(piece):
         elt, t = web.summon_with_t(elt_ref)
         item = htypes.data_browser.ref_list_item(
             idx=idx,
+            name=f"ref#{idx}",
             type=str(t),
             value=str(elt),
             )

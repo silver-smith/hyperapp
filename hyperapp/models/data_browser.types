@@ -20,6 +20,7 @@ list_view = record:
 
 list_item = record:
   idx: int
+  name: string
   type: string
   value: string
 
@@ -29,6 +30,7 @@ ref_list_view = record:
 
 ref_list_item = record:
   idx: int
+  name: string
   type: string
   value: string
 
