@@ -17,7 +17,7 @@ from .code.mark import mark
 log = logging.getLogger(__name__)
 
 
-peer_list_path = Path.home() / '.local/share/hyperapp/client/peer_list.yaml'
+peer_list_path = Path.home() / '.local/share/hyperapp/client/peer_list.json'
 server_bundle_path = '.local/share/hyperapp/server/peer.json'
 
 
