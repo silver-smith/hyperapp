@@ -6,6 +6,8 @@ record_item = record:
   type: string
   value: string
 
+record_data_adapter = record
+
 
 primitive_view = record:
   data: ref

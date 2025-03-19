@@ -1,0 +1,60 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:mosaic.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.data_browser:record_data_adapter
+- legacy_type.data_browser:record_view
+- legacy_type.line_edit:readonly_view
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:template
+definitions:
+  data_browser_adapter.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: data_browser_adapter
+      file_name: data_browser_adapter.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.data_browser.record_data_adapter: legacy_type.data_browser:record_data_adapter
+        htypes.line_edit.readonly_view: legacy_type.line_edit:readonly_view
+        services.mosaic: builtins:mosaic.service
+  data_browser_data_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser_adapter.module
+      attr_name: data_browser_data_view
+  data_browser_data_view.k:
+    type: data_browser_data_view_k
+    value: {}
+  data_browser_data_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: data_browser_data_view
+      ctx_params:
+      - piece
+      - adapter
+      service_params: []
+  data_browser_data_view.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: data_browser_data_view.k
+      model_t: legacy_type.data_browser:record_view
+      ui_t_t: null
+      view_t: legacy_type.line_edit:readonly_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: data_browser_data_view.system-fn
+  data_browser_data_view_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: data_browser_adapter
+      name: data_browser_data_view_k
+      base: null
+      fields: {}
