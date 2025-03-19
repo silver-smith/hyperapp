@@ -16,6 +16,7 @@ import:
 - legacy_type.command:model_command
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
+- legacy_type.model:remote_model
 - legacy_type.model_list:model_arg
 - legacy_type.peer_list:bundle
 - legacy_type.peer_list:item
@@ -212,6 +213,7 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         htypes.builtin.bundle: legacy_type.builtin:bundle
+        htypes.model.remote_model: legacy_type.model:remote_model
         htypes.peer_list.bundle: legacy_type.peer_list:bundle
         htypes.peer_list.item: legacy_type.peer_list:item
         htypes.peer_list.model: legacy_type.peer_list:model

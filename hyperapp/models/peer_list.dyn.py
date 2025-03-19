@@ -111,6 +111,13 @@ def open_model(piece, current_item, model, peer_registry):
     model_t = pyobj_creg.invite(model.model_t)
     peer = peer_registry.invite(current_item.peer)
     log.info("Peer list: Open model %s @ %s (%s)", model_t, current_item.name, repr(peer))
+    if model_t.fields:
+        log.info("Model %s has fields, do not know how to make an instance", model_t)
+        return
+    model = model_t()
+    return htypes.model.remote_model(
+        model=mosaic.put(model),
+        )
 
 
 @mark.global_command
