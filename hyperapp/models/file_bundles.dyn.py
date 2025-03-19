@@ -14,7 +14,8 @@ def open_file_bundle_list():
 @mark.model
 def file_bundle_list(piece):
     return [
-        htypes.file_bundles.item("client state", "~/.local/share/hyperapp/client/layout.json"),
+        htypes.file_bundles.item("Client state", "~/.local/share/hyperapp/client/layout.json"),
+        htypes.file_bundles.item("Peer list", "~/.local/share/hyperapp/client/peer_list.json"),
         htypes.file_bundles.item("lcs", "~/.local/share/hyperapp/client/lcs.cdr"),
         ]
 
