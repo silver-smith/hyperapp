@@ -30,6 +30,7 @@ import:
 - models.data_browser:data_browser-record_view.model-cfg-item
 - models.data_browser:data_browser-ref_list_view-ref_list_open.command-cfg-item
 - models.data_browser:data_browser-ref_list_view.model-cfg-item
+- models.data_browser:formatter_creg-data_browser-record_view.actor-template
 - models.file_bundles:file_bundles-view-open.command-cfg-item
 - models.file_bundles:file_bundles-view.model-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
@@ -85,6 +86,7 @@ definitions:
     value:
       items:
       - models.config.config_item_list:formatter_creg-config_item_list-model.actor-template
+      - models.data_browser:formatter_creg-data_browser-record_view.actor-template
       - models.model_list:formatter_creg-model_list-model.actor-template
       - models.peer_list:formatter_creg-peer_list-model.actor-template
   global_model_command_reg:

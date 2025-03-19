@@ -34,6 +34,15 @@ def test_browse_record():
     assert result[1].name == 'sample_list'
 
 
+def test_format_record_view():
+    data = "Sample string"
+    piece = htypes.data_browser.record_view(
+        data=mosaic.put(data),
+        )
+    title = data_browser.format_record_view(piece)
+    assert type(title) is str
+
+
 def test_browse_list():
     elt_1 = "Sample element 1"
     elt_2 = "Sample element 2"

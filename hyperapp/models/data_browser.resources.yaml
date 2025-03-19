@@ -25,6 +25,7 @@ import:
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model:record_ui_t
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
   browse_current_model:
@@ -188,6 +189,18 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+  format_record_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: format_record_view
+  formatter_creg-data_browser-record_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.data_browser:record_view
+      function: format_record_view
+      service_params:
+      - format
   list_open:
     type: legacy_type.builtin:attribute
     value:

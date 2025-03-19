@@ -62,6 +62,13 @@ def record_open(piece, current_item):
     return data_browser(value, field_t)
 
 
+@mark.actor.formatter_creg
+def format_record_view(piece, format):
+    data = web.summon(piece.data)
+    data_title = format(data)
+    return f'Data browser: {data_title}'
+
+
 @mark.model
 def browse_list(piece):
     data, data_t = web.summon_with_t(piece.data)
