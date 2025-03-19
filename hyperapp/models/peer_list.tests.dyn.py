@@ -66,7 +66,8 @@ def test_open_model(generate_rsa_identity, piece):
     model = htypes.model_list.model_arg(
         model_t=pyobj_creg.actor_to_ref(htypes.peer_list_tests.sample_model),
         )
-    peer_list.open_model(piece, current_item, model)
+    remote_model = peer_list.open_model(piece, current_item, model)
+    assert isinstance(remote_model, htypes.model.remote_model)
 
 
 def test_open():

@@ -117,6 +117,7 @@ def open_model(piece, current_item, model, peer_registry):
     model = model_t()
     return htypes.model.remote_model(
         model=mosaic.put(model),
+        remote_peer=mosaic.put(peer.piece),
         )
 
 

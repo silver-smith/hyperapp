@@ -4,6 +4,7 @@ model = record:
 
 remote_model = record:
   model: ref
+  remote_peer: ref
 
 
 list_ui_t = record:
