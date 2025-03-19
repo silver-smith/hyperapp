@@ -140,6 +140,58 @@ def get_fn_called_flag():
     return _sample_fn_is_called.is_set()
 
 
+def test_fn_adapter_with_remote_model(
+        generate_rsa_identity,
+        endpoint_registry,
+        rpc_endpoint,
+        rpc_call_factory,
+        subprocess_rpc_server_running,
+        ui_adapter_creg,
+        ):
+
+    identity = generate_rsa_identity(fast=True)
+    endpoint_registry.register(identity, rpc_endpoint)
+
+    subprocess_name = 'test-remote-fn-list-adapter-main'
+    with subprocess_rpc_server_running(subprocess_name, identity) as process:
+        log.info("Started: %r", process)
+
+        real_model = htypes.list_adapter_tests.sample_list()
+        model = htypes.model.remote_model(
+            model=mosaic.put(real_model),
+            remote_peer=mosaic.put(process.peer.piece),
+            )
+        ctx = Context(
+            piece=model,
+            identity=identity,
+            )
+        system_fn = htypes.system_fn.ctx_fn(
+            function=pyobj_creg.actor_to_ref(sample_remote_list_fn),
+            ctx_params=('piece',),
+            service_params=(),
+            )
+        adapter_piece = htypes.list_adapter.fn_list_adapter(
+            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
+            system_fn=mosaic.put(system_fn),
+            )
+        adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
+
+        assert adapter.column_count() == 2
+        assert adapter.column_title(0) == 'id'
+        assert adapter.column_title(1) == 'text'
+
+        assert adapter.row_count() == 3
+        assert adapter.cell_data(1, 0) == 22
+        assert adapter.cell_data(2, 1) == "third"
+
+        get_fn_called_flag_call = rpc_call_factory(
+            sender_identity=identity,
+            receiver_peer=process.peer,
+            servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
+            )
+        assert get_fn_called_flag_call()
+
+
 def test_fn_adapter_with_remote_context(
         generate_rsa_identity,
         endpoint_registry,
