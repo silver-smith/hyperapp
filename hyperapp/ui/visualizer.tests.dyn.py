@@ -88,10 +88,19 @@ def test_sample_list(visualizer, ctx):
     assert isinstance(layout, htypes.list.view)
 
 
-def test_model_layout_k_resource_name():
-    gen = Mock()
-    piece = htypes.ui.model_layout_k(
+@mark.fixture
+def model_layout_k():
+    return htypes.ui.model_layout_k(
         model_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
         )
-    name = visualizer_module.model_layout_k_resource_name(piece, gen)
+
+
+def test_model_layout_k_resource_name(model_layout_k):
+    gen = Mock()
+    name = visualizer_module.model_layout_k_resource_name(model_layout_k, gen)
     assert type(name) is str
+
+
+def test_format_model_layout_k(model_layout_k):
+    title = visualizer_module.format_model_layout_k(model_layout_k)
+    assert type(title) is str

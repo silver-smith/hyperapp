@@ -16,6 +16,17 @@ import:
 - legacy_type.system:service_template
 - legacy_type.ui:model_layout_k
 definitions:
+  format_model_layout_k:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer.module
+      attr_name: format_model_layout_k
+  formatter_creg-ui-model_layout_k.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.ui:model_layout_k
+      function: format_model_layout_k
+      service_params: []
   model_layout_k_resource_name:
     type: legacy_type.builtin:attribute
     value:

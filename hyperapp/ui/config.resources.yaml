@@ -135,6 +135,7 @@ import:
 - ui.view.view_factory_list:view_factory_list-model.model-cfg-item
 - ui.view.view_registry:view_reg.service
 - ui.view.wrap_view:wrap_view.universal-ui-command
+- ui.visualizer:formatter_creg-ui-model_layout_k.actor-template
 - ui.visualizer:model_reg.service
 - ui.visualizer:resource_name_creg-ui-model_layout_k.actor-template
 - ui.visualizer:ui_type_creg.service
@@ -218,6 +219,7 @@ definitions:
       items:
       - ui.column_format:formatter_creg-column-column_k.actor-template
       - ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-template
+      - ui.visualizer:formatter_creg-ui-model_layout_k.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:

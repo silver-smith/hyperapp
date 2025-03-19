@@ -67,3 +67,9 @@ def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model_t):
 def model_layout_k_resource_name(piece, gen):
     model_t = pyobj_creg.invite(piece.model_t)
     return f'{model_t.full_name}-model_layout_k'
+
+
+@mark.actor.formatter_creg
+def format_model_layout_k(piece):
+    model_t = pyobj_creg.invite(piece.model_t)
+    return f'model_layout_k({model_t.full_name})'
