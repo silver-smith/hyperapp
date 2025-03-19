@@ -17,6 +17,7 @@ import:
 - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
 - ui.crud.crud:crud-view.view-template
 - ui.crud.crud:crud.service
+- ui.crud.crud:formatter_creg-crud-layout_k.actor-template
 - ui.crud.crud:resource_name_creg-crud-layout_k.actor-template
 - ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-template
 - ui.crud.crud:ui_adapter_creg-crud-record_adapter.actor-template
@@ -218,6 +219,7 @@ definitions:
     value:
       items:
       - ui.column_format:formatter_creg-column-column_k.actor-template
+      - ui.crud.crud:formatter_creg-crud-layout_k.actor-template
       - ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-template
       - ui.visualizer:formatter_creg-ui-model_layout_k.actor-template
   global_model_command_reg:

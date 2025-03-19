@@ -150,6 +150,18 @@ definitions:
     type: legacy_type.command:ui_command_enumerator
     value:
       system_fn: crud_commit_command_enum.fn
+  format_layout_k:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud.module
+      attr_name: format_layout_k
+  formatter_creg-crud-layout_k.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.crud:layout_k
+      function: format_layout_k
+      service_params:
+      - format
   layout_k_resource_name:
     type: legacy_type.builtin:attribute
     value:

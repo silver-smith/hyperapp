@@ -417,3 +417,10 @@ def layout_k_resource_name(piece, gen):
     command_name = gen.assigned_name(command)
     command_stem = command_name.removesuffix('.commit-d').replace(':', '-')
     return f'crud-layout_k-{command_stem}'
+
+
+@mark.actor.formatter_creg
+def format_layout_k(piece, format):
+    command = web.summon(piece.commit_command_d)
+    command_title = format(command)
+    return f'crud.layout_k({command_title})'

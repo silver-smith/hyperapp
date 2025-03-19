@@ -142,16 +142,20 @@ def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, commit_co
         )
 
 
+@mark.fixture
+def commit_command_layout_k(commit_command_d):
+    return htypes.crud.layout_k(
+        commit_command_d=mosaic.put(commit_command_d),
+        )
+
+
 @mark.fixture.obj
-def model_layout_reg(commit_command_d):
+def model_layout_reg(commit_command_layout_k):
     def getitem(self, layout_k):
         def k(t):
             return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
         if layout_k == k(htypes.crud_tests.sample_selector_model):
             return htypes.crud_tests.selector_view()
-        commit_command_layout_k = htypes.crud.layout_k(
-            commit_command_d=mosaic.put(commit_command_d),
-            )
         if layout_k == commit_command_layout_k:
             raise KeyError(layout_k)
         raise RuntimeError(f"Mock model_layout_reg: __getitem__ with {layout_k} was not expected")
@@ -290,11 +294,13 @@ async def test_command_enum_for_selector(view_reg, lcs, ctx, _sample_selector_pi
     await bound_cmd.run()
 
 
-def test_layout_k_resource_name(commit_command_d):
+def test_layout_k_resource_name(commit_command_layout_k):
     gen = Mock()
     gen.assigned_name.return_value = 'some_command'
-    layout_k = htypes.crud.layout_k(
-        commit_command_d=mosaic.put(commit_command_d),
-        )
-    name = crud.layout_k_resource_name(layout_k, gen)
+    name = crud.layout_k_resource_name(commit_command_layout_k, gen)
     assert type(name) is str
+
+
+def test_format_layout_k(commit_command_layout_k):
+    title = crud.format_layout_k(commit_command_layout_k)
+    assert type(title) is str
