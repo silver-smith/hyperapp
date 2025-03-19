@@ -44,7 +44,8 @@ def ui_type_creg(config):
 
 
 @mark.service
-def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model_t):
+def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model):
+    model_t = deduce_t(model)
     layout_k = htypes.ui.model_layout_k(
         model_t=pyobj_creg.actor_to_ref(model_t),
         )

@@ -34,12 +34,12 @@ def model_layout_reg_config():
 
 
 def test_string(visualizer, ctx):
-    layout = visualizer(ctx, htypes.builtin.string)
+    layout = visualizer(ctx, "")
     assert isinstance(layout, htypes.text.edit_view)
 
 
 def test_int(visualizer, ctx):
-    layout = visualizer(ctx, htypes.builtin.int)
+    layout = visualizer(ctx, 1)
     assert isinstance(layout, htypes.text.edit_view)
 
 
@@ -48,7 +48,7 @@ def test_list(visualizer, ctx):
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = visualizer(ctx, deduce_t(value))
+    layout = visualizer(ctx, value)
     assert isinstance(layout, htypes.list.view)
 
 
@@ -83,8 +83,8 @@ def ui_type_creg_config():
 
 
 def test_sample_list(visualizer, ctx):
-    model_t = htypes.visualizer_tests.sample_list
-    layout = visualizer(ctx, model_t)
+    model = htypes.visualizer_tests.sample_list()
+    layout = visualizer(ctx, model)
     assert isinstance(layout, htypes.list.view)
 
 

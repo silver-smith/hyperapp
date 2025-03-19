@@ -6,7 +6,6 @@ from hyperapp.boot.htypes import TPrimitive
 
 from . import htypes
 from .services import (
-    deduce_t,
     mosaic,
     pyobj_creg,
     web,
@@ -244,8 +243,7 @@ class Crud:
             else:
                 value = self._run_init(ctx, init_action_fn, model, init_args)
             selector_model = get_fn.call(ctx, value=value)
-            selector_model_t = deduce_t(selector_model)
-            base_view_piece = self._visualizer(ctx, selector_model_t)
+            base_view_piece = self._visualizer(ctx, selector_model)
             new_model = selector_model
         else:
             assert init_action_fn  # Init action fn may be omitted only for selectors.

@@ -102,7 +102,7 @@ definitions:
       want_config: false
       free_params:
       - ctx
-      - model_t
+      - model
   visualizer_reg:
     type: legacy_type.builtin:attribute
     value:

@@ -23,7 +23,7 @@ default_layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
 
 def make_default_piece(visualizer, ctx):
     text = "Sample text"
-    text_view = visualizer(ctx, htypes.builtin.string)
+    text_view = visualizer(ctx, text)
     navigator = htypes.navigator.view(
         current_view=mosaic.put(text_view),
         current_model=mosaic.put(text),

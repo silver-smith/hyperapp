@@ -8,7 +8,6 @@ from operator import attrgetter, itemgetter
 
 from . import htypes
 from .services import (
-    deduce_t,
     pyobj_creg,
     mosaic,
     web,
@@ -92,7 +91,7 @@ class BoundUiModelCommand(BoundCommandBase):
         if piece is None:
             return None
         if self._layout is None:
-            view_piece = self._visualizer(self._ctx, deduce_t(piece))
+            view_piece = self._visualizer(self._ctx, piece)
         else:
             view_piece = self._layout
         model_ctx = self._ctx.pop().clone_with(model=piece)
