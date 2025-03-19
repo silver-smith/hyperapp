@@ -3,15 +3,27 @@
 import:
 - base.mark:mark.module
 - builtins:mosaic.service
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.data_browser:record_data_adapter
 - legacy_type.data_browser:record_view
 - legacy_type.line_edit:readonly_view
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:template
 definitions:
+  DataBrowserViewDataAdapter:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser_adapter.module
+      attr_name: DataBrowserViewDataAdapter
+  DataBrowserViewDataAdapter.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: DataBrowserViewDataAdapter
+      attr_name: from_piece
   data_browser_adapter.module:
     type: legacy_type.builtin:python_module
     value:
@@ -22,6 +34,7 @@ definitions:
         htypes.data_browser.record_data_adapter: legacy_type.data_browser:record_data_adapter
         htypes.line_edit.readonly_view: legacy_type.line_edit:readonly_view
         services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   data_browser_data_view:
     type: legacy_type.builtin:attribute
     value:
@@ -58,3 +71,9 @@ definitions:
       name: data_browser_data_view_k
       base: null
       fields: {}
+  ui_adapter_creg-data_browser-record_data_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.data_browser:record_data_adapter
+      function: DataBrowserViewDataAdapter.from_piece
+      service_params: []

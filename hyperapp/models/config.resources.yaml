@@ -32,6 +32,7 @@ import:
 - models.data_browser:data_browser-ref_list_view.model-cfg-item
 - models.data_browser:formatter_creg-data_browser-record_view.actor-template
 - models.data_browser_adapter:data_browser_data_view.view-factory-template
+- models.data_browser_adapter:ui_adapter_creg-data_browser-record_data_adapter.actor-template
 - models.file_bundles:file_bundles-view-open.command-cfg-item
 - models.file_bundles:file_bundles-view.model-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
@@ -74,6 +75,7 @@ definitions:
         model_reg: model_reg
         selector_reg: selector_reg
         system: system
+        ui_adapter_creg: ui_adapter_creg
         view_factory_reg: view_factory_reg
         view_ui_model_command_reg: view_ui_model_command_reg
   feed_factory:
@@ -154,6 +156,11 @@ definitions:
     value:
       items:
       - models.peer_list:peer_list_reg.service
+  ui_adapter_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.data_browser_adapter:ui_adapter_creg-data_browser-record_data_adapter.actor-template
   view_factory_reg:
     type: legacy_type.system:item_list_config
     value:
