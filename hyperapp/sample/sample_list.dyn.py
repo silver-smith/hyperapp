@@ -1,12 +1,16 @@
 import asyncio
+import logging
 
 from . import htypes
 from .code.mark import mark
 from .code.list_diff import ListDiff
 
+log = logging.getLogger(__name__)
+
 
 @mark.model
 def sample_list(piece):
+    log.info("Sample list: Called model")
     return [
         htypes.sample_list.item(1, "first", "First sample"),
         htypes.sample_list.item(2, "second", "Second sample"),
