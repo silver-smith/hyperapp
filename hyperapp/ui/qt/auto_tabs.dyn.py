@@ -40,7 +40,10 @@ class AutoTabsView(TabsView):
 
     def _tab_label(self, piece):
         title = self._format(piece)
-        return title[:40]
+        if len(title) > 40:
+            return title[:37] + '...'
+        else:
+            return title
 
 
 @mark.ui_command(htypes.auto_tabs.view)
