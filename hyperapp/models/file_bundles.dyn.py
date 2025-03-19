@@ -16,6 +16,8 @@ def file_bundle_list(piece):
     return [
         htypes.file_bundles.item("Client state", "~/.local/share/hyperapp/client/layout.json"),
         htypes.file_bundles.item("Peer list", "~/.local/share/hyperapp/client/peer_list.json"),
+        htypes.file_bundles.item("Server peer", "~/.local/share/hyperapp/server/peer.json"),
+        htypes.file_bundles.item("Server identity", "~/.local/share/hyperapp/server/identity.json"),
         ]
 
 
