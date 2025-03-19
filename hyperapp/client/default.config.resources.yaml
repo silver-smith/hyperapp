@@ -1,3 +1,71 @@
 # Automatically generated file. Do not edit.
 
-definitions: {}
+import:
+- legacy_type.box_layout:view
+- legacy_type.data_browser:list_view
+- legacy_type.data_browser:record_data_adapter
+- legacy_type.data_browser:record_item
+- legacy_type.data_browser:record_view
+- legacy_type.data_browser:ref_list_view
+- legacy_type.data_service:config_item
+- legacy_type.line_edit:readonly_view
+- legacy_type.list_as_tree_adapter:adapter
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- legacy_type.tree:view
+- legacy_type.ui:model_layout_k
+- models.data_browser:data_browser-record_view.system-fn
+- models.data_browser:list_open.d
+- models.data_browser:record_open.d
+- models.data_browser:ref_list_open.d
+definitions:
+  box_layout_view_1:
+    type: legacy_type.box_layout:view
+    value:
+      direction: TopToBottom
+      elements:
+      - view: line_view-record_data_adapter_1
+        focusable: false
+        stretch: 0
+      - view: tree_view_1
+        focusable: true
+        stretch: 1
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        model_layout_reg: model_layout_reg.config
+  config_item-data_browser.record_view-model_layout_k:
+    type: legacy_type.data_service:config_item
+    value:
+      key: data_browser.record_view-model_layout_k
+      value: box_layout_view_1
+  data_browser.record_view-model_layout_k:
+    type: legacy_type.ui:model_layout_k
+    value:
+      model_t: legacy_type.data_browser:record_view
+  line_view-record_data_adapter_1:
+    type: legacy_type.line_edit:readonly_view
+    value:
+      adapter: record_data_adapter_1
+  list_as_tree_adapter_adapter_1:
+    type: legacy_type.list_as_tree_adapter:adapter
+    value:
+      root_item_t: legacy_type.data_browser:record_item
+      root_function: models.data_browser:data_browser-record_view.system-fn
+      root_open_children_command_d: models.data_browser:record_open.d
+      layers:
+        legacy_type.data_browser:ref_list_view: models.data_browser:ref_list_open.d
+        legacy_type.data_browser:list_view: models.data_browser:list_open.d
+  model_layout_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-data_browser.record_view-model_layout_k
+  record_data_adapter_1:
+    type: legacy_type.data_browser:record_data_adapter
+    value: {}
+  tree_view_1:
+    type: legacy_type.tree:view
+    value:
+      adapter: list_as_tree_adapter_adapter_1
