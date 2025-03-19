@@ -13,6 +13,7 @@ from .services import (
     unbundler,
     )
 from .code.mark import mark
+from .code.list_diff import ListDiff
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +39,18 @@ class PeerList:
         peer_list = self._peer_list
         peer_list.append(Peer(name, peer))
         self._save(peer_list)
+
+    def remove(self, name):
+        peer_list = self._peer_list
+        for idx, rec in enumerate(self._peer_list):
+            if rec.name == name:
+                del peer_list[idx]
+                break
+        else:
+            log.warning("Peer list: Can not remove host %r; it is not in the list", name)
+            return False
+        self._save(peer_list)
+        return True
 
     @cached_property
     def _peer_list(self):
@@ -104,6 +117,14 @@ def add(piece, host, peer_list_reg, file_bundle_factory, peer_registry):
     peer = peer_registry.invite(peer_ref)
     log.info("Loaded server %r peer", host)
     peer_list_reg.add(host, peer)
+
+
+@mark.command
+async def remove(piece, current_idx, current_item, feed_factory, peer_list_reg):
+    log.info("Peer list: Remove host #%d: %r", current_idx, current_item.name)
+    feed = feed_factory(piece)
+    if peer_list_reg.remove(current_item.name):
+        await feed.send(ListDiff.Remove(current_idx))
 
 
 @mark.command(args=['model'])

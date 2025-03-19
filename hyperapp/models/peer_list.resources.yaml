@@ -5,6 +5,7 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:unbundler.service
+- common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:bundle
 - legacy_type.builtin:python_module
@@ -14,6 +15,8 @@ import:
 - legacy_type.command:args_picker_command_fn
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model:remote_model
@@ -183,6 +186,20 @@ definitions:
     value:
       t: legacy_type.peer_list:model
       command: open_model.model-command
+  peer_list-model-remove.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.peer_list:model
+      command: remove.model-command
+  peer_list-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.peer_list:model
+      feed_type: peer_list-model.feed-type
+  peer_list-model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: null
   peer_list-model.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -211,6 +228,7 @@ definitions:
       module_name: peer_list
       file_name: peer_list.dyn.py
       import_list:
+        code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         htypes.builtin.bundle: legacy_type.builtin:bundle
         htypes.model.remote_model: legacy_type.model:remote_model
@@ -242,6 +260,41 @@ definitions:
       - peer_registry
       want_config: false
       free_params: []
+  remove:
+    type: legacy_type.builtin:attribute
+    value:
+      object: peer_list.module
+      attr_name: remove
+  remove.d:
+    type: remove_d
+    value: {}
+  remove.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: remove
+      ctx_params:
+      - piece
+      - current_idx
+      - current_item
+      service_params:
+      - feed_factory
+      - peer_list_reg
+  remove.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: remove.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: remove.fn
+  remove_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: peer_list
+      name: remove_d
+      base: null
+      fields: {}
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
