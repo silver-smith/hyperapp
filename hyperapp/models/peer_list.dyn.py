@@ -97,7 +97,7 @@ def peer_list_model(piece, peer_list_reg):
 
 def _unpack_bundle(json_data):
     bundle = packet_coders.decode('json', json_data, htypes.builtin.bundle)
-    unbundler.register_bundle(bundle, register_associations=False)
+    unbundler.register_bundle(bundle, register_associations=True)
     return bundle.roots[0]
 
 
