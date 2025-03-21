@@ -96,7 +96,7 @@ class BoundUiModelCommand(BoundCommandBase):
             view_piece = self._layout
         model_ctx = self._ctx.pop().clone_with(model=piece)
         view = self._view_reg.animate(view_piece, model_ctx)
-        log.info("Run model command %r view: %s", self.name, view)
+        log.info("Model command %r: visualizing with view: %s", self.name, view)
         self._navigator_rec.view.open(self._ctx, piece, view, navigator_w)
 
 
