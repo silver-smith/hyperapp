@@ -19,5 +19,7 @@ def test_server(server_main):
         pass
     sys_argv = [
         f'--identity-path={identity_path}',
+        '--host=localhost',
+        '--port=0',  # Use ephemeral instead of default.
         ]
     server_main(name_to_project, sys_argv)

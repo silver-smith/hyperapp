@@ -14,11 +14,14 @@ log = logging.getLogger(__name__)
 
 
 DEFAULT_IDENTITY_PATH = Path.home() / '.local/share/hyperapp/server/identity.json'
+DEFAULT_PORT = 7777
 
 
 def _parse_args(sys_argv):
     parser = argparse.ArgumentParser(description='Hyperapp server')
     parser.add_argument('--identity-path', type=Path, default=DEFAULT_IDENTITY_PATH, help="Path to server identity")
+    parser.add_argument('--port', type=int, default=DEFAULT_PORT, help="Bind to port")
+    parser.add_argument('--host', default='', help="Bind to host")
     return parser.parse_args(sys_argv)
 
 
@@ -51,7 +54,8 @@ def server_main(
     server_peer_ref = mosaic.put(server_identity.peer.piece)
     endpoint_registry.register(server_identity, rpc_endpoint)
 
-    server = tcp_server_factory()
+    bind_address = (args.host, args.port)
+    server = tcp_server_factory(bind_address)
     log.info("Tcp route: %r", server.route)
     route_table.add_route(server_peer_ref, server.route)
 
