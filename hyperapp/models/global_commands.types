@@ -1,4 +1,1 @@
 model = record
-
-open_global_commands_d = record
-run_command_d = record

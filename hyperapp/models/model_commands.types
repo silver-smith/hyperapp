@@ -1,6 +1,3 @@
 model = record:
   model: ref
   model_state: ref
-
-open_model_commands_d = record
-run_command_d = record

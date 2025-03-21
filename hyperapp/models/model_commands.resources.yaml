@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -13,8 +14,6 @@ import:
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model_commands:model
-- legacy_type.model_commands:open_model_commands_d
-- legacy_type.model_commands:run_command_d
 - legacy_type.system_fn:ctx_fn
 - models.command_list_model:command_list_model.module
 - ui.model_command:model_command.module
@@ -72,7 +71,7 @@ definitions:
       object: model_commands.module
       attr_name: open_model_commands
   open_model_commands.d:
-    type: legacy_type.model_commands:open_model_commands_d
+    type: open_model_commands_d
     value: {}
   open_model_commands.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -91,13 +90,20 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: open_model_commands.fn
+  open_model_commands_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: model_commands
+      name: open_model_commands_d
+      base: null
+      fields: {}
   run_command:
     type: legacy_type.builtin:attribute
     value:
       object: model_commands.module
       attr_name: run_command
   run_command.d:
-    type: legacy_type.model_commands:run_command_d
+    type: run_command_d
     value: {}
   run_command.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -119,3 +125,10 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: run_command.fn
+  run_command_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: model_commands
+      name: run_command_d
+      base: null
+      fields: {}
