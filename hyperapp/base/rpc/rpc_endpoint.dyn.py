@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import inspect
 import threading
@@ -131,6 +132,9 @@ def run_function_target(target, rpc_request):
         kw = {**kw, 'request': rpc_request}
     log.info("Call rpc servant: %s (%s)", servant_fn, kw)
     result = servant_fn(**kw)
+    if inspect.iscoroutine(result):
+        log.info("Rpc servant %s returned coroutine, running:", servant_fn)
+        result = asyncio.run(result)
     log.info("Rpc servant %s call result: %s", servant_fn, result)
     return result
 
