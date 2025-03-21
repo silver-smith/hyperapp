@@ -34,6 +34,10 @@ class UnboundCommand(UnboundCommandBase):
         super().__init__(d)
         self._ctx_fn = ctx_fn
 
+    @property
+    def fn(self):
+        return self._ctx_fn
+
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.name}: {self._ctx_fn}>"
 
