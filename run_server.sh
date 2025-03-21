@@ -10,6 +10,7 @@ cmd=(
   ./boot.py
   base,rc,common,ui,models,sample,server
   server_main
+  "$@"
   )
 
 cd "$( dirname "$0" )"
