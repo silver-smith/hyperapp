@@ -56,6 +56,7 @@ import:
 - ui.navigator:navigator-view-go_back.command-cfg-item
 - ui.navigator:navigator-view-go_forward.command-cfg-item
 - ui.navigator:navigator-view.view-template
+- ui.peer_label_reg:peer_label_reg.service
 - ui.qt.auto_tabs:auto_tabs-view-close_tab.command-cfg-item
 - ui.qt.auto_tabs:auto_tabs-view-duplicate_tab.command-cfg-item
 - ui.qt.auto_tabs:auto_tabs-view.view-template
@@ -286,6 +287,7 @@ definitions:
       - ui.model_command:model_command_enumerator_reg.service
       - ui.model_command:model_command_reg.service
       - ui.model_layout_reg:model_layout_reg.service
+      - ui.peer_label_reg:peer_label_reg.service
       - ui.selector:selector_reg.service
       - ui.shortcut_reg:shortcut_reg.service
       - ui.system_fn_creg:system_fn_creg.service
