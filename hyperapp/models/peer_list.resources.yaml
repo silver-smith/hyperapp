@@ -49,6 +49,7 @@ definitions:
       - peer_list_reg
       - file_bundle_factory
       - peer_registry
+      - peer_label_reg
   add.model-command:
     type: legacy_type.command:model_command
     value:

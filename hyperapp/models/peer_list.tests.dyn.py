@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from hyperapp.boot.htypes.packet_coders import packet_coders
 
@@ -42,17 +42,23 @@ def file_bundle_factory(generate_rsa_identity, peer_name, path):
     return mock
 
 
+@mark.fixture.obj
+def peer_label_reg():
+    return MagicMock()
+
+
 def test_model(piece):
     item_list = peer_list.peer_list_model(piece)
     assert type(item_list) is list
 
 
-def test_add_localhost(piece):
+def test_add_localhost(peer_label_reg, piece):
     host = 'localhost'
     peer_list.add(piece, host)
+    peer_label_reg.__setitem__.assert_called_once()
 
 
-def test_add_remote(bundler, generate_rsa_identity, piece):
+def test_add_remote(bundler, generate_rsa_identity, peer_label_reg, piece):
     host = 'example-host'
     identity = generate_rsa_identity(fast=True)
     bundle = bundler([mosaic.put(identity.peer.piece)]).bundle
@@ -60,6 +66,7 @@ def test_add_remote(bundler, generate_rsa_identity, piece):
     with patch.object(peer_list, 'subprocess') as subprocess:
         subprocess.check_output.return_value = data_json
         peer_list.add(piece, host)
+    peer_label_reg.__setitem__.assert_called_once()
 
 
 async def test_remove(feed_factory, piece, peer_name):

@@ -102,21 +102,23 @@ def _unpack_bundle(json_data):
 
 
 @mark.command(args=['host'])
-def add(piece, host, peer_list_reg, file_bundle_factory, peer_registry):
+def add(piece, host, peer_list_reg, file_bundle_factory, peer_registry, peer_label_reg):
     log.info("Peer list: Add host: %r", host)
     if host in {'', 'localhost'}:
         path = Path.home() / server_bundle_path
         bundle = file_bundle_factory(path)
         peer = peer_registry.animate(bundle.load_piece())
         log.info("Loaded local server peer from: %s", bundle.path)
-        peer_list_reg.add('localhost', peer)
-        return
-    command = ['ssh', host, 'cat', server_bundle_path]
-    bundle_json = subprocess.check_output(command)
-    peer_ref = _unpack_bundle(bundle_json)
-    peer = peer_registry.invite(peer_ref)
-    log.info("Loaded server %r peer", host)
-    peer_list_reg.add(host, peer)
+        label = 'localhost'
+    else:
+        command = ['ssh', host, 'cat', server_bundle_path]
+        bundle_json = subprocess.check_output(command)
+        peer_ref = _unpack_bundle(bundle_json)
+        peer = peer_registry.invite(peer_ref)
+        log.info("Loaded server %r peer", host)
+        label = host
+    peer_list_reg.add(label, peer)
+    peer_label_reg[peer.piece] = label
 
 
 @mark.command
