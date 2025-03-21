@@ -1,0 +1,32 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.model:remote_model
+- legacy_type.system:actor_template
+definitions:
+  format_remote_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: remote_model.module
+      attr_name: format_remote_model
+  formatter_creg-model-remote_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.model:remote_model
+      function: format_remote_model
+      service_params:
+      - peer_registry
+      - peer_label_reg
+      - format
+  remote_model.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: remote_model
+      file_name: remote_model.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        services.web: builtins:web.service
