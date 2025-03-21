@@ -32,11 +32,21 @@ class BoundRemoteCommand(BoundModelCommand):
         self._remote_peer = remote_peer
 
     async def _run(self):
+        try:
+            model = self._ctx.model
+        except KeyError:
+            ctx = self._ctx
+        else:
+            real_model = web.summon(model.model)
+            ctx = self._ctx.clone_with(
+                model=real_model,
+                piece=real_model,
+                )
         log.info("Run remote command: %r", self)
         rpc_call = self._rpc_call_factory(
             sender_identity=self._identity,
             receiver_peer=self._remote_peer,
-            servant_ref=self._ctx_fn.partial_ref(self._ctx),
+            servant_ref=self._ctx_fn.partial_ref(ctx),
             )
         result = rpc_call()
         log.info("Run remote command %r result: [%s] %r", self, type(result), result)
