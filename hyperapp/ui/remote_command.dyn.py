@@ -53,12 +53,17 @@ class BoundRemoteCommand(BoundModelCommand):
         return result
 
 
+@mark.service
+def remote_command_from_model_command(rpc_call_factory, identity, remote_peer, command):
+    return UnboundRemoteCommand(rpc_call_factory, command.d, command.fn, command.properties, identity, remote_peer)
+
+
 @mark.command_enum
-def remote_command_enum(piece, identity, peer_registry, rpc_call_factory, model_command_reg):
+def remote_command_enum(piece, identity, peer_registry, model_command_reg, remote_command_from_model_command):
     model, model_t = web.summon_with_t(piece.model)
     remote_peer = peer_registry.invite(piece.remote_peer)
     command_list = model_command_reg(model_t)
     return [
-        UnboundRemoteCommand(rpc_call_factory, cmd.d, cmd.fn, cmd.properties, identity, remote_peer)
-        for cmd in command_list
+        remote_command_from_model_command(identity, remote_peer, command)
+        for command in command_list
         ]

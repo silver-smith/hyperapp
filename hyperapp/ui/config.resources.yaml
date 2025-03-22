@@ -103,6 +103,7 @@ import:
 - ui.record_adapter:ui_type_creg-model-record_ui_t.actor-template
 - ui.record_field_adapter:ui_adapter_creg-record_field_adapter-record_field_adapter.actor-template
 - ui.remote_command:model-remote_model-remote_command_enum.command-cfg-item
+- ui.remote_command:remote_command_from_model_command.service
 - ui.remote_model:formatter_creg-model-remote_model.actor-template
 - ui.selector:cfg_item_creg-selector-template.actor-template
 - ui.selector:selector_reg.service
@@ -290,6 +291,7 @@ definitions:
       - ui.model_command:model_command_reg.service
       - ui.model_layout_reg:model_layout_reg.service
       - ui.peer_label_reg:peer_label_reg.service
+      - ui.remote_command:remote_command_from_model_command.service
       - ui.selector:selector_reg.service
       - ui.shortcut_reg:shortcut_reg.service
       - ui.system_fn_creg:system_fn_creg.service
