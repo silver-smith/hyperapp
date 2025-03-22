@@ -1,4 +1,5 @@
 import logging
+import inspect
 import weakref
 from functools import cached_property
 
@@ -391,7 +392,10 @@ class BoundCrudCommitCommand(BoundCommandBase):
             self._ctx, self._model, self._args,
             kw={self._commit_value_field: value},
             )
-        return self._commit_fn.call(fn_ctx)
+        result = self._commit_fn.call(fn_ctx)
+        if inspect.iscoroutine(result):
+            result = await result
+        return result
 
     @staticmethod
     def _pick_ctx_value(ctx):
