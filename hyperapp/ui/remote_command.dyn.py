@@ -1,5 +1,6 @@
 import logging
 
+from . import htypes
 from .services import (
     deduce_t,
     web,
@@ -37,11 +38,14 @@ class BoundRemoteCommand(BoundModelCommand):
         except KeyError:
             ctx = self._ctx
         else:
-            real_model = web.summon(model.model)
-            ctx = self._ctx.clone_with(
-                model=real_model,
-                piece=real_model,
-                )
+            if isinstance(model, htypes.model.remote_model):
+                real_model = web.summon(model.model)
+                ctx = self._ctx.clone_with(
+                    model=real_model,
+                    piece=real_model,
+                    )
+            else:
+                ctx = self._ctx
         log.info("Run remote command: %r", self)
         rpc_call = self._rpc_call_factory(
             sender_identity=self._identity,

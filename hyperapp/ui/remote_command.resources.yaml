@@ -27,6 +27,7 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
+        htypes.model.remote_model: legacy_type.model:remote_model
         services.deduce_t: builtins:deduce_t.service
         services.web: builtins:web.service
   remote_command_enum:

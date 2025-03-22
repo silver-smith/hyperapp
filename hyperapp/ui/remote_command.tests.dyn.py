@@ -2,17 +2,36 @@ from . import htypes
 from .services import (
     mosaic,
     )
+from .code.mark import mark
+from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
 from .tested.code import remote_command
 
 
 
+@mark.fixture
+def rpc_call_factory(receiver_peer, sender_identity, servant_ref):
+    def call():
+        return "Sample result"
+    return call
+
+
 def _sample_fn():
     return 'sample-fn'
 
 
-def test_remote_command_from_model_command(partial_ref, generate_rsa_identity, remote_command_from_model_command):
+@mark.fixture
+def remote_model(generate_rsa_identity):
+    remote_identity = generate_rsa_identity(fast=True)
+    model = htypes.remote_command_tests.sample_model()
+    return htypes.model.remote_model(
+        model=mosaic.put(model),
+        remote_peer=mosaic.put(remote_identity.peer.piece),
+        )
+
+
+async def test_remote_command_from_model_command(partial_ref, generate_rsa_identity, remote_command_from_model_command, remote_model):
     my_identity = generate_rsa_identity(fast=True)
     remote_identity = generate_rsa_identity(fast=True)
     fn = ContextFn(
@@ -30,14 +49,15 @@ def test_remote_command_from_model_command(partial_ref, generate_rsa_identity, r
         )
     command = remote_command_from_model_command(my_identity, remote_identity.peer, model_command)
     assert isinstance(command, remote_command.UnboundRemoteCommand)
-
-
-def test_enum(generate_rsa_identity):
-    my_identity = generate_rsa_identity(fast=True)
-    remote_identity = generate_rsa_identity(fast=True)
-    model = htypes.remote_command_tests.sample_model()
-    remote_model = htypes.model.remote_model(
-        model=mosaic.put(model),
-        remote_peer=mosaic.put(remote_identity.peer.piece),
+    # Test run method, pick model.remote_model type.
+    ctx = Context(
+        model=remote_model,
         )
+    bound_command = command.bind(ctx)
+    result = await bound_command.run()
+    assert result == "Sample result"
+
+
+def test_enum(generate_rsa_identity, remote_model):
+    my_identity = generate_rsa_identity(fast=True)
     command_list = remote_command.remote_command_enum(remote_model, my_identity)
