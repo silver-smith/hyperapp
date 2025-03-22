@@ -1,3 +1,5 @@
+import os
+
 from . import htypes
 from .code.mark import mark
 
@@ -35,3 +37,18 @@ async def details(piece, current_idx):
 @mark.command
 async def sample_tree_info(piece):
     return f"Sample tree piece: {piece}"
+
+
+@mark.global_command
+def system_info():
+    uname = os.uname()
+    info = {
+        'user': os.getlogin(),
+        'nodename': uname.nodename,
+        'version': uname.version,
+        'cpu_count': str(os.cpu_count()),
+        }
+    return [
+        htypes.sample_list.item(idx, key, value)
+        for idx, (key, value) in enumerate(info.items())
+        ]

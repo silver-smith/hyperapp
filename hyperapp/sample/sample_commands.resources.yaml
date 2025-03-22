@@ -4,6 +4,7 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.sample_commands:details_d
@@ -177,3 +178,33 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: show_state.fn
+  system_info:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: system_info
+  system_info.d:
+    type: system_info_d
+    value: {}
+  system_info.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: system_info
+      ctx_params: []
+      service_params: []
+  system_info.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: system_info.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: system_info.fn
+  system_info_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_commands
+      name: system_info_d
+      base: null
+      fields: {}
