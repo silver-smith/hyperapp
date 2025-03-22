@@ -69,6 +69,7 @@ def test_add_remote(bundler, generate_rsa_identity, peer_label_reg, piece):
     peer_label_reg.__setitem__.assert_called_once()
 
 
+
 async def test_remove(feed_factory, piece, peer_name):
     feed = feed_factory(piece)
     current_idx = 0
@@ -81,18 +82,30 @@ async def test_remove(feed_factory, piece, peer_name):
     await feed.wait_for_diffs(count=1)
 
 
-def test_open_model(generate_rsa_identity, piece):
+@mark.fixture
+def current_item(generate_rsa_identity):
     identity = generate_rsa_identity(fast=True)
-    current_item = htypes.peer_list.item(
+    return htypes.peer_list.item(
         name="Sample peer",
         peer=mosaic.put(identity.peer.piece),
         peer_repr="<unused>",
         )
+
+
+def test_open_model(piece, current_item):
     model = htypes.model_list.model_arg(
         model_t=pyobj_creg.actor_to_ref(htypes.peer_list_tests.sample_model),
         )
     remote_model = peer_list.open_model(piece, current_item, model)
     assert isinstance(remote_model, htypes.model.remote_model)
+
+
+def test_run_global_command(piece, current_item):
+    command_d = htypes.peer_list_tests.sample_command_d()
+    command = htypes.global_commands.command_arg(
+        d=mosaic.put(command_d),
+        )
+    peer_list.run_command(piece, current_item, command)
 
 
 def test_open():

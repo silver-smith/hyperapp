@@ -11,6 +11,7 @@ from .services import (
     mosaic,
     pyobj_creg,
     unbundler,
+    web,
     )
 from .code.mark import mark
 from .code.list_diff import ListDiff
@@ -142,6 +143,13 @@ def open_model(piece, current_item, model, peer_registry):
         model=mosaic.put(model),
         remote_peer=mosaic.put(peer.piece),
         )
+
+
+@mark.command(args=['command'])
+def run_command(piece, current_item, command, peer_registry):
+    command_d = web.summon(command.d)
+    peer = peer_registry.invite(current_item.peer)
+    log.info("Peer list: Run global command %s @ %s (%s)", command_d, current_item.name, repr(peer))
 
 
 @mark.global_command

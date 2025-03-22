@@ -55,6 +55,7 @@ import:
 - models.peer_list:peer_list-model-add.command-cfg-item
 - models.peer_list:peer_list-model-open_model.command-cfg-item
 - models.peer_list:peer_list-model-remove.command-cfg-item
+- models.peer_list:peer_list-model-run_command.command-cfg-item
 - models.peer_list:peer_list-model.feed-template
 - models.peer_list:peer_list-model.model-cfg-item
 - models.peer_list:peer_list_reg.service
@@ -132,6 +133,7 @@ definitions:
       - models.peer_list:peer_list-model-add.command-cfg-item
       - models.peer_list:peer_list-model-open_model.command-cfg-item
       - models.peer_list:peer_list-model-remove.command-cfg-item
+      - models.peer_list:peer_list-model-run_command.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
   model_reg:
     type: legacy_type.system:item_list_config

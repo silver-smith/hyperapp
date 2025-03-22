@@ -5,6 +5,7 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:unbundler.service
+- builtins:web.service
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:bundle
@@ -17,6 +18,7 @@ import:
 - legacy_type.command:model_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
+- legacy_type.global_commands:command_arg
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model:remote_model
@@ -177,6 +179,13 @@ definitions:
       name: open_peer_list_d
       base: null
       fields: {}
+  open_run_command_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: peer_list
+      name: open_run_command_d
+      base: null
+      fields: {}
   peer_list-model-add.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -192,6 +201,11 @@ definitions:
     value:
       t: legacy_type.peer_list:model
       command: remove.model-command
+  peer_list-model-run_command.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.peer_list:model
+      command: run_command.model-command
   peer_list-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -240,6 +254,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.unbundler: builtins:unbundler.service
+        services.web: builtins:web.service
   peer_list_model:
     type: legacy_type.builtin:attribute
     value:
@@ -294,6 +309,51 @@ definitions:
     value:
       module_name: peer_list
       name: remove_d
+      base: null
+      fields: {}
+  run_command:
+    type: legacy_type.builtin:attribute
+    value:
+      object: peer_list.module
+      attr_name: run_command
+  run_command.commit-d:
+    type: run_command_d
+    value: {}
+  run_command.commit-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: run_command
+      ctx_params:
+      - piece
+      - current_item
+      - command
+      service_params:
+      - peer_registry
+  run_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: run_command.open-d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: run_command.open-fn
+  run_command.open-d:
+    type: open_run_command_d
+    value: {}
+  run_command.open-fn:
+    type: legacy_type.command:args_picker_command_fn
+    value:
+      name: run_command
+      args:
+        command: legacy_type.global_commands:command_arg
+      commit_command_d: run_command.commit-d
+      commit_fn: run_command.commit-fn
+  run_command_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: peer_list
+      name: run_command_d
       base: null
       fields: {}
   system-dict_config_ctl.ctl:
