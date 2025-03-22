@@ -327,8 +327,12 @@ definitions:
       - piece
       - current_item
       - command
+      - identity
+      - ctx
       service_params:
       - peer_registry
+      - global_model_command_reg
+      - remote_command_from_model_command
   run_command.model-command:
     type: legacy_type.command:model_command
     value:

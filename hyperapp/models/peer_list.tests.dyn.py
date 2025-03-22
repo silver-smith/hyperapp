@@ -8,6 +8,9 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.context import Context
+from .code.system_fn import ContextFn
+from .code.model_command import UnboundModelCommand
 from .fixtures import feed_fixtures
 from .tested.code import peer_list
 
@@ -100,12 +103,49 @@ def test_open_model(piece, current_item):
     assert isinstance(remote_model, htypes.model.remote_model)
 
 
-def test_run_global_command(piece, current_item):
-    command_d = htypes.peer_list_tests.sample_command_d()
+def _sample_fn():
+    return 'sample-fn'
+
+
+@mark.fixture
+def command_d():
+    return htypes.peer_list_tests.sample_command_d()
+
+
+@mark.config_fixture('global_model_command_reg')
+def global_model_command_reg_config(partial_ref, command_d):
+    fn = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=(),
+        service_params=(),
+        raw_fn=_sample_fn,
+        bound_fn=_sample_fn,
+        )
+    command = UnboundModelCommand(
+        d=command_d,
+        ctx_fn=fn,
+        properties=htypes.command.properties(False, False, False),
+        )
+    return [command]
+
+
+@mark.fixture
+def rpc_call_factory(receiver_peer, sender_identity, servant_ref):
+    def call():
+        return "Sample result"
+    return call
+
+
+async def test_run_global_command(generate_rsa_identity, piece, current_item, command_d):
+    identity = generate_rsa_identity(fast=True)
+    ctx = Context(
+        identity=identity,
+        )
     command = htypes.global_commands.command_arg(
         d=mosaic.put(command_d),
         )
-    peer_list.run_command(piece, current_item, command)
+    result = await peer_list.run_command(piece, current_item, command, identity, ctx)
+    assert result == "Sample result"
 
 
 def test_open():
