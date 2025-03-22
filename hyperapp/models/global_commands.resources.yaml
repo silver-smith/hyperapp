@@ -11,12 +11,45 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command_list_model:item
+- legacy_type.global_commands:command_arg
 - legacy_type.global_commands:model
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
+- legacy_type.selector:template
 - legacy_type.system_fn:ctx_fn
 - models.command_list_model:command_list_model.module
 definitions:
+  global_command_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: global_commands.module
+      attr_name: global_command_get
+  global_command_pick:
+    type: legacy_type.builtin:attribute
+    value:
+      object: global_commands.module
+      attr_name: global_command_pick
+  global_commands-command_arg.selector-template:
+    type: legacy_type.selector:template
+    value:
+      value_t: legacy_type.global_commands:command_arg
+      get_fn: global_commands-command_arg.selector.get.system-fn
+      pick_fn: global_commands-command_arg.selector.pick.system-fn
+  global_commands-command_arg.selector.get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: global_command_get
+      ctx_params:
+      - value
+      service_params: []
+  global_commands-command_arg.selector.pick.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: global_command_pick
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   global_commands-model-run_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -54,6 +87,7 @@ definitions:
       import_list:
         code.command_list_model: models.command_list_model:command_list_model.module
         code.mark: base.mark:mark.module
+        htypes.global_commands.command_arg: legacy_type.global_commands:command_arg
         htypes.global_commands.model: legacy_type.global_commands:model
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service

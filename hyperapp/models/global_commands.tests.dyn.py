@@ -91,3 +91,29 @@ async def test_run_command(lcs, piece):
     result = await global_commands.run_command(piece, current_item, lcs, ctx.push())
     navigator.view.open.assert_called_once()
     assert navigator.view.open.call_args.args[1] == 'sample-fn: a-service'
+
+
+def test_selector_get(piece):
+    d = htypes.global_commands_tests.sample_model_command_d()
+    value = htypes.global_commands.command_arg(
+        d=mosaic.put(d),
+        )
+    model = global_commands.global_command_get(value)
+    assert model == piece
+
+
+def test_selector_pick(piece):
+    current_item = htypes.command_list_model.item(
+        ui_command_d=mosaic.put(htypes.global_commands_tests.sample_command_d()),
+        model_command_d=mosaic.put(htypes.global_commands_tests.sample_model_command_d()),
+        name="<unused>",
+        groups="<unused>",
+        repr="<unused>",
+        shortcut="<unused>",
+        text="<unused>",
+        tooltip="<unused>",
+        )
+    value = global_commands.global_command_pick(piece, current_item)
+    value == htypes.global_commands.command_arg(
+        d=mosaic.put(htypes.global_commands_tests.sample_model_command_d()),
+        )

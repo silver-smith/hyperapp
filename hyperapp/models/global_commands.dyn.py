@@ -40,6 +40,18 @@ async def run_command(piece, current_item, lcs, ctx, ui_global_command_items):
     return piece
 
 
+@mark.selector.get
+def global_command_get(value):
+    return htypes.global_commands.model()
+
+
+@mark.selector.pick
+def global_command_pick(piece, current_item):
+    return htypes.global_commands.command_arg(
+        d=current_item.model_command_d,
+        )
+
+
 @mark.global_command
 def open_global_commands():
     return htypes.global_commands.model()

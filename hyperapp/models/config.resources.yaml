@@ -36,6 +36,7 @@ import:
 - models.file_bundles:file_bundles-view-open.command-cfg-item
 - models.file_bundles:file_bundles-view.model-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
+- models.global_commands:global_commands-command_arg.selector-template
 - models.global_commands:global_commands-model-run_command.command-cfg-item
 - models.global_commands:global_commands-model.model-cfg-item
 - models.global_commands:open_global_commands.global-model-command
@@ -154,6 +155,7 @@ definitions:
     value:
       items:
       - models.config.config_layer_list:config_layer_list-layer.selector-template
+      - models.global_commands:global_commands-command_arg.selector-template
       - models.model_list:model_list-model_arg.selector-template
   system:
     type: legacy_type.system:item_list_config
