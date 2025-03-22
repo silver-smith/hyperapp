@@ -58,3 +58,11 @@ def add_mark(view, state, hook, current_model, ctx, view_reg):
         )
     new_view = view_reg.animate(new_view_piece, ctx)
     hook.replace_view(new_view, new_state)
+
+
+@mark.ui_command
+def remove_mark(view, state, hook, ctx, view_reg):
+    new_view_piece = web.summon(view.piece.base)
+    new_state = web.summon(state.base)
+    new_view = view_reg.animate(new_view_piece, ctx)
+    hook.replace_view(new_view, new_state)

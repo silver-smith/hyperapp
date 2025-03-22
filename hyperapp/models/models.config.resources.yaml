@@ -175,7 +175,7 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: models.model_list:open_model_list.d
-      value: shortcut_Alt_Shift_M
+      value: shortcut_Ctrl_Alt_M
   config_item-models.peer_list-add.commit-d:
     type: legacy_type.data_service:config_item
     value:
@@ -249,15 +249,15 @@ definitions:
   shortcut_Alt_Shift_C:
     type: legacy_type.builtin:string
     value: Alt+Shift+C
-  shortcut_Alt_Shift_M:
-    type: legacy_type.builtin:string
-    value: Alt+Shift+M
   shortcut_C:
     type: legacy_type.builtin:string
     value: C
   shortcut_Ctrl_Alt_C:
     type: legacy_type.builtin:string
     value: Ctrl+Alt+C
+  shortcut_Ctrl_Alt_M:
+    type: legacy_type.builtin:string
+    value: Ctrl+Alt+M
   shortcut_Del:
     type: legacy_type.builtin:string
     value: Del

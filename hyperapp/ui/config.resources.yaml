@@ -3,6 +3,7 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- ui.arg_mark:arg_mark-view-remove_mark.command-cfg-item
 - ui.arg_mark:arg_mark-view.view-template
 - ui.arg_mark:navigator-view-add_mark.command-cfg-item
 - ui.column_format:formatter_creg-column-column_k.actor-template
@@ -399,6 +400,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.arg_mark:arg_mark-view-remove_mark.command-cfg-item
       - ui.arg_mark:navigator-view-add_mark.command-cfg-item
       - ui.navigator:navigator-view-go_back.command-cfg-item
       - ui.navigator:navigator-view-go_forward.command-cfg-item

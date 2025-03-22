@@ -50,3 +50,20 @@ def test_add_mark(view_reg, model):
     hook = Mock()
     result = arg_mark.add_mark(navigator, state, hook, model, ctx)
     hook.replace_view.assert_called_once()
+
+
+def test_remove_mark(view_reg, model):
+    ctx = Context()
+    label_view = htypes.label.view("Sample label")
+    label_state = htypes.label.state()
+    view_piece = htypes.arg_mark.view(
+        base=mosaic.put(label_view),
+        model=mosaic.put(model),
+        )
+    state = htypes.context_view.state(
+        base=mosaic.put(label_state),
+        )
+    view = view_reg.animate(view_piece, ctx)
+    hook = Mock()
+    result = arg_mark.remove_mark(view, state, hook, ctx)
+    hook.replace_view.assert_called_once()
