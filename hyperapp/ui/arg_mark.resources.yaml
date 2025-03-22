@@ -1,0 +1,98 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:deduce_t.service
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.arg_mark:view
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
+- legacy_type.context_view:state
+- legacy_type.navigator:view
+- legacy_type.system_fn:ctx_fn
+- ui.qt.context_view:context_view.module
+definitions:
+  MarkView:
+    type: legacy_type.builtin:attribute
+    value:
+      object: arg_mark.module
+      attr_name: MarkView
+  MarkView.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: MarkView
+      attr_name: from_piece
+  MarkView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: MarkView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params:
+      - format
+      - view_reg
+  add_mark:
+    type: legacy_type.builtin:attribute
+    value:
+      object: arg_mark.module
+      attr_name: add_mark
+  add_mark.d:
+    type: add_mark_d
+    value: {}
+  add_mark.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: add_mark
+      ctx_params:
+      - view
+      - state
+      - hook
+      - current_model
+      - ctx
+      service_params:
+      - view_reg
+  add_mark.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: add_mark.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: add_mark.fn
+  add_mark_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: arg_mark
+      name: add_mark_d
+      base: null
+      fields: {}
+  arg_mark-view.view-template:
+    type: legacy_type.cfg_item:typed_fn_cfg_item
+    value:
+      t: legacy_type.arg_mark:view
+      system_fn: MarkView_from_piece.system-fn
+  arg_mark.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: arg_mark
+      file_name: arg_mark.dyn.py
+      import_list:
+        code.context_view: ui.qt.context_view:context_view.module
+        code.mark: base.mark:mark.module
+        htypes.arg_mark.view: legacy_type.arg_mark:view
+        htypes.context_view.state: legacy_type.context_view:state
+        services.deduce_t: builtins:deduce_t.service
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+  navigator-view-add_mark.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.navigator:view
+      command: add_mark.ui-command

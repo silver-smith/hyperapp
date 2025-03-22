@@ -3,6 +3,8 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- ui.arg_mark:arg_mark-view.view-template
+- ui.arg_mark:navigator-view-add_mark.command-cfg-item
 - ui.column_format:formatter_creg-column-column_k.actor-template
 - ui.column_resource_name:resource_name_creg-column-column_k.actor-template
 - ui.column_visible_reg:column_visible_reg.service
@@ -375,6 +377,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.arg_mark:arg_mark-view.view-template
       - ui.crud.crud:crud-view.view-template
       - ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
       - ui.navigator:navigator-view.view-template
@@ -396,6 +399,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.arg_mark:navigator-view-add_mark.command-cfg-item
       - ui.navigator:navigator-view-go_back.command-cfg-item
       - ui.navigator:navigator-view-go_forward.command-cfg-item
       - ui.qt.auto_tabs:auto_tabs-view-close_tab.command-cfg-item
