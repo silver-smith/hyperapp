@@ -65,9 +65,28 @@ def model_command_enumerator_from_piece(piece, system_fn_creg):
         )
 
 
+class CommandDict:
+
+    def __init__(self, command_list):
+        self._command_list = command_list
+
+    def __getitem__(self, d):
+        return self._command_dict[d]
+
+    def values(self):
+        return self._command_list
+
+    @property
+    def _command_dict(self):
+        d_to_command = {}
+        for command in self._command_list:
+            d_to_command[command.d] = command
+        return d_to_command
+
+
 @mark.service(ctl=FlatListConfigCtl())
 def global_model_command_reg(config):
-    return config
+    return CommandDict(config)
 
 
 @mark.service(ctl=DictListConfigCtl())

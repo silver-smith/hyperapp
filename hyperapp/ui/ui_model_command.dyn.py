@@ -316,14 +316,14 @@ class ModelCommandItemList(CommandItemList):
 
     @property
     def _all_model_commands(self):
-        return [*self._global_model_command_reg, *self._model_commands]
+        return [*self._global_model_command_reg.values(), *self._model_commands]
 
 
 class GlobalCommandItemList(CommandItemList):
 
     @property
     def _all_model_commands(self):
-        return self._global_model_command_reg
+        return self._global_model_command_reg.values()
 
         
 @mark.service

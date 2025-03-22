@@ -138,7 +138,7 @@ def unwrap_master_details(model, view, state, hook, ctx, view_reg):
 
 def _all_model_commands(global_model_command_reg, get_model_commands, model_t, command_ctx):
     command_list = [
-        *global_model_command_reg,
+        *global_model_command_reg.values(),
         *get_model_commands(model_t, command_ctx),
         ]
     return [
