@@ -45,6 +45,11 @@ class Web(object):
         value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
         return (value, t)
 
+    def summon_with_t_opt(self, ref, expected_type=None):
+        if ref is None:
+            return (None, None)
+        return self.summon_with_t(ref, expected_type)
+
     def summon(self, ref, expected_type=None):
         value, t = self.summon_with_t(ref, expected_type)
         return value
