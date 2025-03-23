@@ -14,6 +14,10 @@ from .code.context_view import ContextView
 log = logging.getLogger(__name__)
 
 
+def mark_name(model_t):
+    return f'mark-{model_t.module_name}-{model_t.name}'
+
+
 class MarkView(ContextView):
 
     @classmethod
@@ -28,7 +32,7 @@ class MarkView(ContextView):
         model_t = deduce_t(model)
         super().__init__(base_view, label=f"Mark: {model_label}")
         self._model = model
-        self._mark_name = f'mark-{model_t.module_name}-{model_t.name}'
+        self._mark_name = mark_name(model_t)
 
     @property
     def piece(self):
