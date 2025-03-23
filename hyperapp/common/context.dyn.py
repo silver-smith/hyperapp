@@ -20,6 +20,9 @@ class Context:
             raise AttributeError(name)
         return self._get(name)
 
+    def __getitem__(self, name):
+        return self._get(name)
+
     def __contains__(self, name):
         if self._next:
             if name in self._next:
@@ -35,8 +38,13 @@ class Context:
     def update(self, **kw):
         self._items.update(kw)
 
-    def clone_with(self, **kw):
-        return Context({**self._items, **kw}, self._next)
+    def clone_with(self, items=None, **kw):
+        new_items = {
+            **self._items,
+            **(items or {}),
+            **kw,
+            }
+        return Context(new_items, self._next)
 
     def copy_from(self, ctx):
         return Context({**self._items, **ctx._items}, self._next)
