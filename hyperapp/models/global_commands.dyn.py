@@ -60,3 +60,10 @@ def open_global_commands():
 @mark.actor.formatter_creg
 def format_model(piece):
     return "Global commands"
+
+
+@mark.actor.formatter_creg
+def format_command_arg(piece, format):
+    command_d = web.summon(piece.d)
+    command_d_title = format(command_d)
+    return f"Command: {command_d_title}"

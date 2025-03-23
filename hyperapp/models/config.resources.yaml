@@ -36,6 +36,7 @@ import:
 - models.file_bundles:file_bundles-view-open.command-cfg-item
 - models.file_bundles:file_bundles-view.model-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
+- models.global_commands:formatter_creg-global_commands-command_arg.actor-template
 - models.global_commands:formatter_creg-global_commands-model.actor-template
 - models.global_commands:global_commands-command_arg.selector-template
 - models.global_commands:global_commands-model-run_command.command-cfg-item
@@ -99,6 +100,7 @@ definitions:
       items:
       - models.config.config_item_list:formatter_creg-config_item_list-model.actor-template
       - models.data_browser:formatter_creg-data_browser-record_view.actor-template
+      - models.global_commands:formatter_creg-global_commands-command_arg.actor-template
       - models.global_commands:formatter_creg-global_commands-model.actor-template
       - models.model_list:formatter_creg-model_list-model.actor-template
       - models.peer_list:formatter_creg-peer_list-model.actor-template

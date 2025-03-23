@@ -122,3 +122,12 @@ def test_selector_pick(piece):
 def test_format_model(piece):
     title = global_commands.format_model(piece)
     assert type(title) is str
+
+
+def test_command_arg(piece):
+    d = htypes.global_commands_tests.sample_model_command_d()
+    value = htypes.global_commands.command_arg(
+        d=mosaic.put(d),
+        )
+    title = global_commands.format_command_arg(value)
+    assert type(title) is str

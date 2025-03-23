@@ -20,11 +20,23 @@ import:
 - legacy_type.system_fn:ctx_fn
 - models.command_list_model:command_list_model.module
 definitions:
+  format_command_arg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: global_commands.module
+      attr_name: format_command_arg
   format_model:
     type: legacy_type.builtin:attribute
     value:
       object: global_commands.module
       attr_name: format_model
+  formatter_creg-global_commands-command_arg.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.global_commands:command_arg
+      function: format_command_arg
+      service_params:
+      - format
   formatter_creg-global_commands-model.actor-template:
     type: legacy_type.system:actor_template
     value:
