@@ -60,6 +60,8 @@ import:
 - models.peer_list:peer_list-model.model-cfg-item
 - models.peer_list:peer_list_reg.service
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
+- models.show_current_context:formatter_creg-show_current_context-model.actor-template
+- models.show_current_context:show_current_context-model.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 definitions:
   command_creg:
@@ -98,6 +100,7 @@ definitions:
       - models.data_browser:formatter_creg-data_browser-record_view.actor-template
       - models.model_list:formatter_creg-model_list-model.actor-template
       - models.peer_list:formatter_creg-peer_list-model.actor-template
+      - models.show_current_context:formatter_creg-show_current_context-model.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -152,6 +155,7 @@ definitions:
       - models.model_commands:model_commands-model.model-cfg-item
       - models.model_list:model_list-model.model-cfg-item
       - models.peer_list:peer_list-model.model-cfg-item
+      - models.show_current_context:show_current_context-model.model-cfg-item
   selector_reg:
     type: legacy_type.system:item_list_config
     value:

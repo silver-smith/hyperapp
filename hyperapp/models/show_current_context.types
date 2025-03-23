@@ -1,3 +1,6 @@
 item = record:
   name: string
   value: string
+
+model = record:
+  items: item list
