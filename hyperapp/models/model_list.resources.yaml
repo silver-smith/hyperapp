@@ -23,11 +23,22 @@ definitions:
     value:
       object: model_list.module
       attr_name: format_model
+  format_model_arg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_list.module
+      attr_name: format_model_arg
   formatter_creg-model_list-model.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.model_list:model
       function: format_model
+      service_params: []
+  formatter_creg-model_list-model_arg.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.model_list:model_arg
+      function: format_model_arg
       service_params: []
   model_list-model.list-ui-t:
     type: legacy_type.model:list_ui_t

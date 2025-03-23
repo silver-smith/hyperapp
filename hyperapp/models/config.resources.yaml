@@ -49,6 +49,7 @@ import:
 - models.model_commands:model_commands-model.model-cfg-item
 - models.model_commands:open_model_commands.global-model-command
 - models.model_list:formatter_creg-model_list-model.actor-template
+- models.model_list:formatter_creg-model_list-model_arg.actor-template
 - models.model_list:model_list-model.model-cfg-item
 - models.model_list:model_list-model_arg.selector-template
 - models.model_list:open_model_list.global-model-command
@@ -103,6 +104,7 @@ definitions:
       - models.global_commands:formatter_creg-global_commands-command_arg.actor-template
       - models.global_commands:formatter_creg-global_commands-model.actor-template
       - models.model_list:formatter_creg-model_list-model.actor-template
+      - models.model_list:formatter_creg-model_list-model_arg.actor-template
       - models.peer_list:formatter_creg-peer_list-model.actor-template
       - models.show_current_context:formatter_creg-show_current_context-model.actor-template
   global_model_command_reg:

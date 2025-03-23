@@ -36,6 +36,12 @@ def format_model(piece):
     return "Model list"
 
 
+@mark.actor.formatter_creg
+def format_model_arg(piece):
+    model_t = pyobj_creg.invite(piece.model_t)
+    return f"Model: {model_t.full_name}"
+
+
 @mark.selector.get
 def model_list_get(value):
     return htypes.model_list.model()

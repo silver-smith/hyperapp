@@ -26,6 +26,14 @@ def test_format_model(piece):
     assert type(title) is str
 
 
+def test_format_model_arg():
+    value = htypes.model_list.model_arg(
+        model_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+        )
+    title = model_list.format_model_arg(value)
+    assert type(title) is str
+
+
 def test_selector_get():
     value = htypes.model_list.model_arg(
         model_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
