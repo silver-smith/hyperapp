@@ -30,15 +30,16 @@ class MarkView(ContextView):
         base_view = view_reg.invite(piece.base, ctx)
         model, model_t = web.summon_with_t(piece.model)
         value, value_t = web.summon_with_t_opt(piece.value)
+        mark_label = format(model)
         items = {}
         items[model_mark_name(model_t)] = model
         if value is not None:
             items[value_mark_name(value_t)] = value
-        model_label = format(model)
-        return cls(base_view, model, value, items, model_label)
+            mark_label += ", " + format(value)
+        return cls(base_view, model, value, items, mark_label)
 
-    def __init__(self, base_view, model, value, items, model_label):
-        super().__init__(base_view, label=f"Mark: {model_label}")
+    def __init__(self, base_view, model, value, items, mark_label):
+        super().__init__(base_view, label=f"Mark: {mark_label}")
         self._model = model
         self._value = value
         self._items = items
