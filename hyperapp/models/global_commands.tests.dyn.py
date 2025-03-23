@@ -117,3 +117,8 @@ def test_selector_pick(piece):
     value == htypes.global_commands.command_arg(
         d=mosaic.put(htypes.global_commands_tests.sample_model_command_d()),
         )
+
+
+def test_format_model(piece):
+    title = global_commands.format_model(piece)
+    assert type(title) is str

@@ -55,3 +55,8 @@ def global_command_pick(piece, current_item):
 @mark.global_command
 def open_global_commands():
     return htypes.global_commands.model()
+
+
+@mark.actor.formatter_creg
+def format_model(piece):
+    return "Global commands"

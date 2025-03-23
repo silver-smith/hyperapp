@@ -16,9 +16,21 @@ import:
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.selector:template
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - models.command_list_model:command_list_model.module
 definitions:
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: global_commands.module
+      attr_name: format_model
+  formatter_creg-global_commands-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.global_commands:model
+      function: format_model
+      service_params: []
   global_command_get:
     type: legacy_type.builtin:attribute
     value:
