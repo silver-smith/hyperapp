@@ -1,3 +1,5 @@
+from hyperapp.boot.htypes import TRecord
+
 from .services import (
     deduce_t,
     )
@@ -40,11 +42,14 @@ class SelectorGetProbe(SelectorProbe):
             raise RuntimeError(f"{self._fn}: Expected single non-service parameter, 'value': {params.ctx_names}")
         value = params.values['value']
         value_t = deduce_t(value)
+        model_t = deduce_t(result)
+        assert isinstance(model_t, TRecord), model_t
         ctr = SelectorGetTemplateCtr(
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             service_params=params.service_names,
             value_t=value_t,
+            model_t=model_t,
             )
         self._ctr_collector.add_constructor(ctr)
 

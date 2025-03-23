@@ -34,6 +34,7 @@ definitions:
     type: legacy_type.selector:template
     value:
       value_t: legacy_type.lcs_layer:layer
+      model_t: legacy_type.lcs_layer:model
       get_fn: lcs_layer-layer.selector.get.system-fn
       pick_fn: lcs_layer-layer.selector.pick.system-fn
   lcs_layer-layer.selector.get.system-fn:

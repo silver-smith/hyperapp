@@ -55,6 +55,7 @@ definitions:
     type: legacy_type.selector:template
     value:
       value_t: legacy_type.model_list:model_arg
+      model_t: legacy_type.model_list:model
       get_fn: model_list-model_arg.selector.get.system-fn
       pick_fn: model_list-model_arg.selector.pick.system-fn
   model_list-model_arg.selector.get.system-fn:

@@ -3,6 +3,7 @@ get_ctr = record:
   attr_qual_name: string list
   service_params: string list
   value_t: ref
+  model_t: ref
 
 pick_ctr = record:
   module_name: string

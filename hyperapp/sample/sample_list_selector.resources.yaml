@@ -23,6 +23,7 @@ definitions:
     type: legacy_type.selector:template
     value:
       value_t: legacy_type.sample_list_selector:item
+      model_t: legacy_type.sample_list:sample_list
       get_fn: sample_list_selector-item.selector.get.system-fn
       pick_fn: sample_list_selector-item.selector.pick.system-fn
   sample_list_selector-item.selector.get.system-fn:

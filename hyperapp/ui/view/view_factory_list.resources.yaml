@@ -70,6 +70,7 @@ definitions:
     type: legacy_type.selector:template
     value:
       value_t: legacy_type.view_factory:factory
+      model_t: legacy_type.view_factory_list:model
       get_fn: view_factory-factory.selector.get.system-fn
       pick_fn: view_factory-factory.selector.pick.system-fn
   view_factory-factory.selector.get.system-fn:

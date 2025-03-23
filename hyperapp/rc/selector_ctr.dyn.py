@@ -67,7 +67,12 @@ class SelectorGetTemplateCtr(SelectorTemplateCtrBase):
             attr_qual_name=piece.attr_qual_name,
             service_params=piece.service_params,
             value_t=pyobj_creg.invite(piece.value_t),
+            model_t=pyobj_creg.invite(piece.model_t),
             )
+
+    def __init__(self, module_name, attr_qual_name, service_params, value_t, model_t):
+        super().__init__(module_name, attr_qual_name, service_params, value_t)
+        self._model_t = model_t
 
     @property
     def piece(self):
@@ -76,6 +81,7 @@ class SelectorGetTemplateCtr(SelectorTemplateCtrBase):
             attr_qual_name=tuple(self._attr_qual_name),
             service_params=tuple(self._service_params),
             value_t=pyobj_creg.actor_to_ref(self._value_t),
+            model_t=pyobj_creg.actor_to_ref(self._model_t),
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
@@ -83,7 +89,7 @@ class SelectorGetTemplateCtr(SelectorTemplateCtrBase):
         self._add_selector_ctr(resource_tgt, target_set)
 
     def _add_selector_ctr(self, resource_tgt, target_set):
-        ctr = SelectorCtr(self._value_t)
+        ctr = SelectorCtr(self._value_t, self._model_t)
         ctr.update_selector_targets(resource_tgt, target_set)
 
 
@@ -118,8 +124,9 @@ class SelectorPickTemplateCtr(SelectorTemplateCtrBase):
 
 class SelectorCtr(Constructor):
 
-    def __init__(self, value_t):
+    def __init__(self, value_t, model_t):
         self._value_t = value_t
+        self._model_t = model_t
         self._get_resolved_tgt = None
         self._pick_resolved_tgt = None
 
@@ -146,6 +153,7 @@ class SelectorCtr(Constructor):
             types, python_module, name_to_res)
         template = htypes.selector.template(
             value_t=pyobj_creg.actor_to_ref(self._value_t),
+            model_t=pyobj_creg.actor_to_ref(self._model_t),
             get_fn=mosaic.put(get_fn),
             pick_fn=mosaic.put(pick_fn),
             )

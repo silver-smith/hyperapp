@@ -24,6 +24,7 @@ definitions:
     type: legacy_type.selector:template
     value:
       value_t: legacy_type.config_layer_list:layer
+      model_t: legacy_type.config_layer_list:model
       get_fn: config_layer_list-layer.selector.get.system-fn
       pick_fn: config_layer_list-layer.selector.pick.system-fn
   config_layer_list-layer.selector.get.system-fn:

@@ -33,6 +33,7 @@ definitions:
     type: legacy_type.selector:template
     value:
       value_t: legacy_type.global_commands:command_arg
+      model_t: legacy_type.global_commands:model
       get_fn: global_commands-command_arg.selector.get.system-fn
       pick_fn: global_commands-command_arg.selector.pick.system-fn
   global_commands-command_arg.selector.get.system-fn:
