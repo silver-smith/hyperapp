@@ -14,8 +14,12 @@ from .code.context_view import ContextView
 log = logging.getLogger(__name__)
 
 
-def mark_name(model_t):
-    return f'mark-{model_t.module_name}-{model_t.name}'
+def model_mark_name(model_t):
+    return f'mark-{model_t.full_name}'
+
+
+def value_mark_name(value_t):
+    return f'arg-value-{value_t.full_name}'
 
 
 class MarkView(ContextView):
@@ -24,38 +28,54 @@ class MarkView(ContextView):
     @mark.view
     def from_piece(cls, piece, ctx, format, view_reg):
         base_view = view_reg.invite(piece.base, ctx)
-        model = web.summon(piece.model)
+        model, model_t = web.summon_with_t(piece.model)
+        value, value_t = web.summon_with_t_opt(piece.value)
+        items = {}
+        items[model_mark_name(model_t)] = model
+        if value is not None:
+            items[value_mark_name(value_t)] = value
         model_label = format(model)
-        return cls(base_view, model, model_label)
+        return cls(base_view, model, value, items, model_label)
 
-    def __init__(self, base_view, model, model_label):
-        model_t = deduce_t(model)
+    def __init__(self, base_view, model, value, items, model_label):
         super().__init__(base_view, label=f"Mark: {model_label}")
         self._model = model
-        self._mark_name = mark_name(model_t)
+        self._value = value
+        self._items = items
 
     @property
     def piece(self):
         return htypes.arg_mark.view(
             base=mosaic.put(self._base_view.piece),
             model=mosaic.put(self._model),
+            value=mosaic.put_opt(self._value),
             )
 
     def children_context(self, ctx):
-        return ctx.clone_with(
-            **{self._mark_name: self._model},
-            )
+        return ctx.clone_with(self._items)
 
 
 @mark.ui_command
-def add_mark(view, state, hook, current_model, ctx, view_reg):
+def add_mark(view, state, hook, current_model, ctx, view_reg, selector_reg):
     model_t = deduce_t(current_model)
     if not isinstance(model_t, TRecord):
         log.warning("Model is not a record, not marking: %s", model)
         return
+    try:
+        selector = selector_reg.by_model_t(model_t)
+    except KeyError:
+        value = None
+    else:
+        fn_ctx = ctx.clone_with(
+            piece=current_model,
+            model=current_model,
+            **ctx.attributes(ctx.model_state),
+            )
+        value = selector.pick_fn.call(fn_ctx)
     new_view_piece = htypes.arg_mark.view(
         base=mosaic.put(view.piece),
-        model=mosaic.put(current_model)
+        model=mosaic.put(current_model),
+        value=mosaic.put_opt(value),
         )
     new_state = htypes.context_view.state(
         base=mosaic.put(state),

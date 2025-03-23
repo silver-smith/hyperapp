@@ -9,7 +9,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.arg_mark import mark_name
+from .code.arg_mark import value_mark_name
 
 
 class ArgsPickerFn:
@@ -106,7 +106,7 @@ class ArgsPickerFn:
         return (args, required_args)
 
     def _pick_arg(self, ctx, name, required_t):
-        ctx_name = mark_name(required_t)
+        ctx_name = value_mark_name(required_t)
         try:
             value = ctx[ctx_name]
         except KeyError:

@@ -15,12 +15,18 @@ def model():
     return htypes.arg_mark_tests.sample_model()
 
 
-def test_view(qapp, model):
+@mark.fixture
+def value():
+    return htypes.arg_mark_tests.sample_value()
+
+
+def test_view(qapp, model, value):
     ctx = Context()
     base_piece = htypes.label.view("Sample label")
     piece = htypes.arg_mark.view(
         base=mosaic.put(base_piece),
         model=mosaic.put(model),
+        value=mosaic.put(value),
         )
     base_state = htypes.label.state()
     state = htypes.context_view.state(
@@ -52,13 +58,14 @@ def test_add_mark(view_reg, model):
     hook.replace_view.assert_called_once()
 
 
-def test_remove_mark(view_reg, model):
+def test_remove_mark(view_reg, model, value):
     ctx = Context()
     label_view = htypes.label.view("Sample label")
     label_state = htypes.label.state()
     view_piece = htypes.arg_mark.view(
         base=mosaic.put(label_view),
         model=mosaic.put(model),
+        value=mosaic.put(value),
         )
     state = htypes.context_view.state(
         base=mosaic.put(label_state),

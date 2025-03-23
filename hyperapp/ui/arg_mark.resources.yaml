@@ -57,6 +57,7 @@ definitions:
       - ctx
       service_params:
       - view_reg
+      - selector_reg
   add_mark.ui-command:
     type: legacy_type.command:ui_command
     value:
