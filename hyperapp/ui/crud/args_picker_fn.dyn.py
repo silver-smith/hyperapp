@@ -61,20 +61,20 @@ class ArgsPickerFn:
             args['element_idx'] = ctx.element_idx
         return args
 
-    async def call(self, ctx, **kw):
+    def call(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
-        return await self._open(
+        return self._open(
             navigator_rec=ctx_kw['navigator'],
             ctx=ctx,
             )
 
-    async def _open(self, navigator_rec, ctx):
+    def _open(self, navigator_rec, ctx):
         args, required_args = self._pick_args_from_context(ctx)
         if len(required_args) > 1:
             required_str = ', '.join(name for name, t in required_args.items())
             raise RuntimeError(f"More than 1 args to pick is not supported: {required_str}")
         if not required_args:
-            return await self._run_commit_fn(ctx, args)
+            return self._run_commit_fn(ctx, args)
         [(value_field, value_t)] = required_args.items()
         try:
             get_default_fn = self._editor_default_reg[value_t]
