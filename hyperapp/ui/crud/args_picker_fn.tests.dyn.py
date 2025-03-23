@@ -39,7 +39,7 @@ def navigator_rec(navigator_widget):
     return Mock(view=Mock(), widget_wr=weakref.ref(navigator_widget))
 
 
-def test_args_picker_fn(navigator_rec):
+async def test_args_picker_fn(navigator_rec):
     commit_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_commit),
         ctx_params=('sample_value',),
@@ -71,4 +71,4 @@ def test_args_picker_fn(navigator_rec):
         model_state=None,
         )
     assert not picker_fn.missing_params(ctx)
-    picker_fn.call(ctx)
+    await picker_fn.call(ctx)

@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -9,6 +10,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:args_picker_command_fn
 - legacy_type.system:actor_template
+- ui.arg_mark:arg_mark.module
 definitions:
   ArgsPickerFn:
     type: legacy_type.builtin:attribute
@@ -26,7 +28,9 @@ definitions:
       module_name: args_picker_fn
       file_name: args_picker_fn.dyn.py
       import_list:
+        code.arg_mark: ui.arg_mark:arg_mark.module
         code.mark: base.mark:mark.module
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service

@@ -1,9 +1,15 @@
+import inspect
+
+from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
+
 from .services import (
+    deduce_t,
     mosaic,
     pyobj_creg,
     web,
     )
 from .code.mark import mark
+from .code.arg_mark import mark_name
 
 
 class ArgsPickerFn:
@@ -24,17 +30,17 @@ class ArgsPickerFn:
             name=piece.name,
             args=args,
             commit_command_d=web.summon(piece.commit_command_d),
-            commit_fn_ref=piece.commit_fn,
+            commit_fn=system_fn_creg.invite(piece.commit_fn),
             )
 
-    def __init__(self, system_fn_creg, crud, editor_default_reg, name, args, commit_command_d, commit_fn_ref):
+    def __init__(self, system_fn_creg, crud, editor_default_reg, name, args, commit_command_d, commit_fn):
         self._system_fn_creg = system_fn_creg
         self._crud = crud
         self._editor_default_reg = editor_default_reg
         self._name = name
         self._args = args
         self._commit_command_d = commit_command_d
-        self._commit_fn_ref = commit_fn_ref
+        self._commit_fn = commit_fn
 
     def __repr__(self):
         return f"<ArgsPickerFn {self._name}: {self._args}>"
@@ -55,16 +61,21 @@ class ArgsPickerFn:
             args['element_idx'] = ctx.element_idx
         return args
 
-    def call(self, ctx, **kw):
+    async def call(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
-        return self._open(
+        return await self._open(
             navigator_rec=ctx_kw['navigator'],
             ctx=ctx,
             )
 
-    def _open(self, navigator_rec, ctx):
-        assert len(self._args) == 1, "TODO: Pick args from context and implement multi-args editor"
-        [(value_field, value_t)] = self._args.items()
+    async def _open(self, navigator_rec, ctx):
+        args, required_args = self._pick_args_from_context(ctx)
+        if len(required_args) > 1:
+            required_str = ', '.join(name for name, t in required_args.items())
+            raise RuntimeError(f"More than 1 args to pick is not supported: {required_str}")
+        if not required_args:
+            return await self._run_commit_fn(ctx, args)
+        [(value_field, value_t)] = required_args.items()
         try:
             get_default_fn = self._editor_default_reg[value_t]
         except KeyError:
@@ -77,8 +88,40 @@ class ArgsPickerFn:
             label=f"{value_field} for: {self._name}",
             init_action_fn=self._system_fn_creg.animate_opt(get_default_fn),
             commit_command_d=self._commit_command_d,
-            commit_action_fn_ref=self._commit_fn_ref,
+            commit_action_fn_ref=mosaic.put(self._commit_fn.piece),
             commit_value_field=value_field,
             model=commit_args.get('model'),
             commit_args=commit_args,
             )
+
+    def _pick_args_from_context(self, ctx):
+        args = {}
+        required_args = {}
+        for name, t in self._args.items():
+            value = self._pick_arg(ctx, name, t)
+            if value is None:
+                required_args[name] = t
+            else:
+                args[name] = value
+        return (args, required_args)
+
+    def _pick_arg(self, ctx, name, required_t):
+        ctx_name = mark_name(required_t)
+        try:
+            value = ctx[ctx_name]
+        except KeyError:
+            return None
+        try:
+            value_t = deduce_t(value)
+        except DeduceTypeError:
+            return None
+        if required_t is value_t:
+            return value
+        return None
+
+    async def _run_commit_fn(self, ctx, args):
+        fn_ctx = ctx.clone_with(args)
+        result = self._commit_fn.call(fn_ctx)
+        if inspect.iscoroutine(result):
+            result = await result
+        return result
