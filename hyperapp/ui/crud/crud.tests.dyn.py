@@ -237,6 +237,7 @@ def test_open_command_fn_to_str(run_open_command_fn_test):
 def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
     value_t = htypes.crud_tests.sample_selector
     selector = Selector(
+        model_t=htypes.crud_tests.sample_selector_model,
         get_fn=_sample_selector_get_fn,
         pick_fn=_sample_selector_pick_fn,
         )
