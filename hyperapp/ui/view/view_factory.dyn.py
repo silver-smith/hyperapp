@@ -39,7 +39,7 @@ class ViewFactory(ViewFactoryBase):
     def k(self):
         return self._k
 
-    def call(self, ctx, adapter=None):
+    async def call(self, ctx, adapter=None):
         if self._ui_t_t is not None:
             model_t = deduce_t(ctx.model)
             ui_t, system_fn_ref = self._visualizer_reg(model_t)
@@ -73,8 +73,8 @@ class ViewMultiFactoryItem:
         self._k = k
         self._get_fn = get_fn
 
-    def call(self, ctx, adapter=None):
-        return self._get_fn.call(ctx, k=self._k, adapter=adapter)
+    async def call(self, ctx, adapter=None):
+        return await self._get_fn.call(ctx, k=self._k, adapter=adapter)
 
 
 class ViewMultiFactory(ViewFactoryBase):

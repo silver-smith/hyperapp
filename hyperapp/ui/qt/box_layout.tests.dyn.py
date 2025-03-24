@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 from . import htypes
 from .services import (
@@ -72,7 +72,7 @@ def test_wrap():
 @mark.config_fixture('view_factory_reg')
 def view_factory_reg_config():
     k = htypes.box_layout_tests.sample_k()
-    factory = Mock()
+    factory = AsyncMock()
     factory.call.return_value = htypes.label.view("Sample label")
     return {k: factory}
 
@@ -103,8 +103,8 @@ def widget(view, state, ctx):
     return  view.construct_widget(state, ctx)
 
 
-def test_add_element(qapp, ctx, ctl_hook, view, widget, view_factory):
-    box_layout.add_element(view, widget, view_factory, ctx)
+async def test_add_element(qapp, ctx, ctl_hook, view, widget, view_factory):
+    await box_layout.add_element(view, widget, view_factory, ctx)
     ctl_hook.element_inserted.assert_called_once()
 
 
@@ -113,9 +113,9 @@ def test_add_stretch(qapp, ctx, ctl_hook, view, widget):
     ctl_hook.element_inserted.assert_called_once()
 
 
-def test_insert_element(qapp, ctx, ctl_hook, view, widget, view_factory):
+async def test_insert_element(qapp, ctx, ctl_hook, view, widget, view_factory):
     element_idx = 0
-    box_layout.insert_element(view, widget, element_idx, view_factory, ctx)
+    await box_layout.insert_element(view, widget, element_idx, view_factory, ctx)
     ctl_hook.element_inserted.assert_called_once()
 
 

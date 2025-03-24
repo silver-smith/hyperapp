@@ -28,7 +28,7 @@ def record_field_list(model, ctx, view_factory_reg):
     return k_list
 
 
-def record_field_get(k, ctx, view_factory_reg):
+async def record_field_get(k, ctx, view_factory_reg):
     base_factory_k = web.summon(k.base_factory_k)
     base_factory = view_factory_reg[base_factory_k]
     record_adapter = htypes.crud.record_adapter()

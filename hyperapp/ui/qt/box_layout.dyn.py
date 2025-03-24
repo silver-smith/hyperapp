@@ -212,7 +212,7 @@ def wrap_box_layout(inner):
 
 
 @mark.ui_command(args=['view_factory'])
-def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
+async def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
     k = web.summon(view_factory.k)
     factory = view_factory_reg[k]
     last_child = view.child_view(view.children_count - 1)
@@ -220,7 +220,7 @@ def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
     fn_ctx = ctx.clone_with(
         inner=last_child.piece,
         )
-    elt_piece = factory.call(fn_ctx)
+    elt_piece = await factory.call(fn_ctx)
     elt_view = view_reg.animate(elt_piece, ctx)
     view.add_child(ctx, widget, elt_view)
 
@@ -231,7 +231,7 @@ def add_stretch(view, widget, ctx):
 
 
 @mark.ui_command(args=['view_factory'])
-def insert_element(view, widget, element_idx, view_factory, ctx, view_reg, view_factory_reg):
+async def insert_element(view, widget, element_idx, view_factory, ctx, view_reg, view_factory_reg):
     k = web.summon(view_factory.k)
     factory = view_factory_reg[k]
     first_child = view.child_view(0)
@@ -239,7 +239,7 @@ def insert_element(view, widget, element_idx, view_factory, ctx, view_reg, view_
     fn_ctx = ctx.clone_with(
         inner=first_child.piece,
         )
-    elt_piece = factory.call(fn_ctx)
+    elt_piece = await factory.call(fn_ctx)
     elt_view = view_reg.animate(elt_piece, ctx)
     view.insert_child(element_idx, ctx, widget, elt_view)
 

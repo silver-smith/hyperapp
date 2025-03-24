@@ -109,7 +109,7 @@ def details_command_list(model, model_state, ctx, details_commands):
 
 
 async def details_get(k, model, model_state, ctx, visualizer, details_commands):
-    command_d = web.summon(factory_k.command_d)
+    command_d = web.summon(k.command_d)
     unbound_command = _pick_details_command(details_commands, ctx, command_d, model, model_state)
     details_model = await _run_details_command(ctx, unbound_command)
     details_ctx = _details_context(ctx, details_model)
@@ -117,5 +117,5 @@ async def details_get(k, model, model_state, ctx, visualizer, details_commands):
     return htypes.details.view(
         details_model=mosaic.put(details_ctx.model),
         details_view=mosaic.put(details_view),
-        command_d=factory_k.command_d,
+        command_d=k.command_d,
         )

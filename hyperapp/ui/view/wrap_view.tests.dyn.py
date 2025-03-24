@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 from . import htypes
 from .services import (
@@ -12,7 +12,7 @@ from .tested.code import wrap_view
 @mark.config_fixture('view_factory_reg')
 def view_factory_reg_config():
     k = htypes.wrap_view_tests.sample_k()
-    factory = Mock()
+    factory = AsyncMock()
     return {k: factory}
 
 
@@ -21,7 +21,7 @@ def view_reg():
     return Mock()
 
 
-def test_wrap_view():
+async def test_wrap_view():
     ctx = Context()
     k = htypes.wrap_view_tests.sample_k()
     view_factory = htypes.view_factory.factory(
@@ -30,5 +30,5 @@ def test_wrap_view():
         )
     hook = Mock()
     view = Mock(piece=None)
-    wrapper = wrap_view.wrap_view(view_factory, view, hook, ctx)
+    wrapper = await wrap_view.wrap_view(view_factory, view, hook, ctx)
     hook.replace_view.assert_called_once()
