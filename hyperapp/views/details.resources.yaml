@@ -7,12 +7,42 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.details:factory_k
+- legacy_type.details:view
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
+- legacy_type.system_fn:ctx_fn
 - ui.model_command:model_command.module
+- ui.wrapper_view:wrapper_view.module
 definitions:
+  DetailsView:
+    type: legacy_type.builtin:attribute
+    value:
+      object: details.module
+      attr_name: DetailsView
+  DetailsView.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: DetailsView
+      attr_name: from_piece
+  DetailsView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: DetailsView.from_piece
+      ctx_params:
+      - piece
+      - ctx
+      service_params:
+      - view_reg
+      - visualizer
+      - details_commands
+  details-view.view-template:
+    type: legacy_type.cfg_item:typed_fn_cfg_item
+    value:
+      t: legacy_type.details:view
+      system_fn: DetailsView_from_piece.system-fn
   details.module:
     type: legacy_type.builtin:python_module
     value:
@@ -21,7 +51,9 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
+        code.wrapper_view: ui.wrapper_view:wrapper_view.module
         htypes.details.factory_k: legacy_type.details:factory_k
+        htypes.details.view: legacy_type.details:view
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service

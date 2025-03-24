@@ -1,2 +1,7 @@
+view = record:
+  details_model: ref
+  details_view: ref
+  command_d: ref
+
 factory_k = record:
   command_d: ref

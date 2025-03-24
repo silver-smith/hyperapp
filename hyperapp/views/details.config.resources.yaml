@@ -37,8 +37,7 @@ definitions:
       - model_state
       - ctx
       service_params:
-      - global_model_command_reg
-      - get_model_commands
+      - details_commands
 
   details_get:
     type: legacy_type.builtin:attribute
@@ -52,8 +51,12 @@ definitions:
       function: details_get
       ctx_params:
       - k
+      - model
+      - model_state
       - ctx
-      service_params: []
+      service_params:
+      - visualizer
+      - details_commands
 
   details_k:
     type: legacy_type.builtin:record_mt

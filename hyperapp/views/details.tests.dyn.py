@@ -1,6 +1,7 @@
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     )
 from .code.mark import mark
 from .code.context import Context
@@ -19,22 +20,26 @@ def test_format_factory_k():
     assert type(title) is str
 
 
+def details_command():
+    return 'details-model'
 
-def _sample_fn():
-    return 'sample-fn'
+
+@mark.fixture
+def command_d():
+    return htypes.details_tests.sample_command_d()
 
 
 @mark.config_fixture('model_command_reg')
-def model_command_reg_config(partial_ref):
+def model_command_reg_config(partial_ref, command_d):
     fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=(),
         service_params=(),
-        raw_fn=_sample_fn,
-        bound_fn=_sample_fn,
+        raw_fn=details_command,
+        bound_fn=details_command,
         )
     command = UnboundModelCommand(
-        d=htypes.details_tests.sample_command_d(),
+        d=command_d,
         ctx_fn=fn,
         properties=htypes.command.properties(False, False, False),
         )
@@ -44,8 +49,19 @@ def model_command_reg_config(partial_ref):
 
 
 @mark.fixture
-def ctx():
-    return Context()
+def details_view():
+    return htypes.text.edit_view(
+        adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
+        )
+
+
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config(details_view):
+    def k(t):
+        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
+    return {
+        k(htypes.builtin.string): details_view,
+        }
 
 
 @mark.fixture.obj
@@ -67,13 +83,39 @@ def model_state():
         )
 
 
-def test_details_commands_service(details_commands, ctx, model_t):
+@mark.fixture
+def ctx(model, model_state):
+    return Context(
+        model=model,
+        model_state=model_state,
+        )
+
+
+def test_view(ctx, command_d, details_view):
+    piece = htypes.details.view(
+        details_model=mosaic.put(details_command()),
+        details_view=mosaic.put(details_view),
+        command_d=mosaic.put(command_d),
+        )
+    view = details.DetailsView.from_piece(piece, ctx)
+    assert view.piece == piece
+    assert view.children_context(ctx).model == details_command()
+
+
+def test_details_commands_service(details_commands, ctx, command_d, model_t):
     d_to_command = details_commands(model_t, ctx)
     assert type(d_to_command) is dict
-    assert list(d_to_command) == [htypes.details_tests.sample_command_d()]
+    assert list(d_to_command) == [command_d]
 
 
 def test_command_list(details_commands, ctx, model, model_state):
     k_list = details.details_command_list(model, model_state, ctx, details_commands)
     assert type(k_list) is list
     assert len(k_list) == 1
+
+
+async def test_get(visualizer, details_commands, ctx, command_d, model, model_state):
+    k = htypes.details.factory_k(
+        command_d=mosaic.put(command_d),
+        )
+    view_piece = await details.details_get(k, model, model_state, ctx, visualizer, details_commands)
