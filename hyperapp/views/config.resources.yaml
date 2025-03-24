@@ -3,6 +3,7 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- views.details:formatter_creg-details-factory_k.actor-template
 - views.list_as_tree:list-view-switch_list_to_tree.command-cfg-item
 - views.list_as_tree:list_as_tree-opener_commands-toggle_open_command.command-cfg-item
 - views.list_as_tree:list_as_tree-opener_commands.feed-template
@@ -25,6 +26,7 @@ definitions:
     value:
       services:
         feed_factory: feed_factory
+        formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
         model_reg: model_reg
@@ -38,6 +40,11 @@ definitions:
     value:
       items:
       - views.list_as_tree:list_as_tree-opener_commands.feed-template
+  formatter_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - views.details:formatter_creg-details-factory_k.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:

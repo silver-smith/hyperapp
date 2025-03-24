@@ -1,0 +1,4 @@
+sample_command_d = record
+sample_model = record
+item = record:
+  id: int

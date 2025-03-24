@@ -1,0 +1,77 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:record_mt
+- legacy_type.model:list_ui_t
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:multi_template
+- views.details:details.module
+
+definitions:
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        view_factory_reg: view_factory_reg.config
+
+  view_factory_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - details.view-factory-template
+
+  details_command_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: views.details:details.module
+      attr_name: details_command_list
+
+  details_command_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: details_command_list
+      ctx_params:
+      - model
+      - model_state
+      - ctx
+      service_params:
+      - global_model_command_reg
+      - get_model_commands
+
+  details_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: views.details:details.module
+      attr_name: details_get
+
+  details_get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: details_get
+      ctx_params:
+      - k
+      - ctx
+      service_params: []
+
+  details_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: details
+      name: details_k
+      base: null
+      fields: {}
+
+  details.k:
+    type: details_k
+    value: {}
+
+  details.view-factory-template:
+    type: legacy_type.view_factory:multi_template
+    value:
+      k: details.k
+      model_t: null
+      ui_t_t: legacy_type.model:list_ui_t
+      list_fn: details_command_list.system-fn
+      get_fn: details_get.system-fn
