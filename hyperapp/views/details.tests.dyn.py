@@ -43,14 +43,37 @@ def model_command_reg_config(partial_ref):
         }
 
 
-def test_command_list(global_model_command_reg, get_model_commands):
-    ctx = Context()
+@mark.fixture
+def ctx():
+    return Context()
+
+
+@mark.fixture.obj
+def model_t():
+    return htypes.details_tests.sample_model
+
+
+@mark.fixture.obj
+def model(model_t):
+    return model_t()
+
+
+@mark.fixture
+def model_state():
     model_state_t = list_model_state_t(htypes.details_tests.item)
-    model_state = model_state_t(
+    return model_state_t(
         current_idx=0,
         current_item=htypes.details_tests.item(id=1),
         )
-    model = htypes.details_tests.sample_model()
-    k_list = details.details_command_list(model, model_state, ctx, global_model_command_reg, get_model_commands)
+
+
+def test_details_commands_service(details_commands, ctx, model_t):
+    d_to_command = details_commands(model_t, ctx)
+    assert type(d_to_command) is dict
+    assert list(d_to_command) == [htypes.details_tests.sample_command_d()]
+
+
+def test_command_list(details_commands, ctx, model, model_state):
+    k_list = details.details_command_list(model, model_state, ctx, details_commands)
     assert type(k_list) is list
     assert len(k_list) == 1

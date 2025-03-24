@@ -15,25 +15,27 @@ def format_factory_k(piece, format):
     return f"details: {command_d_str}"
 
 
-def _all_model_commands(global_model_command_reg, get_model_commands, model_t, command_ctx):
+@mark.service
+def details_commands(global_model_command_reg, get_model_commands, model_t, command_ctx):
     command_list = [
         *global_model_command_reg.values(),
         *get_model_commands(model_t, command_ctx),
         ]
-    return [
-        cmd for cmd in command_list
+    d_to_command = {
+        cmd.d: cmd for cmd in command_list
         if not cmd.properties.is_global or cmd.properties.uses_state
-        ]
+        }
+    return d_to_command
 
 
-def details_command_list(model, model_state, ctx, global_model_command_reg, get_model_commands):
+def details_command_list(model, model_state, ctx, details_commands):
     model_t = deduce_t(model)
     command_ctx = model_command_ctx(ctx, model, model_state)
-    command_list = _all_model_commands(global_model_command_reg, get_model_commands, model_t, command_ctx)
+    d_to_command = details_commands(model_t, command_ctx)
     factory_k_list = []
-    for command in command_list:
+    for command_d in d_to_command:
         factory_k = htypes.details.factory_k(
-            command_d=mosaic.put(command.d),
+            command_d=mosaic.put(command_d),
             )
         factory_k_list.append(factory_k)
     return factory_k_list

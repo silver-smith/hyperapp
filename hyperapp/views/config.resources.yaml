@@ -3,6 +3,7 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- views.details:details_commands.service
 - views.details:formatter_creg-details-factory_k.actor-template
 - views.list_as_tree:list-view-switch_list_to_tree.command-cfg-item
 - views.list_as_tree:list_as_tree-opener_commands-toggle_open_command.command-cfg-item
@@ -30,6 +31,7 @@ definitions:
         global_model_command_reg: global_model_command_reg
         model_command_reg: model_command_reg
         model_reg: model_reg
+        system: system
         ui_adapter_creg: ui_adapter_creg
         view_factory_reg: view_factory_reg
         view_reg: view_reg
@@ -60,6 +62,11 @@ definitions:
     value:
       items:
       - views.list_as_tree:list_as_tree-opener_commands.model-cfg-item
+  system:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - views.details:details_commands.service
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:
