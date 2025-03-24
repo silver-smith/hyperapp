@@ -40,28 +40,31 @@ class DetailsView(WrapperView):
     @classmethod
     @mark.view
     def from_piece(cls, piece, ctx, view_reg, visualizer, details_commands):
+        command_d = web.summon(piece.command_d)
+        model_state = web.summon(piece.model_state)
         details_model = web.summon(piece.details_model)
         details_ctx = ctx.clone_with(
             model=details_model,
             piece=details_model,
             )
         details_view = view_reg.invite(piece.details_view, details_ctx)
-        command_d = web.summon(piece.command_d)
-        unbound_command = _pick_details_command(details_commands, ctx, command_d, ctx.model, ctx.model_state)
-        return cls(visualizer, details_model, details_view, unbound_command)
+        unbound_command = _pick_details_command(details_commands, ctx, command_d, ctx.model, model_state)
+        return cls(visualizer, unbound_command, model_state, details_model, details_view)
 
-    def __init__(self, visualizer, details_model, details_view, unbound_command):
+    def __init__(self, visualizer, unbound_command, model_state, details_model, details_view):
         super().__init__(details_view)
+        self._unbound_command = unbound_command
+        self._model_state = model_state
         self._visualizer = visualizer
         self._details_model = details_model
-        self._unbound_command = unbound_command
 
     @property
     def piece(self):
         return htypes.details.view(
+            command_d=mosaic.put(self._unbound_command.d),
+            model_state=mosaic.put(self._model_state),
             details_model=mosaic.put(self._details_model),
             details_view=mosaic.put(self._base_view.piece),
-            command_d=mosaic.put(self._unbound_command.d),
             )
 
     def children_context(self, ctx):
@@ -115,7 +118,8 @@ async def details_get(k, model, model_state, ctx, visualizer, details_commands):
     details_ctx = _details_context(ctx, details_model)
     details_view = visualizer(details_ctx, details_model)
     return htypes.details.view(
+        command_d=k.command_d,
+        model_state=mosaic.put(model_state),
         details_model=mosaic.put(details_ctx.model),
         details_view=mosaic.put(details_view),
-        command_d=k.command_d,
         )

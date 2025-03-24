@@ -91,11 +91,12 @@ def ctx(model, model_state):
         )
 
 
-def test_view(ctx, command_d, details_view):
+def test_view(ctx, command_d, model_state, details_view):
     piece = htypes.details.view(
+        command_d=mosaic.put(command_d),
+        model_state=mosaic.put(model_state),
         details_model=mosaic.put(details_command()),
         details_view=mosaic.put(details_view),
-        command_d=mosaic.put(command_d),
         )
     view = details.DetailsView.from_piece(piece, ctx)
     assert view.piece == piece

@@ -1,7 +1,8 @@
 view = record:
+  command_d: ref
+  model_state: ref  # Canned model state used to pick details command, if picked from command enumerator.
   details_model: ref
   details_view: ref
-  command_d: ref
 
 factory_k = record:
   command_d: ref
