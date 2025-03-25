@@ -12,8 +12,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
-- legacy_type.command:args_picker_command_fn
 - legacy_type.command:cfg_item
+- legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.command:ui_command
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:factory
@@ -62,23 +62,16 @@ definitions:
   add_element.open-d:
     type: open_add_element_d
     value: {}
-  add_element.open-fn:
-    type: legacy_type.command:args_picker_command_fn
+  add_element.ui-command-enumerator:
+    type: legacy_type.command:ui_args_picker_command_enumerator
     value:
       name: add_element
+      is_global: false
       args:
         view_factory: legacy_type.view_factory:factory
+      args_picker_command_d: add_element.open-d
       commit_command_d: add_element.commit-d
       commit_fn: add_element.commit-fn
-  add_element.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: add_element.open-d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: add_element.open-fn
   add_element_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -123,7 +116,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.box_layout:view
-      command: add_element.ui-command
+      command: add_element.ui-command-enumerator
   box_layout-view-add_stretch.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -133,7 +126,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.box_layout:view
-      command: insert_element.ui-command
+      command: insert_element.ui-command-enumerator
   box_layout-view-remove_element.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -187,23 +180,16 @@ definitions:
   insert_element.open-d:
     type: open_insert_element_d
     value: {}
-  insert_element.open-fn:
-    type: legacy_type.command:args_picker_command_fn
+  insert_element.ui-command-enumerator:
+    type: legacy_type.command:ui_args_picker_command_enumerator
     value:
       name: insert_element
+      is_global: false
       args:
         view_factory: legacy_type.view_factory:factory
+      args_picker_command_d: insert_element.open-d
       commit_command_d: insert_element.commit-d
       commit_fn: insert_element.commit-fn
-  insert_element.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: insert_element.open-d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: insert_element.open-fn
   insert_element_d:
     type: legacy_type.builtin:record_mt
     value:

@@ -92,12 +92,15 @@ class UiCommandProbe(CommandProbe):
             t = self._deduce_view_t(params, 'ui_command')
         if 'element_idx' in params.ctx_names:
             service_name = 'view_element_ui_command_reg'
+            enum_service_name = 'view_element_ui_command_enumerator_reg'
         else:
             service_name = 'view_ui_command_reg'
+            enum_service_name = 'ui_command_enumerator_reg'
         ctr = UiCommandTemplateCtr(
             **self._common_ctr_kw(params),
             t=t,
             service_name=service_name,
+            enum_service_name=enum_service_name,
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -112,6 +115,7 @@ class UiModelCommandProbe(CommandProbe):
         ctr = UiCommandTemplateCtr(
             **self._common_ctr_kw(params),
             service_name='view_ui_model_command_reg',
+            enum_service_name=None,
             t=t,
             )
         self._ctr_collector.add_constructor(ctr)
@@ -123,6 +127,7 @@ class UniversalUiCommandProbe(CommandProbe):
         ctr = UniversalUiCommandTemplateCtr(
             **self._common_ctr_kw(params),
             service_name='universal_ui_command_reg',
+            enum_service_name='universal_ui_command_enumerator_reg',
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -137,6 +142,7 @@ class UiCommandEnumeratorProbe(CommandProbe):
         ctr = UiCommandEnumeratorTemplateCtr(
             **self._common_ctr_kw(params),
             service_name='ui_command_enumerator_reg',
+            enum_service_name=None,
             t=t,
             )
         self._ctr_collector.add_constructor(ctr)
@@ -152,6 +158,7 @@ class ModelCommandProbe(CommandProbe):
         ctr = ModelCommandTemplateCtr(
             **self._common_ctr_kw(params),
             service_name='model_command_reg',
+            enum_service_name='model_command_enumerator_reg',
             t=t,
             )
         self._ctr_collector.add_constructor(ctr)
@@ -167,6 +174,7 @@ class ModelCommandEnumeratorProbe(CommandProbe):
         ctr = ModelCommandEnumeratorTemplateCtr(
             **self._common_ctr_kw(params),
             service_name='model_command_enumerator_reg',
+            enum_service_name=None,
             t=t,
             )
         self._ctr_collector.add_constructor(ctr)
@@ -179,6 +187,7 @@ class GlobalModelCommandProbe(CommandProbe):
         ctr = GlobalModelCommandTemplateCtr(
             **self._common_ctr_kw(params),
             service_name='global_model_command_reg',
+            enum_service_name=None,
             )
         self._ctr_collector.add_constructor(ctr)
 

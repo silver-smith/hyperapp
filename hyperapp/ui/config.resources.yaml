@@ -124,7 +124,9 @@ import:
 - ui.ui_command:get_view_commands.service
 - ui.ui_command:get_view_element_commands.service
 - ui.ui_command:ui_command_enumerator_reg.service
+- ui.ui_command:universal_ui_command_enumerator_reg.service
 - ui.ui_command:universal_ui_command_reg.service
+- ui.ui_command:view_element_ui_command_enumerator_reg.service
 - ui.ui_command:view_element_ui_command_reg.service
 - ui.ui_command:view_ui_command_reg.service
 - ui.ui_command:view_ui_model_command_reg.service
@@ -133,7 +135,7 @@ import:
 - ui.ui_model_command:get_ui_model_commands.service
 - ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
-- ui.view.replace_view:replace_view.universal-ui-command
+- ui.view.replace_view:replace_view.universal-ui-command-enumerator
 - ui.view.view_factory:view_factory_reg.service
 - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-template
 - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-template
@@ -142,7 +144,7 @@ import:
 - ui.view.view_factory_list:view_factory-factory.selector-template
 - ui.view.view_factory_list:view_factory_list-model.model-cfg-item
 - ui.view.view_registry:view_reg.service
-- ui.view.wrap_view:wrap_view.universal-ui-command
+- ui.view.wrap_view:wrap_view.universal-ui-command-enumerator
 - ui.visualizer:formatter_creg-ui-model_layout_k.actor-template
 - ui.visualizer:model_reg.service
 - ui.visualizer:resource_name_creg-ui-model_layout_k.actor-template
@@ -191,7 +193,8 @@ definitions:
         ui_adapter_creg: ui_adapter_creg
         ui_command_enumerator_reg: ui_command_enumerator_reg
         ui_type_creg: ui_type_creg
-        universal_ui_command_reg: universal_ui_command_reg
+        universal_ui_command_enumerator_reg: universal_ui_command_enumerator_reg
+        view_element_ui_command_enumerator_reg: view_element_ui_command_enumerator_reg
         view_element_ui_command_reg: view_element_ui_command_reg
         view_factory_reg: view_factory_reg
         view_reg: view_reg
@@ -302,7 +305,9 @@ definitions:
       - ui.ui_command:get_view_commands.service
       - ui.ui_command:get_view_element_commands.service
       - ui.ui_command:ui_command_enumerator_reg.service
+      - ui.ui_command:universal_ui_command_enumerator_reg.service
       - ui.ui_command:universal_ui_command_reg.service
+      - ui.ui_command:view_element_ui_command_enumerator_reg.service
       - ui.ui_command:view_element_ui_command_reg.service
       - ui.ui_command:view_ui_command_reg.service
       - ui.ui_command:view_ui_model_command_reg.service
@@ -344,6 +349,8 @@ definitions:
     value:
       items:
       - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
+      - ui.qt.box_layout:box_layout-view-add_element.command-cfg-item
+      - ui.qt.label:label-view-set_label_text.command-cfg-item
   ui_type_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -351,17 +358,21 @@ definitions:
       - ui.qt.fn_index_tree_adapter:ui_type_creg-model-tree_ui_t.actor-template
       - ui.qt.fn_list_adapter:ui_type_creg-model-list_ui_t.actor-template
       - ui.record_adapter:ui_type_creg-model-record_ui_t.actor-template
-  universal_ui_command_reg:
+  universal_ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.view.replace_view:replace_view.universal-ui-command
-      - ui.view.wrap_view:wrap_view.universal-ui-command
-  view_element_ui_command_reg:
+      - ui.view.replace_view:replace_view.universal-ui-command-enumerator
+      - ui.view.wrap_view:wrap_view.universal-ui-command-enumerator
+  view_element_ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - ui.qt.box_layout:box_layout-view-insert_element.command-cfg-item
+  view_element_ui_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
       - ui.qt.box_layout:box_layout-view-remove_element.command-cfg-item
   view_factory_reg:
     type: legacy_type.system:item_list_config
@@ -406,10 +417,8 @@ definitions:
       - ui.navigator:navigator-view-go_forward.command-cfg-item
       - ui.qt.auto_tabs:auto_tabs-view-close_tab.command-cfg-item
       - ui.qt.auto_tabs:auto_tabs-view-duplicate_tab.command-cfg-item
-      - ui.qt.box_layout:box_layout-view-add_element.command-cfg-item
       - ui.qt.box_layout:box_layout-view-add_stretch.command-cfg-item
       - ui.qt.box_layout:box_layout-view-unwrap.command-cfg-item
-      - ui.qt.label:label-view-set_label_text.command-cfg-item
       - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
       - ui.qt.window_commands:window-view-quit.command-cfg-item
       - ui.tab_groups:tabs-view-move_tab_to_new_group.command-cfg-item

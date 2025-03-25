@@ -20,7 +20,6 @@ import:
 - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
 - sample.sample_list:sample_list-sample_list.model-cfg-item
 - sample.sample_list_arg:sample_list_selector-item.editor_default.cfg-item
-- sample.sample_list_arg:show_sample_list_item.global-model-command
 - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
 - sample.sample_list_selector:sample_list_selector-item.selector-template
 - sample.sample_record:open_sample_fn_record.global-model-command
@@ -78,7 +77,6 @@ definitions:
       - sample.sample_commands:system_info.global-model-command
       - sample.sample_list:open_feed_sample_fn_list.global-model-command
       - sample.sample_list:open_sample_fn_list.global-model-command
-      - sample.sample_list_arg:show_sample_list_item.global-model-command
       - sample.sample_record:open_sample_fn_record.global-model-command
       - sample.sample_tree:open_sample_fn_tree.global-model-command
   model_command_reg:

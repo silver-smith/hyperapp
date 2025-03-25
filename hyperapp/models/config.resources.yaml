@@ -80,6 +80,7 @@ definitions:
         feed_factory: feed_factory
         formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
+        model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
         model_reg: model_reg
         selector_reg: selector_reg
@@ -120,6 +121,13 @@ definitions:
       - models.model_list:open_model_list.global-model-command
       - models.peer_list:open_peer_list.global-model-command
       - models.show_current_context:show_current_context.global-model-command
+  model_command_enumerator_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.peer_list:peer_list-model-add.command-cfg-item
+      - models.peer_list:peer_list-model-open_model.command-cfg-item
+      - models.peer_list:peer_list-model-run_command.command-cfg-item
   model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -139,10 +147,7 @@ definitions:
       - models.global_commands:global_commands-model-run_command.command-cfg-item
       - models.identity_command:model_commands-model-add_identity_command.command-cfg-item
       - models.model_commands:model_commands-model-run_command.command-cfg-item
-      - models.peer_list:peer_list-model-add.command-cfg-item
-      - models.peer_list:peer_list-model-open_model.command-cfg-item
       - models.peer_list:peer_list-model-remove.command-cfg-item
-      - models.peer_list:peer_list-model-run_command.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
   model_reg:
     type: legacy_type.system:item_list_config

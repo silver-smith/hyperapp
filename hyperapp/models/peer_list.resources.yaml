@@ -13,8 +13,8 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:args_picker_command_fn
 - legacy_type.command:cfg_item
+- legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
@@ -52,26 +52,19 @@ definitions:
       - file_bundle_factory
       - peer_registry
       - peer_label_reg
-  add.model-command:
-    type: legacy_type.command:model_command
+  add.model-command-enumerator:
+    type: legacy_type.command:model_args_picker_command_enumerator
     value:
-      d: add.open-d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: add.open-fn
+      name: add
+      is_global: false
+      args:
+        host: legacy_type.builtin:string
+      args_picker_command_d: add.open-d
+      commit_command_d: add.commit-d
+      commit_fn: add.commit-fn
   add.open-d:
     type: open_add_d
     value: {}
-  add.open-fn:
-    type: legacy_type.command:args_picker_command_fn
-    value:
-      name: add
-      args:
-        host: legacy_type.builtin:string
-      commit_command_d: add.commit-d
-      commit_fn: add.commit-fn
   add_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -115,26 +108,19 @@ definitions:
       - model
       service_params:
       - peer_registry
-  open_model.model-command:
-    type: legacy_type.command:model_command
+  open_model.model-command-enumerator:
+    type: legacy_type.command:model_args_picker_command_enumerator
     value:
-      d: open_model.open-d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: open_model.open-fn
+      name: open_model
+      is_global: false
+      args:
+        model: legacy_type.model_list:model_arg
+      args_picker_command_d: open_model.open-d
+      commit_command_d: open_model.commit-d
+      commit_fn: open_model.commit-fn
   open_model.open-d:
     type: open_open_model_d
     value: {}
-  open_model.open-fn:
-    type: legacy_type.command:args_picker_command_fn
-    value:
-      name: open_model
-      args:
-        model: legacy_type.model_list:model_arg
-      commit_command_d: open_model.commit-d
-      commit_fn: open_model.commit-fn
   open_model_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -190,12 +176,12 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.peer_list:model
-      command: add.model-command
+      command: add.model-command-enumerator
   peer_list-model-open_model.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.peer_list:model
-      command: open_model.model-command
+      command: open_model.model-command-enumerator
   peer_list-model-remove.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -205,7 +191,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.peer_list:model
-      command: run_command.model-command
+      command: run_command.model-command-enumerator
   peer_list-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -333,26 +319,19 @@ definitions:
       - peer_registry
       - global_model_command_reg
       - remote_command_from_model_command
-  run_command.model-command:
-    type: legacy_type.command:model_command
+  run_command.model-command-enumerator:
+    type: legacy_type.command:model_args_picker_command_enumerator
     value:
-      d: run_command.open-d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: run_command.open-fn
+      name: run_command
+      is_global: false
+      args:
+        command: legacy_type.global_commands:command_arg
+      args_picker_command_d: run_command.open-d
+      commit_command_d: run_command.commit-d
+      commit_fn: run_command.commit-fn
   run_command.open-d:
     type: open_run_command_d
     value: {}
-  run_command.open-fn:
-    type: legacy_type.command:args_picker_command_fn
-    value:
-      name: run_command
-      args:
-        command: legacy_type.global_commands:command_arg
-      commit_command_d: run_command.commit-d
-      commit_fn: run_command.commit-fn
   run_command_d:
     type: legacy_type.builtin:record_mt
     value:

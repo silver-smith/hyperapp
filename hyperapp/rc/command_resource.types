@@ -6,6 +6,7 @@ command_ctr = record:
   module_name: string
   attr_qual_name: string list
   service_name: string
+  enum_service_name: string opt
   ctx_params: string list
   service_params: string list
   args: arg list

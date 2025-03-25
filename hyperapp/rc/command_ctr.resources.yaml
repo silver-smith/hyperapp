@@ -7,8 +7,10 @@ import:
 - legacy_type.command:args_picker_command_fn
 - legacy_type.command:cfg_item
 - legacy_type.command:properties
+- legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
+- legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.command:ui_command
 - legacy_type.command:ui_command_enumerator
 - legacy_type.command_resource:arg
@@ -36,8 +38,10 @@ definitions:
         htypes.command.args_picker_command_fn: legacy_type.command:args_picker_command_fn
         htypes.command.cfg_item: legacy_type.command:cfg_item
         htypes.command.properties: legacy_type.command:properties
+        htypes.command.model_args_picker_command_enumerator: legacy_type.command:model_args_picker_command_enumerator
         htypes.command.model_command: legacy_type.command:model_command
         htypes.command.model_command_enumerator: legacy_type.command:model_command_enumerator
+        htypes.command.ui_args_picker_command_enumerator: legacy_type.command:ui_args_picker_command_enumerator
         htypes.command.ui_command: legacy_type.command:ui_command
         htypes.command.ui_command_enumerator: legacy_type.command:ui_command_enumerator
         htypes.command_resource.arg: legacy_type.command_resource:arg

@@ -13,13 +13,18 @@ LOCAL_PARAMS = {'controller', 'ctx', 'lcs', 'rpc_endpoint', 'identity', 'remote_
 
 class CommandTemplateCtr(Constructor):
 
-    def __init__(self, module_name, attr_qual_name, service_name, ctx_params, service_params, args):
+    def __init__(self, module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args):
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
+        self._enum_service_name = enum_service_name
         self._ctx_params = ctx_params
         self._service_params = service_params
         self._args = args
+
+    @property
+    def _have_args(self):
+        return bool(self._args)
 
     @property
     def _args_tuple(self):
@@ -39,11 +44,20 @@ class CommandTemplateCtr(Constructor):
             }
 
     def update_targets(self, target_set):
+        if self._have_args:
+            service_name = self._enum_service_name
+            if not service_name:
+                attr_path = ".".join(self._attr_qual_name)
+                raise RuntimeError(
+                    f"Command arguments are not supported for {self._service_name} commands:"
+                    f" {self._module_name}:{attr_path}")
+        else:
+            service_name = self._service_name
         resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
         # ready target may already have provider set, but in case of
         # non-typed marker it have not.
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
-            self._service_name, self._resource_name,
+            service_name, self._resource_name,
             provider=resource_tgt,
             ctr=self,
             )
@@ -60,7 +74,7 @@ class CommandTemplateCtr(Constructor):
         d_t = d_type(types, code_name, name)
         return d_t()
 
-    def _make_args_picker_command(self, types, name, commit_fn, name_to_res):
+    def _make_args_picker_command_enum(self, types, name, commit_fn, name_to_res):
         commit_d = self._command_d(types, name)
         open_d = self._command_d(types, f'open_{name}')
         args = tuple(
@@ -70,27 +84,19 @@ class CommandTemplateCtr(Constructor):
                 )
             for name, t in self._args.items()
             )
-        open_fn = htypes.command.args_picker_command_fn(
+        command_enum = self._enum_command_t(
             name=name,
+            is_global=self._is_global,
             args=args,
+            args_picker_command_d=mosaic.put(open_d),
             commit_command_d=mosaic.put(commit_d),
             commit_fn=mosaic.put(commit_fn),
-            )
-        properties = htypes.command.properties(
-            is_global=self._is_global,
-            uses_state=False,
-            remotable=False,
             )
         if name_to_res is not None:
             name_to_res[f'{self._fn_name}.commit-d'] = commit_d
             name_to_res[f'{self._fn_name}.open-d'] = open_d
             name_to_res[f'{self._fn_name}.commit-fn'] = commit_fn
-            name_to_res[f'{self._fn_name}.open-fn'] = open_fn
-        return self._command_t(
-            d=mosaic.put(open_d),
-            properties=properties,
-            system_fn=mosaic.put(open_fn),
-            )
+        return command_enum
 
     def _make_command(self, types, name, fn, name_to_res):
         d = self._command_d(types, name)
@@ -125,13 +131,20 @@ class CommandTemplateCtr(Constructor):
             service_params=tuple(self._service_params),
             )
         name = self._attr_qual_name[-1]
-        if self._args:
-            command = self._make_args_picker_command(types, name, fn, name_to_res)
+        if self._have_args:
+            command = self._make_args_picker_command_enum(types, name, fn, name_to_res)
         else:
             command = self._make_command(types, name, fn, name_to_res)
         if name_to_res is not None:
             name_to_res[f'{self._fn_name}.{self._command_resource_suffix}'] = command
         return command
+
+    @property
+    def _command_resource_suffix(self):
+        if self._have_args:
+            return self._command_enum_resource_suffix
+        else:
+            return self._direct_command_resource_suffix
 
 
 class UntypedCommandTemplateCtr(CommandTemplateCtr):
@@ -142,6 +155,7 @@ class UntypedCommandTemplateCtr(CommandTemplateCtr):
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
+            enum_service_name=piece.enum_service_name,
             ctx_params=piece.ctx_params,
             service_params=piece.service_params,
             args=cls._args_dict(piece.args),
@@ -153,6 +167,7 @@ class UntypedCommandTemplateCtr(CommandTemplateCtr):
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,
+            enum_service_name=self._enum_service_name,
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             args=self._args_tuple,
@@ -177,14 +192,15 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
+            enum_service_name=piece.enum_service_name,
             ctx_params=piece.ctx_params,
             service_params=piece.service_params,
             args=cls._args_dict(piece.args),
             t=pyobj_creg.invite(piece.t),
             )
 
-    def __init__(self, module_name, attr_qual_name, service_name, ctx_params, service_params, args, t):
-        super().__init__(module_name, attr_qual_name, service_name, ctx_params, service_params, args)
+    def __init__(self, module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args, t):
+        super().__init__(module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args)
         self._t = t
 
     @property
@@ -193,6 +209,7 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,
+            enum_service_name=self._enum_service_name,
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             args=self._args_tuple,
@@ -220,24 +237,28 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
 class UiCommandTemplateCtr(TypedCommandTemplateCtr):
 
     _command_t = htypes.command.ui_command
+    _enum_command_t = htypes.command.ui_args_picker_command_enumerator
     _template_ctr_t = htypes.command_resource.ui_command_template_ctr
     _is_global = False
-    _command_resource_suffix = 'ui-command'
+    _direct_command_resource_suffix = 'ui-command'
+    _command_enum_resource_suffix = 'ui-command-enumerator'
 
 
 class UniversalUiCommandTemplateCtr(UntypedCommandTemplateCtr):
 
     _command_t = htypes.command.ui_command
+    _enum_command_t = htypes.command.ui_args_picker_command_enumerator
     _template_ctr_t = htypes.command_resource.universal_ui_command_template_ctr
     _is_global = False
-    _command_resource_suffix = 'universal-ui-command'
+    _direct_command_resource_suffix = 'universal-ui-command'
+    _command_enum_resource_suffix = 'universal-ui-command-enumerator'
 
 
 class UiCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 
     _template_ctr_t = htypes.command_resource.ui_command_enumerator_template_ctr
     _is_global = False
-    _command_resource_suffix = 'ui-command-enumerator'
+    _direct_command_resource_suffix = 'ui-command-enumerator'
 
     def _make_command(self, types, name, fn, name_to_res):
         if name_to_res is not None:
@@ -250,16 +271,18 @@ class UiCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
 
     _command_t = htypes.command.model_command
+    _enum_command_t = htypes.command.model_args_picker_command_enumerator
     _template_ctr_t = htypes.command_resource.model_command_template_ctr
     _is_global = False
-    _command_resource_suffix = 'model-command'
+    _direct_command_resource_suffix = 'model-command'
+    _command_enum_resource_suffix = 'model-command-enumerator'
 
 
 class ModelCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 
     _template_ctr_t = htypes.command_resource.model_command_enumerator_template_ctr
     _is_global = False
-    _command_resource_suffix = 'model-command-enumerator'
+    _direct_command_resource_suffix = 'model-command-enumerator'
 
     def _make_command(self, types, name, fn, name_to_res):
         if name_to_res is not None:
@@ -274,4 +297,4 @@ class GlobalModelCommandTemplateCtr(UntypedCommandTemplateCtr):
     _command_t = htypes.command.model_command
     _template_ctr_t = htypes.command_resource.global_model_command_template_ctr
     _is_global = True
-    _command_resource_suffix = 'global-model-command'
+    _direct_command_resource_suffix = 'global-model-command'

@@ -109,6 +109,11 @@ def model_command_enumerator_reg(config, model_t):
     return config.get(model_t, [])
 
 
+# @mark.service(ctl=FlatListConfigCtl())
+# def global_model_command_enumerator_reg(config):
+#     return CommandDict(config)
+
+
 @mark.service
 def get_model_commands(model_command_reg, model_command_enumerator_reg, model_t, ctx):
     command_list = [*model_command_reg(model_t)]

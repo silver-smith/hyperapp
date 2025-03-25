@@ -51,6 +51,7 @@ definitions:
       - view_ui_model_command_reg
       - universal_ui_command_reg
       - ui_command_enumerator_reg
+      - universal_ui_command_enumerator_reg
       want_config: false
       free_params:
       - ctx
@@ -69,6 +70,7 @@ definitions:
       function: get_view_element_commands
       service_params:
       - view_element_ui_command_reg
+      - view_element_ui_command_enumerator_reg
       want_config: false
       free_params:
       - view
@@ -120,6 +122,20 @@ definitions:
     value:
       object: ui_command.module
       attr_name: ui_command_from_piece
+  universal_ui_command_enumerator_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command.module
+      attr_name: universal_ui_command_enumerator_reg
+  universal_ui_command_enumerator_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: universal_ui_command_enumerator_reg
+      ctl: list_config_ctl-flat_list_config_ctl.ctl
+      function: universal_ui_command_enumerator_reg
+      service_params: []
+      want_config: true
+      free_params: []
   universal_ui_command_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -134,6 +150,21 @@ definitions:
       service_params: []
       want_config: true
       free_params: []
+  view_element_ui_command_enumerator_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command.module
+      attr_name: view_element_ui_command_enumerator_reg
+  view_element_ui_command_enumerator_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: view_element_ui_command_enumerator_reg
+      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      function: view_element_ui_command_enumerator_reg
+      service_params: []
+      want_config: true
+      free_params:
+      - view_t
   view_element_ui_command_reg:
     type: legacy_type.builtin:attribute
     value:

@@ -4,20 +4,10 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:args_picker_command_fn
-- legacy_type.command:model_command
 - legacy_type.sample_list_selector:item
 - legacy_type.system_fn:ctx_fn
 definitions:
-  open_show_sample_list_item_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: sample_list_arg
-      name: open_show_sample_list_item_d
-      base: null
-      fields: {}
   sample_list_arg.module:
     type: legacy_type.builtin:python_module
     value:
@@ -42,45 +32,3 @@ definitions:
     value:
       t: legacy_type.sample_list_selector:item
       value: sample_list_default.system-fn
-  show_sample_list_item:
-    type: legacy_type.builtin:attribute
-    value:
-      object: sample_list_arg.module
-      attr_name: show_sample_list_item
-  show_sample_list_item.commit-d:
-    type: show_sample_list_item_d
-    value: {}
-  show_sample_list_item.commit-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: show_sample_list_item
-      ctx_params:
-      - item
-      service_params: []
-  show_sample_list_item.global-model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: show_sample_list_item.open-d
-      properties:
-        is_global: true
-        uses_state: false
-        remotable: false
-      system_fn: show_sample_list_item.open-fn
-  show_sample_list_item.open-d:
-    type: open_show_sample_list_item_d
-    value: {}
-  show_sample_list_item.open-fn:
-    type: legacy_type.command:args_picker_command_fn
-    value:
-      name: show_sample_list_item
-      args:
-        item: legacy_type.sample_list_selector:item
-      commit_command_d: show_sample_list_item.commit-d
-      commit_fn: show_sample_list_item.commit-fn
-  show_sample_list_item_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: sample_list_arg
-      name: show_sample_list_item_d
-      base: null
-      fields: {}

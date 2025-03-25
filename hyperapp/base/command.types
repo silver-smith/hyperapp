@@ -25,6 +25,17 @@ arg = record:
   name: string
   t: ref
 
+args_picker_command_enumerator = record:
+  name: string
+  is_global: bool
+  args: arg list
+  args_picker_command_d: ref
+  commit_command_d: ref
+  commit_fn: ref
+
+model_args_picker_command_enumerator = record(args_picker_command_enumerator)
+ui_args_picker_command_enumerator = record(args_picker_command_enumerator)
+
 args_picker_command_fn = record:
   name: string
   args: arg list

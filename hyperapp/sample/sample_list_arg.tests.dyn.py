@@ -7,7 +7,7 @@ def test_default():
     assert item
 
 
-def test_show_sample_list_item():
-    item = htypes.sample_list_selector.item(id=123)
-    text = sample_list_arg.show_sample_list_item(item)
-    assert type(text) is str
+# def test_show_sample_list_item():
+#     item = htypes.sample_list_selector.item(id=123)
+#     text = sample_list_arg.show_sample_list_item(item)
+#     assert type(text) is str
