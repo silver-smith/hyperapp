@@ -27,14 +27,6 @@ def _details_context(ctx, details_model):
         )
 
 
-def _pick_details_command(details_commands, ctx, command_d, model, model_state):
-    model_t = deduce_t(model)
-    command_ctx = model_command_ctx(ctx, model, model_state)
-    d_to_command = details_commands(model_t, command_ctx)
-    unbound_command = d_to_command[command_d]
-    return unbound_command
-
-
 class DetailsView(WrapperView):
 
     @classmethod
