@@ -36,8 +36,8 @@ definitions:
       - ctx
       service_params:
       - view_reg
+      - command_creg
       - visualizer
-      - details_commands
   details-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
@@ -87,6 +87,7 @@ definitions:
       function: format_factory_k
       service_params:
       - format
+      - command_creg
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

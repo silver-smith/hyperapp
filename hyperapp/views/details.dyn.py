@@ -39,30 +39,23 @@ class DetailsView(WrapperView):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, view_reg, visualizer, details_commands):
-        command_d = web.summon(piece.command_d)
-        model_state = web.summon(piece.model_state)
+    def from_piece(cls, piece, ctx, view_reg, command_creg, visualizer):
+        unbound_command = command_creg.invite(piece.command)
         details_model = web.summon(piece.details_model)
-        details_ctx = ctx.clone_with(
-            model=details_model,
-            piece=details_model,
-            )
+        details_ctx = _details_context(ctx, details_model)
         details_view = view_reg.invite(piece.details_view, details_ctx)
-        unbound_command = _pick_details_command(details_commands, ctx, command_d, ctx.model, model_state)
-        return cls(visualizer, unbound_command, model_state, details_model, details_view)
+        return cls(visualizer, unbound_command, details_model, details_view)
 
-    def __init__(self, visualizer, unbound_command, model_state, details_model, details_view):
+    def __init__(self, visualizer, unbound_command, details_model, details_view):
         super().__init__(details_view)
         self._unbound_command = unbound_command
-        self._model_state = model_state
         self._visualizer = visualizer
         self._details_model = details_model
 
     @property
     def piece(self):
         return htypes.details.view(
-            command_d=mosaic.put(self._unbound_command.d),
-            model_state=mosaic.put(self._model_state),
+            command=mosaic.put(self._unbound_command.piece),
             details_model=mosaic.put(self._details_model),
             details_view=mosaic.put(self._base_view.piece),
             )
@@ -79,9 +72,9 @@ class DetailsView(WrapperView):
 
 
 @mark.actor.formatter_creg
-def format_factory_k(piece, format):
-    command_d = web.summon(piece.command_d)
-    command_d_str = format(command_d)
+def format_factory_k(piece, format, command_creg):
+    unbound_command = command_creg.invite(piece.command)
+    command_d_str = format(unbound_command.d)
     return f"details: {command_d_str}"
 
 
@@ -103,23 +96,21 @@ def details_command_list(model, model_state, ctx, details_commands):
     command_ctx = model_command_ctx(ctx, model, model_state)
     d_to_command = details_commands(model_t, command_ctx)
     factory_k_list = []
-    for command_d in d_to_command:
+    for command in d_to_command.values():
         factory_k = htypes.details.factory_k(
-            command_d=mosaic.put(command_d),
+            command=mosaic.put(command.piece),
             )
         factory_k_list.append(factory_k)
     return factory_k_list
 
 
-async def details_get(k, model, model_state, ctx, visualizer, details_commands):
-    command_d = web.summon(k.command_d)
-    unbound_command = _pick_details_command(details_commands, ctx, command_d, model, model_state)
+async def details_get(k, ctx, command_creg, visualizer):
+    unbound_command = command_creg.invite(k.command)
     details_model = await _run_details_command(ctx, unbound_command)
     details_ctx = _details_context(ctx, details_model)
     details_view = visualizer(details_ctx, details_model)
     return htypes.details.view(
-        command_d=k.command_d,
-        model_state=mosaic.put(model_state),
-        details_model=mosaic.put(details_ctx.model),
+        command=k.command,
+        details_model=mosaic.put(details_model),
         details_view=mosaic.put(details_view),
         )

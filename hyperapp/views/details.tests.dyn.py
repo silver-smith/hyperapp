@@ -11,15 +11,6 @@ from .code.list_adapter import list_model_state_t
 from .tested.code import details
 
 
-def test_format_factory_k():
-    command_d = htypes.details_tests.sample_command_d()
-    k = htypes.details.factory_k(
-        command_d=mosaic.put(command_d),
-        )
-    title = details.format_factory_k(k)
-    assert type(title) is str
-
-
 def details_command():
     return 'details-model'
 
@@ -29,8 +20,8 @@ def command_d():
     return htypes.details_tests.sample_command_d()
 
 
-@mark.config_fixture('model_command_reg')
-def model_command_reg_config(partial_ref, command_d):
+@mark.fixture
+def unbound_command(partial_ref, command_d):
     fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=(),
@@ -38,13 +29,25 @@ def model_command_reg_config(partial_ref, command_d):
         raw_fn=details_command,
         bound_fn=details_command,
         )
-    command = UnboundModelCommand(
+    return UnboundModelCommand(
         d=command_d,
         ctx_fn=fn,
         properties=htypes.command.properties(False, False, False),
         )
+
+
+def test_format_factory_k(unbound_command):
+    k = htypes.details.factory_k(
+        command=mosaic.put(unbound_command.piece),
+        )
+    title = details.format_factory_k(k)
+    assert type(title) is str
+
+
+@mark.config_fixture('model_command_reg')
+def model_command_reg_config(unbound_command):
     return {
-        htypes.details_tests.sample_model: [command],
+        htypes.details_tests.sample_model: [unbound_command],
         }
 
 
@@ -91,10 +94,9 @@ def ctx(model, model_state):
         )
 
 
-def test_view(ctx, command_d, model_state, details_view):
+def test_view(ctx, unbound_command, details_view):
     piece = htypes.details.view(
-        command_d=mosaic.put(command_d),
-        model_state=mosaic.put(model_state),
+        command=mosaic.put(unbound_command.piece),
         details_model=mosaic.put(details_command()),
         details_view=mosaic.put(details_view),
         )
@@ -115,8 +117,9 @@ def test_command_list(details_commands, ctx, model, model_state):
     assert len(k_list) == 1
 
 
-async def test_get(visualizer, details_commands, ctx, command_d, model, model_state):
+async def test_get(command_creg, visualizer, details_commands, ctx, unbound_command, model):
     k = htypes.details.factory_k(
-        command_d=mosaic.put(command_d),
+        command=mosaic.put(unbound_command.piece),
         )
-    view_piece = await details.details_get(k, model, model_state, ctx, visualizer, details_commands)
+    view_piece = await details.details_get(k, ctx, command_creg, visualizer)
+    assert view_piece
