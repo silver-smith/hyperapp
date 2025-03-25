@@ -1,0 +1,43 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:string
+- legacy_type.data_service:config_item
+- legacy_type.rsa_identity:rsa_peer
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+definitions:
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        peer_label_reg: peer_label_reg.config
+  config_item-rsa_peer_1:
+    type: legacy_type.data_service:config_item
+    value:
+      key: rsa_peer_1
+      value: string_1
+  config_item-rsa_peer_2:
+    type: legacy_type.data_service:config_item
+    value:
+      key: rsa_peer_2
+      value: string_2
+  peer_label_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-rsa_peer_2
+      - config_item-rsa_peer_1
+  rsa_peer_1:
+    type: legacy_type.rsa_identity:rsa_peer
+    value:
+      public_key_pem: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUE0UlgrdGJGL1d5NzNlbXFUUVdDYQpuU2lBdVcrdVJRRU4yNnZWSUpvdzF1ZGo2VnJ3VTI0a2JyQXVLU3UvWUJGbXlKMHljMVI4OVNrZFVjRndhY2tCCnVzWmFIcUpXbDI3c21wQnJ0eW1RN3FLcHp0N3lnWnZOU2VjUjFzdGNvc0NPZUgweUVna1owVnppbk52SVpoaEkKMXB6NEtXc2FlS0JNT0Mzd09keGoydkRwNjZLTThESk92TC9vcC91TXNWdVc2Mlpud213ZlNzdk1aZlU4ak5hRQpjdzhybjRoVkZKenhoVzFhL3VrbmpyWGh0UitGMFFzY2liREw4eW9hWWl2TTdWbklTdXBlRVBDSS9vSWlpaUdJCkk2MTYrVWczNVc0QTdKdTg3UzRxUmhxTVBMYVdINXJUWFlkOEhpVFU3V0JTaCtEZnduWEZsSVZ3ZXVjbkpmLzAKMmF1K0h2aEJ3VGE3bDZ5V1RhQjB5WE9IODBPQzBZaCt6QnFnUkpPS0Vtc3paSWx1ZTlkdkJJL0Z2NEhPRTF6bApsUWJuQXZvL1ZqQ1BjQkp2MGNlUDVZNG9FVUdlb2NVMENMNERISHNBZXlVK2FGdkdCMExnNEE0NEh1ZkVDczZ1CnZSWDZVYUNSL3JaR0FGWXp2NTlDcDM5REFXRGRoZEtKaDdRTXJrcHU2b05DV0NGTUUySDZPWnIxa1o3TEM3eFIKWnRLVjVkQ2RmUmpNQUhZeUtJVU10bGFZTDlEd0pMOHY0dnloZHZiZktpQ0Q0MkE1NlBISFZsT0VuWi9xM3NwRwpKeHJRNWRaT2J5aWk1aTVqNHVNeVIzYVBBVkYvRXV1L0praVBPY3Z1ZVVLUnlPVExVek1FZTY0UHpYb0RZT21lCjRMRHhYKy9vMVFPeWFPeDNONVU4d2tzQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=
+  rsa_peer_2:
+    type: legacy_type.rsa_identity:rsa_peer
+    value:
+      public_key_pem: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUEzYzdVc29MZC8zemdQb3d2enVKawpwL0ROZkcxWkNKR1dGRmVGN2Q1WlN2NE9UMm1BM1d6cFpQc1pMSUcyQlBMazdFVmYrS0lUYnRFVklNTyszWk5PCktheXV2RGlXQk01NFFLTnlQUkcvTmxKdmVDamRtbEdDSzl6TlJFTkk4OGY2dmtBTjNkZjBUcHFHYnVYL2lzNkEKdVBmMnZ1QVhQVnRWVTZtNVUwaWJ0LzVPRFo0aVZYT0pTb0lleFgrNUVPOG9MdkpKRElodkZhTDB6eHcwRFh1aworb2VOSXNORTNSVU5LNXY3ZnFIWCt0cXJQalJBYWFqQU9vOWVSeExzeVcyTDBFS2w1VmdWUE9tb2ppVE1HSFNTCnE0R0N3Y29OYTAybXFuY3hGcDcyTmF5cmw1M1BjMmxCZzBSWmhvRFJibW1zaTM4NFZ5KzMxdlVmNDRzc1o0OSsKR2MwTEpPTTJzRzRYcURPS2JWNkVDd2hxaHdsM2xmcXdEeSs4NzVpaWZrMDA0RHBhVlhOZ2J6blllYnJCMlVMOQpiTHhDbkJUeWxuNTVpSzNxd2c2MWtPUlJQOFJHalE3c1liamlqcGo0WlVoc29FZXlMMGhadGhUWi8xOURKOXRVCldjS29LeWZrMkNZVUZnYXhNUHg1TXVyZ1dwUWZkbGhyQzZrZk8zWHJFUTJncVNVN0dSQUZEVzI0bTdsQWxLS2kKOERnR2NHQmNFYVZ3eldNWGRmYjBTVGJnN0RIbWxhOFVERVlmWXEzcDErVnRrbUlpV0xFVXU2b1ZCSVZDWmpmdgp1Zlo0RnYyN3JibDVtbWs3RVo5eUE0M0U2YnZJZkRRWHVWd1VjbzBXSk0zSXU1SzU1QkZ3aUFjZUlzR1o2Z1p5CmppSWE2K2hySWZtQU0vNGZhTnd5MDNVQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=
+  string_1:
+    type: legacy_type.builtin:string
+    value:host2  string_2:
+    type: legacy_type.builtin:string
+    value: localhost
