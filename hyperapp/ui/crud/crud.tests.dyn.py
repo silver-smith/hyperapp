@@ -211,6 +211,7 @@ def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_cr
         commit_action_fn=mosaic.put(_sample_crud_update_fn),
         )
     fn = crud.CrudOpenFn.from_piece(piece)
+    assert fn.piece == piece
 
     assert fn.missing_params(Context()) == {'navigator', 'model', 'current_item'}
     ctx = ctx.clone_with(

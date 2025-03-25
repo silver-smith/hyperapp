@@ -126,6 +126,17 @@ class CrudOpenFn:
     def __repr__(self):
         return f"<CrudOpenFn {self._name} keys={self._key_fields}>"
 
+    @property
+    def piece(self):
+        return htypes.crud.open_command_fn(
+            name=self._name,
+            value_t=pyobj_creg.actor_to_ref(self._value_t),
+            key_fields=tuple(self._key_fields),
+            init_action_fn=mosaic.put(self._init_action_fn.piece),
+            commit_command_d=mosaic.put(self._commit_command_d),
+            commit_action_fn=self._commit_action_fn_ref,
+            )
+
     def missing_params(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
         return self._required_kw - ctx_kw.keys()
