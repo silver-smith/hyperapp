@@ -74,6 +74,8 @@ class DetailsView(WrapperView):
         details_widget = details_view.construct_widget(None, details_ctx)
         self.replace_child(ctx, widget, 0, details_view, details_widget)
         # Do not update self._details_model - it will cause new layout saving.
+        # Calling this hook causes infinite children update.
+        # TODO: Possible solution: Add origin to children update and do not call it.
         # self._ctl_hook.element_replaced(0, details_view, details_widget)
 
 
