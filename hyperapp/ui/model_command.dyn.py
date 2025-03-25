@@ -1,8 +1,10 @@
 import logging
 from functools import partial
 
+from . import htypes
 from .services import (
     deduce_t,
+    mosaic,
     web,
     )
 from .code.mark import mark
@@ -27,6 +29,14 @@ class UnboundModelCommand(UnboundCommand):
     def __init__(self, d, ctx_fn, properties):
         super().__init__(d, ctx_fn)
         self._properties = properties
+
+    @property
+    def piece(self):
+        return htypes.command.model_command(
+            d=mosaic.put(self._d),
+            properties=self._properties,
+            system_fn=mosaic.put(self._ctx_fn.piece),
+            )
 
     @property
     def properties(self):

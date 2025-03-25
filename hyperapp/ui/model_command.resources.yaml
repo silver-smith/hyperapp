@@ -3,6 +3,7 @@
 import:
 - base.mark:mark.module
 - builtins:deduce_t.service
+- builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -79,7 +80,9 @@ definitions:
         code.command_enumerator: ui.command_enumerator:command_enumerator.module
         code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
         code.mark: base.mark:mark.module
+        htypes.command.model_command: legacy_type.command:model_command
         services.deduce_t: builtins:deduce_t.service
+        services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
   model_command_enumerator_from_piece:
     type: legacy_type.builtin:attribute

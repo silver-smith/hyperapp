@@ -32,6 +32,7 @@ def test_model_command_from_piece():
         )
     command = model_command.model_command_from_piece(piece)
     assert isinstance(command, model_command.UnboundModelCommand)
+    assert command.piece == piece
 
 
 def test_model_command_enumerator_from_piece():
