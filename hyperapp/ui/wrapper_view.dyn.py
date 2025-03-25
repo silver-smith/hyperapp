@@ -17,7 +17,13 @@ class WrapperView(View):
         return 0
 
     def replace_child_widget(self, widget, idx, new_child_widget):
-        self._base_view.replace_child_widget(widget, idx, new_child_widget)
+        assert idx == 0
+        self._ctl_hook.replace_parent_widget(new_child_widget)
+
+    def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
+        assert idx == 0
+        self._base_view = new_child_view
+        self.replace_child_widget(widget, idx, new_child_widget)
 
     def items(self):
         return [Item('base', self._base_view)]
