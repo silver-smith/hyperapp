@@ -50,7 +50,7 @@ class UnboundArgsPickerCommandEnumerator:
         return f"<ArgsPickerCommandEnum: {self._commit_fn}>"
 
     def enum_commands(self, ctx):
-        log.info("Run args picker command enumerator: %r (%s)", self, self._args)
+        log.debug("Run args picker command enumerator: %r (%s)", self, self._args)
         fn = ArgsPickerFn(
             system_fn_creg=self._system_fn_creg,
             crud=self._crud,
@@ -72,5 +72,5 @@ class UnboundArgsPickerCommandEnumerator:
             groups=default_command_groups(properties, CommandKind.VIEW),
             )
         result = [command]
-        log.info("Run args picker command enumerator %r result: %r", self, result)
+        log.debug("Run args picker command enumerator %r result: %r", self, result)
         return result
