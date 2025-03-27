@@ -147,6 +147,7 @@ def get_view_commands(
 def get_view_element_commands(
         view_element_ui_command_reg,
         view_element_ui_command_enumerator_reg,
+        ctx,
         view,
         ):
     view_t = deduce_t(view.piece)

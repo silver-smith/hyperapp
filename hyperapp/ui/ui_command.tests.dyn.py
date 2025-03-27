@@ -66,13 +66,17 @@ def view_ui_command_reg_config(partial_ref):
     return {htypes.ui_command_tests.sample_view: [command]}
 
 
-async def test_view_commands(get_view_commands, view, widget):
-    lcs = Mock()
-    lcs.get.return_value = None
-    ctx = Context(
+@mark.fixture
+def ctx(view, widget):
+    return Context(
         view=view,
         widget=weakref.ref(widget),
         )
+
+
+async def test_view_commands(get_view_commands, view, ctx):
+    lcs = Mock()
+    lcs.get.return_value = None
     command_list = get_view_commands(ctx, lcs, view)
     [unbound_command] = command_list
     bound_command = unbound_command.bind(ctx)
@@ -80,8 +84,8 @@ async def test_view_commands(get_view_commands, view, widget):
     assert result == 'sample-fn: a-state, a-service', repr(result)
 
 
-async def test_view_element_commands(get_view_element_commands, view, widget):
-    command_list = get_view_element_commands(view)
+async def test_view_element_commands(get_view_element_commands, view, ctx):
+    command_list = get_view_element_commands(ctx, view)
     assert type(command_list) is list
 
 

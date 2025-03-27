@@ -73,6 +73,7 @@ definitions:
       - view_element_ui_command_enumerator_reg
       want_config: false
       free_params:
+      - ctx
       - view
   list_config_ctl-dict_list_config_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl

@@ -157,8 +157,8 @@ class _Item:
         unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.ctx.lcs, self.view)
         view_commands = self._bind_commands(unbound_view_commands, command_ctx)
         if self.parent.view:
-            unbound_element_commands = self._meta.svc.get_view_element_commands(self.parent.view)
             parent_command_ctx = self.parent.command_context(my_rctx)
+            unbound_element_commands = self._meta.svc.get_view_element_commands(parent_command_ctx, self.parent.view)
             element_command_ctx = parent_command_ctx.clone_with(
                 element_idx=self.idx,
                 )
