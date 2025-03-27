@@ -18,6 +18,8 @@ import:
 - ui.controller:canned_ctl_item_factory.service
 - ui.controller:controller_running.service
 - ui.controller:layout-view.feed-template
+- ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-template
+- ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-template
 - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
 - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
 - ui.crud.crud:crud-view.view-template
@@ -171,6 +173,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-template
+      - ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-template
       - ui.model_command:command_creg-command-model_command.actor-template
       - ui.model_command:command_creg-command-model_command_enumerator.actor-template
       - ui.ui_command:command_creg-command-ui_command.actor-template
