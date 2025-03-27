@@ -10,7 +10,9 @@ import:
 - ui.column_resource_name:resource_name_creg-column-column_k.actor-template
 - ui.column_visible_reg:column_visible_reg.service
 - ui.command_cfg_item:cfg_item_creg-command-cfg_item.actor-template
+- ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-template
 - ui.command_cfg_item:cfg_item_creg-command-model_command.actor-template
+- ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-template
 - ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-template
 - ui.command_creg:command_creg.service
 - ui.controller:canned_ctl_item_factory.service
@@ -157,7 +159,9 @@ definitions:
     value:
       items:
       - ui.command_cfg_item:cfg_item_creg-command-cfg_item.actor-template
+      - ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-template
       - ui.command_cfg_item:cfg_item_creg-command-model_command.actor-template
+      - ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-template
       - ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-template
       - ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-template
       - ui.selector:cfg_item_creg-selector-template.actor-template

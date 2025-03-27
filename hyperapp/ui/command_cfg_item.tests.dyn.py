@@ -79,3 +79,33 @@ def ui_command():
 def test_untyped_ui_command(ui_command):
     cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(ui_command)
     assert cfg_item.piece == ui_command
+
+
+@mark.fixture
+def args_picker_enum(enum_t):
+    d = htypes.command_cfg_item_tests.sample_command_d()
+    fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(_sample_fn),
+        ctx_params=('view', 'state'),
+        service_params=('sample_service',),
+        )
+    return enum_t(
+        name='sample-command',
+        is_global=False,
+        args=(),
+        args_picker_command_d=mosaic.put(d),
+        commit_command_d=mosaic.put(d),
+        commit_fn=mosaic.put(fn),
+        )
+
+
+def test_untyped_model_command_enum(args_picker_enum):
+    enum = args_picker_enum(htypes.command.model_args_picker_command_enumerator)
+    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(enum)
+    assert cfg_item.piece == enum
+
+
+def test_untyped_ui_command_enum(args_picker_enum):
+    enum = args_picker_enum(htypes.command.ui_args_picker_command_enumerator)
+    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(enum)
+    assert cfg_item.piece == enum
