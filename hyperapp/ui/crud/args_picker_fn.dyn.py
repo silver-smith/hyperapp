@@ -12,6 +12,23 @@ from .code.mark import mark
 from .code.arg_mark import value_mark_name
 
 
+def args_dict_to_tuple(args):
+    return tuple(
+        htypes.command.arg(
+            name=name,
+            t=pyobj_creg.actor_to_ref(arg.t),
+            )
+        for name, value in args.items()
+        )
+
+
+def args_tuple_to_dict(args):
+    return {
+        arg.name: pyobj_creg.invite(arg.t)
+        for arg in args
+        }
+
+
 class ArgsPickerFn:
 
     _required_kw = {'navigator', 'hook'}
@@ -19,10 +36,7 @@ class ArgsPickerFn:
     @classmethod
     @mark.actor.system_fn_creg
     def from_piece(cls, piece, crud, system_fn_creg, editor_default_reg):
-        args = {
-            arg.name: pyobj_creg.invite(arg.t)
-            for arg in piece.args
-            }
+        args = args_tuple_to_dict(piece.args)
         return cls(
             system_fn_creg=system_fn_creg,
             crud=crud,

@@ -2,11 +2,17 @@
 
 import:
 - base.mark:mark.module
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:model_args_picker_command_enumerator
+- legacy_type.command:properties
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.system:actor_template
+- ui.command:command.module
+- ui.command_groups:command_groups.module
+- ui.crud.args_picker_fn:args_picker_fn.module
+- ui.ui_command:ui_command.module
 definitions:
   UnboundArgsPickerCommandEnumerator:
     type: legacy_type.builtin:attribute
@@ -24,18 +30,28 @@ definitions:
       module_name: args_picker_command_enum
       file_name: args_picker_command_enum.dyn.py
       import_list:
+        code.args_picker_fn: ui.crud.args_picker_fn:args_picker_fn.module
+        code.command: ui.command:command.module
+        code.command_groups: ui.command_groups:command_groups.module
         code.mark: base.mark:mark.module
+        code.ui_command: ui.ui_command:ui_command.module
+        htypes.command.properties: legacy_type.command:properties
+        services.web: builtins:web.service
   command_creg-command-model_args_picker_command_enumerator.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:model_args_picker_command_enumerator
       function: UnboundArgsPickerCommandEnumerator.from_piece
       service_params:
+      - crud
       - system_fn_creg
+      - editor_default_reg
   command_creg-command-ui_args_picker_command_enumerator.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:ui_args_picker_command_enumerator
       function: UnboundArgsPickerCommandEnumerator.from_piece
       service_params:
+      - crud
       - system_fn_creg
+      - editor_default_reg

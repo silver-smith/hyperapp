@@ -4,11 +4,17 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.context import Context
 from .tested.code import args_picker_command_enum
 
 
 def _sample_fn():
     pass
+
+
+@mark.fixture
+def ctx():
+    return Context()
 
 
 @mark.fixture
@@ -29,13 +35,17 @@ def args_picker_enum(enum_t):
         )
 
 
-def test_model_args_picker_enumerator_from_piece(args_picker_enum):
+def test_model_args_picker_enumerator_from_piece(ctx, args_picker_enum):
     piece = args_picker_enum(htypes.command.model_args_picker_command_enumerator)
     enum = args_picker_command_enum.UnboundArgsPickerCommandEnumerator.from_piece(piece)
     assert isinstance(enum, args_picker_command_enum.UnboundArgsPickerCommandEnumerator)
+    command_list = enum.enum_commands(ctx)
+    assert type(command_list) is list
 
 
-def test_ui_args_picker_enumerator_from_piece(args_picker_enum):
+def test_ui_args_picker_enumerator_from_piece(ctx, args_picker_enum):
     piece = args_picker_enum(htypes.command.ui_args_picker_command_enumerator)
     enum = args_picker_command_enum.UnboundArgsPickerCommandEnumerator.from_piece(piece)
     assert isinstance(enum, args_picker_command_enum.UnboundArgsPickerCommandEnumerator)
+    command_list = enum.enum_commands(ctx)
+    assert type(command_list) is list
