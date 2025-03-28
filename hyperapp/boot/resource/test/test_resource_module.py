@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 
 pytest_plugins = [
     'hyperapp.boot.test.services',
+    'hyperapp.boot.resource.test.services',
     ]
 
 TEST_DIR = Path(__file__).parent.resolve()
