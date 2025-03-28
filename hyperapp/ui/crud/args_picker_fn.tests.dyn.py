@@ -47,8 +47,9 @@ def test_args_picker_fn(navigator_rec):
         )
     piece = htypes.command.args_picker_command_fn(
         name='sample-fn',
-        args=(
-            htypes.command.arg(
+        args=(),
+        required_args=(
+            htypes.command.arg_t(
                 name='sample_value',
                 t=pyobj_creg.actor_to_ref(htypes.args_picker_fn_tests.sample_value),
                 ),
@@ -57,6 +58,7 @@ def test_args_picker_fn(navigator_rec):
         commit_fn=mosaic.put(commit_fn),
         )
     picker_fn = args_picker_fn.ArgsPickerFn.from_piece(piece)
+    assert picker_fn.piece == piece
     assert picker_fn.missing_params(Context()) == {'navigator', 'hook'}
     canned_item_piece = htypes.ui.canned_ctl_item(
         item_id=12345,

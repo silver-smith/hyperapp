@@ -53,7 +53,7 @@ definitions:
     value:
       name: replace_view
       is_global: false
-      args:
+      required_args:
         view_factory: legacy_type.view_factory:factory
       args_picker_command_d: replace_view.open-d
       commit_command_d: replace_view.commit-d

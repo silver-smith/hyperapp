@@ -1,0 +1,21 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
+- legacy_type.builtin:python_module
+- legacy_type.command:arg
+- legacy_type.command:arg_t
+definitions:
+  command_args.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: command_args
+      file_name: command_args.dyn.py
+      import_list:
+        htypes.command.arg: legacy_type.command:arg
+        htypes.command.arg_t: legacy_type.command:arg_t
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service

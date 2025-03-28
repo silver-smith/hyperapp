@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:deduce_t.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -9,9 +10,13 @@ import:
 - legacy_type.command:properties
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.system:actor_template
+- ui.arg_mark:arg_mark.module
 - ui.command:command.module
 - ui.command_groups:command_groups.module
 - ui.crud.args_picker_fn:args_picker_fn.module
+- ui.crud.canned_args_command_fn:canned_args_command_fn.module
+- ui.crud.command_args:command_args.module
+- ui.model_command:model_command.module
 - ui.ui_command:ui_command.module
 definitions:
   UnboundArgsPickerCommandEnumerator:
@@ -30,12 +35,17 @@ definitions:
       module_name: args_picker_command_enum
       file_name: args_picker_command_enum.dyn.py
       import_list:
+        code.arg_mark: ui.arg_mark:arg_mark.module
         code.args_picker_fn: ui.crud.args_picker_fn:args_picker_fn.module
+        code.canned_args_command_fn: ui.crud.canned_args_command_fn:canned_args_command_fn.module
         code.command: ui.command:command.module
+        code.command_args: ui.crud.command_args:command_args.module
         code.command_groups: ui.command_groups:command_groups.module
         code.mark: base.mark:mark.module
+        code.model_command: ui.model_command:model_command.module
         code.ui_command: ui.ui_command:ui_command.module
         htypes.command.properties: legacy_type.command:properties
+        services.deduce_t: builtins:deduce_t.service
         services.web: builtins:web.service
   command_creg-command-model_args_picker_command_enumerator.actor-template:
     type: legacy_type.system:actor_template

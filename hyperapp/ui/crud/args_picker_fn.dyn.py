@@ -1,32 +1,13 @@
 import inspect
 
-from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
-
+from . import htypes
 from .services import (
-    deduce_t,
     mosaic,
     pyobj_creg,
     web,
     )
 from .code.mark import mark
-from .code.arg_mark import value_mark_name
-
-
-def args_dict_to_tuple(args):
-    return tuple(
-        htypes.command.arg(
-            name=name,
-            t=pyobj_creg.actor_to_ref(arg.t),
-            )
-        for name, value in args.items()
-        )
-
-
-def args_tuple_to_dict(args):
-    return {
-        arg.name: pyobj_creg.invite(arg.t)
-        for arg in args
-        }
+from .code.command_args import args_dict_to_tuple, args_t_dict_to_tuple, args_t_tuple_to_dict
 
 
 class ArgsPickerFn:
@@ -36,28 +17,41 @@ class ArgsPickerFn:
     @classmethod
     @mark.actor.system_fn_creg
     def from_piece(cls, piece, crud, system_fn_creg, editor_default_reg):
-        args = args_tuple_to_dict(piece.args)
+        args = args_t_tuple_to_dict(piece.args)
+        required_args = args_t_tuple_to_dict(piece.required_args)
         return cls(
             system_fn_creg=system_fn_creg,
             crud=crud,
             editor_default_reg=editor_default_reg,
             name=piece.name,
             args=args,
+            required_args=required_args,
             commit_command_d=web.summon(piece.commit_command_d),
             commit_fn=system_fn_creg.invite(piece.commit_fn),
             )
 
-    def __init__(self, system_fn_creg, crud, editor_default_reg, name, args, commit_command_d, commit_fn):
+    def __init__(self, system_fn_creg, crud, editor_default_reg, name, args, required_args, commit_command_d, commit_fn):
         self._system_fn_creg = system_fn_creg
         self._crud = crud
         self._editor_default_reg = editor_default_reg
         self._name = name
         self._args = args
+        self._required_args = required_args
         self._commit_command_d = commit_command_d
         self._commit_fn = commit_fn
 
     def __repr__(self):
         return f"<ArgsPickerFn {self._name}: {self._args}>"
+
+    @property
+    def piece(self):
+        return htypes.command.args_picker_command_fn(
+            name=self._name,
+            args=args_dict_to_tuple(self._args),
+            required_args=args_t_dict_to_tuple(self._required_args),
+            commit_command_d=mosaic.put(self._commit_command_d),
+            commit_fn=mosaic.put(self._commit_fn.piece),
+            )
 
     def missing_params(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
@@ -83,18 +77,17 @@ class ArgsPickerFn:
             )
 
     def _open(self, navigator_rec, ctx):
-        args, required_args = self._pick_args_from_context(ctx)
-        if len(required_args) > 1:
-            required_str = ', '.join(name for name, t in required_args.items())
+        if len(self._required_args) > 1:
+            required_str = ', '.join(name for name, t in self._required_args.items())
             raise RuntimeError(f"More than 1 args to pick is not supported: {required_str}")
-        if not required_args:
-            return self._run_commit_fn(ctx, args)
-        [(value_field, value_t)] = required_args.items()
+        if not self._required_args:
+            return self._run_commit_fn(ctx, self._args)
+        [(value_field, value_t)] = self._required_args.items()
         try:
             get_default_fn = self._editor_default_reg[value_t]
         except KeyError:
             get_default_fn = None
-        commit_args = self._can_crud_args(ctx)
+        commit_args = {**self._args, **self._can_crud_args(ctx)}
         return self._crud.open_view(
             navigator_rec=navigator_rec,
             ctx=ctx,
@@ -107,31 +100,6 @@ class ArgsPickerFn:
             model=commit_args.get('model'),
             commit_args=commit_args,
             )
-
-    def _pick_args_from_context(self, ctx):
-        args = {}
-        required_args = {}
-        for name, t in self._args.items():
-            value = self._pick_arg(ctx, name, t)
-            if value is None:
-                required_args[name] = t
-            else:
-                args[name] = value
-        return (args, required_args)
-
-    def _pick_arg(self, ctx, name, required_t):
-        ctx_name = value_mark_name(required_t)
-        try:
-            value = ctx[ctx_name]
-        except KeyError:
-            return None
-        try:
-            value_t = deduce_t(value)
-        except DeduceTypeError:
-            return None
-        if required_t is value_t:
-            return value
-        return None
 
     async def _run_commit_fn(self, ctx, args):
         fn_ctx = ctx.clone_with(args)

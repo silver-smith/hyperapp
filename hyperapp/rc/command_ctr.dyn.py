@@ -77,8 +77,8 @@ class CommandTemplateCtr(Constructor):
     def _make_args_picker_command_enum(self, types, name, commit_fn, name_to_res):
         commit_d = self._command_d(types, name)
         open_d = self._command_d(types, f'open_{name}')
-        args = tuple(
-            htypes.command.arg(
+        required_args = tuple(
+            htypes.command.arg_t(
                 name=name,
                 t=pyobj_creg.actor_to_ref(t),
                 )
@@ -87,7 +87,7 @@ class CommandTemplateCtr(Constructor):
         command_enum = self._enum_command_t(
             name=name,
             is_global=self._is_global,
-            args=args,
+            required_args=required_args,
             args_picker_command_d=mosaic.put(open_d),
             commit_command_d=mosaic.put(commit_d),
             commit_fn=mosaic.put(commit_fn),

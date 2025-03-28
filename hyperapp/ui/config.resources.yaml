@@ -21,6 +21,7 @@ import:
 - ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-template
 - ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-template
 - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
+- ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-template
 - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
 - ui.crud.crud:crud-view.view-template
 - ui.crud.crud:crud.service
@@ -335,6 +336,7 @@ definitions:
     value:
       items:
       - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
+      - ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-template
       - ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-template
       - ui.system_fn:system_fn_creg-system_fn-ctx_fn.actor-template
   ui_adapter_creg:

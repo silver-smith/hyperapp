@@ -92,7 +92,7 @@ def args_picker_enum(enum_t):
     return enum_t(
         name='sample-command',
         is_global=False,
-        args=(),
+        required_args=(),
         args_picker_command_d=mosaic.put(d),
         commit_command_d=mosaic.put(d),
         commit_fn=mosaic.put(fn),

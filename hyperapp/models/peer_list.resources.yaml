@@ -57,7 +57,7 @@ definitions:
     value:
       name: add
       is_global: false
-      args:
+      required_args:
         host: legacy_type.builtin:string
       args_picker_command_d: add.open-d
       commit_command_d: add.commit-d
@@ -113,7 +113,7 @@ definitions:
     value:
       name: open_model
       is_global: false
-      args:
+      required_args:
         model: legacy_type.model_list:model_arg
       args_picker_command_d: open_model.open-d
       commit_command_d: open_model.commit-d
@@ -324,7 +324,7 @@ definitions:
     value:
       name: run_command
       is_global: false
-      args:
+      required_args:
         command: legacy_type.global_commands:command_arg
       args_picker_command_d: run_command.open-d
       commit_command_d: run_command.commit-d

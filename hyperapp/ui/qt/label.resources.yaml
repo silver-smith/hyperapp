@@ -120,7 +120,7 @@ definitions:
     value:
       name: set_label_text
       is_global: false
-      args:
+      required_args:
         text: legacy_type.builtin:string
       args_picker_command_d: set_label_text.open-d
       commit_command_d: set_label_text.commit-d

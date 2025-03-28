@@ -67,7 +67,7 @@ definitions:
     value:
       name: add_element
       is_global: false
-      args:
+      required_args:
         view_factory: legacy_type.view_factory:factory
       args_picker_command_d: add_element.open-d
       commit_command_d: add_element.commit-d
@@ -185,7 +185,7 @@ definitions:
     value:
       name: insert_element
       is_global: false
-      args:
+      required_args:
         view_factory: legacy_type.view_factory:factory
       args_picker_command_d: insert_element.open-d
       commit_command_d: insert_element.commit-d

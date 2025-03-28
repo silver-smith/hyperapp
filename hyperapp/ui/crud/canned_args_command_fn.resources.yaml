@@ -3,42 +3,36 @@
 import:
 - base.mark:mark.module
 - builtins:mosaic.service
-- builtins:pyobj_creg.service
-- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.command:args_picker_command_fn
+- legacy_type.command:canned_args_command_fn
 - legacy_type.system:actor_template
 - ui.crud.command_args:command_args.module
 definitions:
-  ArgsPickerFn:
+  CannedArgsCommandFn:
     type: legacy_type.builtin:attribute
     value:
-      object: args_picker_fn.module
-      attr_name: ArgsPickerFn
-  ArgsPickerFn.from_piece:
+      object: canned_args_command_fn.module
+      attr_name: CannedArgsCommandFn
+  CannedArgsCommandFn.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ArgsPickerFn
+      object: CannedArgsCommandFn
       attr_name: from_piece
-  args_picker_fn.module:
+  canned_args_command_fn.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: args_picker_fn
-      file_name: args_picker_fn.dyn.py
+      module_name: canned_args_command_fn
+      file_name: canned_args_command_fn.dyn.py
       import_list:
         code.command_args: ui.crud.command_args:command_args.module
         code.mark: base.mark:mark.module
-        htypes.command.args_picker_command_fn: legacy_type.command:args_picker_command_fn
+        htypes.command.canned_args_command_fn: legacy_type.command:canned_args_command_fn
         services.mosaic: builtins:mosaic.service
-        services.pyobj_creg: builtins:pyobj_creg.service
-        services.web: builtins:web.service
-  system_fn_creg-command-args_picker_command_fn.actor-template:
+  system_fn_creg-command-canned_args_command_fn.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command:args_picker_command_fn
-      function: ArgsPickerFn.from_piece
+      t: legacy_type.command:canned_args_command_fn
+      function: CannedArgsCommandFn.from_piece
       service_params:
-      - crud
       - system_fn_creg
-      - editor_default_reg
