@@ -103,6 +103,7 @@ def test_ui_command_from_piece():
         )
     command = ui_command.ui_command_from_piece(piece)
     assert isinstance(command, ui_command.UnboundUiCommand)
+    assert command.piece == piece
 
 
 def test_ui_command_enumerator_from_piece():

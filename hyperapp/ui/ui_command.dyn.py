@@ -3,8 +3,10 @@ from functools import partial
 
 from hyperapp.boot.htypes import TRecord
 
+from . import htypes
 from .services import (
     deduce_t,
+    mosaic,
     web,
     )
 from .code.mark import mark
@@ -23,6 +25,14 @@ class UnboundUiCommand(UnboundCommand):
         super().__init__(d, ctx_fn)
         self._properties = properties
         self._groups = groups
+
+    @property
+    def piece(self):
+        return htypes.command.ui_command(
+            d=mosaic.put(self._d),
+            properties=self._properties,
+            system_fn=mosaic.put(self._ctx_fn.piece),
+            )
 
     @property
     def properties(self):
