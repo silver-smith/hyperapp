@@ -46,7 +46,7 @@ class SelectorGetProbe(SelectorProbe):
         assert isinstance(model_t, TRecord), model_t
         ctr = SelectorGetTemplateCtr(
             module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
+            attr_qual_name=params.real_qual_name(self._fn),
             service_params=params.service_names,
             value_t=value_t,
             model_t=model_t,
@@ -60,7 +60,7 @@ class SelectorPickProbe(SelectorProbe):
         value_t = deduce_t(result)
         ctr = SelectorPickTemplateCtr(
             module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
+            attr_qual_name=params.real_qual_name(self._fn),
             ctx_params=params.ctx_names,
             service_params=params.service_names,
             value_t=value_t,

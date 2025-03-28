@@ -85,7 +85,7 @@ class CrudProbe:
         key_fields = self._pick_key_fields(item_t, params)
         return dict(
             module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
+            attr_qual_name=params.real_qual_name(self._fn),
             model_t=model_t,
             action=self._action,
             key_fields=tuple(key_fields),

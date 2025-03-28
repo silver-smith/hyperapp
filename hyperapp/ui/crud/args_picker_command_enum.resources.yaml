@@ -19,15 +19,25 @@ import:
 - ui.model_command:model_command.module
 - ui.ui_command:ui_command.module
 definitions:
-  UnboundArgsPickerCommandEnumerator:
+  UnboundArgsPickerModelCommandEnumerator:
     type: legacy_type.builtin:attribute
     value:
       object: args_picker_command_enum.module
-      attr_name: UnboundArgsPickerCommandEnumerator
-  UnboundArgsPickerCommandEnumerator.from_piece:
+      attr_name: UnboundArgsPickerModelCommandEnumerator
+  UnboundArgsPickerModelCommandEnumerator.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: UnboundArgsPickerCommandEnumerator
+      object: UnboundArgsPickerModelCommandEnumerator
+      attr_name: from_piece
+  UnboundArgsPickerUiCommandEnumerator:
+    type: legacy_type.builtin:attribute
+    value:
+      object: args_picker_command_enum.module
+      attr_name: UnboundArgsPickerUiCommandEnumerator
+  UnboundArgsPickerUiCommandEnumerator.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UnboundArgsPickerUiCommandEnumerator
       attr_name: from_piece
   args_picker_command_enum.module:
     type: legacy_type.builtin:python_module
@@ -51,7 +61,7 @@ definitions:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:model_args_picker_command_enumerator
-      function: UnboundArgsPickerCommandEnumerator.from_piece
+      function: UnboundArgsPickerModelCommandEnumerator.from_piece
       service_params:
       - crud
       - system_fn_creg
@@ -60,7 +70,7 @@ definitions:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:ui_args_picker_command_enumerator
-      function: UnboundArgsPickerCommandEnumerator.from_piece
+      function: UnboundArgsPickerUiCommandEnumerator.from_piece
       service_params:
       - crud
       - system_fn_creg

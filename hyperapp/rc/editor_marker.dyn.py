@@ -36,7 +36,7 @@ class EditorDefaultProbe:
         result_t = deduce_t(result)
         ctr = EditorDefaultTemplateCtr(
             module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
+            attr_qual_name=params.real_qual_name(self._fn),
             ctx_params=params.ctx_names,
             service_params=params.service_names,
             value_t=result_t,

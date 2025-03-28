@@ -11,7 +11,7 @@ class ViewProbe(ActorProbeBase):
     def _add_constructor(self, params, t):
         ctr = ViewTemplateCtr(
             module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
+            attr_qual_name=params.real_qual_name(self._fn),
             t=t,
             ctx_params=params.ctx_names,
             service_params=params.service_names,

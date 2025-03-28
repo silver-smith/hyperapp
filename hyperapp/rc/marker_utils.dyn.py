@@ -4,7 +4,22 @@ from collections import namedtuple
 from .code.probe import real_fn
 
 
-Params = namedtuple('Params', 'ctx_names service_names values')
+class Params:
+
+    def __init__(self, called_class_name, ctx_names, service_names, values):
+        self._called_class_name = called_class_name
+        self.ctx_names = ctx_names
+        self.service_names = service_names
+        self.values = values
+
+    # Class method may be implemented in base class.
+    # But we need actual (called) class name in qual_name list.
+    def real_qual_name(self, fn):
+        qual_name_l = fn.__qualname__.split('.')
+        if self._called_class_name:
+            assert len(qual_name_l) > 1
+            return [self._called_class_name, *qual_name_l[1:]]
+        return qual_name_l
 
 
 def check_is_function(fn):
@@ -44,8 +59,10 @@ def split_params(fn, args, kw):
     fn_names = fn_params(fn)
     if args and is_cls_arg(fn, args[0]):
         # fn is a classmethod and args[0] is a 'cls' argument.
+        called_class_name = args[0].__name__
         param_ofs = 1
     else:
+        called_class_name = None
         param_ofs = 0
     args_values = {
         fn_names[idx]: arg
@@ -63,4 +80,4 @@ def split_params(fn, args, kw):
         name for name in fn_names[param_ofs:]
         if name not in ctx_names
         ]
-    return Params(ctx_names, service_names, values)
+    return Params(called_class_name, ctx_names, service_names, values)

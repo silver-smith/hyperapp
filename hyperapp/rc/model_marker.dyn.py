@@ -68,7 +68,7 @@ class ModelProbe:
             ui_t = self._make_tree_ui_t(result_t, parent)
         ctr = ModelCtr(
             module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
+            attr_qual_name=params.real_qual_name(self._fn),
             model_t=model_t,
             ui_t=ui_t,
             ctx_params=params.ctx_names,

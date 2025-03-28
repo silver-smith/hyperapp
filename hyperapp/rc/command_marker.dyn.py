@@ -73,7 +73,7 @@ class CommandProbe(ProbeBase):
             }
         return dict(
             module_name=self._module_name,
-            attr_qual_name=self.real_fn.__qualname__.split('.'),
+            attr_qual_name=params.real_qual_name(self.real_fn),
             ctx_params=params.ctx_names,
             service_params=params.service_names,
             args=args,

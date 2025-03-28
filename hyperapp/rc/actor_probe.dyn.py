@@ -45,7 +45,7 @@ class ActorProbe(ActorProbeBase):
     def _add_constructor(self, params, t):
         ctr = ActorTemplateCtr(
             module_name=self._module_name,
-            attr_qual_name=self.real_fn.__qualname__.split('.'),
+            attr_qual_name=params.real_qual_name(self.real_fn),
             service_name=self._service_name,
             t=t,
             creg_params=params.ctx_names,
