@@ -66,17 +66,24 @@ class _TableView(QtWidgets.QTableView):
 
     def __init__(self):
         super().__init__()
-        self.on_state_changed = None
+        self._focusable = False
+        self._on_state_changed = None
+
+    def init_widget(self, focusable, on_state_changed):
+        self._focusable = focusable
+        self._on_state_changed = on_state_changed
+        if focusable and self.isVisible():
+            self.setFocus()
 
     def currentChanged(self, current, previous):
         result = super().currentChanged(current, previous)
-        if self.on_state_changed:
-            self.on_state_changed()
+        if self._on_state_changed:
+            self._on_state_changed()
         return result
 
     def setVisible(self, visible):
         super().setVisible(visible)
-        if visible:
+        if visible and self._focusable:
             self.setFocus()
 
     # When opened in splitter, show which pane is active using selection.
@@ -127,8 +134,8 @@ class ListView(View):
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
-    def init_widget(self, widget):
-        widget.on_state_changed = self._ctl_hook.parent_context_changed
+    def init_widget(self, widget, focusable):
+        widget.init_widget(focusable, on_state_changed=self._ctl_hook.parent_context_changed)
 
     def widget_state(self, widget):
         idx = widget.currentIndex().row()

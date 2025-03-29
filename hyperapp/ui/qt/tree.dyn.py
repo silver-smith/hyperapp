@@ -110,21 +110,30 @@ class _TreeWidget(QtWidgets.QTreeView):
     def __init__(self, current_path):
         super().__init__()
         self._want_current_path = current_path
-        self.on_state_changed = None
+        self._focusable = False
+        self._on_state_changed = None
         self._visible_time = 0
+
+    def init_widget(self, focusable, on_state_changed):
+        self._focusable = focusable
+        self._on_state_changed = on_state_changed
+        if focusable and self.isVisible():
+            self.setFocus()
 
     def currentChanged(self, current, previous):
         result = super().currentChanged(current, previous)
-        if self.on_state_changed:
-            self.on_state_changed()
+        if self._on_state_changed:
+            self._on_state_changed()
         return result
 
     def setVisible(self, visible):
         super().setVisible(visible)
-        if visible:
+        if not visible:
+            return
+        if self._focusable:
             self.setFocus()
-            self._setup()
-            self._visible_time = time.time()
+        self._setup()
+        self._visible_time = time.time()
 
     def check_is_just_shown(self):
         # Heuristics to detect initial data population.
@@ -243,8 +252,8 @@ class TreeView(View):
         model.rowsInserted.connect(partial(self._on_row_inserted, widget))
         return widget
 
-    def init_widget(self, widget):
-        widget.on_state_changed = self._ctl_hook.parent_context_changed
+    def init_widget(self, widget, focusable):
+        widget.init_widget(focusable, on_state_changed=self._ctl_hook.parent_context_changed)
 
     def widget_state(self, widget):
         index = widget.currentIndex()

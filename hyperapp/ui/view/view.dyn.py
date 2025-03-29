@@ -21,7 +21,7 @@ class View(metaclass=abc.ABCMeta):
     def construct_widget(self, state, ctx):
         pass
 
-    def init_widget(self, widget):
+    def init_widget(self, widget, focusable):
         pass
 
     def replace_child_widget(self, widget, idx, new_child_widget):

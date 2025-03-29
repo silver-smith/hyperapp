@@ -115,7 +115,7 @@ class _Item:
         if not self._widget_wr:
             widget = self.parent.get_child_widget(self.idx)
             self._widget_wr = weakref.ref(widget)
-            self.view.init_widget(widget)
+            self.view.init_widget(widget, self.focusable)
         widget = self._widget_wr()
         if widget is None:
             raise RuntimeError("Widget is gone")
