@@ -232,7 +232,7 @@ class TRecord(Type):
         type_name = f'{self._module_name}_{self._name}'
         for idx in itertools.count(1):
             try:
-                used_module_name = self._used_type_names[type_name]
+                _used_module_name = self._used_type_names[type_name]
             except KeyError:
                 break
             type_name = f'{self._module_name}_{self._name}_{idx}'
