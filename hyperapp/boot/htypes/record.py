@@ -31,6 +31,10 @@ def ref_str(ref):
         return '%s:%s' % (ref.hash_algorithm, hash_hex)
 
 
+class RecordBase(tuple):
+    pass
+
+
 # This is copied and adjusted namedtuple implementation from collections module.
 
 # We want record instances have '_t' member, excluded from _asdict() results.
@@ -40,10 +44,10 @@ _class_template = """\
 from builtins import property as _property, tuple as _tuple
 from operator import itemgetter as _itemgetter
 
-from hyperapp.boot.htypes.record import ref_repr
+from hyperapp.boot.htypes.record import RecordBase, ref_repr
 
 
-class {typename}(tuple):
+class {typename}(RecordBase):
     '{typename}({arg_list})'
 
     __slots__ = ()
@@ -75,6 +79,12 @@ class {typename}(tuple):
     def __repr__(self):
         'Return a nicely formatted representation string'
         return {repr_fmt}
+
+    def __lt__(self, rhs):
+        if type(rhs) is self.__class__ or isinstance(rhs, RecordBase):
+            return self[:-1] < rhs[:-1]
+        else:
+            return self[:-1] < tuple((rhs,))
 
     def __iter__(self):
         return iter(({attr_list}))

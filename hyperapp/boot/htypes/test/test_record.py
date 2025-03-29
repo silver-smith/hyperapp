@@ -120,3 +120,57 @@ def test_is_instance_base_list():
     element = element_t('abc', None)
     value = t(element_list=(element,))
     assert isinstance(value, t)
+
+
+def test_comparison_with_ref_field(mosaic):
+    module_name = 'test_comparison_with_ref'
+    simple_t = TRecord(module_name, 'simple', {})
+    complex_t = TRecord(module_name, 'complex', {
+        'some_ref': ref_t,
+        })
+    simple = simple_t()
+    complex = complex_t(some_ref=mosaic.put(123))
+    simple < complex  # Should not raise TypeError
+
+
+def test_comparison_with_ref_field_reverse(mosaic):
+    module_name = 'test_comparison_with_ref'
+    simple_t = TRecord(module_name, 'simple', {})
+    complex_t = TRecord(module_name, 'complex', {
+        'some_ref': ref_t,
+        })
+    simple = simple_t()
+    complex = complex_t(some_ref=mosaic.put(123))
+    complex < simple  # Should not raise TypeError
+
+
+def test_comparison_with_str_field(mosaic):
+    module_name = 'test_comparison_with_ref'
+    simple_t = TRecord(module_name, 'simple', {})
+    complex_t = TRecord(module_name, 'complex', {
+        'some_str': tString,
+        })
+    simple = simple_t()
+    complex = complex_t(some_str='Some string')
+    simple < complex  # Should not raise TypeError
+
+
+def test_comparison_with_inner_rec(mosaic):
+    module_name = 'test_comparison_with_ref'
+    simple_t = TRecord(module_name, 'simple', {})
+    inner_t = TRecord(module_name, 'inner', {
+        'some_int': tInt,
+        })
+    complex_t = TRecord(module_name, 'complex', {
+        'some_rec': inner_t,
+        })
+    simple = simple_t()
+    complex = complex_t(some_rec=inner_t(some_int=123))
+    simple < complex  # Should not raise TypeError
+
+
+def test_comparison_with_int(mosaic):
+    module_name = 'test_comparison_with_ref'
+    record_t = TRecord(module_name, 'some_rec', {})
+    rec = record_t()
+    rec < 123  # Should not raise TypeError
