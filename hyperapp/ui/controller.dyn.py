@@ -112,13 +112,22 @@ class _Item:
 
     @property
     def widget(self):
-        if not self._widget_wr:
-            widget = self.parent.get_child_widget(self.idx)
-            self._widget_wr = weakref.ref(widget)
-            self.view.init_widget(widget, self.focusable)
-        widget = self._widget_wr()
-        if widget is None:
-            raise RuntimeError("Widget is gone")
+        if self._widget_wr:
+            widget = self._widget_wr()
+            if widget is None:
+                raise RuntimeError("Widget is gone")
+        else:
+            widget = self._init_widget()
+        return widget
+
+    def _init_widget(self):
+        if not self.view:
+            return
+        if self._widget_wr:
+            return
+        widget = self.parent.get_child_widget(self.idx)
+        self._widget_wr = weakref.ref(widget)
+        self.view.init_widget(widget, self.focusable)
         return widget
 
     def get_child_widget(self, idx):
@@ -140,6 +149,7 @@ class _Item:
 
     async def update_other_children(self, rctx):
         for kid in self.children:
+            kid._init_widget()  # For current children widget inited from current_child->current_child_idx->widget call.
             if kid is self.current_child:
                 continue
             rctx = await kid.update_other_children(rctx)
