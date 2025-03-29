@@ -82,6 +82,9 @@ class _TableView(QtWidgets.QTableView):
         return result
 
     def setVisible(self, visible):
+        if not self._focusable:
+            # Something sets policy back to strong policy if policy is set in init_widget.
+            self.setFocusPolicy(QtCore.Qt.NoFocus)
         super().setVisible(visible)
         if visible and self._focusable:
             self.setFocus()
