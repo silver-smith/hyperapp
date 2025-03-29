@@ -122,15 +122,13 @@ class UnboundArgsPickerCommandEnumerator:
 
 
 class UnboundArgsPickerModelCommandEnumerator(UnboundArgsPickerCommandEnumerator):
-    _command_kind = CommandKind.MODEL
 
     def _make_command(self, d, properties, fn):
         return UnboundModelCommand(d, fn, properties)
 
 
 class UnboundArgsPickerUiCommandEnumerator(UnboundArgsPickerCommandEnumerator):
-    _command_kind = CommandKind.VIEW
 
     def _make_command(self, d, properties, fn):
-        groups = default_command_groups(properties, self._command_kind)
+        groups = default_command_groups(properties, CommandKind.VIEW)
         return UnboundUiCommand(d, fn, properties, groups)
