@@ -6,6 +6,7 @@ from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
 from . import htypes
 from .services import (
     deduce_t,
+    mosaic,
     web,
     )
 from .code.mark import mark
@@ -15,7 +16,7 @@ from .code.model_command import UnboundModelCommand
 from .code.ui_command import UnboundUiCommand
 from .code.arg_mark import value_mark_name
 from .code.canned_args_command_fn import CannedArgsCommandFn
-from .code.command_args import args_t_tuple_to_dict
+from .code.command_args import args_dict_to_tuple, args_t_tuple_to_dict
 from .code.args_picker_fn import ArgsPickerFn
 
 log = logging.getLogger(__name__)
@@ -118,7 +119,11 @@ class UnboundArgsPickerCommandEnumerator:
             uses_state=False,
             remotable=False,
             )
-        return self._make_command(self._commit_command_d, properties, fn)
+        command_d = htypes.command.canned_arg_command_d(
+            commit_command_d=mosaic.put(self._commit_command_d),
+            args=args_dict_to_tuple(args),
+            )
+        return self._make_command(command_d, properties, fn)
 
 
 class UnboundArgsPickerModelCommandEnumerator(UnboundArgsPickerCommandEnumerator):
