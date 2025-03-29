@@ -6,6 +6,12 @@ from hyperapp.boot.htypes import (
     TRecord,
     ref_t,
     )
+from hyperapp.boot import cdr_coders
+
+
+pytest_plugins = [
+    'hyperapp.boot.test.services',
+    ]
 
 
 def test_instantiate():
