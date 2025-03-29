@@ -29,3 +29,12 @@ def test_command(partial_ref):
     assert not fn.missing_params(ctx)
     result = fn.call(ctx)
     assert result == 'result: sample-value'
+
+
+def test_format_d():
+    commit_command_d = htypes.canned_args_command_fn_tests.sample_command_d()
+    d = htypes.command.canned_arg_command_d(
+        commit_command_d=mosaic.put(commit_command_d),
+        )
+    title = canned_args_command_fn.format_canned_arg_command_d(d)
+    assert type(title) is str

@@ -3,8 +3,10 @@
 import:
 - base.mark:mark.module
 - builtins:mosaic.service
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.command:canned_arg_command_d
 - legacy_type.command:canned_args_command_fn
 - legacy_type.system:actor_template
 - ui.crud.command_args:command_args.module
@@ -29,6 +31,19 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.command.canned_args_command_fn: legacy_type.command:canned_args_command_fn
         services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+  format_canned_arg_command_d:
+    type: legacy_type.builtin:attribute
+    value:
+      object: canned_args_command_fn.module
+      attr_name: format_canned_arg_command_d
+  formatter_creg-command-canned_arg_command_d.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:canned_arg_command_d
+      function: format_canned_arg_command_d
+      service_params:
+      - format
   system_fn_creg-command-canned_args_command_fn.actor-template:
     type: legacy_type.system:actor_template
     value:

@@ -1,6 +1,7 @@
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code.mark import mark
 from .code.command_args import args_tuple_to_dict, args_dict_to_tuple
@@ -40,3 +41,9 @@ class CannedArgsCommandFn:
             **self._args,
             )
         return self._commit_fn.call(command_ctx)
+
+
+@mark.actor.formatter_creg
+def format_canned_arg_command_d(piece, format):
+    commit_command_d = web.summon(piece.commit_command_d)
+    return format(commit_command_d)

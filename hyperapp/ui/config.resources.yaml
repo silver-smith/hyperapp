@@ -21,6 +21,7 @@ import:
 - ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-template
 - ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-template
 - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
+- ui.crud.canned_args_command_fn:formatter_creg-command-canned_arg_command_d.actor-template
 - ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-template
 - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
 - ui.crud.crud:crud-view.view-template
@@ -238,6 +239,7 @@ definitions:
     value:
       items:
       - ui.column_format:formatter_creg-column-column_k.actor-template
+      - ui.crud.canned_args_command_fn:formatter_creg-command-canned_arg_command_d.actor-template
       - ui.crud.crud:formatter_creg-crud-layout_k.actor-template
       - ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-template
       - ui.remote_model:formatter_creg-model-remote_model.actor-template
