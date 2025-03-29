@@ -15,6 +15,7 @@ import:
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
 - ui.model_command:model_command.module
+- ui.view.view:view.module
 - ui.wrapper_view:wrapper_view.module
 definitions:
   DetailsView:
@@ -51,6 +52,7 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
+        code.view: ui.view.view:view.module
         code.wrapper_view: ui.wrapper_view:wrapper_view.module
         htypes.details.factory_k: legacy_type.details:factory_k
         htypes.details.view: legacy_type.details:view

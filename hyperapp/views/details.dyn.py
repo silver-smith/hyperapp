@@ -7,6 +7,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.view import Item
 from .code.model_command import model_command_ctx
 from .code.wrapper_view import WrapperView
 
@@ -65,6 +66,9 @@ class DetailsView(WrapperView):
         log.info("Details view: children changed; updating details view")
         await self._update_details_view(ctx, rctx.model_state, widget)
         pass  # TODO: Save layout.
+
+    def items(self):
+        return [Item('base', self._base_view, focusable=False)]
 
     async def _update_details_view(self, ctx, model_state, widget):
         details_model = await _run_details_command(ctx, self._unbound_command, ctx.model, model_state)
