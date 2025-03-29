@@ -29,4 +29,5 @@ class WrapperView(View):
         return [Item('base', self._base_view)]
 
     def item_widget(self, widget, idx):
-        return self._base_view.item_widget(widget, idx)
+        assert idx == 0
+        return widget
