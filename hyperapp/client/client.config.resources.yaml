@@ -2,26 +2,26 @@
 
 import:
 - legacy_type.box_layout:view
+- legacy_type.builtin:list_mt
+- legacy_type.command:canned_arg_command_d
 - legacy_type.command:canned_args_command_fn
 - legacy_type.command:model_command
 - legacy_type.data_service:config_item
 - legacy_type.details:view
+- legacy_type.global_commands:command_arg
 - legacy_type.list:view
 - legacy_type.list_adapter:fn_list_adapter
-- legacy_type.model:remote_model
-- legacy_type.model_list:model_arg
+- legacy_type.list_adapter:static_list_adapter
 - legacy_type.peer_list:item
 - legacy_type.peer_list:model
-- legacy_type.rsa_identity:rsa_peer
 - legacy_type.sample_list:item
-- legacy_type.sample_list:sample_list
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.ui:model_layout_k
-- models.peer_list:open_model.commit-d
-- models.peer_list:open_model.commit-fn
 - models.peer_list:peer_list-model.system-fn
-- sample.sample_list:sample_list-sample_list.system-fn
+- models.peer_list:run_command.commit-d
+- models.peer_list:run_command.commit-fn
+- sample.sample_commands:system_info.d
 definitions:
   box_layout_view_1:
     type: legacy_type.box_layout:view
@@ -34,12 +34,22 @@ definitions:
       - view: details_view_1
         focusable: false
         stretch: 0
+  canned_arg_command_d_1:
+    type: legacy_type.command:canned_arg_command_d
+    value:
+      commit_command_d: models.peer_list:run_command.commit-d
+      args:
+        command: command_arg_1
   canned_args_command_fn_1:
     type: legacy_type.command:canned_args_command_fn
     value:
       args:
-        model: model_arg_1
-      commit_fn: models.peer_list:open_model.commit-fn
+        command: command_arg_1
+      commit_fn: models.peer_list:run_command.commit-fn
+  command_arg_1:
+    type: legacy_type.global_commands:command_arg
+    value:
+      d: sample.sample_commands:system_info.d
   config:
     type: legacy_type.system:system_config
     value:
@@ -54,18 +64,27 @@ definitions:
     type: legacy_type.details:view
     value:
       command: model_command_1
-      details_model: remote_model_1
+      details_model: item-list_1
       details_view: list_view_2
   fn_list_adapter_1:
     type: legacy_type.list_adapter:fn_list_adapter
     value:
       item_t: legacy_type.peer_list:item
       system_fn: models.peer_list:peer_list-model.system-fn
-  fn_list_adapter_2:
-    type: legacy_type.list_adapter:fn_list_adapter
+  item-list_1:
+    type: sample_list-item-list
     value:
-      item_t: legacy_type.sample_list:item
-      system_fn: sample.sample_list:sample_list-sample_list.system-fn
+    - id: 0
+      title: user
+      desc: user
+    - id: 1
+      title: nodename
+      desc:host1    - id: 2
+      title: version
+      desc: '#1 SMP PREEMPT_DYNAMIC Debian 6.1.128-1 (2025-02-07)'
+    - id: 3
+      title: cpu_count
+      desc: '16'
   list_view_1:
     type: legacy_type.list:view
     value:
@@ -73,15 +92,11 @@ definitions:
   list_view_2:
     type: legacy_type.list:view
     value:
-      adapter: fn_list_adapter_2
-  model_arg_1:
-    type: legacy_type.model_list:model_arg
-    value:
-      model_t: legacy_type.sample_list:sample_list
+      adapter: static_list_adapter_1
   model_command_1:
     type: legacy_type.command:model_command
     value:
-      d: models.peer_list:open_model.commit-d
+      d: canned_arg_command_d_1
       properties:
         is_global: false
         uses_state: false
@@ -96,15 +111,10 @@ definitions:
     type: legacy_type.ui:model_layout_k
     value:
       model_t: legacy_type.peer_list:model
-  remote_model_1:
-    type: legacy_type.model:remote_model
+  sample_list-item-list:
+    type: legacy_type.builtin:list_mt
     value:
-      model: sample_list_1
-      remote_peer: rsa_peer_1
-  rsa_peer_1:
-    type: legacy_type.rsa_identity:rsa_peer
-    value:
-      public_key_pem: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUEzYzdVc29MZC8zemdQb3d2enVKawpwL0ROZkcxWkNKR1dGRmVGN2Q1WlN2NE9UMm1BM1d6cFpQc1pMSUcyQlBMazdFVmYrS0lUYnRFVklNTyszWk5PCktheXV2RGlXQk01NFFLTnlQUkcvTmxKdmVDamRtbEdDSzl6TlJFTkk4OGY2dmtBTjNkZjBUcHFHYnVYL2lzNkEKdVBmMnZ1QVhQVnRWVTZtNVUwaWJ0LzVPRFo0aVZYT0pTb0lleFgrNUVPOG9MdkpKRElodkZhTDB6eHcwRFh1aworb2VOSXNORTNSVU5LNXY3ZnFIWCt0cXJQalJBYWFqQU9vOWVSeExzeVcyTDBFS2w1VmdWUE9tb2ppVE1HSFNTCnE0R0N3Y29OYTAybXFuY3hGcDcyTmF5cmw1M1BjMmxCZzBSWmhvRFJibW1zaTM4NFZ5KzMxdlVmNDRzc1o0OSsKR2MwTEpPTTJzRzRYcURPS2JWNkVDd2hxaHdsM2xmcXdEeSs4NzVpaWZrMDA0RHBhVlhOZ2J6blllYnJCMlVMOQpiTHhDbkJUeWxuNTVpSzNxd2c2MWtPUlJQOFJHalE3c1liamlqcGo0WlVoc29FZXlMMGhadGhUWi8xOURKOXRVCldjS29LeWZrMkNZVUZnYXhNUHg1TXVyZ1dwUWZkbGhyQzZrZk8zWHJFUTJncVNVN0dSQUZEVzI0bTdsQWxLS2kKOERnR2NHQmNFYVZ3eldNWGRmYjBTVGJnN0RIbWxhOFVERVlmWXEzcDErVnRrbUlpV0xFVXU2b1ZCSVZDWmpmdgp1Zlo0RnYyN3JibDVtbWs3RVo5eUE0M0U2YnZJZkRRWHVWd1VjbzBXSk0zSXU1SzU1QkZ3aUFjZUlzR1o2Z1p5CmppSWE2K2hySWZtQU0vNGZhTnd5MDNVQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=
-  sample_list_1:
-    type: legacy_type.sample_list:sample_list
+      element: legacy_type.sample_list:item
+  static_list_adapter_1:
+    type: legacy_type.list_adapter:static_list_adapter
     value: {}
