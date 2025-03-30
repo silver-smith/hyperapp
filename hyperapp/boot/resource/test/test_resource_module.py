@@ -1,10 +1,11 @@
 import logging
 import yaml
+from functools import partial
 from pathlib import Path
 
 import pytest
 
-from hyperapp.boot.htypes import Type, TRecord, record_mt
+from hyperapp.boot.htypes import Type, TList, TRecord, record_mt, list_mt
 from hyperapp.boot.htypes.attribute import attribute_t
 from hyperapp.boot.htypes.partial import partial_param_t, partial_t
 from hyperapp.boot.htypes.builtin_service import builtin_service_t
@@ -80,7 +81,7 @@ def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory,
     compare(res_module, 'test_set_partial')
 
 
-def test_primitive(mosaic, resource_registry, resource_module_factory, compare):
+def test_primitive(resource_registry, resource_module_factory, compare):
     res_module = resource_module_factory(resource_registry, 'test_module')
     res_module['sample_string'] = 'abcd efgh'
     res_module['sample_int'] = 12345
@@ -89,7 +90,52 @@ def test_primitive(mosaic, resource_registry, resource_module_factory, compare):
     assert res_module['sample_string'] == 'abcd efgh'
 
 
-def test_resolve_legacy_type(mosaic, htypes, resource_registry, resource_module_factory, compare):
+# Extract from dynamic module base.type_reconstructor.
+def list_type_to_piece(pyobj_creg, t):
+    if isinstance(t, TList):
+        return list_mt(
+            element=pyobj_creg.actor_to_ref(t.element_t),
+            )
+
+
+def test_int_list(pyobj_creg, reconstructors, resource_registry, resource_module_factory, compare):
+    reconstructors.append(partial(list_type_to_piece, pyobj_creg))
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    value = (111, 222, 333)
+    res_module['sample_list'] = value
+    assert res_module['sample_list'] == value
+    assert res_module.as_dict['definitions']['builtin-int-list']['value']['element'] == 'legacy_type.builtin:int'
+
+
+def test_int_rec_list(pyobj_creg, reconstructors, htypes, resource_registry, resource_module_factory, compare):
+    reconstructors.append(partial(list_type_to_piece, pyobj_creg))
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    value = tuple(
+        htypes.test_resources.int_rec(id)
+        for id in [111, 222, 333]
+        )
+    res_module['sample_list'] = value
+    assert res_module['sample_list'] == value
+    assert (res_module.as_dict['definitions']['test_resources-int_rec-list']['value']['element']
+            == 'legacy_type.test_resources:int_rec')
+
+
+def test_ref_rec_list(mosaic, pyobj_creg, reconstructors, htypes, resource_registry, resource_module_factory, compare):
+    reconstructors.append(partial(list_type_to_piece, pyobj_creg))
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    value = tuple(
+        htypes.test_resources.ref_rec(mosaic.put(id))
+        for id in [111, 222, 333]
+        )
+    for id in [111, 222, 333]:
+        res_module[f'int-{id}'] = id
+    res_module['sample_list'] = value
+    assert res_module['sample_list'] == value
+    assert (res_module.as_dict['definitions']['test_resources-ref_rec-list']['value']['element']
+            == 'legacy_type.test_resources:ref_rec')
+
+
+def test_resolve_legacy_type(htypes, resource_registry, resource_module_factory, compare):
     res_module = resource_module_factory(resource_registry, 'test_module')
     test_d = htypes.test_resources.test_d
     res_module['test_d'] = test_d()
@@ -110,7 +156,7 @@ def _type_to_piece(t):
     raise RuntimeError(f"Test reconstructor: Unknown type: {t!r}")
 
 
-def test_add_custom_type(mosaic, htypes, resource_registry, resource_module_factory, reconstructors, compare):
+def test_add_custom_type(htypes, resource_registry, resource_module_factory, reconstructors, compare):
     reconstructors.append(_type_to_piece)
     res_module = resource_module_factory(resource_registry, 'test_module')
     custom_d = TRecord('custom_module', 'custom_d_t')
@@ -118,7 +164,7 @@ def test_add_custom_type(mosaic, htypes, resource_registry, resource_module_fact
     compare(res_module, 'test_add_custom_type')
 
 
-def test_add_custom_type_matching_var_name(mosaic, htypes, resource_registry, resource_module_factory, reconstructors, compare):
+def test_add_custom_type_matching_var_name(htypes, resource_registry, resource_module_factory, reconstructors, compare):
     reconstructors.append(_type_to_piece)
     res_module = resource_module_factory(resource_registry, 'test_module')
     custom_d = TRecord('custom_module', 'custom_d')

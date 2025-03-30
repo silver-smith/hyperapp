@@ -6,6 +6,7 @@ from functools import cached_property
 
 from yaml.scanner import ScannerError
 
+from hyperapp.boot.htypes import record_mt, list_mt
 from hyperapp.boot.htypes.deduce_value_type import deduce_value_type
 from hyperapp.boot.resource.resource_registry import UnknownResourceName
 
@@ -196,10 +197,23 @@ class ResourceModule:
     def _add_resource_type(self, resource_type):
         piece = self._pyobj_creg.actor_to_piece(resource_type.resource_t)
         if self._resource_registry.has_piece(piece):
-            _ = self._reverse_resolve(piece)  # Adds to import_set.
-            return
-        self._set(piece.name, piece)
-        return piece.name
+            full_name = self._reverse_resolve(piece)  # Adds to import_set.
+            if ':' in full_name:
+                return (full_name
+                        .removeprefix('legacy_type.')
+                        .replace(':', '-')
+                        )
+            else:
+                return full_name
+        if isinstance(piece, record_mt):
+            name = piece.name
+        elif isinstance(piece, list_mt):
+            element_t = resource_type.resource_t.element_t
+            element_type = self._resource_type_producer(element_t)
+            element_name = self._add_resource_type(element_type)
+            name = f'{element_name}-list'
+        self._set(name, piece)
+        return name
 
     @property
     def as_dict(self):

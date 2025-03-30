@@ -1,6 +1,11 @@
 
 test_d = record
 
+int_rec = record:
+  value: int
+
+ref_rec = record:
+  value: ref
 
 test_resource_t_base = record:
   value: ref opt
