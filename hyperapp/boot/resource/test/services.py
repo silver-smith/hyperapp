@@ -6,10 +6,12 @@ from hyperapp.boot.htypes.python_module import python_module_t
 from hyperapp.boot.htypes.attribute import attribute_t
 from hyperapp.boot.htypes.call import call_t
 from hyperapp.boot.htypes.partial import partial_t
+from hyperapp.boot.htypes import list_mt
 from hyperapp.boot.resource.resource_type import ResourceType
 from hyperapp.boot.resource.builtin_service import make_builtin_service_resource_module
 from hyperapp.boot.resource.legacy_type import load_legacy_type_resources
 from hyperapp.boot.resource.resource_type_producer import resource_type_producer as resource_type_producer_fn
+from hyperapp.boot.resource.list_mt_resource_type import ListMtResourceType
 from hyperapp.boot.resource.resource_module import ResourceModule
 from hyperapp.boot.resource.python_module import PythonModuleResourceType
 from hyperapp.boot.resource.attribute import AttributeResourceType
@@ -28,6 +30,7 @@ def resource_type_factory(mosaic, web, pyobj_creg):
 @pytest.fixture
 def resource_type_reg():
     reg = {}
+    reg[list_mt] = ListMtResourceType()
     reg[python_module_t] = PythonModuleResourceType()
     reg[attribute_t] = AttributeResourceType()
     reg[call_t] = CallResourceType()

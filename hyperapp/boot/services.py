@@ -2,6 +2,7 @@ import logging
 from functools import partial
 from pathlib import Path
 
+from .htypes import list_mt
 from .htypes import BuiltinTypeRegistry, register_builtin_types
 from .htypes.deduce_value_type import deduce_value_type
 from .mosaic import Mosaic
@@ -15,6 +16,7 @@ from .python_importer import PythonImporter
 from .unbundler import Unbundler
 from .resource.resource_type import ResourceType
 from .resource.resource_type_producer import resource_type_producer
+from .resource.list_mt_resource_type import ListMtResourceType
 from .resource.python_module import PythonModuleResourceType, python_module_pyobj
 from .htypes.python_module import python_module_t
 from .resource.resource_module import ResourceModule
@@ -101,6 +103,7 @@ class Services(object):
         self.deduce_t = deduce_value_type
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
+        self.resource_type_reg[list_mt] = ListMtResourceType()
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()
         self.pyobj_creg.register_actor(
             python_module_t, python_module_pyobj,
