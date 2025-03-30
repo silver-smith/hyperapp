@@ -31,6 +31,7 @@ arg = record:
 
 canned_arg_command_d = record:
   commit_command_d: ref
+  args: arg list
 
 canned_args_command_fn = record:
   args: arg list

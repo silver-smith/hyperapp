@@ -35,6 +35,12 @@ def test_format_d():
     commit_command_d = htypes.canned_args_command_fn_tests.sample_command_d()
     d = htypes.command.canned_arg_command_d(
         commit_command_d=mosaic.put(commit_command_d),
+        args=(
+            htypes.command.arg(
+                name='arg_name',
+                value=mosaic.put("Sample arg value"),
+                ),
+            ),
         )
     title = canned_args_command_fn.format_canned_arg_command_d(d)
     assert type(title) is str
