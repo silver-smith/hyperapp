@@ -8,3 +8,6 @@ sample_value = record:
   direction: string
   stretch: int
   inner: ref
+
+sample_item = record:
+  id: int

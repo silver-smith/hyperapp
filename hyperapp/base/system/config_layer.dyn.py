@@ -1,7 +1,7 @@
 import itertools
 from functools import cached_property
 
-from hyperapp.boot.htypes import TPrimitive, TRecord, tString
+from hyperapp.boot.htypes import TPrimitive, TList, TRecord, tString
 from hyperapp.boot.project import RESOURCE_EXT
 
 from . import htypes
@@ -207,13 +207,16 @@ class ResourceNameGenerator:
         else:
             if stem:
                 return (stem, False)
-        stem = self._make_default_stem(piece, t)
+        stem = self._make_default_stem(t)
         require_index = self._require_index(piece, t, stem)
         return (stem, require_index)
 
-    def _make_default_stem(self, piece, t):
+    def _make_default_stem(self, t):
         if isinstance(t, TPrimitive):
             return t.name
+        elif isinstance(t, TList):
+            base = self._make_default_stem(t.element_t)
+            return f'{base}-list'
         else:
             assert isinstance(t, TRecord)
             if t.name in {'view', 'layout', 'state', 'adapter'}:

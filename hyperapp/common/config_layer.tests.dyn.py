@@ -71,6 +71,15 @@ def test_record(layer, key, value):
     assert layer.config['sample_service'][key] == value
 
 
+def test_list(layer, key):
+    value = (
+        htypes.config_layer_tests.sample_item(11),
+        htypes.config_layer_tests.sample_item(22),
+        )
+    layer.set('sample_service', key, value)
+    assert layer.config['sample_service'][key] == value
+
+
 def test_persistence(layer_factory, key, value):
     layer_1 = layer_factory()
     layer_1.set('sample_service', key, value)
