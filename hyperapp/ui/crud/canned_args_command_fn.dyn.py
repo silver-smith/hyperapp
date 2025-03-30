@@ -43,12 +43,18 @@ class CannedArgsCommandFn:
         return self._commit_fn.call(command_ctx)
 
 
+def _pretify_arg_value(format, value):
+    title = format(value)
+    # Remove possible argument prefix.
+    return title.split(': ')[-1]
+
+
 @mark.actor.formatter_creg
 def format_canned_arg_command_d(piece, format):
     commit_command_d = web.summon(piece.commit_command_d)
     commit_command_text = format(commit_command_d)
     args = [
-        format(web.summon(arg.value))
+        _pretify_arg_value(format, web.summon(arg.value))
         for arg in piece.args
         ]
     args_str = ", ".join(args)
