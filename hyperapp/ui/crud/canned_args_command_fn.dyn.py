@@ -46,4 +46,10 @@ class CannedArgsCommandFn:
 @mark.actor.formatter_creg
 def format_canned_arg_command_d(piece, format):
     commit_command_d = web.summon(piece.commit_command_d)
-    return format(commit_command_d)
+    commit_command_text = format(commit_command_d)
+    args = [
+        format(web.summon(arg.value))
+        for arg in piece.args
+        ]
+    args_str = ", ".join(args)
+    return f"{commit_command_text}: {args_str}"
