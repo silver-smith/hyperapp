@@ -101,3 +101,19 @@ class BoundCommand(BoundCommandBase):
     @cached_property
     def _missing_params(self):
         return self._ctx_fn.missing_params(self._ctx)
+
+
+def _amend_fragment(text):
+    text = text.split('.')[-1]
+    text = text.removesuffix('()')
+    text = text.removesuffix('_d')
+    text = text.replace('_', ' ')
+    text = text.capitalize()
+    return text
+
+
+def command_text(format, command):
+    text = format(command.d)
+    fragments = text.split(': ')
+    amended_fragments = [_amend_fragment(f) for f in fragments]
+    return ": ".join(amended_fragments)

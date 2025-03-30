@@ -21,10 +21,10 @@ async def test_widget(qapp):
     piece = make_piece()
     state = make_state()
     command = Mock(
+        d=htypes.menu_bar_tests.sample_command_d(),
         groups={htypes.command_groups.global_d()},
         enabled=True,
         )
-    command.name = "Sample"
 
     view = menu_bar.MenuBarView.from_piece(piece, ctx)
     widget = view.construct_widget(state, ctx)

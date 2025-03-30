@@ -11,6 +11,7 @@ import:
 - legacy_type.menu_bar:state
 - legacy_type.menu_bar:view
 - legacy_type.system_fn:ctx_fn
+- ui.command:command.module
 - ui.view.view:view.module
 definitions:
   MenuBarView:
@@ -31,6 +32,7 @@ definitions:
       - piece
       - ctx
       service_params:
+      - format
       - shortcut_reg
   menu_bar-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
@@ -43,6 +45,7 @@ definitions:
       module_name: menu_bar
       file_name: menu_bar.dyn.py
       import_list:
+        code.command: ui.command:command.module
         code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
         htypes.command_groups.global_d: legacy_type.command_groups:global_d

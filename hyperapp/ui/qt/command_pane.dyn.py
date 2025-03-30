@@ -6,6 +6,7 @@ from PySide6 import QtCore, QtWidgets
 from . import htypes
 from .code.mark import mark
 from .code.view import Item, View
+from .code.command import command_text
 
 log = logging.getLogger(__name__)
 
@@ -22,11 +23,12 @@ class CommandPaneView(View):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, shortcut_reg):
-        return cls(shortcut_reg)
+    def from_piece(cls, piece, ctx, format, shortcut_reg):
+        return cls(format, shortcut_reg)
 
-    def __init__(self, shortcut_reg):
+    def __init__(self, format, shortcut_reg):
         super().__init__()
+        self._format = format
         self._shortcut_reg = shortcut_reg
 
     @property
@@ -81,7 +83,7 @@ class CommandPaneView(View):
         widget.spacing_idx += sum(1 for cmd in new_commands if pane_1_d in cmd.groups)
 
     def _make_button(self, cmd, used_shortcuts):
-        text = cmd.name
+        text = command_text(self._format, cmd)
         shortcut = self._shortcut_reg.get(cmd.d)
         if shortcut:
             text += f' ({shortcut})'

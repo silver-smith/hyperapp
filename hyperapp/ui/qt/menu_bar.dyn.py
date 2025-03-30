@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 from . import htypes
 from .code.mark import mark
 from .code.view import View
+from .code.command import command_text
 
 
 class MenuBar(QtWidgets.QMenuBar):
@@ -20,11 +21,12 @@ class MenuBarView(View):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, shortcut_reg):
-        return cls(shortcut_reg)
+    def from_piece(cls, piece, ctx, format, shortcut_reg):
+        return cls(format, shortcut_reg)
 
-    def __init__(self, shortcut_reg):
+    def __init__(self, format, shortcut_reg):
         super().__init__()
+        self._format = format
         self._shortcut_reg = shortcut_reg
 
     @property
@@ -68,7 +70,8 @@ class MenuBarView(View):
             widget.command_to_action[cmd] = action
 
     def _make_action(self, cmd, used_shortcuts):
-        action = QtGui.QAction(cmd.name, enabled=cmd.enabled)
+        text = command_text(self._format, cmd)
+        action = QtGui.QAction(text, enabled=cmd.enabled)
         action.triggered.connect(cmd.start)
         shortcut = self._shortcut_reg.get(cmd.d)
         if shortcut and shortcut not in used_shortcuts:
