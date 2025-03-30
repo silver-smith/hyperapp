@@ -91,3 +91,12 @@ def test_ui_canned(canned_ctx, args_picker_enum):
     [command] = command_list
     assert isinstance(command, UnboundUiCommand)
     assert isinstance(web.summon(command.piece.system_fn), htypes.command.canned_args_command_fn)
+
+
+def test_format_open_args_picker_command_d():
+    commit_command_d = htypes.args_picker_command_enum_tests.sample_command_d()
+    d = htypes.command.open_args_picker_command_d(
+        commit_command_d=mosaic.put(commit_command_d),
+        )
+    title = args_picker_command_enum.format_open_args_picker_command_d(d)
+    assert type(title) is str

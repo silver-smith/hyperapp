@@ -137,3 +137,10 @@ class UnboundArgsPickerUiCommandEnumerator(UnboundArgsPickerCommandEnumerator):
     def _make_command(self, d, properties, fn):
         groups = default_command_groups(properties, CommandKind.VIEW)
         return UnboundUiCommand(d, fn, properties, groups)
+
+
+@mark.actor.formatter_creg
+def format_open_args_picker_command_d(piece, format):
+    commit_command_d = web.summon(piece.commit_command_d)
+    commit_command_text = format(commit_command_d)
+    return f"{commit_command_text}..."
