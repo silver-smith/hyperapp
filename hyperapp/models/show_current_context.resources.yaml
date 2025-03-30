@@ -65,7 +65,8 @@ definitions:
       function: show_current_context
       ctx_params:
       - ctx
-      service_params: []
+      service_params:
+      - format
   show_current_context.global-model-command:
     type: legacy_type.command:model_command
     value:

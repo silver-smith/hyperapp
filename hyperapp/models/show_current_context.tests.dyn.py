@@ -11,6 +11,7 @@ def piece():
             htypes.show_current_context.item(
                 name="Sample name",
                 value="Sample value",
+                title="Sample value title",
                 ),
             ),
         )

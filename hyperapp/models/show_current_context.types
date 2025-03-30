@@ -1,6 +1,7 @@
 item = record:
   name: string
   value: string
+  title: string
 
 model = record:
   items: item list
