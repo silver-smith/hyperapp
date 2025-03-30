@@ -104,12 +104,17 @@ class BoundCommand(BoundCommandBase):
 
 
 def _amend_fragment(text):
+    if text.endswith('...'):
+        suffix = '...'
+        text = text.removesuffix('...')
+    else:
+        suffix = ''
     text = text.split('.')[-1]
     text = text.removesuffix('()')
     text = text.removesuffix('_d')
     text = text.replace('_', ' ')
     text = text.capitalize()
-    return text
+    return text + suffix
 
 
 def command_text(format, command):
