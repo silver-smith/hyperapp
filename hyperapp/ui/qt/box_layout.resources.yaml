@@ -13,6 +13,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.command:ui_command
 - legacy_type.system_fn:ctx_fn
@@ -60,8 +61,9 @@ definitions:
       - view_reg
       - view_factory_reg
   add_element.open-d:
-    type: open_add_element_d
-    value: {}
+    type: legacy_type.command:open_args_picker_command_d
+    value:
+      commit_command_d: add_element.commit-d
   add_element.ui-command-enumerator:
     type: legacy_type.command:ui_args_picker_command_enumerator
     value:
@@ -178,8 +180,9 @@ definitions:
       - view_reg
       - view_factory_reg
   insert_element.open-d:
-    type: open_insert_element_d
-    value: {}
+    type: legacy_type.command:open_args_picker_command_d
+    value:
+      commit_command_d: insert_element.commit-d
   insert_element.ui-command-enumerator:
     type: legacy_type.command:ui_args_picker_command_enumerator
     value:
@@ -195,20 +198,6 @@ definitions:
     value:
       module_name: box_layout
       name: insert_element_d
-      base: null
-      fields: {}
-  open_add_element_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: box_layout
-      name: open_add_element_d
-      base: null
-      fields: {}
-  open_insert_element_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: box_layout
-      name: open_insert_element_d
       base: null
       fields: {}
   remove_element:

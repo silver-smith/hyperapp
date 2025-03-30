@@ -29,6 +29,9 @@ arg = record:
   name: string
   value: ref
 
+open_args_picker_command_d = record:
+  commit_command_d: ref
+
 canned_arg_command_d = record:
   commit_command_d: ref
   args: arg list

@@ -76,7 +76,9 @@ class CommandTemplateCtr(Constructor):
 
     def _make_args_picker_command_enum(self, types, name, commit_fn, name_to_res):
         commit_d = self._command_d(types, name)
-        open_d = self._command_d(types, f'open_{name}')
+        open_d = htypes.command.open_args_picker_command_d(
+            commit_command_d=mosaic.put(commit_d),
+            )
         required_args = tuple(
             htypes.command.arg_t(
                 name=name,

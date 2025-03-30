@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.label:state
 - legacy_type.label:view
@@ -86,13 +87,6 @@ definitions:
       name: label_view_k
       base: null
       fields: {}
-  open_set_label_text_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: label
-      name: open_set_label_text_d
-      base: null
-      fields: {}
   set_label_text:
     type: legacy_type.builtin:attribute
     value:
@@ -113,8 +107,9 @@ definitions:
       service_params:
       - view_reg
   set_label_text.open-d:
-    type: open_set_label_text_d
-    value: {}
+    type: legacy_type.command:open_args_picker_command_d
+    value:
+      commit_command_d: set_label_text.commit-d
   set_label_text.ui-command-enumerator:
     type: legacy_type.command:ui_args_picker_command_enumerator
     value:
