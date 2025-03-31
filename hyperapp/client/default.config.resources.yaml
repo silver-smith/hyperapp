@@ -27,9 +27,9 @@ import:
 - legacy_type.tree:view
 - legacy_type.ui:model_layout_k
 - models.data_browser:data_browser-record_view.system-fn
-- models.data_browser:list_open.d
-- models.data_browser:record_open.d
-- models.data_browser:ref_list_open.d
+- models.data_browser:list_open.model-command
+- models.data_browser:record_open.model-command
+- models.data_browser:ref_list_open.model-command
 - models.peer_list:peer_list-model.system-fn
 - models.peer_list:run_command.commit-d
 - models.peer_list:run_command.commit-fn
@@ -40,7 +40,7 @@ definitions:
     value:
       direction: TopToBottom
       elements:
-      - view: list_view_2
+      - view: list_view_1
         focusable: true
         stretch: 1
       - view: details_view_1
@@ -97,7 +97,7 @@ definitions:
     value:
       command: model_command_1
       details_model: item-list_1
-      details_view: list_view_1
+      details_view: list_view_2
   fn_list_adapter_1:
     type: legacy_type.list_adapter:fn_list_adapter
     value:
@@ -126,18 +126,18 @@ definitions:
     value:
       root_item_t: legacy_type.data_browser:record_item
       root_function: models.data_browser:data_browser-record_view.system-fn
-      root_open_children_command_d: models.data_browser:record_open.d
+      root_open_children_command: models.data_browser:record_open.model-command
       layers:
-        legacy_type.data_browser:ref_list_view: models.data_browser:ref_list_open.d
-        legacy_type.data_browser:list_view: models.data_browser:list_open.d
+        legacy_type.data_browser:ref_list_view: models.data_browser:ref_list_open.model-command
+        legacy_type.data_browser:list_view: models.data_browser:list_open.model-command
   list_view_1:
     type: legacy_type.list:view
     value:
-      adapter: static_list_adapter_1
+      adapter: fn_list_adapter_1
   list_view_2:
     type: legacy_type.list:view
     value:
-      adapter: fn_list_adapter_1
+      adapter: static_list_adapter_1
   model_command_1:
     type: legacy_type.command:model_command
     value:
@@ -151,8 +151,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - config_item-data_browser.record_view-model_layout_k
       - config_item-peer_list.model-model_layout_k
+      - config_item-data_browser.record_view-model_layout_k
   peer_list.model-model_layout_k:
     type: legacy_type.ui:model_layout_k
     value:
