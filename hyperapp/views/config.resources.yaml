@@ -15,9 +15,6 @@ import:
 - views.list_as_tree_adapter:ui_adapter_creg-list_as_tree_adapter-adapter.actor-template
 - views.local_server_context:local_server_context-view.view-template
 - views.local_server_context:open_local_server_context.global-model-command
-- views.master_details:master_details-view-unwrap_master_details.command-cfg-item
-- views.master_details:master_details-view.view-template
-- views.master_details:master_details.view-factory-template
 - views.qt.splitter:navigator-view-split_horizontally.command-cfg-item
 - views.qt.splitter:splitter-view-unwrap.command-cfg-item
 - views.qt.splitter:splitter-view.view-template
@@ -78,7 +75,6 @@ definitions:
     value:
       items:
       - views.list_as_tree:list_as_tree_ui_type_layout.view-factory-template
-      - views.master_details:master_details.view-factory-template
       - views.qt.splitter:wrap_splitter.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
@@ -86,14 +82,12 @@ definitions:
       items:
       - views.details:details-view.view-template
       - views.local_server_context:local_server_context-view.view-template
-      - views.master_details:master_details-view.view-template
       - views.qt.splitter:splitter-view.view-template
   view_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - views.list_as_tree:list-view-switch_list_to_tree.command-cfg-item
-      - views.master_details:master_details-view-unwrap_master_details.command-cfg-item
       - views.qt.splitter:navigator-view-split_horizontally.command-cfg-item
       - views.qt.splitter:splitter-view-unwrap.command-cfg-item
   view_ui_model_command_reg:
