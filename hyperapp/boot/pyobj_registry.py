@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 class PyObjRegistry(CachedCodeRegistry):
 
     def __init__(self, config, reconstructors):
-        super().__init__(None, None, 'pyobj_creg', config)
+        super().__init__(None, self, None, 'pyobj_creg', config)
         self._reconstructors = reconstructors
 
     def init(self, builtin_types, mosaic, web):

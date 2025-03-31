@@ -1,6 +1,7 @@
 from hyperapp.boot.code_registry import CodeRegistry
 
 from .services import (
+    pyobj_creg,
     web,
     )
 
@@ -8,7 +9,7 @@ from .services import (
 class ContextCodeRegistry(CodeRegistry):
 
     def __init__(self, service_name, config):
-        super().__init__(web, service_name, config)
+        super().__init__(pyobj_creg, web, service_name, config)
 
     def _call(self, fn, piece, args, kw):
         if len(args) != 1 or kw:

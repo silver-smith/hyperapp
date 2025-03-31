@@ -7,7 +7,7 @@ from functools import cached_property
 from yaml.scanner import ScannerError
 
 from hyperapp.boot.htypes import record_mt, list_mt
-from hyperapp.boot.htypes.deduce_value_type import deduce_value_type
+from hyperapp.boot.htypes.deduce_value_type import deduce_value_type_with_list
 from hyperapp.boot.resource.resource_registry import UnknownResourceName
 
 log = logging.getLogger(__name__)
@@ -178,7 +178,7 @@ class ResourceModule:
         self._resource_registry.add_to_cache((self._name, name), piece)
 
     def _piece_to_definition(self, piece):
-        piece_t = deduce_value_type(piece)
+        piece_t = deduce_value_type_with_list(self._pyobj_creg, piece)
         type = self._resource_type_producer(piece_t)
         value = type.reverse_resolve(piece, self._resolve_ref, self._resource_dir)
         return self._Definition(type, value)

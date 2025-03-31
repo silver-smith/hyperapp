@@ -5,7 +5,7 @@ import threading
 from collections import namedtuple
 
 from .htypes import capsule_t
-from .htypes.deduce_value_type import deduce_value_type
+from .htypes.deduce_value_type import deduce_value_type_with_list
 from .ref import DecodedCapsule, decode_capsule, make_capsule, make_ref
 from .visual_rep import pprint
 
@@ -43,7 +43,7 @@ class Mosaic:
             raise RuntimeError(f"{x}: {piece}")
         except KeyError:
             pass
-        t = t or deduce_value_type(piece)
+        t = t or deduce_value_type_with_list(self._pyobj_creg, piece)
         # make_capsule should be outside the lock as mosaic.put is called somewhere inside it.
         capsule = make_capsule(self._pyobj_creg, piece, t)
         ref = make_ref(capsule)

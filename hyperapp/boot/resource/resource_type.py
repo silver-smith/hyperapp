@@ -182,4 +182,4 @@ class ResourceType:
 
     def to_dict(self, definition):
         encoder = NamedPairsDictEncoder()
-        return encoder.encode(definition)
+        return encoder.encode(definition, self.definition_t)

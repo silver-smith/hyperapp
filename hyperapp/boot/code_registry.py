@@ -1,7 +1,7 @@
 import logging
 
 from .htypes import ref_t
-from .htypes.deduce_value_type import deduce_value_type
+from .htypes.deduce_value_type import deduce_value_type_with_list
 from .config_item_missing import ConfigItemMissingError
 
 _log = logging.getLogger(__name__)
@@ -9,8 +9,9 @@ _log = logging.getLogger(__name__)
 
 class CodeRegistry:
 
-    def __init__(self, web, service_name, config):
+    def __init__(self, pyobj_creg, web, service_name, config):
         super().__init__()
+        self._pyobj_creg = pyobj_creg
         self._web = web
         self._service_name = service_name
         self._config = config  # t -> fn
@@ -29,7 +30,7 @@ class CodeRegistry:
         return self.invite(ref, *args, **kw)
 
     def animate(self, piece, *args, **kw):
-        t = deduce_value_type(piece)
+        t = deduce_value_type_with_list(self._pyobj_creg, piece)
         return self._animate(t, piece, args, kw)
 
     def animate_opt(self, piece, *args, **kw):

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from .htypes import list_mt
 from .htypes import BuiltinTypeRegistry, register_builtin_types
-from .htypes.deduce_value_type import deduce_value_type
+from .htypes.deduce_value_type import deduce_value_type_with_list
 from .mosaic import Mosaic
 from .web import Web
 from .type_module_loader import TypeModuleLoader
@@ -100,7 +100,7 @@ class Services(object):
         self.python_importer.register_meta_hook()
         self.resource_type_factory = partial(ResourceType, self.mosaic, self.web, self.pyobj_creg)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
-        self.deduce_t = deduce_value_type
+        self.deduce_t = partial(deduce_value_type_with_list, self.pyobj_creg)
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[list_mt] = ListMtResourceType()
@@ -130,8 +130,8 @@ class Services(object):
         self.pyobj_creg.register_actor(partial_t, partial_pyobj, pyobj_creg=self.pyobj_creg)
         self.resource_type_reg[raw_t] = RawResourceType()
         self.pyobj_creg.register_actor(raw_t, raw_pyobj, web=self.web)
-        self.code_registry_ctr = partial(CodeRegistry, self.web)
-        self.cached_code_registry_ctr = partial(CachedCodeRegistry, self.mosaic, self.web)
+        self.code_registry_ctr = partial(CodeRegistry, self.pyobj_creg, self.web)
+        self.cached_code_registry_ctr = partial(CachedCodeRegistry, self.mosaic, self.pyobj_creg, self.web)
         builtin_type_modules = load_legacy_type_resources(self.builtin_types_as_dict())
         builtins_project = BuiltinsProject(
             self.builtin_types_as_dict(), builtin_type_modules, self.builtin_service_resource_loader)
