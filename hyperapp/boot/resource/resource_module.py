@@ -160,12 +160,16 @@ class ResourceModule:
             return self._items[name]
         except KeyError:
             pass
-        defn = self._get_definition(name)
-        piece = defn.type.resolve(defn.value, self._resolve_name_to_ref, self._resource_dir)
-        self._items[name] = piece
-        self._resource_registry.add_to_cache((self._name, name), piece)
-        log.debug("%s: Loaded resource %r: %s", self._name, name, piece)
-        return piece
+        defn = self._get_definition(name)  # KeyError from here.
+        try:
+            piece = defn.type.resolve(defn.value, self._resolve_name_to_ref, self._resource_dir)
+            self._items[name] = piece
+            self._resource_registry.add_to_cache((self._name, name), piece)
+            log.debug("%s: Loaded resource %r: %s", self._name, name, piece)
+            return piece
+        except KeyError as x:
+            # KeyError risen from __getitem__ will be swallowed.
+            raise RuntimeError(f"While resolving {self._name}:{name}: {x}") from x
 
     def _set(self, name, piece):
         definition = self._piece_to_definition(piece)
