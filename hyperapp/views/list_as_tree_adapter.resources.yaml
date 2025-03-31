@@ -48,5 +48,6 @@ definitions:
       function: ListAsTreeAdapter.from_piece
       service_params:
       - system_fn_creg
+      - command_creg
       - get_model_commands
       - visualizer_reg

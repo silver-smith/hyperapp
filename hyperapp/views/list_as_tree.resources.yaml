@@ -17,11 +17,8 @@ import:
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.list:view
-- legacy_type.list_as_tree:open_opener_commands_d
 - legacy_type.list_as_tree:opener_command_item
 - legacy_type.list_as_tree:opener_commands
-- legacy_type.list_as_tree:switch_list_to_tree_d
-- legacy_type.list_as_tree:toggle_open_command_d
 - legacy_type.list_as_tree_adapter:adapter
 - legacy_type.list_as_tree_adapter:layer
 - legacy_type.model:list_ui_t
@@ -30,7 +27,7 @@ import:
 - legacy_type.tree:view
 - legacy_type.ui:model_layout_k
 - legacy_type.view_factory:template
-- ui.directory:directory.module
+- ui.command:command.module
 - ui.model_command:model_command.module
 - ui.qt.fn_list_adapter:fn_list_adapter.module
 - views.list_as_tree_adapter:list_as_tree_adapter.module
@@ -76,6 +73,8 @@ definitions:
       - piece
       - ctx
       service_params:
+      - format
+      - command_creg
       - get_model_commands
       - model_layout_reg
   list_as_tree.module:
@@ -84,7 +83,7 @@ definitions:
       module_name: list_as_tree
       file_name: list_as_tree.dyn.py
       import_list:
-        code.directory: ui.directory:directory.module
+        code.command: ui.command:command.module
         code.fn_list_adapter: ui.qt.fn_list_adapter:fn_list_adapter.module
         code.list_as_tree_adapter: views.list_as_tree_adapter:list_as_tree_adapter.module
         code.list_diff: common.list_diff:list_diff.module
@@ -143,7 +142,7 @@ definitions:
       object: list_as_tree.module
       attr_name: open_opener_commands
   open_opener_commands.d:
-    type: legacy_type.list_as_tree:open_opener_commands_d
+    type: open_opener_commands_d
     value: {}
   open_opener_commands.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -162,6 +161,13 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: open_opener_commands.fn
+  open_opener_commands_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: list_as_tree
+      name: open_opener_commands_d
+      base: null
+      fields: {}
   opener_command_list:
     type: legacy_type.builtin:attribute
     value:
@@ -173,7 +179,7 @@ definitions:
       object: list_as_tree.module
       attr_name: switch_list_to_tree
   switch_list_to_tree.d:
-    type: legacy_type.list_as_tree:switch_list_to_tree_d
+    type: switch_list_to_tree_d
     value: {}
   switch_list_to_tree.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -195,13 +201,20 @@ definitions:
         uses_state: false
         remotable: false
       system_fn: switch_list_to_tree.fn
+  switch_list_to_tree_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: list_as_tree
+      name: switch_list_to_tree_d
+      base: null
+      fields: {}
   toggle_open_command:
     type: legacy_type.builtin:attribute
     value:
       object: list_as_tree.module
       attr_name: toggle_open_command
   toggle_open_command.d:
-    type: legacy_type.list_as_tree:toggle_open_command_d
+    type: toggle_open_command_d
     value: {}
   toggle_open_command.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -213,7 +226,9 @@ definitions:
       - current_item
       - ctx
       service_params:
+      - format
       - feed_factory
+      - command_creg
       - get_model_commands
       - model_layout_reg
   toggle_open_command.model-command:
@@ -225,6 +240,13 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: toggle_open_command.fn
+  toggle_open_command_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: list_as_tree
+      name: toggle_open_command_d
+      base: null
+      fields: {}
   tree-view-open_opener_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

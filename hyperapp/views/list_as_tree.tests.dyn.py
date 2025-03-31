@@ -20,8 +20,8 @@ from .tested.code import list_as_tree
 log = logging.getLogger(__name__)
 
 
-def sample_fn_1(piece):
-    log.info("Sample fn 1: %s", piece)
+def root_model(piece):
+    log.info("Sample root model: %s", piece)
     assert isinstance(piece, htypes.list_as_tree_tests.sample_list_1), repr(piece)
     return [
         htypes.list_as_tree_tests.item_1(0, "one", "First item"),
@@ -30,41 +30,13 @@ def sample_fn_1(piece):
         ]
 
 
-def fn_1():
-    return  htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_fn_1),
+@mark.fixture
+def root_model_fn():
+    return htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(root_model),
         ctx_params=('piece',),
         service_params=(),
         )
-
-
-def test_ui_type_layout(fn_1):
-    system_fn_ref = mosaic.put(fn_1)
-    piece = htypes.model.list_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
-        )
-    layout = list_as_tree.list_as_tree_ui_type_layout(piece, system_fn_ref)
-    assert isinstance(layout, htypes.tree.view)
-
-
-def test_switch_list_as_tree(ui_adapter_creg, fn_1):
-    ctx = Context()
-    model = htypes.list_as_tree_tests.sample_list_1()
-    piece = htypes.list_adapter.fn_list_adapter(
-        item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
-        system_fn=mosaic.put(fn_1),
-        )
-    adapter = ui_adapter_creg.animate(piece, model, ctx)
-
-    view = Mock(adapter=adapter)
-    hook = Mock()
-
-    list_as_tree.switch_list_to_tree(model, view, hook, ctx)
-
-    hook.replace_view.assert_called_once()
-    new_view = hook.replace_view.call_args.args[0]
-    assert isinstance(new_view, TreeView)
-    assert isinstance(new_view.adapter, ListAsTreeAdapter)
 
 
 def sample_fn_1_open(piece, current_item):
@@ -79,36 +51,73 @@ def sample_fn_2_open(piece, current_item):
     return htypes.list_as_tree_tests.sample_list_2(base_id=current_item.id)
 
 
-@mark.config_fixture('model_command_reg')
-def model_command_reg_config(partial_ref):
-    open_fn_1 = ContextFn(
+@mark.fixture
+def open_command_1(partial_ref):
+    open_1_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=sample_fn_1_open,
         bound_fn=sample_fn_1_open,
         )
-    open_fn_2 = ContextFn(
+    return UnboundModelCommand(
+        d=htypes.list_as_tree_tests.open_1_d(),
+        ctx_fn=open_1_fn,
+        properties=htypes.command.properties(False, False, False),
+        )
+
+
+@mark.fixture
+def open_command_2(partial_ref):
+    open_2_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=sample_fn_2_open,
         bound_fn=sample_fn_2_open,
         )
-    command_1 = UnboundModelCommand(
-        d=htypes.list_as_tree_tests.open_1_d(),
-        ctx_fn=open_fn_1,
-        properties=htypes.command.properties(False, False, False),
-        )
-    command_2 = UnboundModelCommand(
+    return UnboundModelCommand(
         d=htypes.list_as_tree_tests.open_2_d(),
-        ctx_fn=open_fn_2,
+        ctx_fn=open_2_fn,
         properties=htypes.command.properties(False, False, False),
         )
+
+
+@mark.config_fixture('model_command_reg')
+def model_command_reg_config(open_command_1, open_command_2):
     return {
-        htypes.list_as_tree_tests.sample_list_1: [command_1],
-        htypes.list_as_tree_tests.sample_list_2: [command_2],
+        htypes.list_as_tree_tests.sample_list_1: [open_command_1],
+        htypes.list_as_tree_tests.sample_list_2: [open_command_2],
         }
+
+
+def test_ui_type_layout(root_model_fn):
+    system_fn_ref = mosaic.put(root_model_fn)
+    piece = htypes.model.list_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
+        )
+    layout = list_as_tree.list_as_tree_ui_type_layout(piece, system_fn_ref)
+    assert isinstance(layout, htypes.tree.view)
+
+
+def test_switch_list_as_tree(ui_adapter_creg, root_model_fn):
+    ctx = Context()
+    model = htypes.list_as_tree_tests.sample_list_1()
+    piece = htypes.list_adapter.fn_list_adapter(
+        item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
+        system_fn=mosaic.put(root_model_fn),
+        )
+    adapter = ui_adapter_creg.animate(piece, model, ctx)
+
+    view = Mock(adapter=adapter)
+    hook = Mock()
+
+    list_as_tree.switch_list_to_tree(model, view, hook, ctx)
+
+    hook.replace_view.assert_called_once()
+    new_view = hook.replace_view.call_args.args[0]
+    assert isinstance(new_view, TreeView)
+    assert isinstance(new_view.adapter, ListAsTreeAdapter)
 
 
 @mark.fixture
@@ -117,21 +126,11 @@ def root_item_t():
 
 
 @mark.fixture
-def fn_1():
-    return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_fn_1),
-        ctx_params=('piece',),
-        service_params=(),
-        )
-
-
-@mark.fixture
-def adapter_piece(root_item_t, fn_1):
-    open_command_1_d_ref = mosaic.put(htypes.list_as_tree_tests.open_1_d())
+def adapter_piece(root_item_t, root_model_fn, open_command_1):
     return htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(fn_1),
-        root_open_children_command_d=open_command_1_d_ref,
+        root_function=mosaic.put(root_model_fn),
+        root_open_children_command=mosaic.put(open_command_1.piece),
         layers=(),
         )
 
@@ -158,7 +157,7 @@ def model_state():
         )
 
 
-def test_opener_commands_list(adapter_piece, model_state):
+def test_opener_commands_list(command_creg, adapter_piece, model_state):
     ctx = Context()
     tree_view = htypes.tree.view(
         adapter=mosaic.put(adapter_piece),
@@ -174,8 +173,8 @@ def test_opener_commands_list(adapter_piece, model_state):
     assert type(result) is list
     assert len(result) == 1
     [item] = result
-    assert item.name == 'open_2'
-    assert web.summon_opt(item.command_d) == htypes.list_as_tree_tests.open_2_d()
+    assert item.name == 'Open 2', item.name
+    assert command_creg.invite_opt(item.command).d == htypes.list_as_tree_tests.open_2_d()
 
 
 @mark.fixture.obj
@@ -183,7 +182,7 @@ def model_layout_reg():
     return MagicMock()
 
 
-async def test_set_root_open_command(model_layout_reg, root_item_t, fn_1, model_state):
+async def test_set_root_open_command(model_layout_reg, open_command_1, root_item_t, root_model_fn, model_state):
     ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece = root_piece
@@ -193,14 +192,14 @@ async def test_set_root_open_command(model_layout_reg, root_item_t, fn_1, model_
         model_state=mosaic.put(model_state),
         )
     current_item = htypes.list_as_tree.opener_command_item(
-        command_d=mosaic.put(htypes.list_as_tree_tests.open_1_d()),
+        command=mosaic.put(open_command_1.piece),
         name="<unused>",
         is_opener=False,
         )
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(fn_1),
-        root_open_children_command_d=None,
+        root_function=mosaic.put(root_model_fn),
+        root_open_children_command=None,
         layers=(),
         )
     view = htypes.tree.view(
@@ -211,7 +210,7 @@ async def test_set_root_open_command(model_layout_reg, root_item_t, fn_1, model_
     model_layout_reg.__setitem__.assert_called_once()
 
 
-async def test_set_non_root_open_command(model_layout_reg, root_item_t, fn_1, model_state):
+async def test_set_non_root_open_command(model_layout_reg, open_command_1, root_item_t, root_model_fn, model_state):
     ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece_t = htypes.list_as_tree_tests.sample_list_2
@@ -225,13 +224,13 @@ async def test_set_non_root_open_command(model_layout_reg, root_item_t, fn_1, mo
     layers = (
         htypes.list_as_tree_adapter.layer(
             piece_t=mosaic.put(layer_piece_t_res),
-            open_children_command_d=None,
+            open_children_command=None,
             ),
         )
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(fn_1),
-        root_open_children_command_d=None,
+        root_function=mosaic.put(root_model_fn),
+        root_open_children_command=None,
         layers=layers,
         )
     view = htypes.tree.view(
@@ -239,7 +238,7 @@ async def test_set_non_root_open_command(model_layout_reg, root_item_t, fn_1, mo
         )
     model_layout_reg.get.return_value = view
     current_item = htypes.list_as_tree.opener_command_item(
-        command_d=mosaic.put(htypes.list_as_tree_tests.open_1_d()),
+        command=mosaic.put(open_command_1.piece),
         name="<unused>",
         is_opener=False,
         )

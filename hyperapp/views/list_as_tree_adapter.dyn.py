@@ -24,33 +24,34 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
 
     @dataclass
     class _Layer:
-        open_command_d: Any|None = None
+        open_command: Any|None = None
         item_t: Any|None = None
         model_state_t: Any|None = None
         list_fn: ContextFn|None = None
 
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.list_as_tree_adapter.adapter)
-    def from_piece(cls, piece, model, ctx, system_fn_creg, get_model_commands, visualizer_reg):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, command_creg, get_model_commands, visualizer_reg):
         layers = {}
         for rec in piece.layers:
             piece_t = pyobj_creg.invite(rec.piece_t)
             layer = cls._Layer(
-                open_command_d=web.summon_opt(rec.open_children_command_d),
+                open_command=command_creg.invite_opt(rec.open_children_command),
                 )
             layers[piece_t] = layer
         root_item_t = pyobj_creg.invite(piece.root_item_t)
         root_layer = cls._Layer(
-            open_command_d=web.summon_opt(piece.root_open_children_command_d),
+            open_command=command_creg.invite_opt(piece.root_open_children_command),
             item_t=root_item_t,
             model_state_t=list_model_state_t(root_item_t),
             list_fn=system_fn_creg.invite(piece.root_function),
             )
-        return cls(system_fn_creg, get_model_commands, visualizer_reg, model, root_item_t, ctx, root_layer, layers)
+        return cls(system_fn_creg, command_creg, get_model_commands, visualizer_reg, model, root_item_t, ctx, root_layer, layers)
 
-    def __init__(self, system_fn_creg, get_model_commands, visualizer_reg, model, item_t, ctx, root_layer, layers):
+    def __init__(self, system_fn_creg, command_creg, get_model_commands, visualizer_reg, model, item_t, ctx, root_layer, layers):
         super().__init__(model, item_t)
         self._system_fn_creg = system_fn_creg
+        self._command_creg = command_creg
         self._get_model_commands = get_model_commands
         self._visualizer_reg = visualizer_reg
         self._ctx = ctx
@@ -138,11 +139,7 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
     async def _run_open_command(self, layer, model, current_item_id):
         model_t = deduce_t(model)
         command_ctx = self._make_command_ctx(layer, self._ctx, model, current_item_id)
-        command_list = self._get_model_commands(model_t, command_ctx)
-        try:
-            unbound_command = next(cmd for cmd in command_list if cmd.d == layer.open_command_d)
-        except StopIteration:
-            raise RuntimeError(f"Command {command_d} is not available anymore")
+        unbound_command = layer.open_command
         bound_command = unbound_command.bind(command_ctx)
         piece = await bound_command.run()
         log.info("List-to-tree adapter: open command result: %s", piece)
@@ -161,7 +158,7 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
         pp_piece = self._id_to_piece[pp_id]
         log.info("List-to-tree adapter: loading layer for pp#%d parent#%d:", pp_id, parent_id)
         self._parent_id_to_layer[parent_id] = None  # Cache None if no layer is available.
-        if pp_layer.open_command_d is None:
+        if pp_layer.open_command is None:
             log.info("List-to-tree adapter: Open command for parent#%d is not specified", parent_id)
             return None
         piece = await self._run_open_command(pp_layer, model=pp_piece, current_item_id=parent_id)

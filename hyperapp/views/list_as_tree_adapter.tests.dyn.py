@@ -108,45 +108,51 @@ class MockSubscriber:
             log.info("Mock subscriber: condition is met: %s", cond)
 
 
-@mark.config_fixture('model_command_reg')
-def model_command_reg_config(partial_ref):
-    open_fn_1 = ContextFn(
+@mark.fixture
+def open_command_1(partial_ref):
+    open_1_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=sample_fn_1_open,
         bound_fn=sample_fn_1_open,
         )
-    open_fn_2 = ContextFn(
+    return UnboundModelCommand(
+        d=htypes.list_as_tree_tests.open_1_d(),
+        ctx_fn=open_1_fn,
+        properties=htypes.command.properties(False, False, False),
+        )
+
+
+@mark.fixture
+def open_command_2(partial_ref):
+    open_2_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=sample_fn_2_open,
         bound_fn=sample_fn_2_open,
         )
-    command_1 = UnboundModelCommand(
-        d=htypes.list_as_tree_adapter_tests.open_1_d(),
-        ctx_fn=open_fn_1,
+    return UnboundModelCommand(
+        d=htypes.list_as_tree_tests.open_2_d(),
+        ctx_fn=open_2_fn,
         properties=htypes.command.properties(False, False, False),
         )
-    command_2 = UnboundModelCommand(
-        d=htypes.list_as_tree_adapter_tests.open_2_d(),
-        ctx_fn=open_fn_2,
-        properties=htypes.command.properties(False, False, False),
-        )
+
+
+@mark.config_fixture('model_command_reg')
+def model_command_reg_config(open_command_1, open_command_2):
     return {
-        htypes.list_as_tree_adapter_tests.sample_list_1: [command_1],
-        htypes.list_as_tree_adapter_tests.sample_list_2: [command_2],
+        htypes.list_as_tree_adapter_tests.sample_list_1: [open_command_1],
+        htypes.list_as_tree_adapter_tests.sample_list_2: [open_command_2],
         }
 
 
-async def test_three_layers():
+async def test_three_layers(open_command_1, open_command_2):
     ctx = Context()
     model = htypes.list_as_tree_adapter_tests.sample_list_1()
     root_item_t = htypes.list_as_tree_adapter_tests.item_1
     root_item_t_piece = pyobj_creg.actor_to_piece(root_item_t)
-    open_command_1_d_ref = mosaic.put(htypes.list_as_tree_adapter_tests.open_1_d())
-    open_command_2_d_ref = mosaic.put(htypes.list_as_tree_adapter_tests.open_2_d())
     piece_2_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.sample_list_2)
     piece_3_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.sample_list_3)
     fn_1 = htypes.system_fn.ctx_fn(
@@ -157,15 +163,15 @@ async def test_three_layers():
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t_piece),
         root_function=mosaic.put(fn_1),
-        root_open_children_command_d=open_command_1_d_ref,
+        root_open_children_command=mosaic.put(open_command_1.piece),
         layers=(
             htypes.list_as_tree_adapter.layer(
                 piece_t=mosaic.put(piece_2_t),
-                open_children_command_d=open_command_2_d_ref,
+                open_children_command=mosaic.put(open_command_2.piece),
                 ),
             htypes.list_as_tree_adapter.layer(
                 piece_t=mosaic.put(piece_3_t),
-                open_children_command_d=None,
+                open_children_command=None,
                 ),
             ),
         )
@@ -235,7 +241,7 @@ async def test_single_layer():
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t_piece),
         root_function=mosaic.put(fn_1),
-        root_open_children_command_d=None,
+        root_open_children_command=None,
         layers=(),
         )
     adapter = list_as_tree_adapter.ListAsTreeAdapter.from_piece(adapter_piece, model, ctx)
