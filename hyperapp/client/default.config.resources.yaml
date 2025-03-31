@@ -2,14 +2,26 @@
 
 import:
 - legacy_type.box_layout:view
+- legacy_type.builtin:list_mt
+- legacy_type.command:canned_arg_command_d
+- legacy_type.command:canned_args_command_fn
+- legacy_type.command:model_command
 - legacy_type.data_browser:list_view
 - legacy_type.data_browser:record_data_adapter
 - legacy_type.data_browser:record_item
 - legacy_type.data_browser:record_view
 - legacy_type.data_browser:ref_list_view
 - legacy_type.data_service:config_item
+- legacy_type.details:view
+- legacy_type.global_commands:command_arg
 - legacy_type.line_edit:readonly_view
+- legacy_type.list:view
+- legacy_type.list_adapter:fn_list_adapter
+- legacy_type.list_adapter:static_list_adapter
 - legacy_type.list_as_tree_adapter:adapter
+- legacy_type.peer_list:item
+- legacy_type.peer_list:model
+- legacy_type.sample_list:item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.tree:view
@@ -18,8 +30,23 @@ import:
 - models.data_browser:list_open.d
 - models.data_browser:record_open.d
 - models.data_browser:ref_list_open.d
+- models.peer_list:peer_list-model.system-fn
+- models.peer_list:run_command.commit-d
+- models.peer_list:run_command.commit-fn
+- sample.sample_commands:system_info.d
 definitions:
   box_layout_view_1:
+    type: legacy_type.box_layout:view
+    value:
+      direction: TopToBottom
+      elements:
+      - view: list_view_2
+        focusable: true
+        stretch: 1
+      - view: details_view_1
+        focusable: false
+        stretch: 0
+  box_layout_view_2:
     type: legacy_type.box_layout:view
     value:
       direction: TopToBottom
@@ -30,6 +57,22 @@ definitions:
       - view: tree_view_1
         focusable: true
         stretch: 1
+  canned_arg_command_d_1:
+    type: legacy_type.command:canned_arg_command_d
+    value:
+      commit_command_d: models.peer_list:run_command.commit-d
+      args:
+        command: command_arg_1
+  canned_args_command_fn_1:
+    type: legacy_type.command:canned_args_command_fn
+    value:
+      args:
+        command: command_arg_1
+      commit_fn: models.peer_list:run_command.commit-fn
+  command_arg_1:
+    type: legacy_type.global_commands:command_arg
+    value:
+      d: sample.sample_commands:system_info.d
   config:
     type: legacy_type.system:system_config
     value:
@@ -39,11 +82,41 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: data_browser.record_view-model_layout_k
+      value: box_layout_view_2
+  config_item-peer_list.model-model_layout_k:
+    type: legacy_type.data_service:config_item
+    value:
+      key: peer_list.model-model_layout_k
       value: box_layout_view_1
   data_browser.record_view-model_layout_k:
     type: legacy_type.ui:model_layout_k
     value:
       model_t: legacy_type.data_browser:record_view
+  details_view_1:
+    type: legacy_type.details:view
+    value:
+      command: model_command_1
+      details_model: item-list_1
+      details_view: list_view_1
+  fn_list_adapter_1:
+    type: legacy_type.list_adapter:fn_list_adapter
+    value:
+      item_t: legacy_type.peer_list:item
+      system_fn: models.peer_list:peer_list-model.system-fn
+  item-list_1:
+    type: sample_list-item-list
+    value:
+    - id: 0
+      title: user
+      desc: user
+    - id: 1
+      title: nodename
+      desc:host1    - id: 2
+      title: version
+      desc: '#1 SMP PREEMPT_DYNAMIC Debian 6.1.128-1 (2025-02-07)'
+    - id: 3
+      title: cpu_count
+      desc: '16'
   line_view-record_data_adapter_1:
     type: legacy_type.line_edit:readonly_view
     value:
@@ -57,13 +130,42 @@ definitions:
       layers:
         legacy_type.data_browser:ref_list_view: models.data_browser:ref_list_open.d
         legacy_type.data_browser:list_view: models.data_browser:list_open.d
+  list_view_1:
+    type: legacy_type.list:view
+    value:
+      adapter: static_list_adapter_1
+  list_view_2:
+    type: legacy_type.list:view
+    value:
+      adapter: fn_list_adapter_1
+  model_command_1:
+    type: legacy_type.command:model_command
+    value:
+      d: canned_arg_command_d_1
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: canned_args_command_fn_1
   model_layout_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-data_browser.record_view-model_layout_k
+      - config_item-peer_list.model-model_layout_k
+  peer_list.model-model_layout_k:
+    type: legacy_type.ui:model_layout_k
+    value:
+      model_t: legacy_type.peer_list:model
   record_data_adapter_1:
     type: legacy_type.data_browser:record_data_adapter
+    value: {}
+  sample_list-item-list:
+    type: legacy_type.builtin:list_mt
+    value:
+      element: legacy_type.sample_list:item
+  static_list_adapter_1:
+    type: legacy_type.list_adapter:static_list_adapter
     value: {}
   tree_view_1:
     type: legacy_type.tree:view
