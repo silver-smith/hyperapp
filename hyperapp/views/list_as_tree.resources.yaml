@@ -18,6 +18,7 @@ import:
 - legacy_type.feed:list_feed_type
 - legacy_type.list:view
 - legacy_type.list_as_tree:layer_list
+- legacy_type.list_as_tree:layer_list_item
 - legacy_type.list_as_tree:opener_command_item
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree_adapter:adapter
@@ -38,6 +39,28 @@ definitions:
     value:
       t: legacy_type.list:view
       command: switch_list_to_tree.ui-command
+  list_as_tree-layer_list.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.list_as_tree:layer_list_item
+  list_as_tree-layer_list.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: list_as_tree-layer_list.list-ui-t
+      system_fn: list_as_tree-layer_list.system-fn
+  list_as_tree-layer_list.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.list_as_tree:layer_list
+      value: list_as_tree-layer_list.model
+  list_as_tree-layer_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_as_tree_layers
+      ctx_params:
+      - piece
+      service_params:
+      - command_creg
   list_as_tree-opener_commands-toggle_open_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -92,6 +115,7 @@ definitions:
         code.model_command: ui.model_command:model_command.module
         htypes.list.view: legacy_type.list:view
         htypes.list_as_tree.layer_list: legacy_type.list_as_tree:layer_list
+        htypes.list_as_tree.layer_list_item: legacy_type.list_as_tree:layer_list_item
         htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
         htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands
         htypes.list_as_tree_adapter.adapter: legacy_type.list_as_tree_adapter:adapter
@@ -102,6 +126,11 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+  list_as_tree_layers:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_as_tree.module
+      attr_name: list_as_tree_layers
   list_as_tree_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:

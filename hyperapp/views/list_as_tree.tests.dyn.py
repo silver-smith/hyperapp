@@ -145,6 +145,23 @@ def adapter_piece(root_item_t, root_list_model_fn, open_command_1):
         )
 
 
+def test_layer_list_model(open_command_1):
+    layers = (
+        htypes.list_as_tree_adapter.layer(
+            piece_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.sample_list_2),
+            open_children_command=None,
+            ),
+        )
+    piece = htypes.list_as_tree.layer_list(
+        root_piece_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.sample_list_1),
+        root_open_children_command=mosaic.put(open_command_1.piece),
+        layers=layers,
+        )
+    item_list = list_as_tree.list_as_tree_layers(piece)
+    assert type(item_list) is list
+    assert isinstance(item_list[0], htypes.list_as_tree.layer_list_item)
+
+
 def test_open_layers(view_reg, ctx, adapter_piece, root_model):
     view_piece = htypes.tree.view(
         adapter=mosaic.put(adapter_piece),
@@ -174,6 +191,7 @@ def model_state():
         current_idx=0,
         current_item=htypes.list_as_tree_tests.item_1(123, "some", "Some item"),
         )
+
 
 def test_opener_commands_list(command_creg, ctx, adapter_piece, model_state):
     tree_view = htypes.tree.view(
@@ -230,7 +248,6 @@ async def test_set_non_root_open_command(model_layout_reg, ctx, open_command_1, 
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece_t = htypes.list_as_tree_tests.sample_list_2
     layer_piece = layer_piece_t(base_id=0)
-    layer_piece_t_res = pyobj_creg.actor_to_piece(layer_piece_t)
     piece = htypes.list_as_tree.opener_commands(
         root_piece=mosaic.put(root_piece),
         layer_piece=mosaic.put(layer_piece),
@@ -238,7 +255,7 @@ async def test_set_non_root_open_command(model_layout_reg, ctx, open_command_1, 
         )
     layers = (
         htypes.list_as_tree_adapter.layer(
-            piece_t=mosaic.put(layer_piece_t_res),
+            piece_t=pyobj_creg.actor_to_ref(layer_piece_t),
             open_children_command=None,
             ),
         )

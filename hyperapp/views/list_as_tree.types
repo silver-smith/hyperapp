@@ -17,3 +17,10 @@ layer_list = record:
   root_open_children_command: ref opt
   layers: layer list
   # TODO: current_layer: int  # 0 is root, 1.. match layers 0..
+
+layer_list_item = record:
+  is_root: bool
+  piece_t: ref
+  piece_t_text: string
+  open_command: ref opt
+  open_command_text: string

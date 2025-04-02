@@ -1,8 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_type.builtin:bool
 - legacy_type.builtin:string
+- legacy_type.column:column_k
 - legacy_type.data_service:config_item
+- legacy_type.list_as_tree:layer_list
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - views.list_as_tree:open_layers.d
@@ -12,11 +15,41 @@ import:
 - views.qt.splitter:split_horizontally.d
 - views.qt.splitter:unwrap.d
 definitions:
+  bool-false:
+    type: legacy_type.builtin:bool
+    value: false
+  column_k-list_as_tree.layer_list-open_command:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.list_as_tree:layer_list
+      column_name: open_command
+  column_k-list_as_tree.layer_list-piece_t:
+    type: legacy_type.column:column_k
+    value:
+      model_t: legacy_type.list_as_tree:layer_list
+      column_name: piece_t
+  column_visible_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-column_k-list_as_tree.layer_list-open_command
+      - config_item-column_k-list_as_tree.layer_list-piece_t
   config:
     type: legacy_type.system:system_config
     value:
       services:
         shortcut_reg: shortcut_reg.config
+        column_visible_reg: column_visible_reg.config
+  config_item-column_k-list_as_tree.layer_list-open_command:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-list_as_tree.layer_list-open_command
+      value: bool-false
+  config_item-column_k-list_as_tree.layer_list-piece_t:
+    type: legacy_type.data_service:config_item
+    value:
+      key: column_k-list_as_tree.layer_list-piece_t
+      value: bool-false
   config_item-views.list_as_tree-open_layers.d:
     type: legacy_type.data_service:config_item
     value:

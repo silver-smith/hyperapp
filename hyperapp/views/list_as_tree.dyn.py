@@ -52,8 +52,38 @@ def switch_list_to_tree(piece, view, hook, ctx, view_reg):
 
 
 @mark.model
-def list_as_tree_layers(piece):
-    pass
+def list_as_tree_layers(piece, command_creg):
+
+    def t_ref_text(t_ref):
+        t = pyobj_creg.invite(t_ref)
+        return str(t)
+
+    def command_ref_text(command_ref):
+        command = command_creg.invite_opt(command_ref)
+        if command:
+            return command_text(format, command)
+        else:
+            return ''
+
+    layer_item_list = [
+        htypes.list_as_tree.layer_list_item(
+            is_root=False,
+            piece_t=layer.piece_t,
+            piece_t_text=t_ref_text(layer.piece_t),
+            open_command=layer.open_children_command,
+            open_command_text=command_ref_text(layer.open_children_command),
+            )
+        for layer in piece.layers
+        ]
+    root_item = htypes.list_as_tree.layer_list_item(
+        is_root=True,
+        piece_t=piece.root_piece_t,
+        piece_t_text=t_ref_text(piece.root_piece_t),
+        open_command=piece.root_open_children_command,
+        open_command_text=command_ref_text(piece.root_open_children_command),
+        )
+
+    return [root_item, *layer_item_list]
 
 
 @mark.ui_command
