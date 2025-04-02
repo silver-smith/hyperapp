@@ -49,6 +49,6 @@ def system_info():
         'cpu_count': str(os.cpu_count()),
         }
     return [
-        htypes.sample_list.item(idx, key, value)
+        htypes.sample_commands.system_info_item(idx, key, value)
         for idx, (key, value) in enumerate(info.items())
         ]

@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.sample_commands:system_info_item
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_tree:sample_tree
@@ -141,6 +142,7 @@ definitions:
       file_name: sample_commands.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        htypes.sample_commands.system_info_item: legacy_type.sample_commands:system_info_item
         htypes.sample_list.item: legacy_type.sample_list:item
   sample_list-sample_list-details.command-cfg-item:
     type: legacy_type.command:cfg_item

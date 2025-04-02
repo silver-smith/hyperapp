@@ -1,0 +1,4 @@
+system_info_item = record:
+  idx: int
+  name: string
+  value: string
