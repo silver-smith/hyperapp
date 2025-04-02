@@ -17,6 +17,7 @@ import:
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.list:view
+- legacy_type.list_as_tree:layer_list
 - legacy_type.list_as_tree:opener_command_item
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree_adapter:adapter
@@ -90,6 +91,7 @@ definitions:
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
         htypes.list.view: legacy_type.list:view
+        htypes.list_as_tree.layer_list: legacy_type.list_as_tree:layer_list
         htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
         htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands
         htypes.list_as_tree_adapter.adapter: legacy_type.list_as_tree_adapter:adapter
@@ -134,6 +136,39 @@ definitions:
     value:
       module_name: list_as_tree
       name: list_as_tree_ui_type_layout_k
+      base: null
+      fields: {}
+  open_layers:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_as_tree.module
+      attr_name: open_layers
+  open_layers.d:
+    type: open_layers_d
+    value: {}
+  open_layers.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_layers
+      ctx_params:
+      - view
+      - current_item
+      - model
+      service_params: []
+  open_layers.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: open_layers.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_layers.fn
+  open_layers_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: list_as_tree
+      name: open_layers_d
       base: null
       fields: {}
   open_opener_commands:
@@ -247,6 +282,11 @@ definitions:
       name: toggle_open_command_d
       base: null
       fields: {}
+  tree-view-open_layers.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tree:view
+      command: open_layers.ui-command
   tree-view-open_opener_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

@@ -1,3 +1,6 @@
+from list_as_tree_adapter import layer
+
+
 opener_commands = record:
   root_piece: ref
   layer_piece: ref
@@ -7,3 +10,10 @@ opener_command_item = record:
   command: ref
   name: string
   is_opener: bool
+
+
+layer_list = record:
+  root_piece_t: ref
+  root_open_children_command: ref opt
+  layers: layer list
+  # TODO: current_layer: int  # 0 is root, 1.. match layers 0..

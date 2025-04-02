@@ -11,6 +11,7 @@ import:
 - views.list_as_tree:list_as_tree-opener_commands.feed-template
 - views.list_as_tree:list_as_tree-opener_commands.model-cfg-item
 - views.list_as_tree:list_as_tree_ui_type_layout.view-factory-template
+- views.list_as_tree:tree-view-open_layers.command-cfg-item
 - views.list_as_tree:tree-view-open_opener_commands.command-cfg-item
 - views.list_as_tree_adapter:ui_adapter_creg-list_as_tree_adapter-adapter.actor-template
 - views.local_server_context:local_server_context-view.view-template
@@ -88,6 +89,7 @@ definitions:
     value:
       items:
       - views.list_as_tree:list-view-switch_list_to_tree.command-cfg-item
+      - views.list_as_tree:tree-view-open_layers.command-cfg-item
       - views.qt.splitter:navigator-view-split_horizontally.command-cfg-item
       - views.qt.splitter:splitter-view-unwrap.command-cfg-item
   view_ui_model_command_reg:

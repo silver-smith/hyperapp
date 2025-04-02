@@ -20,7 +20,7 @@ from .tested.code import list_as_tree
 log = logging.getLogger(__name__)
 
 
-def root_model(piece):
+def root_list_model(piece):
     log.info("Sample root model: %s", piece)
     assert isinstance(piece, htypes.list_as_tree_tests.sample_list_1), repr(piece)
     return [
@@ -31,9 +31,9 @@ def root_model(piece):
 
 
 @mark.fixture
-def root_model_fn():
+def root_list_model_fn():
     return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(root_model),
+        function=pyobj_creg.actor_to_ref(root_list_model),
         ctx_params=('piece',),
         service_params=(),
         )
@@ -91,8 +91,8 @@ def model_command_reg_config(open_command_1, open_command_2):
         }
 
 
-def test_ui_type_layout(root_model_fn):
-    system_fn_ref = mosaic.put(root_model_fn)
+def test_ui_type_layout(root_list_model_fn):
+    system_fn_ref = mosaic.put(root_list_model_fn)
     piece = htypes.model.list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
         )
@@ -100,19 +100,29 @@ def test_ui_type_layout(root_model_fn):
     assert isinstance(layout, htypes.tree.view)
 
 
-def test_switch_list_as_tree(ui_adapter_creg, root_model_fn):
-    ctx = Context()
-    model = htypes.list_as_tree_tests.sample_list_1()
+@mark.fixture
+def root_model():
+    return htypes.list_as_tree_tests.sample_list_1()
+
+
+@mark.fixture
+def ctx(root_model):
+    return Context(
+        model=root_model,
+        )
+
+
+def test_switch_list_as_tree(ui_adapter_creg, ctx, root_list_model_fn, root_model):
     piece = htypes.list_adapter.fn_list_adapter(
         item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
-        system_fn=mosaic.put(root_model_fn),
+        system_fn=mosaic.put(root_list_model_fn),
         )
-    adapter = ui_adapter_creg.animate(piece, model, ctx)
+    adapter = ui_adapter_creg.animate(piece, root_model, ctx)
 
     view = Mock(adapter=adapter)
     hook = Mock()
 
-    list_as_tree.switch_list_to_tree(model, view, hook, ctx)
+    list_as_tree.switch_list_to_tree(root_model, view, hook, ctx)
 
     hook.replace_view.assert_called_once()
     new_view = hook.replace_view.call_args.args[0]
@@ -126,17 +136,26 @@ def root_item_t():
 
 
 @mark.fixture
-def adapter_piece(root_item_t, root_model_fn, open_command_1):
+def adapter_piece(root_item_t, root_list_model_fn, open_command_1):
     return htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(root_model_fn),
+        root_function=mosaic.put(root_list_model_fn),
         root_open_children_command=mosaic.put(open_command_1.piece),
         layers=(),
         )
 
 
-def test_open_opener_commands(ui_adapter_creg, adapter_piece):
-    ctx = Context()
+def test_open_layers(view_reg, ctx, adapter_piece, root_model):
+    view_piece = htypes.tree.view(
+        adapter=mosaic.put(adapter_piece),
+        )
+    view = view_reg.animate(view_piece, ctx)
+    current_item = htypes.list_as_tree_tests.item_1(123, "some", "Some item"),
+    piece = list_as_tree.open_layers(view, current_item, root_model)
+    assert isinstance(piece, htypes.list_as_tree.layer_list)
+
+
+def test_open_opener_commands(ui_adapter_creg, ctx, adapter_piece):
     model = htypes.list_as_tree_tests.sample_list_1()
     adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
 
@@ -156,9 +175,7 @@ def model_state():
         current_item=htypes.list_as_tree_tests.item_1(123, "some", "Some item"),
         )
 
-
-def test_opener_commands_list(command_creg, adapter_piece, model_state):
-    ctx = Context()
+def test_opener_commands_list(command_creg, ctx, adapter_piece, model_state):
     tree_view = htypes.tree.view(
         adapter=mosaic.put(adapter_piece),
         )
@@ -182,8 +199,7 @@ def model_layout_reg():
     return MagicMock()
 
 
-async def test_set_root_open_command(model_layout_reg, open_command_1, root_item_t, root_model_fn, model_state):
-    ctx = Context()
+async def test_set_root_open_command(model_layout_reg, ctx, open_command_1, root_item_t, root_list_model_fn, model_state):
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece = root_piece
     piece = htypes.list_as_tree.opener_commands(
@@ -198,7 +214,7 @@ async def test_set_root_open_command(model_layout_reg, open_command_1, root_item
         )
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(root_model_fn),
+        root_function=mosaic.put(root_list_model_fn),
         root_open_children_command=None,
         layers=(),
         )
@@ -210,8 +226,7 @@ async def test_set_root_open_command(model_layout_reg, open_command_1, root_item
     model_layout_reg.__setitem__.assert_called_once()
 
 
-async def test_set_non_root_open_command(model_layout_reg, open_command_1, root_item_t, root_model_fn, model_state):
-    ctx = Context()
+async def test_set_non_root_open_command(model_layout_reg, ctx, open_command_1, root_item_t, root_list_model_fn, model_state):
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece_t = htypes.list_as_tree_tests.sample_list_2
     layer_piece = layer_piece_t(base_id=0)
@@ -229,7 +244,7 @@ async def test_set_non_root_open_command(model_layout_reg, open_command_1, root_
         )
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(root_model_fn),
+        root_function=mosaic.put(root_list_model_fn),
         root_open_children_command=None,
         layers=layers,
         )

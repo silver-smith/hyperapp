@@ -51,6 +51,26 @@ def switch_list_to_tree(piece, view, hook, ctx, view_reg):
     hook.replace_view(new_view)
 
 
+@mark.model
+def list_as_tree_layers(piece):
+    pass
+
+
+@mark.ui_command
+def open_layers(view, current_item, model):
+    adapter = view.adapter
+    if not isinstance(adapter, ListAsTreeAdapter):
+        log.info("Not a ListAsTreeAdapter: %r", adapter)
+        return
+    adapter_piece = web.summon(view.piece.adapter)
+    root_piece_t = deduce_t(model)
+    return htypes.list_as_tree.layer_list(
+        root_piece_t=pyobj_creg.actor_to_ref(root_piece_t),
+        root_open_children_command=adapter_piece.root_open_children_command,
+        layers=adapter_piece.layers,
+        )
+
+
 @mark.ui_model_command(htypes.tree.view)
 def open_opener_commands(view, current_path):
     adapter = view.adapter

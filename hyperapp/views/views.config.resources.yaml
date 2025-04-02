@@ -5,6 +5,7 @@ import:
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- views.list_as_tree:open_layers.d
 - views.list_as_tree:open_opener_commands.d
 - views.list_as_tree:toggle_open_command.d
 - views.local_server_context:open_local_server_context.d
@@ -16,6 +17,11 @@ definitions:
     value:
       services:
         shortcut_reg: shortcut_reg.config
+  config_item-views.list_as_tree-open_layers.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.list_as_tree:open_layers.d
+      value: shortcut_Ctrl_Shift_L
   config_item-views.list_as_tree-open_opener_commands.d:
     type: legacy_type.data_service:config_item
     value:
@@ -47,6 +53,9 @@ definitions:
   shortcut_Ctrl_H:
     type: legacy_type.builtin:string
     value: Ctrl+H
+  shortcut_Ctrl_Shift_L:
+    type: legacy_type.builtin:string
+    value: Ctrl+Shift+L
   shortcut_Ctrl_Shift_O:
     type: legacy_type.builtin:string
     value: Ctrl+Shift+O
@@ -56,9 +65,6 @@ definitions:
   shortcut_Space:
     type: legacy_type.builtin:string
     value: Space
-  shortcut_U:
-    type: legacy_type.builtin:string
-    value: U
   shortcut_reg.config:
     type: legacy_type.system:item_list_config
     value:
@@ -68,3 +74,4 @@ definitions:
       - config_item-views.qt.splitter-unwrap.d
       - config_item-views.list_as_tree-open_opener_commands.d
       - config_item-views.list_as_tree-toggle_open_command.d
+      - config_item-views.list_as_tree-open_layers.d
