@@ -7,12 +7,6 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
-- legacy_type.sample_commands:details_d
-- legacy_type.sample_commands:open_sample_static_list_d
-- legacy_type.sample_commands:open_sample_static_text_1_d
-- legacy_type.sample_commands:open_sample_static_text_2_d
-- legacy_type.sample_commands:sample_tree_info_d
-- legacy_type.sample_commands:show_state_d
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_tree:sample_tree
@@ -24,7 +18,7 @@ definitions:
       object: sample_commands.module
       attr_name: details
   details.d:
-    type: legacy_type.sample_commands:details_d
+    type: details_d
     value: {}
   details.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -43,13 +37,20 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: details.fn
+  details_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_commands
+      name: details_d
+      base: null
+      fields: {}
   open_sample_static_list:
     type: legacy_type.builtin:attribute
     value:
       object: sample_commands.module
       attr_name: open_sample_static_list
   open_sample_static_list.d:
-    type: legacy_type.sample_commands:open_sample_static_list_d
+    type: open_sample_static_list_d
     value: {}
   open_sample_static_list.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -66,13 +67,20 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_static_list.fn
+  open_sample_static_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_commands
+      name: open_sample_static_list_d
+      base: null
+      fields: {}
   open_sample_static_text_1:
     type: legacy_type.builtin:attribute
     value:
       object: sample_commands.module
       attr_name: open_sample_static_text_1
   open_sample_static_text_1.d:
-    type: legacy_type.sample_commands:open_sample_static_text_1_d
+    type: open_sample_static_text_1_d
     value: {}
   open_sample_static_text_1.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -89,13 +97,20 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_static_text_1.fn
+  open_sample_static_text_1_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_commands
+      name: open_sample_static_text_1_d
+      base: null
+      fields: {}
   open_sample_static_text_2:
     type: legacy_type.builtin:attribute
     value:
       object: sample_commands.module
       attr_name: open_sample_static_text_2
   open_sample_static_text_2.d:
-    type: legacy_type.sample_commands:open_sample_static_text_2_d
+    type: open_sample_static_text_2_d
     value: {}
   open_sample_static_text_2.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -112,6 +127,13 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_static_text_2.fn
+  open_sample_static_text_2_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_commands
+      name: open_sample_static_text_2_d
+      base: null
+      fields: {}
   sample_commands.module:
     type: legacy_type.builtin:python_module
     value:
@@ -136,7 +158,7 @@ definitions:
       object: sample_commands.module
       attr_name: sample_tree_info
   sample_tree_info.d:
-    type: legacy_type.sample_commands:sample_tree_info_d
+    type: sample_tree_info_d
     value: {}
   sample_tree_info.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -154,13 +176,20 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: sample_tree_info.fn
+  sample_tree_info_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_commands
+      name: sample_tree_info_d
+      base: null
+      fields: {}
   show_state:
     type: legacy_type.builtin:attribute
     value:
       object: sample_commands.module
       attr_name: show_state
   show_state.d:
-    type: legacy_type.sample_commands:show_state_d
+    type: show_state_d
     value: {}
   show_state.fn:
     type: legacy_type.system_fn:ctx_fn
@@ -178,6 +207,13 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: show_state.fn
+  show_state_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: sample_commands
+      name: show_state_d
+      base: null
+      fields: {}
   system_info:
     type: legacy_type.builtin:attribute
     value:
