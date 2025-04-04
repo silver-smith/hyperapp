@@ -7,8 +7,12 @@ from .code.rc_constructor import Constructor
 from .code.d_type import d_type
 
 
-STATE_PARAMS = {'state', 'model_state', 'current_item', 'current_idx', 'current_path'}
+STATE_PARAMS = {'state', 'model_state', 'current_item', 'current_idx', 'current_key', 'current_path'}
 LOCAL_PARAMS = {'controller', 'ctx', 'lcs', 'rpc_endpoint', 'identity', 'remote_peer'}
+
+
+def _is_state_param(name):
+    return name in STATE_PARAMS or name.startswith('current_')
 
 
 class CommandTemplateCtr(Constructor):
@@ -104,7 +108,7 @@ class CommandTemplateCtr(Constructor):
         d = self._command_d(types, name)
         properties = htypes.command.properties(
             is_global=self._is_global,
-            uses_state=bool(set(self._ctx_params) & STATE_PARAMS),
+            uses_state=any(_is_state_param(name) for name in self._ctx_params),
             remotable=not set(self._ctx_params) & LOCAL_PARAMS,
             )
         if name_to_res is not None:
