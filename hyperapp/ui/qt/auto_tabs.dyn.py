@@ -2,7 +2,6 @@ import logging
 
 from . import htypes
 from .code.mark import mark
-from .code.list_diff import ListDiff
 from .code.tabs import TabsView
 
 log = logging.getLogger(__name__)

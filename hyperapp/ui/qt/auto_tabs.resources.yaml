@@ -2,7 +2,6 @@
 
 import:
 - base.mark:mark.module
-- common.list_diff:list_diff.module
 - legacy_type.auto_tabs:close_tab_d
 - legacy_type.auto_tabs:duplicate_tab_d
 - legacy_type.auto_tabs:view
@@ -55,7 +54,6 @@ definitions:
       module_name: auto_tabs
       file_name: auto_tabs.dyn.py
       import_list:
-        code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         code.tabs: ui.qt.tabs:tabs.module
         htypes.auto_tabs.view: legacy_type.auto_tabs:view

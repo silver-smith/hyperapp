@@ -4,7 +4,6 @@ import:
 - base.mark:mark.module
 - builtins:mosaic.service
 - builtins:web.service
-- common.list_diff:list_diff.module
 - legacy_type.box_layout:element
 - legacy_type.box_layout:state
 - legacy_type.box_layout:view
@@ -150,7 +149,6 @@ definitions:
       module_name: box_layout
       file_name: box_layout.dyn.py
       import_list:
-        code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
         htypes.box_layout.element: legacy_type.box_layout:element

@@ -9,7 +9,6 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.list_diff import ListDiff
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)

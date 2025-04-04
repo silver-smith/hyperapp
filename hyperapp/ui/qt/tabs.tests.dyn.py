@@ -4,7 +4,6 @@ from . import htypes
 from .services import (
     mosaic,
     )
-from .code.list_diff import ListDiff
 from .code.context import Context
 from .fixtures import qapp_fixtures
 from .tested.code import tabs
