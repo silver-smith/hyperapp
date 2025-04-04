@@ -17,7 +17,7 @@ from .tested.code import fn_list_adapter
 log = logging.getLogger(__name__)
 
 
-def sample_list_fn(piece):
+def sample_list_model(piece):
     log.info("Sample list fn: %s", piece)
     assert isinstance(piece, htypes.list_adapter_tests.sample_list), repr(piece)
     return [
@@ -25,6 +25,15 @@ def sample_list_fn(piece):
         htypes.list_adapter_tests.item(22, "second", "Second item"),
         htypes.list_adapter_tests.item(33, "third", "Third item"),
         ]
+
+
+@mark.fixture
+def sample_list_model_fn():
+    return htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_list_model),
+        ctx_params=('piece',),
+        service_params=(),
+        )
 
 
 @mark.fixture.obj
@@ -67,15 +76,10 @@ async def _send_append_diff(feed):
     await feed.send(ListDiff.Append(item))
 
 
-async def test_index_fn_adapter(feed_factory, model, ctx):
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_list_fn),
-        ctx_params=('piece',),
-        service_params=(),
-        )
+async def test_index_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     adapter_piece = htypes.list_adapter.index_fn_list_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        system_fn=mosaic.put(system_fn),
+        system_fn=mosaic.put(sample_list_model_fn),
         )
     adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
     assert adapter.column_count() == 2
@@ -97,15 +101,10 @@ async def test_index_fn_adapter(feed_factory, model, ctx):
     assert diff.item.id == 44
 
 
-async def test_key_fn_adapter(feed_factory, model, ctx):
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_list_fn),
-        ctx_params=('piece',),
-        service_params=(),
-        )
+async def test_key_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     adapter_piece = htypes.list_adapter.key_fn_list_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        system_fn=mosaic.put(system_fn),
+        system_fn=mosaic.put(sample_list_model_fn),
         key_field='id',
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
         )
@@ -132,11 +131,20 @@ async def test_key_fn_adapter(feed_factory, model, ctx):
 _sample_fn_is_called = threading.Event()
 
 
-def sample_remote_list_fn(piece):
+def sample_remote_list_model(piece):
     log.info("Sample remote list fn: %s", piece)
-    result = sample_list_fn(piece)
+    result = sample_list_model(piece)
     _sample_fn_is_called.set()
     return result
+
+
+@mark.fixture
+def sample_remote_list_model_fn():
+    return htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_remote_list_model),
+        ctx_params=('piece',),
+        service_params=(),
+        )
 
 
 def get_fn_called_flag():
@@ -149,6 +157,7 @@ def test_fn_adapter_with_remote_model(
         rpc_endpoint,
         rpc_call_factory,
         subprocess_rpc_server_running,
+        sample_remote_list_model_fn,
         ):
 
     identity = generate_rsa_identity(fast=True)
@@ -167,14 +176,9 @@ def test_fn_adapter_with_remote_model(
             piece=model,
             identity=identity,
             )
-        system_fn = htypes.system_fn.ctx_fn(
-            function=pyobj_creg.actor_to_ref(sample_remote_list_fn),
-            ctx_params=('piece',),
-            service_params=(),
-            )
         adapter_piece = htypes.list_adapter.index_fn_list_adapter(
             item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-            system_fn=mosaic.put(system_fn),
+            system_fn=mosaic.put(sample_remote_list_model_fn),
             )
         adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
 
@@ -200,6 +204,7 @@ def test_fn_adapter_with_remote_context(
         rpc_endpoint,
         rpc_call_factory,
         subprocess_rpc_server_running,
+        sample_remote_list_model_fn,
         ):
 
     identity = generate_rsa_identity(fast=True)
@@ -215,14 +220,9 @@ def test_fn_adapter_with_remote_context(
             identity=identity,
             remote_peer=process.peer,
             )
-        system_fn = htypes.system_fn.ctx_fn(
-            function=pyobj_creg.actor_to_ref(sample_remote_list_fn),
-            ctx_params=('piece',),
-            service_params=(),
-            )
         adapter_piece = htypes.list_adapter.index_fn_list_adapter(
             item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-            system_fn=mosaic.put(system_fn),
+            system_fn=mosaic.put(sample_remote_list_model_fn),
             )
         adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
 
@@ -242,13 +242,8 @@ def test_fn_adapter_with_remote_context(
         assert get_fn_called_flag_call()
 
 
-def test_index_list_ui_type_layout():
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_list_fn),
-        ctx_params=(),
-        service_params=(),
-        )
-    system_fn_ref = mosaic.put(system_fn)
+def test_index_list_ui_type_layout(sample_list_model_fn):
+    system_fn_ref = mosaic.put(sample_list_model_fn)
     piece = htypes.model.list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
         )
@@ -256,13 +251,8 @@ def test_index_list_ui_type_layout():
     assert isinstance(layout, htypes.list.view)
 
 
-def test_key_list_ui_type_layout():
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_list_fn),
-        ctx_params=(),
-        service_params=(),
-        )
-    system_fn_ref = mosaic.put(system_fn)
+def test_key_list_ui_type_layout(sample_list_model_fn):
+    system_fn_ref = mosaic.put(sample_list_model_fn)
     piece = htypes.model.key_list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
         key_field='id',
