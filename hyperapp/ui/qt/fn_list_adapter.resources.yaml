@@ -11,6 +11,7 @@ import:
 - legacy_type.list:view
 - legacy_type.list_adapter:index_fn_list_adapter
 - legacy_type.list_adapter:key_fn_list_adapter
+- legacy_type.model:key_list_ui_t
 - legacy_type.model:list_ui_t
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
@@ -48,6 +49,7 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.index_fn_list_adapter: legacy_type.list_adapter:index_fn_list_adapter
+        htypes.list_adapter.key_fn_list_adapter: legacy_type.list_adapter:key_fn_list_adapter
         htypes.model.remote_model: legacy_type.model:remote_model
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -88,6 +90,42 @@ definitions:
       name: index_list_ui_type_layout_k
       base: null
       fields: {}
+  key_list_ui_type_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fn_list_adapter.module
+      attr_name: key_list_ui_type_layout
+  key_list_ui_type_layout.k:
+    type: key_list_ui_type_layout_k
+    value: {}
+  key_list_ui_type_layout.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: key_list_ui_type_layout
+      ctx_params:
+      - piece
+      - system_fn_ref
+      service_params: []
+  key_list_ui_type_layout.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: key_list_ui_type_layout.k
+      model_t: null
+      ui_t_t: legacy_type.model:key_list_ui_t
+      view_t: legacy_type.list:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: key_list_ui_type_layout.system-fn
+  key_list_ui_type_layout_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: fn_list_adapter
+      name: key_list_ui_type_layout_k
+      base: null
+      fields: {}
   ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -110,6 +148,12 @@ definitions:
       - feed_factory
       - column_visible_reg
       - peer_registry
+  ui_type_creg-model-key_list_ui_t.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.model:key_list_ui_t
+      function: key_list_ui_type_layout
+      service_params: []
   ui_type_creg-model-list_ui_t.actor-template:
     type: legacy_type.system:actor_template
     value:

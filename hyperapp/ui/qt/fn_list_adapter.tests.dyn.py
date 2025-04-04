@@ -254,3 +254,19 @@ def test_index_list_ui_type_layout():
         )
     layout = fn_list_adapter.index_list_ui_type_layout(piece, system_fn_ref)
     assert isinstance(layout, htypes.list.view)
+
+
+def test_key_list_ui_type_layout():
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_list_fn),
+        ctx_params=(),
+        service_params=(),
+        )
+    system_fn_ref = mosaic.put(system_fn)
+    piece = htypes.model.key_list_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
+        key_field='id',
+        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
+        )
+    layout = fn_list_adapter.key_list_ui_type_layout(piece, system_fn_ref)
+    assert isinstance(layout, htypes.list.view)

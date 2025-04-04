@@ -81,8 +81,10 @@ import:
 - ui.qt.fn_index_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
 - ui.qt.fn_index_tree_adapter:ui_type_creg-model-tree_ui_t.actor-template
 - ui.qt.fn_list_adapter:index_list_ui_type_layout.view-factory-template
+- ui.qt.fn_list_adapter:key_list_ui_type_layout.view-factory-template
 - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-template
 - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-template
+- ui.qt.fn_list_adapter:ui_type_creg-model-key_list_ui_t.actor-template
 - ui.qt.fn_list_adapter:ui_type_creg-model-list_ui_t.actor-template
 - ui.qt.form:form-view.view-template
 - ui.qt.label:label-view-set_label_text.command-cfg-item
@@ -372,6 +374,7 @@ definitions:
     value:
       items:
       - ui.qt.fn_index_tree_adapter:ui_type_creg-model-tree_ui_t.actor-template
+      - ui.qt.fn_list_adapter:ui_type_creg-model-key_list_ui_t.actor-template
       - ui.qt.fn_list_adapter:ui_type_creg-model-list_ui_t.actor-template
       - ui.record_adapter:ui_type_creg-model-record_ui_t.actor-template
   universal_ui_command_enumerator_reg:
@@ -396,6 +399,7 @@ definitions:
       items:
       - ui.qt.box_layout:wrap_box_layout.view-factory-template
       - ui.qt.fn_list_adapter:index_list_ui_type_layout.view-factory-template
+      - ui.qt.fn_list_adapter:key_list_ui_type_layout.view-factory-template
       - ui.qt.label:label_view.view-factory-template
       - ui.qt.line_edit:line_edit.view-factory-template
       - ui.qt.line_edit:line_view.view-factory-template
