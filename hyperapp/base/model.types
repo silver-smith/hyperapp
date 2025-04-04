@@ -10,6 +10,11 @@ remote_model = record:
 list_ui_t = record:
   item_t: ref
 
+key_list_ui_t = record:
+  item_t: ref
+  key_field: string
+  key_field_t: ref
+
 tree_ui_t = record:
   item_t: ref
 

@@ -18,10 +18,11 @@ from .code.model_ctr import ModelCtr
 
 class ModelProbe:
 
-    def __init__(self, system_probe, ctr_collector, module_name, fn):
+    def __init__(self, system_probe, ctr_collector, module_name, key, fn):
         self._system = system_probe
         self._ctr_collector = ctr_collector
         self._module_name = module_name
+        self._key_field = key
         self._fn = fn
         system_probe.add_global(self)
 
@@ -88,9 +89,23 @@ class ModelProbe:
             )
 
     def _make_list_ui_t(self, result_t):
-        return htypes.model.list_ui_t(
-            item_t=pyobj_creg.actor_to_ref(result_t.element_t),
-            )
+        item_t = result_t.element_t
+        item_t_ref = pyobj_creg.actor_to_ref(item_t)
+        if self._key_field:
+            try:
+                key_field_t = item_t.fields[self._key_field]
+            except KeyError:
+                item_fields = ", ".join(item_t.fields)
+                raise RuntimeError(f"Key field {self._key_field!r} is not among item fields: {item_fields}")
+            return htypes.model.key_list_ui_t(
+                item_t=item_t_ref,
+                key_field=self._key_field,
+                key_field_t=pyobj_creg.actor_to_ref(key_field_t),
+                )
+        else:
+            return htypes.model.list_ui_t(
+                item_t=item_t_ref,
+                )
 
     def _make_record_ui_t(self, result_t):
         return htypes.model.record_ui_t(
@@ -107,7 +122,32 @@ class ModelProbe:
         raise RuntimeError(f"{self._fn}: {error_msg}")
 
 
-def model_marker(fn, module_name, system, ctr_collector):
-    check_not_classmethod(fn)
-    check_is_function(fn)
-    return ModelProbe(system, ctr_collector, module_name, fn)
+class ModelDecorator:
+
+    def __init__(self, system, ctr_collector, module_name, key):
+        self._system = system
+        self._ctr_collector = ctr_collector
+        self._module_name = module_name
+        self._key = key
+
+    def __call__(self, fn):
+        check_not_classmethod(fn)
+        check_is_function(fn)
+        return ModelProbe(self._system, self._ctr_collector, self._module_name, self._key, fn)
+
+
+class ModelMarker:
+
+    def __init__(self, module_name, system, ctr_collector):
+        self._module_name = module_name
+        self._system = system
+        self._ctr_collector = ctr_collector
+
+    def __call__(self, fn=None, *, key=None):
+        if fn is None:
+            return ModelDecorator(self._system, self._ctr_collector, self._module_name, key)
+        if key is not None:
+            raise RuntimeError(f"Model decorator does not support positional arguments")
+        check_not_classmethod(fn)
+        check_is_function(fn)
+        return ModelProbe(self._system, self._ctr_collector, self._module_name, key=None, fn=fn)

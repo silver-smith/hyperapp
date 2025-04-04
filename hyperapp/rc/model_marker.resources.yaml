@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.marker:marker_template
+- legacy_type.model:key_list_ui_t
 - legacy_type.model:list_ui_t
 - legacy_type.model:record_ui_t
 - legacy_type.model:tree_ui_t
@@ -18,6 +19,7 @@ definitions:
       module_name: model_marker
       file_name: model_marker.dyn.py
       import_list:
+        htypes.model.key_list_ui_t: legacy_type.model:key_list_ui_t
         htypes.model.list_ui_t: legacy_type.model:list_ui_t
         htypes.model.record_ui_t: legacy_type.model:record_ui_t
         htypes.model.tree_ui_t: legacy_type.model:tree_ui_t
@@ -26,17 +28,17 @@ definitions:
         code.marker_utils: rc.marker_utils:marker_utils.module
         code.model_ctr: rc.model_ctr:model_ctr.module
 
-  model_marker:
+  ModelMarker:
     type: legacy_type.builtin:attribute
     value:
       object: model_marker.module
-      attr_name: model_marker
+      attr_name: ModelMarker
 
   model.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: model
-      function: model_marker
+      function: ModelMarker
       service_params:
       - system
       - ctr_collector
