@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.builtin:ref
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -23,6 +24,7 @@ import:
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree_adapter:adapter
 - legacy_type.list_as_tree_adapter:layer
+- legacy_type.model:key_list_ui_t
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
@@ -75,14 +77,16 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.list_as_tree:opener_command_item
-  list_as_tree-opener_commands.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  list_as_tree-opener_commands.key-list-ui-t:
+    type: legacy_type.model:key_list_ui_t
     value:
       item_t: legacy_type.list_as_tree:opener_command_item
+      key_field: command
+      key_field_t: legacy_type.builtin:ref
   list_as_tree-opener_commands.model:
     type: legacy_type.model:model
     value:
-      ui_t: list_as_tree-opener_commands.list-ui-t
+      ui_t: list_as_tree-opener_commands.key-list-ui-t
       system_fn: list_as_tree-opener_commands.system-fn
   list_as_tree-opener_commands.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -286,14 +290,12 @@ definitions:
       function: toggle_open_command
       ctx_params:
       - piece
-      - current_idx
-      - current_item
+      - current_command
       - ctx
       service_params:
       - format
       - feed_factory
       - command_creg
-      - get_model_commands
       - model_layout_reg
   toggle_open_command.model-command:
     type: legacy_type.command:model_command

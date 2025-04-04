@@ -225,11 +225,7 @@ async def test_set_root_open_command(model_layout_reg, ctx, open_command_1, root
         layer_piece=mosaic.put(layer_piece),
         model_state=mosaic.put(model_state),
         )
-    current_item = htypes.list_as_tree.opener_command_item(
-        command=mosaic.put(open_command_1.piece),
-        name="<unused>",
-        is_opener=False,
-        )
+    current_command = mosaic.put(open_command_1.piece)
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(root_list_model_fn),
@@ -240,7 +236,7 @@ async def test_set_root_open_command(model_layout_reg, ctx, open_command_1, root
         adapter=mosaic.put(adapter_piece),
         )
     model_layout_reg.get.return_value = view
-    result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx)
+    result = await list_as_tree.toggle_open_command(piece, current_command, ctx)
     model_layout_reg.__setitem__.assert_called_once()
 
 
@@ -269,10 +265,6 @@ async def test_set_non_root_open_command(model_layout_reg, ctx, open_command_1, 
         adapter=mosaic.put(adapter_piece),
         )
     model_layout_reg.get.return_value = view
-    current_item = htypes.list_as_tree.opener_command_item(
-        command=mosaic.put(open_command_1.piece),
-        name="<unused>",
-        is_opener=False,
-        )
-    result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx)
+    current_command = mosaic.put(open_command_1.piece)
+    result = await list_as_tree.toggle_open_command(piece, current_command, ctx)
     model_layout_reg.__setitem__.assert_called_once()

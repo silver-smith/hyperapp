@@ -8,7 +8,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.list_diff import ListDiff
+from .code.list_diff import KeyListDiff
 from .code.command import command_text
 from .code.fn_list_adapter import FnListAdapter
 from .code.list_as_tree_adapter import ListAsTreeAdapter
@@ -172,7 +172,7 @@ def _type_key(model_t):
         )
 
 
-@mark.model
+@mark.model(key='command')
 def opener_command_list(piece, ctx, format, command_creg, get_model_commands, model_layout_reg):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
@@ -192,9 +192,7 @@ def opener_command_list(piece, ctx, format, command_creg, get_model_commands, mo
 
 
 @mark.command
-async def toggle_open_command(
-        piece, current_idx, current_item, ctx,
-        format, feed_factory, command_creg, get_model_commands, model_layout_reg):
+async def toggle_open_command(piece, current_command, ctx, format, feed_factory, command_creg, model_layout_reg):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
     model_state = web.summon(piece.model_state)
@@ -207,39 +205,27 @@ async def toggle_open_command(
     if not isinstance(adapter, htypes.list_as_tree_adapter.adapter):
         log.info("Adapter for %s is not a list-to-tree: %s", model_t, adapter)
         return
+
     prev_command = _get_current_command(command_creg, root_piece_t, layer_piece_t, adapter)
     command_ctx = model_command_ctx(ctx, layer_piece, model_state)
-    command_list = get_model_commands(layer_piece_t, command_ctx)
-    idx_command_by_d = {
-        cmd.d: (idx, cmd) for idx, cmd
-        in enumerate(command_list)
-        }
-    current_command = command_creg.invite(current_item.command)
-    if current_command and prev_command and current_command.d == prev_command.d:
+    current_cmd = command_creg.invite(current_command)
+    if current_cmd and prev_command and current_cmd.d == prev_command.d:
         new_command = None
     else:
-        new_command = current_command
+        new_command = current_cmd
+
     new_adapter = _amend_adapter(root_piece_t, layer_piece_t, adapter, new_command)
     new_view = htypes.tree.view(
         adapter=mosaic.put(new_adapter),
         )
     model_layout_reg[root_piece_k] = new_view
-    feed = feed_factory(piece)
 
+    feed = feed_factory(piece)
     if prev_command:
-        try:
-            idx, prev_command = idx_command_by_d[prev_command.d]
-        except KeyError:
-            pass
-        else:
-            prev_item = _make_command_item(format, prev_command, is_opener=False)
-            await feed.send(ListDiff.Replace(idx, prev_item))
-    if current_command:
-        try:
-            idx, current_command = idx_command_by_d[current_command.d]
-        except KeyError:
-            pass
-        else:
-            assert idx == current_idx
-            item = _make_command_item(format, current_command, is_opener=new_command is not None)
-            await feed.send(ListDiff.Replace(current_idx, item))
+        key = mosaic.put(prev_command.piece)
+        prev_item = _make_command_item(format, prev_command, is_opener=False)
+        await feed.send(KeyListDiff.Replace(key, prev_item))
+    if current_cmd:
+        key = current_command
+        item = _make_command_item(format, current_cmd, is_opener=new_command is not None)
+        await feed.send(KeyListDiff.Replace(key, item))
