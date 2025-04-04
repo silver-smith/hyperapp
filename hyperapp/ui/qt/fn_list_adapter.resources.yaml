@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.list:view
 - legacy_type.list_adapter:index_fn_list_adapter
+- legacy_type.list_adapter:key_fn_list_adapter
 - legacy_type.model:list_ui_t
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
@@ -26,6 +27,16 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: FnIndexListAdapter
+      attr_name: from_piece
+  FnKeyListAdapter:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fn_list_adapter.module
+      attr_name: FnKeyListAdapter
+  FnKeyListAdapter.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FnKeyListAdapter
       attr_name: from_piece
   fn_list_adapter.module:
     type: legacy_type.builtin:python_module
@@ -82,6 +93,17 @@ definitions:
     value:
       t: legacy_type.list_adapter:index_fn_list_adapter
       function: FnIndexListAdapter.from_piece
+      service_params:
+      - system_fn_creg
+      - rpc_call_factory
+      - feed_factory
+      - column_visible_reg
+      - peer_registry
+  ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.list_adapter:key_fn_list_adapter
+      function: FnKeyListAdapter.from_piece
       service_params:
       - system_fn_creg
       - rpc_call_factory
