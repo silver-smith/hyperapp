@@ -10,7 +10,7 @@ from .services import (
     deduce_t,
     pyobj_creg,
     )
-from .code.list_diff import ListDiff
+from .code.list_diff import IndexListDiff, KeyListDiff
 
 log = logging.getLogger(__name__)
 
@@ -42,12 +42,27 @@ class IndexListAdapterMixin:
             current_item=current_item,
             )
 
+    def _populate(self):
+        self._populate_item_list()
+
+    def _apply_diff(self, diff):
+        if isinstance(diff, IndexListDiff.Append):
+            self._item_list.append(diff.item)
+        elif isinstance(diff, IndexListDiff.Replace):
+            self._item_list[diff.idx] = diff.item
+        elif isinstance(diff, IndexListDiff.Remove):
+            del self._item_list[diff.idx]
+        else:
+            raise NotImplementedError(diff)
+        return diff
+
 
 class KeyListAdapterMixin:
 
     def __init__(self, key_field, key_field_t):
         self._key_field = key_field
         self._key_field_t = key_field_t
+        self._key_to_idx = {}
 
     @cached_property
     def model_state_t(self):
@@ -60,6 +75,30 @@ class KeyListAdapterMixin:
             current_item=current_item,
             **{f'current_{self._key_field}': current_key},
             )
+
+    def _populate(self):
+        self._populate_item_list()
+        for idx, item in enumerate(self._item_list):
+            key = getattr(item, self._key_field)
+            self._key_to_idx[key] = idx
+
+    def _apply_diff(self, diff):
+        if isinstance(diff, KeyListDiff.Append):
+            key = getattr(diff.item, self._key_field)
+            self._item_list.append(diff.item)
+            self._key_to_idx[key] = len(self._item_list) - 1
+            return IndexListDiff.Append(diff.item)
+        if isinstance(diff, KeyListDiff.Replace):
+            key = getattr(diff.item, self._key_field)
+            idx = self._key_to_idx[key]
+            self._item_list[idx] = diff.item
+            return IndexListDiff.Replace(idx, diff.item)
+        if isinstance(diff, KeyListDiff.Remove):
+            key = getattr(self._item_list[diff_idx], self._key_field)
+            idx = self._key_to_idx[key]
+            del self._item_list[idx]
+            return IndexListDiff.Remove(idx)
+        raise NotImplementedError(diff)
 
 
 class FnListAdapterBase(metaclass=abc.ABCMeta):
@@ -116,16 +155,9 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         log.info("List adapter: process diff: %s", diff)
         if self._item_list is None:
             self._populate()
-        if isinstance(diff, ListDiff.Append):
-            self._item_list.append(diff.item)
-        elif isinstance(diff, ListDiff.Replace):
-            self._item_list[diff.idx] = diff.item
-        elif isinstance(diff, ListDiff.Remove):
-            del self._item_list[diff.idx]
-        else:
-            raise NotImplementedError(diff)
+        visual_diff = self._apply_diff(diff)
         for subscriber in self._subscribers:
-            subscriber.process_diff(diff)
+            subscriber.process_diff(visual_diff)
 
     @property
     def item_t(self):
@@ -138,7 +170,7 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._populate()
         return self._item_list
 
-    def _populate(self):
+    def _populate_item_list(self):
         additional_kw = {
             'model': self._model,
             'piece': self._model,

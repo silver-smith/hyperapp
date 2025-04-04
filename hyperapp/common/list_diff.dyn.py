@@ -15,7 +15,7 @@ class ListDiffInsertIdx:
         self.item = item
 
     def __repr__(self):
-        return f"<ListDiffInsert: @#{self.idx}: {self.item}>"
+        return f"<ListDiffInsertIdx: @#{self.idx}: {self.item}>"
 
     def apply(self, value):
         assert type(value) in {list, tuple}, repr(value)
@@ -30,13 +30,23 @@ class ListDiffInsertIdx:
             ]
 
 
+class ListDiffInsertKey:
+
+    def __init__(self, key, item):
+        self.key = key
+        self.item = item
+
+    def __repr__(self):
+        return f"<ListDiffInsertKey: @#{self.key}: {self.item}>"
+
+
 class ListDiffRemoveIdx:
 
     def __init__(self, idx):
         self.idx = idx
 
     def __repr__(self):
-        return f"<ListDiffRemove: @#{self.idx}>"
+        return f"<ListDiffRemoveIdx: @#{self.idx}>"
 
     def apply(self, value):
         assert type(value) in {list, tuple}, repr(value)
@@ -48,6 +58,15 @@ class ListDiffRemoveIdx:
             *container[:self.idx],
             *container[self.idx + 1:],
             ]
+
+
+class ListDiffRemoveKey:
+
+    def __init__(self, key):
+        self.key = key
+
+    def __repr__(self):
+        return f"<ListDiffRemoveKey: @#{self.key}>"
 
 
 class ListDiffAppend:
@@ -66,10 +85,20 @@ class ListDiffReplaceIdx:
         self.item = item
 
     def __repr__(self):
-        return f"<ListDiffReplace: @#{self.idx}: {self.item}>"
+        return f"<ListDiffReplaceIdx: @#{self.idx}: {self.item}>"
 
     def replace(self, container, item):
         return replace(container, self.idx, item)
+
+
+class ListDiffReplaceKey:
+
+    def __init__(self, key, item):
+        self.key = key
+        self.item = item
+
+    def __repr__(self):
+        return f"<ListDiffReplaceKey: @#{self.key}: {self.item}>"
 
 
 class ListDiffModifyIdx:
@@ -79,10 +108,20 @@ class ListDiffModifyIdx:
         self.item_diff = item_diff
 
     def __repr__(self):
-        return f"<ListDiffModify: @#{self.idx}: {self.item_diff}>"
+        return f"<ListDiffModifyIdx: @#{self.idx}: {self.item_diff}>"
 
     def replace(self, container, item):
         return replace(container, self.idx, item)
+
+
+class ListDiffModifyKey:
+
+    def __init__(self, key, item_diff):
+        self.key = key
+        self.item_diff = item_diff
+
+    def __repr__(self):
+        return f"<ListDiffModifyKey: @#{self.key}: {self.item_diff}>"
 
 
 class IndexListDiff:
@@ -91,3 +130,11 @@ class IndexListDiff:
     Remove = ListDiffRemoveIdx
     Replace = ListDiffReplaceIdx
     Modify = ListDiffModifyIdx
+
+
+class KeyListDiff:
+    Insert = ListDiffInsertKey
+    Append = ListDiffAppend
+    Remove = ListDiffRemoveKey
+    Replace = ListDiffReplaceKey
+    Modify = ListDiffModifyKey

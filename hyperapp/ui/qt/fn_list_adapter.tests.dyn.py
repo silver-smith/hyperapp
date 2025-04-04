@@ -10,7 +10,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.list_diff import IndexListDiff
+from .code.list_diff import IndexListDiff, KeyListDiff
 from .fixtures import feed_fixtures
 from .tested.code import fn_list_adapter
 
@@ -101,6 +101,11 @@ async def test_index_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     assert diff.item.id == 44
 
 
+async def _send_replace_diff(feed):
+    item = htypes.list_adapter_tests.item(22, "Another second", "New second")
+    await feed.send(KeyListDiff.Replace(22, item))
+
+
 async def test_key_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     adapter_piece = htypes.list_adapter.key_fn_list_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
@@ -120,12 +125,13 @@ async def test_key_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     subscriber = Subscriber(queue)
     adapter.subscribe(subscriber)
 
-    # feed = feed_factory(model)
-    # asyncio.create_task(_send_append_diff(feed))
+    feed = feed_factory(model)
+    asyncio.create_task(_send_replace_diff(feed))
 
-    # diff = await asyncio.wait_for(queue.get(), timeout=5)
-    # assert isinstance(diff, IndexListDiff.Append), repr(diff)
-    # assert diff.item.id == 44
+    diff = await asyncio.wait_for(queue.get(), timeout=5)
+    assert isinstance(diff, IndexListDiff.Replace), repr(diff)
+    assert diff.item.id == 22
+    assert diff.idx == 1
 
 
 _sample_fn_is_called = threading.Event()
