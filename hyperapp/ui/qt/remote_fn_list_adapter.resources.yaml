@@ -9,15 +9,15 @@ import:
 - legacy_type.system:actor_template
 - ui.qt.list_adapter:list_adapter.module
 definitions:
-  RemoteFnListAdapter:
+  RemoteFnIndexListAdapter:
     type: legacy_type.builtin:attribute
     value:
       object: remote_fn_list_adapter.module
-      attr_name: RemoteFnListAdapter
-  RemoteFnListAdapter.from_piece:
+      attr_name: RemoteFnIndexListAdapter
+  RemoteFnIndexListAdapter.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: RemoteFnListAdapter
+      object: RemoteFnIndexListAdapter
       attr_name: from_piece
   remote_fn_list_adapter.module:
     type: legacy_type.builtin:python_module
@@ -33,7 +33,7 @@ definitions:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.list_adapter:remote_fn_list_adapter
-      function: RemoteFnListAdapter.from_piece
+      function: RemoteFnIndexListAdapter.from_piece
       service_params:
       - system_fn_creg
       - peer_registry

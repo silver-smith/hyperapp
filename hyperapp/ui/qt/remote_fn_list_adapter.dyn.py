@@ -5,12 +5,12 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .code.list_adapter import FnListAdapterBase
+from .code.list_adapter import IndexListAdapterMixin, FnListAdapterBase
 
 log = logging.getLogger(__name__)
 
 
-class RemoteFnListAdapter(FnListAdapterBase):
+class RemoteFnIndexListAdapter(FnListAdapterBase, IndexListAdapterMixin):
 
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.list_adapter.remote_fn_list_adapter)
