@@ -19,7 +19,7 @@ import:
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.list:view
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 definitions:
@@ -42,14 +42,14 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.column_list:item
-  column_list-view.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  column_list-view.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.column_list:item
   column_list-view.model:
     type: legacy_type.model:model
     value:
-      ui_t: column_list-view.list-ui-t
+      ui_t: column_list-view.index-list-ui-t
       system_fn: column_list-view.system-fn
   column_list-view.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

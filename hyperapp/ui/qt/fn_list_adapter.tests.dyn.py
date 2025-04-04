@@ -250,7 +250,7 @@ def test_fn_adapter_with_remote_context(
 
 def test_index_list_ui_type_layout(sample_list_model_fn):
     system_fn_ref = mosaic.put(sample_list_model_fn)
-    piece = htypes.model.list_ui_t(
+    piece = htypes.model.index_list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
         )
     layout = fn_list_adapter.index_list_ui_type_layout(piece, system_fn_ref)

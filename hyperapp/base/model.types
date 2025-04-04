@@ -7,7 +7,7 @@ remote_model = record:
   remote_peer: ref
 
 
-list_ui_t = record:
+index_list_ui_t = record:
   item_t: ref
 
 key_list_ui_t = record:

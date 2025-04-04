@@ -93,7 +93,7 @@ def model_command_reg_config(open_command_1, open_command_2):
 
 def test_ui_type_layout(root_list_model_fn):
     system_fn_ref = mosaic.put(root_list_model_fn)
-    piece = htypes.model.list_ui_t(
+    piece = htypes.model.index_list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
         )
     layout = list_as_tree.list_as_tree_ui_type_layout(piece, system_fn_ref)

@@ -14,7 +14,7 @@ import:
 - legacy_type.lcs_layer:layer
 - legacy_type.lcs_layer:model
 - legacy_type.lcs_view:view
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.selector:template
 - legacy_type.system_fn:ctx_fn
@@ -52,14 +52,14 @@ definitions:
       - piece
       - current_item
       service_params: []
-  lcs_layer-model.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  lcs_layer-model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.lcs_layer:item
   lcs_layer-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: lcs_layer-model.list-ui-t
+      ui_t: lcs_layer-model.index-list-ui-t
       system_fn: lcs_layer-model.system-fn
   lcs_layer-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

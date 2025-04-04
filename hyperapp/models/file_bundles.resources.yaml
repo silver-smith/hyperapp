@@ -12,7 +12,7 @@ import:
 - legacy_type.file_bundles:open_d
 - legacy_type.file_bundles:open_file_bundle_list_d
 - legacy_type.file_bundles:view
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 definitions:
@@ -26,14 +26,14 @@ definitions:
     value:
       t: legacy_type.file_bundles:view
       command: open.model-command
-  file_bundles-view.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  file_bundles-view.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.file_bundles:item
   file_bundles-view.model:
     type: legacy_type.model:model
     value:
-      ui_t: file_bundles-view.list-ui-t
+      ui_t: file_bundles-view.index-list-ui-t
       system_fn: file_bundles-view.system-fn
   file_bundles-view.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

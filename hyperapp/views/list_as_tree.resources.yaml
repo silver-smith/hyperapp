@@ -24,8 +24,8 @@ import:
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree_adapter:adapter
 - legacy_type.list_as_tree_adapter:layer
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:key_list_ui_t
-- legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tree:view
@@ -41,14 +41,14 @@ definitions:
     value:
       t: legacy_type.list:view
       command: switch_list_to_tree.ui-command
-  list_as_tree-layer_list.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  list_as_tree-layer_list.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.list_as_tree:layer_list_item
   list_as_tree-layer_list.model:
     type: legacy_type.model:model
     value:
-      ui_t: list_as_tree-layer_list.list-ui-t
+      ui_t: list_as_tree-layer_list.index-list-ui-t
       system_fn: list_as_tree-layer_list.system-fn
   list_as_tree-layer_list.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -156,7 +156,7 @@ definitions:
     value:
       k: list_as_tree_ui_type_layout.k
       model_t: null
-      ui_t_t: legacy_type.model:list_ui_t
+      ui_t_t: legacy_type.model:index_list_ui_t
       view_t: legacy_type.tree:view
       is_wrapper: false
       view_ctx_params:

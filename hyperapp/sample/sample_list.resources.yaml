@@ -9,7 +9,7 @@ import:
 - legacy_type.command:model_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.sample_list:feed_sample_list
 - legacy_type.sample_list:item
@@ -106,14 +106,14 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.sample_list:item
-  sample_list-feed_sample_list.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  sample_list-feed_sample_list.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.sample_list:item
   sample_list-feed_sample_list.model:
     type: legacy_type.model:model
     value:
-      ui_t: sample_list-feed_sample_list.list-ui-t
+      ui_t: sample_list-feed_sample_list.index-list-ui-t
       system_fn: sample_list-feed_sample_list.system-fn
   sample_list-feed_sample_list.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -128,14 +128,14 @@ definitions:
       - piece
       - feed
       service_params: []
-  sample_list-sample_list.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  sample_list-sample_list.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.sample_list:item
   sample_list-sample_list.model:
     type: legacy_type.model:model
     value:
-      ui_t: sample_list-sample_list.list-ui-t
+      ui_t: sample_list-sample_list.index-list-ui-t
       system_fn: sample_list-sample_list.system-fn
   sample_list-sample_list.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

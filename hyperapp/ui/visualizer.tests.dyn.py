@@ -66,7 +66,7 @@ def model_reg_config():
     return {
         htypes.visualizer_tests.sample_list: htypes.model.model(
             ui_t=mosaic.put(
-                htypes.model.list_ui_t(
+                htypes.model.index_list_ui_t(
                     item_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_list_item),
                     ),
                 ),
@@ -78,7 +78,7 @@ def model_reg_config():
 @mark.config_fixture('ui_type_creg')
 def ui_type_creg_config():
     return {
-        htypes.model.list_ui_t: index_list_ui_type_layout,
+        htypes.model.index_list_ui_t: index_list_ui_type_layout,
         }
 
 

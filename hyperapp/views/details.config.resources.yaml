@@ -1,7 +1,7 @@
 import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:record_mt
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.system_fn:ctx_fn
@@ -75,6 +75,6 @@ definitions:
     value:
       k: details.k
       model_t: null
-      ui_t_t: legacy_type.model:list_ui_t
+      ui_t_t: legacy_type.model:index_list_ui_t
       list_fn: details_command_list.system-fn
       get_fn: details_get.system-fn

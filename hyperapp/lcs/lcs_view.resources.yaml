@@ -20,7 +20,7 @@ import:
 - legacy_type.lcs_view:lcs_open_piece_d
 - legacy_type.lcs_view:lcs_remove_d
 - legacy_type.lcs_view:view
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 - models.data_browser:data_browser.module
@@ -132,14 +132,14 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: null
-  lcs_view-view.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  lcs_view-view.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.lcs_view:item
   lcs_view-view.model:
     type: legacy_type.model:model
     value:
-      ui_t: lcs_view-view.list-ui-t
+      ui_t: lcs_view-view.index-list-ui-t
       system_fn: lcs_view-view.system-fn
   lcs_view-view.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

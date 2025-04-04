@@ -73,10 +73,10 @@ def model_reg_config():
         )
     item_t_2 = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.item_2)
     item_t_3 = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.item_3)
-    ui_t_2 = htypes.model.list_ui_t(
+    ui_t_2 = htypes.model.index_list_ui_t(
         item_t=mosaic.put(item_t_2),
         )
-    ui_t_3 = htypes.model.list_ui_t(
+    ui_t_3 = htypes.model.index_list_ui_t(
         item_t=mosaic.put(item_t_3),
         )
     return {

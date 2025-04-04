@@ -11,7 +11,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command_list_model:item
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model_commands:model
 - legacy_type.system_fn:ctx_fn
@@ -28,14 +28,14 @@ definitions:
     value:
       t: legacy_type.model_commands:model
       command: run_command.model-command
-  model_commands-model.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  model_commands-model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.command_list_model:item
   model_commands-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: model_commands-model.list-ui-t
+      ui_t: model_commands-model.index-list-ui-t
       system_fn: model_commands-model.system-fn
   model_commands-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

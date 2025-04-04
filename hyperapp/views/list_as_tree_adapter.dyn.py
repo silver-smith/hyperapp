@@ -168,7 +168,7 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
         except KeyError:
             log.info("List-to-tree adapter: Model for %s is not available", piece_t)
             return None
-        if not isinstance(ui_t, htypes.model.list_ui_t):
+        if not isinstance(ui_t, htypes.model.index_list_ui_t):
             log.info("List-to-tree adapter: Model for %s is not a list", piece_t)
             return None
         try:

@@ -22,7 +22,7 @@ import:
 - legacy_type.data_browser:ref_list_item
 - legacy_type.data_browser:ref_list_open_d
 - legacy_type.data_browser:ref_list_view
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model:record_ui_t
 - legacy_type.system:actor_template
@@ -77,14 +77,14 @@ definitions:
     value:
       t: legacy_type.data_browser:list_view
       command: list_open.model-command
-  data_browser-list_view.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  data_browser-list_view.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.data_browser:list_item
   data_browser-list_view.model:
     type: legacy_type.model:model
     value:
-      ui_t: data_browser-list_view.list-ui-t
+      ui_t: data_browser-list_view.index-list-ui-t
       system_fn: data_browser-list_view.system-fn
   data_browser-list_view.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -124,14 +124,14 @@ definitions:
     value:
       t: legacy_type.data_browser:record_view
       command: record_open.model-command
-  data_browser-record_view.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  data_browser-record_view.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.data_browser:record_item
   data_browser-record_view.model:
     type: legacy_type.model:model
     value:
-      ui_t: data_browser-record_view.list-ui-t
+      ui_t: data_browser-record_view.index-list-ui-t
       system_fn: data_browser-record_view.system-fn
   data_browser-record_view.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -150,14 +150,14 @@ definitions:
     value:
       t: legacy_type.data_browser:ref_list_view
       command: ref_list_open.model-command
-  data_browser-ref_list_view.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  data_browser-ref_list_view.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.data_browser:ref_list_item
   data_browser-ref_list_view.model:
     type: legacy_type.model:model
     value:
-      ui_t: data_browser-ref_list_view.list-ui-t
+      ui_t: data_browser-ref_list_view.index-list-ui-t
       system_fn: data_browser-ref_list_view.system-fn
   data_browser-ref_list_view.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

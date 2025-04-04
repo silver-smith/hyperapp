@@ -103,7 +103,7 @@ class ModelProbe:
                 key_field_t=pyobj_creg.actor_to_ref(key_field_t),
                 )
         else:
-            return htypes.model.list_ui_t(
+            return htypes.model.index_list_ui_t(
                 item_t=item_t_ref,
                 )
 

@@ -9,7 +9,7 @@ import:
 - legacy_type.command:model_command
 - legacy_type.config_service_list:item
 - legacy_type.config_service_list:model
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 definitions:
@@ -18,14 +18,14 @@ definitions:
     value:
       object: config_service_list.module
       attr_name: config_service_list
-  config_service_list-model.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  config_service_list-model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.config_service_list:item
   config_service_list-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: config_service_list-model.list-ui-t
+      ui_t: config_service_list-model.index-list-ui-t
       system_fn: config_service_list-model.system-fn
   config_service_list-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

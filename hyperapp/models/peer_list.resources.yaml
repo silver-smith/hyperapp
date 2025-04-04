@@ -20,7 +20,7 @@ import:
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.global_commands:command_arg
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model:remote_model
 - legacy_type.model_list:model_arg
@@ -183,14 +183,14 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: null
-  peer_list-model.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  peer_list-model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.peer_list:item
   peer_list-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: peer_list-model.list-ui-t
+      ui_t: peer_list-model.index-list-ui-t
       system_fn: peer_list-model.system-fn
   peer_list-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

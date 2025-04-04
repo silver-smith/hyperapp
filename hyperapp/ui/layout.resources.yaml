@@ -23,7 +23,7 @@ import:
 - legacy_type.layout:set_escape_shortcut_d
 - legacy_type.layout:set_shortcut_d
 - legacy_type.layout:view
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model:tree_ui_t
 - legacy_type.system_fn:ctx_fn
@@ -98,14 +98,14 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.layout:command_item
-  layout-command_list.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  layout-command_list.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.layout:command_item
   layout-command_list.model:
     type: legacy_type.model:model
     value:
-      ui_t: layout-command_list.list-ui-t
+      ui_t: layout-command_list.index-list-ui-t
       system_fn: layout-command_list.system-fn
   layout-command_list.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

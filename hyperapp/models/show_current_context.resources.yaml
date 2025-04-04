@@ -7,7 +7,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.show_current_context:item
 - legacy_type.show_current_context:model
@@ -35,14 +35,14 @@ definitions:
     value:
       object: show_current_context.module
       attr_name: show_current_context
-  show_current_context-model.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  show_current_context-model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.show_current_context:item
   show_current_context-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: show_current_context-model.list-ui-t
+      ui_t: show_current_context-model.index-list-ui-t
       system_fn: show_current_context-model.system-fn
   show_current_context-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

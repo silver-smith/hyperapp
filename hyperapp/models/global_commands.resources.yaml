@@ -13,7 +13,7 @@ import:
 - legacy_type.command_list_model:item
 - legacy_type.global_commands:command_arg
 - legacy_type.global_commands:model
-- legacy_type.model:list_ui_t
+- legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.selector:template
 - legacy_type.system:actor_template
@@ -80,14 +80,14 @@ definitions:
     value:
       t: legacy_type.global_commands:model
       command: run_command.model-command
-  global_commands-model.list-ui-t:
-    type: legacy_type.model:list_ui_t
+  global_commands-model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
     value:
       item_t: legacy_type.command_list_model:item
   global_commands-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: global_commands-model.list-ui-t
+      ui_t: global_commands-model.index-list-ui-t
       system_fn: global_commands-model.system-fn
   global_commands-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
