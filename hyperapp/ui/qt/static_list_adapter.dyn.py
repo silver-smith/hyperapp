@@ -7,12 +7,12 @@ from .services import (
     deduce_t,
     )
 from .code.mark import mark
-from .code.list_adapter import ListAdapterBase
+from .code.list_adapter import IndexListAdapterMixin
 
 log = logging.getLogger(__name__)
 
 
-class StaticListAdapter(ListAdapterBase):
+class StaticListAdapter(IndexListAdapterMixin):
 
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.list_adapter.static_list_adapter)

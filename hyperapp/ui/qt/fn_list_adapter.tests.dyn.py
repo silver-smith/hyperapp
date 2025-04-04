@@ -59,11 +59,11 @@ def test_fn_adapter(ui_adapter_creg, model, ctx):
         ctx_params=('piece',),
         service_params=(),
         )
-    adapter_piece = htypes.list_adapter.fn_list_adapter(
+    adapter_piece = htypes.list_adapter.index_fn_list_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
         system_fn=mosaic.put(system_fn),
         )
-    adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
+    adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'text'
@@ -103,12 +103,12 @@ async def test_feed_fn_adapter(ui_adapter_creg, model, ctx):
         ctx_params=('piece', 'feed'),
         service_params=(),
         )
-    adapter_piece = htypes.list_adapter.fn_list_adapter(
+    adapter_piece = htypes.list_adapter.index_fn_list_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
         system_fn=mosaic.put(system_fn),
         )
 
-    adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
+    adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
     queue = asyncio.Queue()
     subscriber = Subscriber(queue)
     adapter.subscribe(subscriber)
@@ -170,11 +170,11 @@ def test_fn_adapter_with_remote_model(
             ctx_params=('piece',),
             service_params=(),
             )
-        adapter_piece = htypes.list_adapter.fn_list_adapter(
+        adapter_piece = htypes.list_adapter.index_fn_list_adapter(
             item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
             system_fn=mosaic.put(system_fn),
             )
-        adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
+        adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
 
         assert adapter.column_count() == 2
         assert adapter.column_title(0) == 'id'
@@ -219,11 +219,11 @@ def test_fn_adapter_with_remote_context(
             ctx_params=('piece',),
             service_params=(),
             )
-        adapter_piece = htypes.list_adapter.fn_list_adapter(
+        adapter_piece = htypes.list_adapter.index_fn_list_adapter(
             item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
             system_fn=mosaic.put(system_fn),
             )
-        adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
+        adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
 
         assert adapter.column_count() == 2
         assert adapter.column_title(0) == 'id'
@@ -241,7 +241,7 @@ def test_fn_adapter_with_remote_context(
         assert get_fn_called_flag_call()
 
 
-def test_list_ui_type_layout():
+def test_index_list_ui_type_layout():
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_list_fn),
         ctx_params=(),
@@ -251,5 +251,5 @@ def test_list_ui_type_layout():
     piece = htypes.model.list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
         )
-    layout = fn_list_adapter.list_ui_type_layout(piece, system_fn_ref)
+    layout = fn_list_adapter.index_list_ui_type_layout(piece, system_fn_ref)
     assert isinstance(layout, htypes.list.view)

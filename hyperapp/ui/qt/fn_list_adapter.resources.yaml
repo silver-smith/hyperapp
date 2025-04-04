@@ -9,7 +9,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.list:view
-- legacy_type.list_adapter:fn_list_adapter
+- legacy_type.list_adapter:index_fn_list_adapter
 - legacy_type.model:list_ui_t
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
@@ -17,15 +17,15 @@ import:
 - legacy_type.view_factory:template
 - ui.qt.list_adapter:list_adapter.module
 definitions:
-  FnListAdapter:
+  FnIndexListAdapter:
     type: legacy_type.builtin:attribute
     value:
       object: fn_list_adapter.module
-      attr_name: FnListAdapter
-  FnListAdapter.from_piece:
+      attr_name: FnIndexListAdapter
+  FnIndexListAdapter.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: FnListAdapter
+      object: FnIndexListAdapter
       attr_name: from_piece
   fn_list_adapter.module:
     type: legacy_type.builtin:python_module
@@ -36,31 +36,31 @@ definitions:
         code.list_adapter: ui.qt.list_adapter:list_adapter.module
         code.mark: base.mark:mark.module
         htypes.list.view: legacy_type.list:view
-        htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
+        htypes.list_adapter.index_fn_list_adapter: legacy_type.list_adapter:index_fn_list_adapter
         htypes.model.remote_model: legacy_type.model:remote_model
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  list_ui_type_layout:
+  index_list_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:
       object: fn_list_adapter.module
-      attr_name: list_ui_type_layout
-  list_ui_type_layout.k:
-    type: list_ui_type_layout_k
+      attr_name: index_list_ui_type_layout
+  index_list_ui_type_layout.k:
+    type: index_list_ui_type_layout_k
     value: {}
-  list_ui_type_layout.system-fn:
+  index_list_ui_type_layout.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: list_ui_type_layout
+      function: index_list_ui_type_layout
       ctx_params:
       - piece
       - system_fn_ref
       service_params: []
-  list_ui_type_layout.view-factory-template:
+  index_list_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: list_ui_type_layout.k
+      k: index_list_ui_type_layout.k
       model_t: null
       ui_t_t: legacy_type.model:list_ui_t
       view_t: legacy_type.list:view
@@ -69,19 +69,19 @@ definitions:
       - piece
       - model
       - ctx
-      system_fn: list_ui_type_layout.system-fn
-  list_ui_type_layout_k:
+      system_fn: index_list_ui_type_layout.system-fn
+  index_list_ui_type_layout_k:
     type: legacy_type.builtin:record_mt
     value:
       module_name: fn_list_adapter
-      name: list_ui_type_layout_k
+      name: index_list_ui_type_layout_k
       base: null
       fields: {}
-  ui_adapter_creg-list_adapter-fn_list_adapter.actor-template:
+  ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.list_adapter:fn_list_adapter
-      function: FnListAdapter.from_piece
+      t: legacy_type.list_adapter:index_fn_list_adapter
+      function: FnIndexListAdapter.from_piece
       service_params:
       - system_fn_creg
       - rpc_call_factory
@@ -92,5 +92,5 @@ definitions:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.model:list_ui_t
-      function: list_ui_type_layout
+      function: index_list_ui_type_layout
       service_params: []

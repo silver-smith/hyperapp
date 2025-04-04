@@ -14,7 +14,7 @@ from .services import (
 from .code.mark import mark
 from .code.system_fn import ContextFn
 from .code.model_command import model_command_ctx
-from .code.list_adapter import list_model_state_t
+from .code.list_adapter import index_list_model_state_t
 from .code.tree_adapter import IndexTreeAdapterBase
 
 log = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
         root_layer = cls._Layer(
             open_command=command_creg.invite_opt(piece.root_open_children_command),
             item_t=root_item_t,
-            model_state_t=list_model_state_t(root_item_t),
+            model_state_t=index_list_model_state_t(root_item_t),
             list_fn=system_fn_creg.invite(piece.root_function),
             )
         return cls(system_fn_creg, command_creg, get_model_commands, visualizer_reg, model, root_item_t, ctx, root_layer, layers)
@@ -178,7 +178,7 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
             layer = self._Layer()
             self._layers[piece_t] = layer
         layer.item_t = pyobj_creg.invite(ui_t.item_t)
-        layer.model_state_t = list_model_state_t(layer.item_t)
+        layer.model_state_t = index_list_model_state_t(layer.item_t)
         layer.list_fn = self._system_fn_creg.invite(fn_ref)
         self._parent_id_to_layer[parent_id] = layer
         self._id_to_piece[parent_id] = piece

@@ -10,7 +10,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.fn_list_adapter import list_ui_type_layout
+from .code.fn_list_adapter import index_list_ui_type_layout
 from .tested.code import visualizer as visualizer_module
 
 
@@ -78,7 +78,7 @@ def model_reg_config():
 @mark.config_fixture('ui_type_creg')
 def ui_type_creg_config():
     return {
-        htypes.model.list_ui_t: list_ui_type_layout,
+        htypes.model.list_ui_t: index_list_ui_type_layout,
         }
 
 

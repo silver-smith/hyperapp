@@ -15,21 +15,40 @@ from .code.list_diff import ListDiff
 log = logging.getLogger(__name__)
 
 
-def list_model_state_t(item_t):
+def index_list_model_state_t(item_t):
     return TRecord('ui_list', f'list_model_state_{item_t.module_name}_{item_t.name}', {
         'current_idx': tInt,
         'current_item': TOptional(item_t),
         })
 
 
-class ListAdapterBase:
+def key_list_model_state_t(item_t, key_field, key_field_t):
+    return TRecord('ui_list', f'list_model_state_{item_t.module_name}_{item_t.name}', {
+        'current_key': key_field_t,
+        f'current_{key_field}': key_field_t,
+        'current_item': TOptional(item_t),
+        })
+
+
+class IndexListAdapterMixin:
 
     @cached_property
     def model_state_t(self):
-        return list_model_state_t(self._item_t)
+        return index_list_model_state_t(self._item_t)
 
 
-class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
+class KeyListAdapterMixin:
+
+    def __init__(self, key_field, key_field_t):
+        self._key_field = key_field
+        self._key_field_t = key_field_t
+
+    @cached_property
+    def model_state_t(self):
+        return key_list_model_state_t(self._item_t, self._key_field, self._key_field_t)
+
+
+class FnListAdapterBase(metaclass=abc.ABCMeta):
 
     def __init__(self, feed_factory, column_visible_reg, model, item_t):
         self._column_visible_reg = column_visible_reg

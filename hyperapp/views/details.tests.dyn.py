@@ -7,7 +7,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
-from .code.list_adapter import list_model_state_t
+from .code.list_adapter import index_list_model_state_t
 from .tested.code import details
 
 
@@ -79,7 +79,7 @@ def model(model_t):
 
 @mark.fixture
 def model_state():
-    model_state_t = list_model_state_t(htypes.details_tests.item)
+    model_state_t = index_list_model_state_t(htypes.details_tests.item)
     return model_state_t(
         current_idx=0,
         current_item=htypes.details_tests.item(id=1),

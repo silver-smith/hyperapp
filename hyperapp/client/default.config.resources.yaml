@@ -16,7 +16,7 @@ import:
 - legacy_type.global_commands:command_arg
 - legacy_type.line_edit:readonly_view
 - legacy_type.list:view
-- legacy_type.list_adapter:fn_list_adapter
+- legacy_type.list_adapter:index_fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
 - legacy_type.list_as_tree_adapter:adapter
 - legacy_type.peer_list:item
@@ -98,8 +98,8 @@ definitions:
       command: model_command_1
       details_model: item-list_1
       details_view: list_view_2
-  fn_list_adapter_1:
-    type: legacy_type.list_adapter:fn_list_adapter
+  index_fn_list_adapter_1:
+    type: legacy_type.list_adapter:index_fn_list_adapter
     value:
       item_t: legacy_type.peer_list:item
       system_fn: models.peer_list:peer_list-model.system-fn
@@ -133,7 +133,7 @@ definitions:
   list_view_1:
     type: legacy_type.list:view
     value:
-      adapter: fn_list_adapter_1
+      adapter: index_fn_list_adapter_1
   list_view_2:
     type: legacy_type.list:view
     value:

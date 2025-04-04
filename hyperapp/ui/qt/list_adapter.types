@@ -1,9 +1,15 @@
 
 static_list_adapter = record
 
-fn_list_adapter = record:
+index_fn_list_adapter = record:
   item_t: ref
   system_fn: ref
+
+key_fn_list_adapter = record:
+  item_t: ref
+  system_fn: ref
+  key_field: string
+  key_field_t: ref
 
 remote_fn_list_adapter = record:
   item_t: ref

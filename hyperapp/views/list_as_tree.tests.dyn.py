@@ -11,7 +11,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
-from .code.list_adapter import list_model_state_t
+from .code.list_adapter import index_list_model_state_t
 from .code.list_as_tree_adapter import ListAsTreeAdapter
 from .code.tree import TreeView
 from .fixtures import feed_fixtures
@@ -113,7 +113,7 @@ def ctx(root_model):
 
 
 def test_switch_list_as_tree(ui_adapter_creg, ctx, root_list_model_fn, root_model):
-    piece = htypes.list_adapter.fn_list_adapter(
+    piece = htypes.list_adapter.index_fn_list_adapter(
         item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
         system_fn=mosaic.put(root_list_model_fn),
         )
@@ -186,7 +186,7 @@ def test_open_opener_commands(ui_adapter_creg, ctx, adapter_piece):
 
 @mark.fixture
 def model_state():
-    model_state_t = list_model_state_t(htypes.list_as_tree_tests.item_1)
+    model_state_t = index_list_model_state_t(htypes.list_as_tree_tests.item_1)
     return model_state_t(
         current_idx=0,
         current_item=htypes.list_as_tree_tests.item_1(123, "some", "Some item"),
