@@ -53,7 +53,21 @@ def ctx(model):
         )
 
 
-def test_fn_adapter(ui_adapter_creg, model, ctx):
+class Subscriber:
+
+    def __init__(self, queue):
+        self._queue = queue
+
+    def process_diff(self, diff):
+        self._queue.put_nowait(diff)
+
+
+async def _send_append_diff(feed):
+    item = htypes.list_adapter_tests.item(44, "Forth diff", "Sample item #4")
+    await feed.send(ListDiff.Append(item))
+
+
+async def test_fn_adapter(feed_factory, model, ctx):
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_list_fn),
         ctx_params=('piece',),
@@ -71,55 +85,12 @@ def test_fn_adapter(ui_adapter_creg, model, ctx):
     assert adapter.cell_data(1, 0) == 22
     assert adapter.cell_data(2, 1) == "third"
 
-
-class Subscriber:
-
-    def __init__(self, queue):
-        self._queue = queue
-
-    def process_diff(self, diff):
-        self._queue.put_nowait(diff)
-
-
-async def _send_diff(feed):
-    item = htypes.list_adapter_tests.item(44, "Forth diff", "Sample item #4")
-    await feed.send(ListDiff.Append(item))
-
-
-def sample_feed_list_fn(piece, feed):
-    log.info("Sample feed list fn: %s", piece)
-    assert isinstance(piece, htypes.list_adapter_tests.sample_list), repr(piece)
-    asyncio.create_task(_send_diff(feed))
-    return [
-        htypes.list_adapter_tests.item(11, "first", "First item"),
-        htypes.list_adapter_tests.item(22, "second", "Second item"),
-        htypes.list_adapter_tests.item(33, "third", "Third item"),
-        ]
-
-
-async def test_feed_fn_adapter(ui_adapter_creg, model, ctx):
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_feed_list_fn),
-        ctx_params=('piece', 'feed'),
-        service_params=(),
-        )
-    adapter_piece = htypes.list_adapter.index_fn_list_adapter(
-        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        system_fn=mosaic.put(system_fn),
-        )
-
-    adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
     queue = asyncio.Queue()
     subscriber = Subscriber(queue)
     adapter.subscribe(subscriber)
 
-    assert adapter.column_count() == 2
-    assert adapter.column_title(0) == 'id'
-    assert adapter.column_title(1) == 'text'
-
-    assert adapter.row_count() == 3
-    assert adapter.cell_data(1, 0) == 22
-    assert adapter.cell_data(2, 1) == "third"
+    feed = feed_factory(model)
+    asyncio.create_task(_send_append_diff(feed))
 
     diff = await asyncio.wait_for(queue.get(), timeout=5)
     assert isinstance(diff, ListDiff.Append), repr(diff)
@@ -146,7 +117,6 @@ def test_fn_adapter_with_remote_model(
         rpc_endpoint,
         rpc_call_factory,
         subprocess_rpc_server_running,
-        ui_adapter_creg,
         ):
 
     identity = generate_rsa_identity(fast=True)
@@ -198,7 +168,6 @@ def test_fn_adapter_with_remote_context(
         rpc_endpoint,
         rpc_call_factory,
         subprocess_rpc_server_running,
-        ui_adapter_creg,
         ):
 
     identity = generate_rsa_identity(fast=True)
