@@ -6,7 +6,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.list_diff import ListDiff
+from .code.list_diff import IndexListDiff
 from .code.directory import d_to_name
 from .code.key_input_dialog import run_key_input_dialog
 
@@ -57,7 +57,7 @@ async def set_shortcut(piece, current_idx, current_item, shortcut_reg, feed_fact
     log.info("Set shortcut for %s: %r", command_d, shortcut)
     new_item = _view_item(current_item, shortcut=shortcut)
     shortcut_reg[command_d] = shortcut
-    await feed.send(ListDiff.Replace(current_idx, new_item))
+    await feed.send(IndexListDiff.Replace(current_idx, new_item))
 
 
 @mark.crud.get

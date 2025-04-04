@@ -3,7 +3,7 @@ import logging
 
 from . import htypes
 from .code.mark import mark
-from .code.list_diff import ListDiff
+from .code.list_diff import IndexListDiff
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ async def open_sample_fn_list():
 async def _send_diff(feed):
     await asyncio.sleep(1)
     item = htypes.sample_list.item(4, "fourth","Sample item #4")
-    await feed.send(ListDiff.Append(item))
+    await feed.send(IndexListDiff.Append(item))
 
 
 @mark.model

@@ -5,7 +5,7 @@ from PySide6 import QtCore, QtWidgets
 
 from . import htypes
 from .code.mark import mark
-from .code.list_diff import ListDiff
+from .code.list_diff import IndexListDiff
 from .code.view import View
 
 log = logging.getLogger(__name__)
@@ -47,15 +47,15 @@ class _Model(QtCore.QAbstractTableModel):
 
     def process_diff(self, diff):
         log.info("List: process diff: %s", diff)
-        if isinstance(diff, ListDiff.Append):
+        if isinstance(diff, IndexListDiff.Append):
             row_count = self.adapter.row_count()
             self.beginInsertRows(QtCore.QModelIndex(), row_count - 1, row_count - 1)
             self.endInsertRows()
-        elif isinstance(diff, ListDiff.Replace):
+        elif isinstance(diff, IndexListDiff.Replace):
             left = self.createIndex(diff.idx, 0)
             right = self.createIndex(diff.idx, self.adapter.column_count() - 1)
             self.dataChanged.emit(left, right)
-        elif isinstance(diff, ListDiff.Remove):
+        elif isinstance(diff, IndexListDiff.Remove):
             self.beginRemoveRows(QtCore.QModelIndex(), diff.idx, diff.idx)
             self.endRemoveRows()
         else:

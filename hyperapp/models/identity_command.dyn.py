@@ -6,7 +6,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.list_diff import ListDiff
+from .code.list_diff import IndexListDiff
 from .code.directory import name_to_d
 from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase
 from .code.ui_model_command import UnboundUiModelCommand
@@ -69,4 +69,4 @@ async def add_identity_command(piece, lcs, ctx, feed_factory, ui_model_command_i
         )
     command_item = commands_item_list.add_custom_model_command(command_d, model_command_piece)
     new_item = command_item_to_model_item(shortcut_reg, lcs, command_item)
-    await feed.send(ListDiff.Append(new_item))
+    await feed.send(IndexListDiff.Append(new_item))

@@ -8,7 +8,7 @@ def replace(container, idx, item):
         ]
 
 
-class ListDiffInsert:
+class ListDiffInsertIdx:
 
     def __init__(self, idx, item):
         self.idx = idx
@@ -30,7 +30,7 @@ class ListDiffInsert:
             ]
 
 
-class ListDiffRemove:
+class ListDiffRemoveIdx:
 
     def __init__(self, idx):
         self.idx = idx
@@ -59,7 +59,7 @@ class ListDiffAppend:
         return f"<ListDiffAppend: {self.item}>"
 
 
-class ListDiffReplace:
+class ListDiffReplaceIdx:
 
     def __init__(self, idx, item):
         self.idx = idx
@@ -72,7 +72,7 @@ class ListDiffReplace:
         return replace(container, self.idx, item)
 
 
-class ListDiffModify:
+class ListDiffModifyIdx:
 
     def __init__(self, idx, item_diff):
         self.idx = idx
@@ -85,9 +85,9 @@ class ListDiffModify:
         return replace(container, self.idx, item)
 
 
-class ListDiff:
-    Insert = ListDiffInsert
+class IndexListDiff:
+    Insert = ListDiffInsertIdx
     Append = ListDiffAppend
-    Remove = ListDiffRemove
-    Replace = ListDiffReplace
-    Modify = ListDiffModify
+    Remove = ListDiffRemoveIdx
+    Replace = ListDiffReplaceIdx
+    Modify = ListDiffModifyIdx

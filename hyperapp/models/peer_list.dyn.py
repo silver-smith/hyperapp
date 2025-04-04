@@ -14,7 +14,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.list_diff import ListDiff
+from .code.list_diff import IndexListDiff
 
 log = logging.getLogger(__name__)
 
@@ -127,7 +127,7 @@ async def remove(piece, current_idx, current_item, feed_factory, peer_list_reg):
     log.info("Peer list: Remove host #%d: %r", current_idx, current_item.name)
     feed = feed_factory(piece)
     if peer_list_reg.remove(current_item.name):
-        await feed.send(ListDiff.Remove(current_idx))
+        await feed.send(IndexListDiff.Remove(current_idx))
 
 
 @mark.command(args=['model'])

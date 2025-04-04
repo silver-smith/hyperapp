@@ -6,7 +6,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .code.list_diff import ListDiff
+from .code.list_diff import IndexListDiff
 
 
 def _column_key(model_t, name):
@@ -42,7 +42,7 @@ async def toggle_visibility(piece, current_idx, current_item, feed_factory, colu
     prev_value = column_visible_reg.get(key, True)
     column_visible_reg[key] = not prev_value
     item = _item(column_visible_reg, model_t, current_item.name)
-    await feed.send(ListDiff.Replace(current_idx, item))
+    await feed.send(IndexListDiff.Replace(current_idx, item))
 
 
 @mark.ui_model_command(htypes.list.view)
