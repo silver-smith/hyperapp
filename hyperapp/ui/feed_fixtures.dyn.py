@@ -8,7 +8,7 @@ from .services import (
     deduce_t,
     )
 from .code.mark import mark
-from .code.list_diff import IndexListDiff
+from .code.list_diff import IndexListDiff, KeyListDiff
 from .code.tree_diff import TreeDiff
 from .code.feed_ctr import ListFeedCtr, IndexTreeFeedCtr
 
@@ -53,6 +53,9 @@ class FeedDiscoverer:
                 IndexListDiff.Insert,
                 IndexListDiff.Append,
                 IndexListDiff.Replace,
+                KeyListDiff.Insert,
+                KeyListDiff.Append,
+                KeyListDiff.Replace,
                 )):
             item_t = deduce_t(diff.item)
             ctr = ListFeedCtr(
@@ -66,7 +69,7 @@ class FeedDiscoverer:
             else:
                 self.ctr = ctr
                 log.info("Feed: Deduced feed type: %s [%s]", self.ctr, item_t)
-        elif isinstance(diff, IndexListDiff.Remove):
+        elif isinstance(diff, (IndexListDiff.Remove, KeyListDiff.Remove)):
             ctr = ListFeedCtr(
                 module_name=module_name,
                 t=self._piece_t,
@@ -81,6 +84,8 @@ class FeedDiscoverer:
         elif self.ctr and isinstance(diff, (
                 IndexListDiff.Remove,
                 IndexListDiff.Modify,
+                KeyListDiff.Remove,
+                KeyListDiff.Modify,
                 )):
             if not isinstance(self.ctr, htypes.feed.list_feed_ctr):
                 raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and list diff ({diff})")
