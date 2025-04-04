@@ -36,6 +36,12 @@ class IndexListAdapterMixin:
     def model_state_t(self):
         return index_list_model_state_t(self._item_t)
 
+    def make_model_state(self, current_idx, current_item):
+        return self.model_state_t(
+            current_idx=current_idx,
+            current_item=current_item,
+            )
+
 
 class KeyListAdapterMixin:
 
@@ -46,6 +52,14 @@ class KeyListAdapterMixin:
     @cached_property
     def model_state_t(self):
         return key_list_model_state_t(self._item_t, self._key_field, self._key_field_t)
+
+    def make_model_state(self, current_idx, current_item):
+        current_key = getattr(current_item, self._key_field)
+        return self.model_state_t(
+            current_key=current_key,
+            current_item=current_item,
+            **{f'current_{self._key_field}': current_key},
+            )
 
 
 class FnListAdapterBase(metaclass=abc.ABCMeta):

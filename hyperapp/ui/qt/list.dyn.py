@@ -155,7 +155,7 @@ class ListView(View):
             current_item = self._adapter.get_item(idx)
         else:
             current_item = None
-        return self._adapter.model_state_t(current_idx=idx, current_item=current_item)
+        return self._adapter.make_model_state(current_idx=idx, current_item=current_item)
 
     @property
     def adapter(self):
