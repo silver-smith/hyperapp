@@ -91,11 +91,13 @@ class KeyListAdapterMixin:
 
     def make_model_state(self, current_idx, current_item):
         current_key = getattr(current_item, self._key_field)
-        return self.model_state_t(
-            current_key=current_key,
-            current_item=current_item,
-            **{f'current_{self._key_field}': current_key},
-            )
+        kw = {
+            'current_item': current_item,
+            f'current_{self._key_field}': current_key,
+            }
+        # key_field may be 'key'. This should not cause 'multiple values for keyword argument' error.
+        kw['current_key'] = current_key
+        return self.model_state_t(**kw)
 
     def _populate(self):
         self._populate_item_list()
