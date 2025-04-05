@@ -140,6 +140,9 @@ class ListView(View):
     def init_widget(self, widget, focusable):
         widget.init_widget(focusable, on_state_changed=self._ctl_hook.parent_context_changed)
 
+    def make_widget_state(self, key):
+        return self._adapter.make_list_state(key)
+
     def widget_state(self, widget):
         idx = widget.currentIndex().row()
         return htypes.list.state(current_idx=idx)

@@ -32,6 +32,13 @@ def key_list_model_state_t(item_t, key_field, key_field_t):
 
 class IndexListAdapterMixin:
 
+    def make_list_state(self, key=None):
+        if key is None:
+            return None
+        if type(key) is not int:
+            raise RuntimeError(f"Index list key: Expected int, but got: {key!r}")
+        return htypes.list.state(current_idx=key)
+
     @cached_property
     def model_state_t(self):
         return index_list_model_state_t(self._item_t)
@@ -63,6 +70,20 @@ class KeyListAdapterMixin:
         self._key_field = key_field
         self._key_field_t = key_field_t
         self._key_to_idx = {}
+
+    def make_list_state(self, key=None):
+        if key is None:
+            return None
+        key_t = deduce_t(key)
+        if key_t is not self._key_field_t:
+            raise RuntimeError(f"Key list key: Expected {self._key_field_t}, but got: {key!r}")
+        try:
+            idx = self._key_to_idx[key]
+        except KeyError:
+            log.warning(
+                "List key %s=%r is missing from existing items, won't select item with that key", self._key_field, key)
+            return None
+        return htypes.list.state(current_idx=idx)
 
     @cached_property
     def model_state_t(self):

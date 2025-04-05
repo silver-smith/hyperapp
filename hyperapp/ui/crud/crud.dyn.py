@@ -14,7 +14,7 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.command import BoundCommandBase, UnboundCommandBase
-from .code.ui_model_command import wrap_model_command_to_ui_command
+from .code.ui_model_command import split_command_result, wrap_model_command_to_ui_command
 from .code.context_view import ContextView
 from .code.record_adapter import FnRecordAdapterBase
 from .code.construct_default_form import construct_default_form
@@ -254,7 +254,8 @@ class Crud:
                 value = None
             else:
                 value = self._run_init(ctx, init_action_fn, model, init_args)
-            selector_model = get_fn.call(ctx, value=value)
+            selector_result = get_fn.call(ctx, value=value)
+            selector_model, selector_key = split_command_result(selector_result)
             base_view_piece = self._visualizer(ctx, selector_model)
             new_model = selector_model
         else:

@@ -86,7 +86,7 @@ class NavigatorView(View):
             next=self._next,
             )
 
-    def open(self, ctx, model, view, widget, layout_k=None, set_layout=True):
+    def open(self, ctx, model, view, widget, key=None, layout_k=None, set_layout=True):
         history_rec = self._history_rec(widget)
         self._current_view = view
         self._current_layout = view.piece
@@ -99,7 +99,7 @@ class NavigatorView(View):
         self._layout_k = layout_k
         self._prev = mosaic.put(history_rec)
         self._next = None
-        state = None  # TODO: Devise new state.
+        state = view.make_widget_state(key)
         self._replace_widget(ctx, state)
 
     def go_back(self, ctx, widget, view_reg):

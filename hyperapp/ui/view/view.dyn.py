@@ -42,6 +42,9 @@ class View(metaclass=abc.ABCMeta):
     async def children_changed(self, ctx, rctx, widget):
         pass
 
+    def make_widget_state(self, key):
+        return None
+
     @abc.abstractmethod
     def widget_state(self, widget):
         pass

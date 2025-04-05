@@ -6,6 +6,7 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
 - legacy_type.column:column_k
+- legacy_type.list:state
 definitions:
   list_adapter.module:
     type: legacy_type.builtin:python_module
@@ -15,5 +16,6 @@ definitions:
       import_list:
         code.list_diff: common.list_diff:list_diff.module
         htypes.column.column_k: legacy_type.column:column_k
+        htypes.list.state: legacy_type.list:state
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
