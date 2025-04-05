@@ -41,6 +41,10 @@ class ContextView(View):
         layout.addWidget(base_widget)
         return widget
 
+    def set_current_key(self, widget, key):
+        base_widget = self._base_widget(widget)
+        self._base_view.set_current_key(base_widget, key)
+
     def widget_state(self, widget):
         base_widget = self._base_widget(widget)
         base_state = self._base_view.widget_state(base_widget)
