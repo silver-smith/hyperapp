@@ -145,7 +145,8 @@ class ListView(View):
 
     def set_current_key(self, widget, key):
         state = self._adapter.make_list_state(key)
-        self._apply_state(widget, state)
+        if state is not None:
+            self._apply_state(widget, state)
 
     def widget_state(self, widget):
         idx = widget.currentIndex().row()
