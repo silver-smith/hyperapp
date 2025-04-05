@@ -131,17 +131,21 @@ class ListView(View):
         widget.resizeColumnsToContents()
         # model.dataChanged.connect(partial(self._on_data_changed, widget))
         if isinstance(state, htypes.list.state):
-            index = model.createIndex(state.current_idx, 0)
-            widget.setCurrentIndex(index)
+            self._apply_state(widget, state)
         widget.clearSelection()
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
+    def _apply_state(self, widget, state):
+        index = widget.model().createIndex(state.current_idx, 0)
+        widget.setCurrentIndex(index)
+
     def init_widget(self, widget, focusable):
         widget.init_widget(focusable, on_state_changed=self._ctl_hook.parent_context_changed)
 
-    def make_widget_state(self, key):
-        return self._adapter.make_list_state(key)
+    def set_current_key(self, widget, key):
+        state = self._adapter.make_list_state(key)
+        self._apply_state(widget, state)
 
     def widget_state(self, widget):
         idx = widget.currentIndex().row()
