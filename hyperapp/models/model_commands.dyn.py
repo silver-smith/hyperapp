@@ -42,9 +42,9 @@ async def run_command(piece, current_item, ctx, lcs, ui_model_command_items):
         return None
     unbound_command = command_item.command
     bound_command = unbound_command.bind(command_ctx)
-    piece = await bound_command.run()
-    log.info("Run command: command result: %s", piece)
-    return piece
+    result = await bound_command.run()
+    log.info("Run command: command result: %s", result)
+    return result
 
 
 @mark.global_command

@@ -153,9 +153,9 @@ async def run_command(piece, current_item, command, identity, ctx, peer_registry
     command = global_model_command_reg[command_d]
     remote_command = remote_command_from_model_command(identity, peer, command)
     bound_command = remote_command.bind(ctx)
-    piece = await bound_command.run()
-    log.info("Run remote global command result: %s", piece)
-    return piece
+    result = await bound_command.run()
+    log.info("Run remote global command result: %s", result)
+    return result
 
 
 @mark.global_command
