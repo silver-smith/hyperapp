@@ -12,7 +12,7 @@ from .code.mark import mark
 from .code.data_browser import data_browser
 
 
-@mark.model
+@mark.model(key='key')
 def config_item_list(piece, system, format):
 
     def enum_items(config):
@@ -94,7 +94,7 @@ def config_item_move_to_another_layer(piece, key, layers, value, system):
     value_template = service_config[key_piece]
     target_layer.set(piece.service_name, key_piece, value_template)
     source_layer.remove(piece.service_name, key_piece)
-    return piece
+    return (piece, key)
 
 
 @mark.actor.formatter_creg

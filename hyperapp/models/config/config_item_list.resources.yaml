@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.builtin:ref
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -16,7 +17,7 @@ import:
 - legacy_type.config_layer_list:layer
 - legacy_type.config_service_list:model
 - legacy_type.crud:open_command_fn
-- legacy_type.model:index_list_ui_t
+- legacy_type.model:key_list_ui_t
 - legacy_type.model:model
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
@@ -56,14 +57,16 @@ definitions:
       - value
       service_params:
       - system
-  config_item_list-model.index-list-ui-t:
-    type: legacy_type.model:index_list_ui_t
+  config_item_list-model.key-list-ui-t:
+    type: legacy_type.model:key_list_ui_t
     value:
       item_t: legacy_type.config_item_list:item
+      key_field: key
+      key_field_t: legacy_type.builtin:ref
   config_item_list-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: config_item_list-model.index-list-ui-t
+      ui_t: config_item_list-model.key-list-ui-t
       system_fn: config_item_list-model.system-fn
   config_item_list-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
