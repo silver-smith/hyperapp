@@ -2,7 +2,7 @@ from . import htypes
 from .code.mark import mark
 
 
-@mark.model
+@mark.model(key='name')
 def config_layer_list(piece, system):
     return [
         htypes.config_layer_list.item(
@@ -20,7 +20,8 @@ def open_config_layer_list():
 
 @mark.selector.get
 def layer_get(value):
-    return htypes.config_layer_list.model()
+    piece = htypes.config_layer_list.model()
+    return (piece, value.name)
 
 
 @mark.selector.pick

@@ -24,8 +24,9 @@ def test_selector_get():
     value = htypes.config_layer_list.layer(
         name='sample-layer',
         )
-    piece = config_layer_list.layer_get(value)
+    piece, key = config_layer_list.layer_get(value)
     assert isinstance(piece, htypes.config_layer_list.model)
+    assert type(key) is str
 
 
 def test_selector_pick():
