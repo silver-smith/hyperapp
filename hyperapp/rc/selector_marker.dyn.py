@@ -11,6 +11,15 @@ from .code.marker_utils import (
 from .code.selector_ctr import SelectorGetTemplateCtr, SelectorPickTemplateCtr
 
 
+# Copy of the same function from ui.ui_model_command module
+def _split_command_result(result):
+    if type(result) is tuple and len(result) == 2:
+        result, key = result
+    else:
+        key = None
+    return (result, key)
+
+
 class SelectorProbe:
 
     def __init__(self, system_probe, ctr_collector, module_name, fn):
@@ -42,7 +51,8 @@ class SelectorGetProbe(SelectorProbe):
             raise RuntimeError(f"{self._fn}: Expected single non-service parameter, 'value': {params.ctx_names}")
         value = params.values['value']
         value_t = deduce_t(value)
-        model_t = deduce_t(result)
+        model, _key = _split_command_result(result)
+        model_t = deduce_t(model)
         assert isinstance(model_t, TRecord), model_t
         ctr = SelectorGetTemplateCtr(
             module_name=self._module_name,

@@ -255,7 +255,7 @@ class Crud:
             else:
                 value = self._run_init(ctx, init_action_fn, model, init_args)
             selector_result = get_fn.call(ctx, value=value)
-            selector_model, selector_key = split_command_result(selector_result)
+            selector_model, key = split_command_result(selector_result)
             base_view_piece = self._visualizer(ctx, selector_model)
             new_model = selector_model
         else:
@@ -278,6 +278,7 @@ class Crud:
                     init_fn=mosaic.put(init_action_fn.piece),
                     args=_args_dict_to_tuple(commit_args),
                     )
+            key = None
         new_view_piece = htypes.crud.view(
             base_view=mosaic.put(base_view_piece),
             label=label,
@@ -295,7 +296,7 @@ class Crud:
         navigator_widget = navigator_rec.widget_wr()
         if navigator_widget is None:
             raise RuntimeError("Navigator widget is gone")
-        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget, set_layout=False)
+        navigator_rec.view.open(ctx, new_model, new_view, navigator_widget, key=key, set_layout=False)
 
     # Override context with original elements, canned by args picker.
     def _canned_kw(self, ctx, args):
