@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.marker:marker_template
 - legacy_type.model:index_list_ui_t
+- legacy_type.model:key_list_ui_t
 - legacy_type.model:tree_ui_t
 - rc.crud_ctr:crud_ctr.module
 - rc.marker_utils:marker_utils.module
@@ -18,6 +19,7 @@ definitions:
       file_name: crud_marker.dyn.py
       import_list:
         htypes.model.index_list_ui_t: legacy_type.model:index_list_ui_t
+        htypes.model.key_list_ui_t: legacy_type.model:key_list_ui_t
         htypes.model.tree_ui_t: legacy_type.model:tree_ui_t
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service

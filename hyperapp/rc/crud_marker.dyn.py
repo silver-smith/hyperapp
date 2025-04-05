@@ -57,8 +57,10 @@ class CrudProbe:
 
     @staticmethod
     def _get_item_t(ui_t):
-        if (isinstance(ui_t, htypes.model.index_list_ui_t)
-            or isinstance(ui_t, htypes.model.tree_ui_t)):
+        if isinstance(ui_t, (
+                htypes.model.index_list_ui_t,
+                htypes.model.key_list_ui_t,
+                htypes.model.tree_ui_t)):
             item_t = pyobj_creg.invite(ui_t.item_t)
         else:
             raise RuntimeError(f"Not supported model UI type: {ui_t}. Only list and tree are supported")
