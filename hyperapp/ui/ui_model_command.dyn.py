@@ -84,7 +84,9 @@ class BoundUiModelCommand(BoundCommandBase):
             return None
         if type(result) is list:
             result = tuple(result)
-        piece = result
+        self._open(navigator_w, result)
+
+    def _open(self, navigator_w, piece):
         view_piece = self._visualizer(self._ctx, piece)
         model_ctx = self._ctx.pop().clone_with(model=piece)
         view = self._view_reg.animate(view_piece, model_ctx)
