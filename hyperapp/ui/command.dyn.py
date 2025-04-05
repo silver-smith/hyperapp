@@ -85,10 +85,7 @@ class BoundCommand(BoundCommandBase):
     async def run(self):
         if not self.enabled:
             raise RuntimeError(f"{self!r}: Disabled: {self.disabled_reason}")
-        result = await self._run()
-        if type(result) is list:
-            result = tuple(result)
-        return result
+        return await self._run()
 
     async def _run(self):
         # log.info("Run command: %r (%s)", self, kw)
