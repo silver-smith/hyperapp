@@ -164,7 +164,7 @@ class _Item:
             return ([], rctx)
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self.command_context(my_rctx)
-        unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.ctx.lcs, self.view)
+        unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.view)
         view_commands = self._bind_commands(unbound_view_commands, command_ctx)
         if self.parent.view:
             parent_command_ctx = self.parent.command_context(my_rctx)

@@ -418,9 +418,9 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
 
 @mark.ui_command_enum
-def crud_commit_command_enum(view, lcs, system_fn_creg, view_reg, visualizer):
+def crud_commit_command_enum(view, system_fn_creg, view_reg, visualizer):
     model_command = view.unbound_commit_command
-    ui_command = wrap_model_command_to_ui_command(view_reg, visualizer, lcs, model_command)
+    ui_command = wrap_model_command_to_ui_command(view_reg, visualizer, model_command)
     return [ui_command]
 
 

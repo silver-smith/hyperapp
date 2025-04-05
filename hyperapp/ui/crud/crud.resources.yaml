@@ -140,7 +140,6 @@ definitions:
       function: crud_commit_command_enum
       ctx_params:
       - view
-      - lcs
       service_params:
       - system_fn_creg
       - view_reg

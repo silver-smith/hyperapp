@@ -23,12 +23,11 @@ log = logging.getLogger(__name__)
 
 class UnboundUiModelCommand(UnboundCommandBase):
 
-    def __init__(self, view_reg, visualizer, lcs, d, model_command):
+    def __init__(self, view_reg, visualizer, d, model_command):
         super().__init__(d)
         self._view_reg = view_reg
         self._visualizer = visualizer
         self._model_command = model_command  # Model command or UI command returning a model.
-        self._lcs = lcs
 
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self._model_command}>"
@@ -47,16 +46,15 @@ class UnboundUiModelCommand(UnboundCommandBase):
 
     def bind(self, ctx):
         return BoundUiModelCommand(
-            self._view_reg, self._visualizer, self._lcs, self._d, self._model_command.bind(ctx), self.groups, ctx)
+            self._view_reg, self._visualizer, self._d, self._model_command.bind(ctx), self.groups, ctx)
 
 
 class BoundUiModelCommand(BoundCommandBase):
 
-    def __init__(self, view_reg, visualizer, lcs, d, model_command, groups, ctx):
+    def __init__(self, view_reg, visualizer, d, model_command, groups, ctx):
         super().__init__(d, ctx)
         self._view_reg = view_reg
         self._visualizer = visualizer
-        self._lcs = lcs
         self._model_command = model_command  # Model command or UI command returning a model.
         self._groups = groups
         self._navigator_rec = ctx.navigator
@@ -216,7 +214,7 @@ class CommandItemList:
             return self._d_to_item_cache
         ui_d_to_command = {}
         for model_command in self._all_model_commands:
-            ui_command = wrap_model_command_to_ui_command(self._view_reg, self._visualizer, self._lcs, model_command)
+            ui_command = wrap_model_command_to_ui_command(self._view_reg, self._visualizer, model_command)
             ui_d_to_command[ui_command.d] = ui_command
         for ui_command_d, rec in self._custom_commands.command_map.items():
             if isinstance(rec, htypes.command.custom_ui_model_command):
@@ -230,7 +228,7 @@ class CommandItemList:
                 model_command = self._command_creg.invite(rec.model_command)
             else:
                 raise RuntimeError(f"Unexpected custom command type: {rec!r}")
-            ui_command = UnboundUiModelCommand(self._view_reg, self._visualizer, self._lcs, ui_command_d, model_command)
+            ui_command = UnboundUiModelCommand(self._view_reg, self._visualizer, ui_command_d, model_command)
             # Override default wrapped model_command if custom layout is configured.
             ui_d_to_command[ui_command_d] = ui_command
         self._d_to_item_cache = {
@@ -358,9 +356,9 @@ def ui_global_command_items(
         )
 
 
-def wrap_model_command_to_ui_command(view_reg, visualizer, lcs, command):
+def wrap_model_command_to_ui_command(view_reg, visualizer, command):
     # Layout command enumerator returns UI commands. Wrapping it (hopefully) won't cause any problems
-    return UnboundUiModelCommand(view_reg, visualizer, lcs, command.d, command)
+    return UnboundUiModelCommand(view_reg, visualizer, command.d, command)
 
 
 @mark.service

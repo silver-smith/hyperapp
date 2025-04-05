@@ -133,12 +133,11 @@ def get_view_commands(
         ui_command_enumerator_reg,
         universal_ui_command_enumerator_reg,
         ctx,
-        lcs,
         view,
         ):
     view_t = deduce_t(view.piece)
     ui_model_command_list = [
-        wrap_model_command_to_ui_command(view_reg, visualizer, lcs, cmd)
+        wrap_model_command_to_ui_command(view_reg, visualizer, cmd)
         for cmd in view_ui_model_command_reg(view_t)
         ]
     command_list = [

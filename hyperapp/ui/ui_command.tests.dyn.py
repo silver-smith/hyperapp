@@ -75,9 +75,7 @@ def ctx(view, widget):
 
 
 async def test_view_commands(get_view_commands, view, ctx):
-    lcs = Mock()
-    lcs.get.return_value = None
-    command_list = get_view_commands(ctx, lcs, view)
+    command_list = get_view_commands(ctx, view)
     [unbound_command] = command_list
     bound_command = unbound_command.bind(ctx)
     result = await bound_command.run()

@@ -46,7 +46,6 @@ def test_command_item_to_item(partial_ref, view_reg, visualizer, shortcut_reg, l
     command = UnboundUiModelCommand(
         view_reg=view_reg,
         visualizer=visualizer,
-        lcs=lcs,
         d=htypes.command_list_model_tests.sample_model_command_d(),
         model_command=model_command,
         )

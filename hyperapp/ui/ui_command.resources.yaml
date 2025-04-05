@@ -56,7 +56,6 @@ definitions:
       want_config: false
       free_params:
       - ctx
-      - lcs
       - view
   get_view_element_commands:
     type: legacy_type.builtin:attribute
