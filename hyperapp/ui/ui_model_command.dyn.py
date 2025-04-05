@@ -23,12 +23,11 @@ log = logging.getLogger(__name__)
 
 class UnboundUiModelCommand(UnboundCommandBase):
 
-    def __init__(self, view_reg, visualizer, lcs, d, model_command, layout=None):
+    def __init__(self, view_reg, visualizer, lcs, d, model_command):
         super().__init__(d)
         self._view_reg = view_reg
         self._visualizer = visualizer
         self._model_command = model_command  # Model command or UI command returning a model.
-        self._layout = layout
         self._lcs = lcs
 
     def __repr__(self):
@@ -46,25 +45,20 @@ class UnboundUiModelCommand(UnboundCommandBase):
     def model_command_d(self):
         return self._model_command.d
 
-    @property
-    def layout(self):
-        return self._layout
-
     def bind(self, ctx):
         return BoundUiModelCommand(
-            self._view_reg, self._visualizer, self._lcs, self._d, self._model_command.bind(ctx), self.groups, self._layout, ctx)
+            self._view_reg, self._visualizer, self._lcs, self._d, self._model_command.bind(ctx), self.groups, ctx)
 
 
 class BoundUiModelCommand(BoundCommandBase):
 
-    def __init__(self, view_reg, visualizer, lcs, d, model_command, groups, layout, ctx):
+    def __init__(self, view_reg, visualizer, lcs, d, model_command, groups, ctx):
         super().__init__(d, ctx)
         self._view_reg = view_reg
         self._visualizer = visualizer
         self._lcs = lcs
         self._model_command = model_command  # Model command or UI command returning a model.
         self._groups = groups
-        self._layout = layout
         self._navigator_rec = ctx.navigator
 
     @property
@@ -90,10 +84,7 @@ class BoundUiModelCommand(BoundCommandBase):
         piece = await self._model_command.run()
         if piece is None:
             return None
-        if self._layout is None:
-            view_piece = self._visualizer(self._ctx, piece)
-        else:
-            view_piece = self._layout
+        view_piece = self._visualizer(self._ctx, piece)
         model_ctx = self._ctx.pop().clone_with(model=piece)
         view = self._view_reg.animate(view_piece, model_ctx)
         log.info("Model command %r: visualizing with view: %s", self.name, view)
@@ -179,7 +170,6 @@ class CommandItem:
         self.name = d_to_name(d)
         self.command = command
         self.enabled = enabled
-        self.layout = command.layout
 
     @property
     def is_global(self):
@@ -240,8 +230,7 @@ class CommandItemList:
                 model_command = self._command_creg.invite(rec.model_command)
             else:
                 raise RuntimeError(f"Unexpected custom command type: {rec!r}")
-            layout = web.summon_opt(rec.layout)
-            ui_command = UnboundUiModelCommand(self._view_reg, self._visualizer, self._lcs, ui_command_d, model_command, layout)
+            ui_command = UnboundUiModelCommand(self._view_reg, self._visualizer, self._lcs, ui_command_d, model_command)
             # Override default wrapped model_command if custom layout is configured.
             ui_d_to_command[ui_command_d] = ui_command
         self._d_to_item_cache = {
@@ -259,22 +248,21 @@ class CommandItemList:
     def __getitem__(self, d):
         return self._d_to_item[d]
 
-    def set_layout(self, d, layout):
-        item = self._d_to_item[d]
-        rec = htypes.command.custom_ui_model_command(
-            ui_command_d=mosaic.put(d),
-            model_command_d=mosaic.put(item.model_command_d),
-            layout=mosaic.put(layout),
-            )
-        self._custom_commands.set(rec)
-        self._d_to_item_cache = None
-        return self._d_to_item[d]
+    # def set_layout(self, d, layout):
+    #     item = self._d_to_item[d]
+    #     rec = htypes.command.custom_ui_model_command(
+    #         ui_command_d=mosaic.put(d),
+    #         model_command_d=mosaic.put(item.model_command_d),
+    #         layout=mosaic.put(layout),
+    #         )
+    #     self._custom_commands.set(rec)
+    #     self._d_to_item_cache = None
+    #     return self._d_to_item[d]
 
     def add_custom_model_command(self, d, model_command_piece):
         rec = htypes.command.custom_ui_command(
             ui_command_d=mosaic.put(d),
             model_command=mosaic.put(model_command_piece),
-            layout=None,
             )
         self._custom_commands.set(rec)
         self._d_to_item_cache = None
@@ -285,7 +273,6 @@ class CommandItemList:
         rec = htypes.command.custom_ui_model_command(
             ui_command_d=mosaic.put(new_d),
             model_command_d=mosaic.put(item.model_command_d),
-            layout=item.layout,
             )
         self._custom_commands.replace(prev_d, rec)
         self._d_to_item_cache = None
@@ -373,7 +360,7 @@ def ui_global_command_items(
 
 def wrap_model_command_to_ui_command(view_reg, visualizer, lcs, command):
     # Layout command enumerator returns UI commands. Wrapping it (hopefully) won't cause any problems
-    return UnboundUiModelCommand(view_reg, visualizer, lcs, command.d, command, layout=None)
+    return UnboundUiModelCommand(view_reg, visualizer, lcs, command.d, command)
 
 
 @mark.service

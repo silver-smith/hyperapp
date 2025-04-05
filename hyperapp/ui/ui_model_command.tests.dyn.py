@@ -64,7 +64,6 @@ def lcs():
     command_3 = htypes.command.custom_ui_model_command(
         ui_command_d=mosaic.put(htypes.ui_model_command_tests.sample_command_3_d()),
         model_command_d=mosaic.put(htypes.ui_model_command_tests.sample_model_command_2_d()),
-        layout=None,
         )
     fn_3 = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn_3),
@@ -79,7 +78,6 @@ def lcs():
     command_4 = htypes.command.custom_ui_command(
         ui_command_d=mosaic.put(htypes.ui_model_command_tests.sample_command_4_d()),
         model_command=mosaic.put(model_command_3),
-        layout=None,
         )
     command_list = htypes.command.custom_model_command_list(
         commands=(
@@ -97,7 +95,6 @@ def test_set_custom_ui_model_command(custom_ui_model_commands, lcs):
     command = htypes.command.custom_ui_model_command(
         ui_command_d=mosaic.put(htypes.ui_model_command_tests.sample_command_2_d()),
         model_command_d=mosaic.put(htypes.ui_model_command_tests.sample_model_command_2_d()),
-        layout=None,
         )
     custom_commands = custom_ui_model_commands(lcs, model_t)
     custom_commands.set(command)

@@ -49,7 +49,6 @@ def test_command_item_to_item(partial_ref, view_reg, visualizer, shortcut_reg, l
         lcs=lcs,
         d=htypes.command_list_model_tests.sample_model_command_d(),
         model_command=model_command,
-        layout=None,
         )
     command_item = CommandItem(
         d=htypes.command_list_model_tests.sample_command_d(),
