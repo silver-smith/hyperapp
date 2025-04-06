@@ -7,7 +7,7 @@ import:
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:record_ui_t
-- legacy_type.model:tree_ui_t
+- legacy_type.model:index_tree_ui_t
 - rc.marker_utils:marker_utils.module
 - rc.model_ctr:model_ctr.module
 
@@ -22,7 +22,7 @@ definitions:
         htypes.model.key_list_ui_t: legacy_type.model:key_list_ui_t
         htypes.model.index_list_ui_t: legacy_type.model:index_list_ui_t
         htypes.model.record_ui_t: legacy_type.model:record_ui_t
-        htypes.model.tree_ui_t: legacy_type.model:tree_ui_t
+        htypes.model.index_tree_ui_t: legacy_type.model:index_tree_ui_t
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.marker_utils: rc.marker_utils:marker_utils.module

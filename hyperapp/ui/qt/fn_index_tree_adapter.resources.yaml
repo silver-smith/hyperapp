@@ -6,7 +6,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.model:tree_ui_t
+- legacy_type.model:index_tree_ui_t
 - legacy_type.system:actor_template
 - legacy_type.tree:view
 - legacy_type.tree_adapter:fn_index_tree_adapter
@@ -48,9 +48,9 @@ definitions:
       - system_fn_creg
       - feed_factory
       - rpc_call_factory
-  ui_type_creg-model-tree_ui_t.actor-template:
+  ui_type_creg-model-index_tree_ui_t.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.model:tree_ui_t
+      t: legacy_type.model:index_tree_ui_t
       function: tree_ui_type_layout
       service_params: []

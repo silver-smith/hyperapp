@@ -84,7 +84,7 @@ class ModelProbe:
             parent_t = self._deduce_t(parent, f"{self._fn}: 'parent' parameter is not a deducible data type: {parent!r}")
             if parent_t is not result_t.element_t:
                 self._raise_error(f"Parent type should match result list element type: parent: {parent_t}, result element: {result_t.element_t}")
-        return htypes.model.tree_ui_t(
+        return htypes.model.index_tree_ui_t(
             item_t=pyobj_creg.actor_to_ref(result_t.element_t),
             )
 

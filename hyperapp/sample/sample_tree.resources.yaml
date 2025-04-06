@@ -11,8 +11,8 @@ import:
 - legacy_type.command:model_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:index_tree_feed_type
+- legacy_type.model:index_tree_ui_t
 - legacy_type.model:model
-- legacy_type.model:tree_ui_t
 - legacy_type.sample_tree:item
 - legacy_type.sample_tree:sample_tree
 - legacy_type.system:actor_template
@@ -208,10 +208,14 @@ definitions:
     type: legacy_type.feed:index_tree_feed_type
     value:
       item_t: null
+  sample_tree-sample_tree.index-tree-ui-t:
+    type: legacy_type.model:index_tree_ui_t
+    value:
+      item_t: legacy_type.sample_tree:item
   sample_tree-sample_tree.model:
     type: legacy_type.model:model
     value:
-      ui_t: sample_tree-sample_tree.tree-ui-t
+      ui_t: sample_tree-sample_tree.index-tree-ui-t
       system_fn: sample_tree-sample_tree.system-fn
   sample_tree-sample_tree.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -227,10 +231,6 @@ definitions:
       - parent
       service_params:
       - get_sample_tree_items
-  sample_tree-sample_tree.tree-ui-t:
-    type: legacy_type.model:tree_ui_t
-    value:
-      item_t: legacy_type.sample_tree:item
   sample_tree.module:
     type: legacy_type.builtin:python_module
     value:

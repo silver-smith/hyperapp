@@ -207,7 +207,7 @@ def test_tree_ui_type_layout():
         service_params=(),
         )
     system_fn_ref = mosaic.put(system_fn)
-    piece = htypes.model.tree_ui_t(
+    piece = htypes.model.index_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.fn_index_tree_adapter_tests.sample_item),
         )
     layout = fn_index_tree_adapter.tree_ui_type_layout(piece, system_fn_ref)

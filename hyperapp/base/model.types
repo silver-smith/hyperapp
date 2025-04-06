@@ -15,7 +15,7 @@ key_list_ui_t = record:
   key_field: string
   key_field_t: ref
 
-tree_ui_t = record:
+index_tree_ui_t = record:
   item_t: ref
 
 record_ui_t = record:
