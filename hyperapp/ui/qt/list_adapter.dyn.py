@@ -77,6 +77,7 @@ class KeyListAdapterMixin:
         key_t = deduce_t(key)
         if key_t is not self._key_field_t:
             raise RuntimeError(f"Key list key: Expected {self._key_field_t}, but got: {key!r}")
+        self._ensure_populated()
         try:
             idx = self._key_to_idx[key]
         except KeyError:
@@ -176,8 +177,7 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
 
     def process_diff(self, diff):
         log.info("List adapter: process diff: %s", diff)
-        if self._item_list is None:
-            self._populate()
+        self._ensure_populated()
         visual_diff = self._apply_diff(diff)
         for subscriber in self._subscribers:
             subscriber.process_diff(visual_diff)
@@ -188,10 +188,12 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
 
     @property
     def _items(self):
-        if self._item_list is not None:
-            return self._item_list
-        self._populate()
+        self._ensure_populated()
         return self._item_list
+
+    def _ensure_populated(self):
+        if self._item_list is None:
+            self._populate()
 
     def _populate_item_list(self):
         additional_kw = {

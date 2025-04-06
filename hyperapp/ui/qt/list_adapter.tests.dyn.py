@@ -34,5 +34,6 @@ def test_index_list_list_state():
 def test_key_list_list_state():
     mixin = KeyListAdapterMixin('id', htypes.builtin.string)
     mixin._key_to_idx['some-key'] = 123
+    mixin._ensure_populated = lambda: None
     state = mixin.make_list_state('some-key')
     assert isinstance(state, htypes.list.state)
