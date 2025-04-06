@@ -74,7 +74,6 @@ class NavigatorView(View):
         self._ctl_hook.replace_parent_widget(new_widget)
         self._ctl_hook.context_changed()
         self._ctl_hook.element_replaced(0, self._current_view, new_widget)
-        return new_widget
 
     def _history_rec(self, widget):
         model_t = deduce_t(self._model)
@@ -100,8 +99,8 @@ class NavigatorView(View):
         self._layout_k = layout_k
         self._prev = mosaic.put(history_rec)
         self._next = None
-        base_widget = self._replace_widget(ctx, state=None)
-        self._current_view.set_current_key(base_widget, key)
+        state = view.make_widget_state(key)
+        self._replace_widget(ctx, state)
 
     def go_back(self, ctx, widget, view_reg):
         if not self._prev:

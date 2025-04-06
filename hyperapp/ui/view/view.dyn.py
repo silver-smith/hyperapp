@@ -42,7 +42,7 @@ class View(metaclass=abc.ABCMeta):
     async def children_changed(self, ctx, rctx, widget):
         pass
 
-    def set_current_key(self, widget, key):
+    def make_widget_state(self, key):
         return None
 
     @abc.abstractmethod

@@ -41,9 +41,11 @@ class ContextView(View):
         layout.addWidget(base_widget)
         return widget
 
-    def set_current_key(self, widget, key):
-        base_widget = self._base_widget(widget)
-        self._base_view.set_current_key(base_widget, key)
+    def make_widget_state(self, key):
+        base_state = self._base_view.make_widget_state(key)
+        return htypes.context_view.state(
+            base=mosaic.put(base_state),
+            )
 
     def widget_state(self, widget):
         base_widget = self._base_widget(widget)
