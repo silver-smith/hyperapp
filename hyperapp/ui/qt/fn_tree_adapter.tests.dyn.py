@@ -9,6 +9,7 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
+from .code.mark import mark
 from .code.context import Context
 from .code.tree_diff import TreeDiff
 from .code.tree_visual_diff import VisualTreeDiffAppend
@@ -18,7 +19,7 @@ from .tested.code import fn_tree_adapter
 log = logging.getLogger(__name__)
 
 
-def sample_tree_fn(piece, parent):
+def sample_tree_model(piece, parent):
     log.info("Sample tree fn: %s", piece)
     assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
     if parent:
@@ -32,18 +33,22 @@ def sample_tree_fn(piece, parent):
         ]
 
 
-def test_fn_adapter():
-    model = htypes.tree_adapter_tests.sample_tree()
-    ctx = Context(piece=model)
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_tree_fn),
+@mark.fixture
+def sample_tree_model_fn():
+    return htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_tree_model),
         ctx_params=('piece', 'parent'),
         service_params=(),
         )
+
+
+def test_fn_adapter(sample_tree_model_fn):
+    model = htypes.tree_adapter_tests.sample_tree()
+    ctx = Context(piece=model)
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        system_fn=mosaic.put(system_fn),
+        system_fn=mosaic.put(sample_tree_model_fn),
         )
     adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
@@ -138,7 +143,7 @@ _sample_fn_is_called = threading.Event()
 
 def sample_remote_tree_fn(piece, parent):
     log.info("Sample remote tree fn: %s", piece)
-    result = sample_tree_fn(piece, parent)
+    result = sample_tree_model(piece, parent)
     _sample_fn_is_called.set()
     return result
 
@@ -199,13 +204,8 @@ def test_fn_adapter_with_remote_context(
         assert get_fn_called_flag_call()
 
 
-def test_tree_ui_type_layout():
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_tree_fn),
-        ctx_params=(),
-        service_params=(),
-        )
-    system_fn_ref = mosaic.put(system_fn)
+def test_tree_ui_type_layout(sample_tree_model_fn):
+    system_fn_ref = mosaic.put(sample_tree_model_fn)
     piece = htypes.model.index_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.fn_tree_adapter_tests.sample_item),
         )
