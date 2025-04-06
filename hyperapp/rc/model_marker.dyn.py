@@ -58,7 +58,7 @@ class ModelProbe:
         result_t = self._deduce_t(result, f"{self._fn}: Returned not a deducible data type: {result!r}")
         tree_params = {'parent'}
         if self._key_field:
-            tree_params |= {'path'}
+            tree_params |= {'current_path'}
         if tree_params & set(params.ctx_names):
             ui_t = self._make_tree_ui_t(params, result_t)
         elif isinstance(result_t, TList):
