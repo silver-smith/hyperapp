@@ -32,7 +32,7 @@ def sample_tree_fn(piece, parent):
         ]
 
 
-def test_fn_adapter(ui_adapter_creg):
+def test_fn_adapter():
     model = htypes.tree_adapter_tests.sample_tree()
     ctx = Context(piece=model)
     system_fn = htypes.system_fn.ctx_fn(
@@ -45,7 +45,7 @@ def test_fn_adapter(ui_adapter_creg):
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         system_fn=mosaic.put(system_fn),
         )
-    adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
+    adapter = fn_index_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
@@ -98,7 +98,7 @@ def sample_feed_tree_fn(piece, parent, feed):
         ]
 
 
-async def test_feed_fn_adapter(ui_adapter_creg):
+async def test_feed_fn_adapter():
     model = htypes.tree_adapter_tests.sample_tree()
     ctx = Context(piece=model)
     system_fn = htypes.system_fn.ctx_fn(
@@ -112,7 +112,7 @@ async def test_feed_fn_adapter(ui_adapter_creg):
         system_fn=mosaic.put(system_fn),
         )
 
-    adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
+    adapter = fn_index_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
     queue = asyncio.Queue()
     subscriber = Subscriber(queue)
     adapter.subscribe(subscriber)
@@ -153,7 +153,6 @@ def test_fn_adapter_with_remote_context(
         rpc_endpoint,
         rpc_call_factory,
         subprocess_rpc_server_running,
-        ui_adapter_creg,
         ):
 
     identity = generate_rsa_identity(fast=True)
@@ -179,7 +178,7 @@ def test_fn_adapter_with_remote_context(
             # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             system_fn=mosaic.put(system_fn),
             )
-        adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
+        adapter = fn_index_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
         assert adapter.column_count() == 2
         assert adapter.column_title(0) == 'id'

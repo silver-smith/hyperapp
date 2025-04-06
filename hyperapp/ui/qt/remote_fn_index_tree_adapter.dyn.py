@@ -3,10 +3,10 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .code.tree_adapter import FnIndexTreeAdapterBase
+from .code.tree_adapter import FnTreeAdapterBase
 
 
-class RemoteFnIndexTreeAdapter(FnIndexTreeAdapterBase):
+class RemoteFnIndexTreeAdapter(FnTreeAdapterBase):
 
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.tree_adapter.remote_fn_index_tree_adapter)

@@ -4,13 +4,13 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .code.tree_adapter import FnIndexTreeAdapterBase
+from .code.tree_adapter import IndexTreeAdapterMixin, KeyTreeAdapterMixin, FnTreeAdapterBase
 
 
-class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
+class FnTreeAdapter(FnTreeAdapterBase):
 
     @classmethod
-    @mark.actor.ui_adapter_creg(htypes.tree_adapter.fn_index_tree_adapter)
+    @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, rpc_call_factory):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
@@ -36,6 +36,14 @@ class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
                 )
             return rpc_call()
         return self._fn.call(self._ctx, **kw)
+
+
+class FnIndexTreeAdapter(FnTreeAdapter, IndexTreeAdapterMixin):
+    pass
+
+
+class FnKeyTreeAdapter(FnTreeAdapter, KeyTreeAdapterMixin):
+    pass
 
 
 @mark.actor.ui_type_creg

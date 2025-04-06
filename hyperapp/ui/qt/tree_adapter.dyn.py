@@ -17,19 +17,7 @@ from .code.tree_visual_diff import (
 log = logging.getLogger(__name__)
 
 
-class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
-
-    def __init__(self, model, item_t):
-        self._model = model
-        self._item_t = item_t
-        self._id_to_item = {0: None}
-        self._id_to_children_id_list = {}
-        self._id_to_parent_id = {}
-        self._id_counter = itertools.count(start=1)
-        self._subscribers = weakref.WeakSet()
-
-    def subscribe(self, subscriber):
-        self._subscribers.add(subscriber)
+class IndexTreeAdapterMixin:
 
     @cached_property
     def model_state_t(self):
@@ -44,6 +32,50 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
             current_path=current_path,
             current_item=current_item,
             )
+
+
+class KeyTreeAdapterMixin:
+
+    def __init__(self, key_field, key_field_t):
+        self._key_field = key_field
+        self._key_field_t = key_field_t
+
+    @cached_property
+    def model_state_t(self):
+        item_t = self._item_t
+        return TRecord('ui_tree', f'model_state_{item_t.module_name}_{item_t.name}', {
+            'current_path': TList(self._key_field_t),
+            'current_item': TOptional(item_t),
+            })
+
+    def make_model_state(self, current_path, current_item):
+        key_path = []
+        item_id = 0
+        for idx in current_path:
+            id_list = self._get_id_list(item_id)
+            item_id = id_list[idx]
+            item = self._id_to_item[item_id]
+            key = getattr(item, self._key_field)
+            key_path.append(key)
+        return self.model_state_t(
+            current_path=tuple(key_path),
+            current_item=current_item,
+            )
+
+
+class TreeAdapterBase(metaclass=abc.ABCMeta):
+
+    def __init__(self, model, item_t):
+        self._model = model
+        self._item_t = item_t
+        self._id_to_item = {0: None}
+        self._id_to_children_id_list = {}
+        self._id_to_parent_id = {}
+        self._id_counter = itertools.count(start=1)
+        self._subscribers = weakref.WeakSet()
+
+    def subscribe(self, subscriber):
+        self._subscribers.add(subscriber)
 
     @property
     def model(self):
@@ -164,7 +196,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
         pass
 
 
-class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
+class FnTreeAdapterBase(TreeAdapterBase, metaclass=abc.ABCMeta):
 
     def __init__(self, feed_factory, model, item_t):
         super().__init__(model, item_t)
