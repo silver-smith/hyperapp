@@ -33,6 +33,11 @@ class IndexTreeAdapterMixin:
             current_item=current_item,
             )
 
+    def _parent_model_kw(self, parent_id):
+        return {
+            'parent': self._id_to_item[parent_id],
+            }
+
 
 class KeyTreeAdapterMixin:
 
@@ -61,6 +66,20 @@ class KeyTreeAdapterMixin:
             current_path=tuple(key_path),
             current_item=current_item,
             )
+
+    def _parent_model_kw(self, parent_id):
+        return {
+            'current_path': self._make_key_path(parent_id),
+            }
+
+    def _make_key_path(self, item_id):
+        if item_id == 0:
+            return []
+        path = []
+        item = self._id_to_item[item_id]
+        key = getattr(item, self._key_field)
+        parent_id = self._id_to_parent_id[item_id]
+        return [*self._make_key_path(parent_id), key]
 
 
 class TreeAdapterBase(metaclass=abc.ABCMeta):
@@ -222,8 +241,8 @@ class FnTreeAdapterBase(TreeAdapterBase, metaclass=abc.ABCMeta):
         additional_kw = {
             'model': self._model,
             'piece': self._model,
-            'parent': self._id_to_item[parent_id],
             'feed': self._feed,
+            **self._parent_model_kw(parent_id),
             }
         return self._call_fn(**additional_kw)
 
