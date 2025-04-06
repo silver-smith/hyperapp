@@ -56,17 +56,17 @@ class ModelProbe:
 
     def _add_constructor(self, params, model_t, result):
         result_t = self._deduce_t(result, f"{self._fn}: Returned not a deducible data type: {result!r}")
-        try:
-            parent = params.values['parent']
-        except KeyError:
-            if isinstance(result_t, TList):
-                ui_t = self._make_list_ui_t(result_t)
-            elif isinstance(result_t, TRecord):
-                ui_t = self._make_record_ui_t(result_t)
-            else:
-                raise RuntimeError(f"Unknown model {model_t} type: {result_t!r}")
+        tree_params = {'parent'}
+        if self._key_field:
+            tree_params |= {'path'}
+        if tree_params & set(params.ctx_names):
+            ui_t = self._make_tree_ui_t(params, result_t)
+        elif isinstance(result_t, TList):
+            ui_t = self._make_list_ui_t(result_t)
+        elif isinstance(result_t, TRecord):
+            ui_t = self._make_record_ui_t(result_t)
         else:
-            ui_t = self._make_tree_ui_t(result_t, parent)
+            raise RuntimeError(f"Unknown model {model_t} type: {result_t!r}")
         ctr = ModelCtr(
             module_name=self._module_name,
             attr_qual_name=params.real_qual_name(self._fn),
@@ -77,35 +77,73 @@ class ModelProbe:
             )
         self._ctr_collector.add_constructor(ctr)
 
-    def _make_tree_ui_t(self, result_t, parent):
+    def _make_tree_ui_t(self, params, result_t):
         if not isinstance(result_t, TList):
             self._raise_error(f"Tree model should return an item list: {result!r}")
-        if parent is not None:
-            parent_t = self._deduce_t(parent, f"{self._fn}: 'parent' parameter is not a deducible data type: {parent!r}")
-            if parent_t is not result_t.element_t:
-                self._raise_error(f"Parent type should match result list element type: parent: {parent_t}, result element: {result_t.element_t}")
-        return htypes.model.index_tree_ui_t(
-            item_t=pyobj_creg.actor_to_ref(result_t.element_t),
-            )
+        self._check_parent_param(params, result_t)
+        self._check_path_param(params, result_t)
+        item_t = result_t.element_t
+        if self._key_field:
+            key_field_t = self._key_field_t(item_t)
+            return htypes.model.key_tree_ui_t(
+                item_t=pyobj_creg.actor_to_ref(item_t),
+                key_field=self._key_field,
+                key_field_t=pyobj_creg.actor_to_ref(key_field_t),
+                )
+        else:
+            return htypes.model.index_tree_ui_t(
+                item_t=pyobj_creg.actor_to_ref(item_t),
+                )
+
+    def _check_parent_param(self, params, result_t):
+        try:
+            parent = params.values['parent']
+        except KeyError:
+            return
+        if parent is None:
+            return
+        parent_t = self._deduce_t(parent, f"{self._fn}: 'parent' parameter is not a deducible data type: {parent!r}")
+        if parent_t is not result_t.element_t:
+            self._raise_error(f"Parent type should match result list element type: parent: {parent_t}, result element: {result_t.element_t}")
+
+    def _check_path_param(self, params, result_t):
+        if not self._key_field:
+            return
+        try:
+            path = params.values['path']
+        except KeyError:
+            return
+        if type(path) not in (tuple, list):
+            self._raise_error(f"Path parameter should have list type: {path!r}")
+        if not path:
+            return
+        path_t = self._deduce_t(path, f"{self._fn}: 'path' parameter is not a deducible data type: {path!r}")
+        if path_t.element_t is not self._key_field_t:
+            self._raise_error(
+                f"Path element type should match key field type:"
+                f" path element type: {path_t.element_t}, key field type: {self.key_field_t}"
+                )
 
     def _make_list_ui_t(self, result_t):
         item_t = result_t.element_t
-        item_t_ref = pyobj_creg.actor_to_ref(item_t)
         if self._key_field:
-            try:
-                key_field_t = item_t.fields[self._key_field]
-            except KeyError:
-                item_fields = ", ".join(item_t.fields)
-                raise RuntimeError(f"Key field {self._key_field!r} is not among item fields: {item_fields}")
+            key_field_t = self._key_field_t(item_t)
             return htypes.model.key_list_ui_t(
-                item_t=item_t_ref,
+                item_t=pyobj_creg.actor_to_ref(item_t),
                 key_field=self._key_field,
                 key_field_t=pyobj_creg.actor_to_ref(key_field_t),
                 )
         else:
             return htypes.model.index_list_ui_t(
-                item_t=item_t_ref,
+                item_t=pyobj_creg.actor_to_ref(item_t),
                 )
+
+    def _key_field_t(self, item_t):
+        try:
+            return item_t.fields[self._key_field]
+        except KeyError:
+            item_fields = ", ".join(item_t.fields)
+            raise RuntimeError(f"Key field {self._key_field!r} is not among item fields: {item_fields}")
 
     def _make_record_ui_t(self, result_t):
         return htypes.model.record_ui_t(
