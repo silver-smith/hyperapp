@@ -82,6 +82,7 @@ async def test_index_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
         system_fn=mosaic.put(sample_list_model_fn),
         )
     adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
+
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'text'
@@ -114,6 +115,7 @@ async def test_key_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
         )
     adapter = fn_list_adapter.FnKeyListAdapter.from_piece(adapter_piece, model, ctx)
+
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'text'
