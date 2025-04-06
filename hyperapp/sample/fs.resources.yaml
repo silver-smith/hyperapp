@@ -1,0 +1,84 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.builtin:string
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:model_command
+- legacy_type.fs:item
+- legacy_type.fs:model
+- legacy_type.model:key_tree_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
+definitions:
+  fs-model.key-tree-ui-t:
+    type: legacy_type.model:key_tree_ui_t
+    value:
+      item_t: legacy_type.fs:item
+      key_field: name
+      key_field_t: legacy_type.builtin:string
+  fs-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: fs-model.key-tree-ui-t
+      system_fn: fs-model.system-fn
+  fs-model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.fs:model
+      value: fs-model.model
+  fs-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: fs_model
+      ctx_params:
+      - piece
+      - current_path
+      service_params: []
+  fs.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: fs
+      file_name: fs.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.fs.item: legacy_type.fs:item
+        htypes.fs.model: legacy_type.fs:model
+  fs_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fs.module
+      attr_name: fs_model
+  open_fs:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fs.module
+      attr_name: open_fs
+  open_fs.d:
+    type: open_fs_d
+    value: {}
+  open_fs.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_fs
+      ctx_params: []
+      service_params: []
+  open_fs.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_fs.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_fs.fn
+  open_fs_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: fs
+      name: open_fs_d
+      base: null
+      fields: {}

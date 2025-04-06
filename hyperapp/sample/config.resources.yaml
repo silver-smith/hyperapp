@@ -3,6 +3,8 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- sample.fs:fs-model.model-cfg-item
+- sample.fs:open_fs.global-model-command
 - sample.sample_commands:open_sample_static_list.global-model-command
 - sample.sample_commands:open_sample_static_text_1.global-model-command
 - sample.sample_commands:open_sample_static_text_2.global-model-command
@@ -70,6 +72,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - sample.fs:open_fs.global-model-command
       - sample.sample_commands:open_sample_static_list.global-model-command
       - sample.sample_commands:open_sample_static_text_1.global-model-command
       - sample.sample_commands:open_sample_static_text_2.global-model-command
@@ -93,6 +96,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - sample.fs:fs-model.model-cfg-item
       - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
       - sample.sample_list:sample_list-sample_list.model-cfg-item
       - sample.sample_record:sample_record-sample_record.model-cfg-item

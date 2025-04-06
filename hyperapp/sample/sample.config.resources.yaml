@@ -5,6 +5,7 @@ import:
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- sample.fs:open_fs.d
 - sample.sample_commands:details.d
 - sample.sample_commands:sample_tree_info.d
 - sample.sample_commands:show_state.d
@@ -24,6 +25,11 @@ definitions:
     value:
       services:
         shortcut_reg: shortcut_reg.config
+  config_item-sample.fs-open_fs.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: sample.fs:open_fs.d
+      value: shortcut_Alt_F
   config_item-sample.sample_commands-details.d:
     type: legacy_type.data_service:config_item
     value:
@@ -92,12 +98,12 @@ definitions:
   shortcut_A:
     type: legacy_type.builtin:string
     value: A
+  shortcut_Alt_F:
+    type: legacy_type.builtin:string
+    value: Alt+F
   shortcut_Alt_I:
     type: legacy_type.builtin:string
     value: Alt+I
-  shortcut_Alt_Shift_S:
-    type: legacy_type.builtin:string
-    value: Alt+Shift+S
   shortcut_Ctrl_Return:
     type: legacy_type.builtin:string
     value: Ctrl+Return
@@ -142,3 +148,4 @@ definitions:
       - config_item-sample.sample_tree-append_tree_item.d
       - config_item-sample.sample_tree-insert_tree_item.d
       - config_item-sample.sample_commands-system_info.d
+      - config_item-sample.fs-open_fs.d
