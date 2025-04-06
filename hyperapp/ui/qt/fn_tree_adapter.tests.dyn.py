@@ -42,6 +42,11 @@ def sample_tree_model_fn():
         )
 
 
+@mark.fixture
+def model():
+    return htypes.tree_adapter_tests.sample_tree()
+
+
 class Subscriber:
 
     def __init__(self, queue):
@@ -56,8 +61,7 @@ async def _send_append_diff(feed):
     await feed.send(TreeDiff.Append((), item))
 
 
-async def test_fn_adapter(feed_factory, sample_tree_model_fn):
-    model = htypes.tree_adapter_tests.sample_tree()
+async def test_fn_index_adapter(feed_factory, sample_tree_model_fn, model):
     ctx = Context(piece=model)
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
@@ -94,6 +98,46 @@ async def test_fn_adapter(feed_factory, sample_tree_model_fn):
     assert diff.parent_id == 0
 
 
+async def test_fn_key_adapter(feed_factory, sample_tree_model_fn, model):
+    ctx = Context(piece=model)
+    adapter_piece = htypes.tree_adapter.fn_key_tree_adapter(
+        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+        system_fn=mosaic.put(sample_tree_model_fn),
+        key_field='id',
+        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
+        )
+    adapter = fn_tree_adapter.FnKeyTreeAdapter.from_piece(adapter_piece, model, ctx)
+
+    assert adapter.column_count() == 2
+    assert adapter.column_title(0) == 'id'
+    assert adapter.column_title(1) == 'text'
+
+    assert adapter.row_count(0) == 3
+    row_1_id = adapter.row_id(0, 1)
+    assert adapter.cell_data(row_1_id, 0) == 2
+    assert adapter.cell_data(row_1_id, 1) == "Second item"
+    row_2_id = adapter.row_id(row_1_id, 2)
+    assert adapter.cell_data(row_2_id, 0) == 23
+
+    assert adapter.path_to_item_id([]) == 0
+    assert adapter.path_to_item_id([0]) == adapter.row_id(0, 0)
+    assert adapter.path_to_item_id([2]) == adapter.row_id(0, 2)
+    assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1_id, 2)
+
+    return
+
+    queue = asyncio.Queue()
+    subscriber = Subscriber(queue)
+    adapter.subscribe(subscriber)
+
+    feed = feed_factory(model)
+    asyncio.create_task(_send_append_diff(feed))
+
+    diff = await asyncio.wait_for(queue.get(), timeout=5)
+    assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
+    assert diff.parent_id == 0
+
+
 _sample_fn_is_called = threading.Event()
 
 
@@ -114,6 +158,7 @@ def test_fn_adapter_with_remote_context(
         rpc_endpoint,
         rpc_call_factory,
         subprocess_rpc_server_running,
+        model,
         ):
 
     identity = generate_rsa_identity(fast=True)
@@ -123,7 +168,6 @@ def test_fn_adapter_with_remote_context(
     with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
-        model = htypes.tree_adapter_tests.sample_tree()
         ctx = Context(
             piece=model,
             identity=identity,

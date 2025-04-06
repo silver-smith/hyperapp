@@ -3,6 +3,12 @@ fn_index_tree_adapter = record:
   item_t: ref
   system_fn: ref
 
+fn_key_tree_adapter = record:
+  item_t: ref
+  system_fn: ref
+  key_field: string
+  key_field_t: ref
+
 remote_fn_index_tree_adapter = record:
   item_t: ref
   system_fn: ref

@@ -10,6 +10,7 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.tree:view
 - legacy_type.tree_adapter:fn_index_tree_adapter
+- legacy_type.tree_adapter:fn_key_tree_adapter
 - ui.qt.tree_adapter:tree_adapter.module
 definitions:
   FnIndexTreeAdapter:
@@ -21,6 +22,16 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: FnIndexTreeAdapter
+      attr_name: from_piece
+  FnKeyTreeAdapter:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fn_tree_adapter.module
+      attr_name: FnKeyTreeAdapter
+  FnKeyTreeAdapter.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FnKeyTreeAdapter
       attr_name: from_piece
   fn_tree_adapter.module:
     type: legacy_type.builtin:python_module
@@ -44,6 +55,15 @@ definitions:
     value:
       t: legacy_type.tree_adapter:fn_index_tree_adapter
       function: FnIndexTreeAdapter.from_piece
+      service_params:
+      - system_fn_creg
+      - feed_factory
+      - rpc_call_factory
+  ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.tree_adapter:fn_key_tree_adapter
+      function: FnKeyTreeAdapter.from_piece
       service_params:
       - system_fn_creg
       - feed_factory
