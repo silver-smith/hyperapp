@@ -163,7 +163,7 @@ def test_fn_adapter_with_remote_context(
 def test_tree_ui_type_layout(sample_tree_model_fn):
     system_fn_ref = mosaic.put(sample_tree_model_fn)
     piece = htypes.model.index_tree_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.fn_tree_adapter_tests.sample_item),
+        item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.item),
         )
     layout = fn_tree_adapter.tree_ui_type_layout(piece, system_fn_ref)
     assert isinstance(layout, htypes.tree.view)
