@@ -15,18 +15,18 @@ definitions:
   FnIndexTreeAdapter:
     type: legacy_type.builtin:attribute
     value:
-      object: fn_index_tree_adapter.module
+      object: fn_tree_adapter.module
       attr_name: FnIndexTreeAdapter
   FnIndexTreeAdapter.from_piece:
     type: legacy_type.builtin:attribute
     value:
       object: FnIndexTreeAdapter
       attr_name: from_piece
-  fn_index_tree_adapter.module:
+  fn_tree_adapter.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: fn_index_tree_adapter
-      file_name: fn_index_tree_adapter.dyn.py
+      module_name: fn_tree_adapter
+      file_name: fn_tree_adapter.dyn.py
       import_list:
         code.mark: base.mark:mark.module
         code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
@@ -37,7 +37,7 @@ definitions:
   tree_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:
-      object: fn_index_tree_adapter.module
+      object: fn_tree_adapter.module
       attr_name: tree_ui_type_layout
   ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template:
     type: legacy_type.system:actor_template

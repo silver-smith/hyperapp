@@ -13,7 +13,7 @@ from .code.context import Context
 from .code.tree_diff import TreeDiff
 from .code.tree_visual_diff import VisualTreeDiffAppend
 from .fixtures import feed_fixtures
-from .tested.code import fn_index_tree_adapter
+from .tested.code import fn_tree_adapter
 
 log = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ def test_fn_adapter():
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         system_fn=mosaic.put(system_fn),
         )
-    adapter = fn_index_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
+    adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
@@ -112,7 +112,7 @@ async def test_feed_fn_adapter():
         system_fn=mosaic.put(system_fn),
         )
 
-    adapter = fn_index_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
+    adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
     queue = asyncio.Queue()
     subscriber = Subscriber(queue)
     adapter.subscribe(subscriber)
@@ -178,7 +178,7 @@ def test_fn_adapter_with_remote_context(
             # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             system_fn=mosaic.put(system_fn),
             )
-        adapter = fn_index_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
+        adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
         assert adapter.column_count() == 2
         assert adapter.column_title(0) == 'id'
@@ -207,7 +207,7 @@ def test_tree_ui_type_layout():
         )
     system_fn_ref = mosaic.put(system_fn)
     piece = htypes.model.index_tree_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.fn_index_tree_adapter_tests.sample_item),
+        item_t=pyobj_creg.actor_to_ref(htypes.fn_tree_adapter_tests.sample_item),
         )
-    layout = fn_index_tree_adapter.tree_ui_type_layout(piece, system_fn_ref)
+    layout = fn_tree_adapter.tree_ui_type_layout(piece, system_fn_ref)
     assert isinstance(layout, htypes.tree.view)

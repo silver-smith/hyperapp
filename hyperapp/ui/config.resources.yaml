@@ -78,14 +78,14 @@ import:
 - ui.qt.box_layout:box_layout-view.view-template
 - ui.qt.box_layout:wrap_box_layout.view-factory-template
 - ui.qt.command_pane:command_pane-view.view-template
-- ui.qt.fn_index_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
-- ui.qt.fn_index_tree_adapter:ui_type_creg-model-index_tree_ui_t.actor-template
 - ui.qt.fn_list_adapter:index_list_ui_type_layout.view-factory-template
 - ui.qt.fn_list_adapter:key_list_ui_type_layout.view-factory-template
 - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-template
 - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-template
 - ui.qt.fn_list_adapter:ui_type_creg-model-index_list_ui_t.actor-template
 - ui.qt.fn_list_adapter:ui_type_creg-model-key_list_ui_t.actor-template
+- ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
+- ui.qt.fn_tree_adapter:ui_type_creg-model-index_tree_ui_t.actor-template
 - ui.qt.form:form-view.view-template
 - ui.qt.label:label-view-set_label_text.command-cfg-item
 - ui.qt.label:label-view.view-template
@@ -352,9 +352,9 @@ definitions:
       items:
       - ui.crud.crud:ui_adapter_creg-crud-record_adapter.actor-template
       - ui.int_adapter:ui_adapter_creg-int_adapter-int_adapter.actor-template
-      - ui.qt.fn_index_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-template
       - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-template
+      - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.remote_fn_index_tree_adapter:ui_adapter_creg-tree_adapter-remote_fn_index_tree_adapter.actor-template
       - ui.qt.remote_fn_list_adapter:ui_adapter_creg-list_adapter-remote_fn_list_adapter.actor-template
       - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
@@ -373,9 +373,9 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.qt.fn_index_tree_adapter:ui_type_creg-model-index_tree_ui_t.actor-template
       - ui.qt.fn_list_adapter:ui_type_creg-model-index_list_ui_t.actor-template
       - ui.qt.fn_list_adapter:ui_type_creg-model-key_list_ui_t.actor-template
+      - ui.qt.fn_tree_adapter:ui_type_creg-model-index_tree_ui_t.actor-template
       - ui.record_adapter:ui_type_creg-model-record_ui_t.actor-template
   universal_ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
