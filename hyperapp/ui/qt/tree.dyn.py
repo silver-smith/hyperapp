@@ -274,7 +274,7 @@ class TreeView(View):
         item_id = index.internalId()
         item = self._adapter.get_item(item_id)
         path = self._adapter.get_path(item_id)
-        return self._adapter.model_state_t(current_path=tuple(path), current_item=item)
+        return self._adapter.make_model_state(current_path=tuple(path), current_item=item)
 
     @property
     def adapter(self):

@@ -39,6 +39,12 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
             'current_item': TOptional(item_t),
             })
 
+    def make_model_state(self, current_path, current_item):
+        return self.model_state_t(
+            current_path=current_path,
+            current_item=current_item,
+            )
+
     @property
     def model(self):
         return self._model
