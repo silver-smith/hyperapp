@@ -58,10 +58,20 @@ class FnKeyTreeAdapter(FnTreeAdapter, KeyTreeAdapterMixin):
 
 
 @mark.actor.ui_type_creg
-def tree_ui_type_layout(piece, system_fn_ref):
+def index_tree_ui_type_layout(piece, system_fn_ref):
     adapter = htypes.tree_adapter.fn_index_tree_adapter(
         item_t=piece.item_t,
-        # key_t=ui_t.key_t,
         system_fn=system_fn_ref,
+        )
+    return htypes.tree.view(mosaic.put(adapter))
+
+
+@mark.actor.ui_type_creg
+def key_tree_ui_type_layout(piece, system_fn_ref):
+    adapter = htypes.tree_adapter.fn_key_tree_adapter(
+        item_t=piece.item_t,
+        system_fn=system_fn_ref,
+        key_field=piece.key_field,
+        key_field_t=piece.key_field_t,
         )
     return htypes.tree.view(mosaic.put(adapter))

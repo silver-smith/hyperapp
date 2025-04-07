@@ -227,10 +227,21 @@ def test_fn_adapter_with_remote_context(
         assert get_fn_called_flag_call()
 
 
-def test_tree_ui_type_layout(sample_index_tree_model_fn):
+def test_index_tree_ui_type_layout(sample_index_tree_model_fn):
     system_fn_ref = mosaic.put(sample_index_tree_model_fn)
     piece = htypes.model.index_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.item),
         )
-    layout = fn_tree_adapter.tree_ui_type_layout(piece, system_fn_ref)
+    layout = fn_tree_adapter.index_tree_ui_type_layout(piece, system_fn_ref)
+    assert isinstance(layout, htypes.tree.view)
+
+
+def test_key_tree_ui_type_layout(sample_key_tree_model_fn):
+    system_fn_ref = mosaic.put(sample_key_tree_model_fn)
+    piece = htypes.model.key_tree_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.item),
+        key_field='id',
+        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
+        )
+    layout = fn_tree_adapter.key_tree_ui_type_layout(piece, system_fn_ref)
     assert isinstance(layout, htypes.tree.view)

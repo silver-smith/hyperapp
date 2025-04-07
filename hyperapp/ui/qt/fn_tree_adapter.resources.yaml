@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.model:index_tree_ui_t
+- legacy_type.model:key_tree_ui_t
 - legacy_type.system:actor_template
 - legacy_type.tree:view
 - legacy_type.tree_adapter:fn_index_tree_adapter
@@ -43,13 +44,19 @@ definitions:
         code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
         htypes.tree.view: legacy_type.tree:view
         htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
+        htypes.tree_adapter.fn_key_tree_adapter: legacy_type.tree_adapter:fn_key_tree_adapter
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-  tree_ui_type_layout:
+  index_tree_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:
       object: fn_tree_adapter.module
-      attr_name: tree_ui_type_layout
+      attr_name: index_tree_ui_type_layout
+  key_tree_ui_type_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fn_tree_adapter.module
+      attr_name: key_tree_ui_type_layout
   ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -72,5 +79,11 @@ definitions:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.model:index_tree_ui_t
-      function: tree_ui_type_layout
+      function: index_tree_ui_type_layout
+      service_params: []
+  ui_type_creg-model-key_tree_ui_t.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.model:key_tree_ui_t
+      function: key_tree_ui_type_layout
       service_params: []
