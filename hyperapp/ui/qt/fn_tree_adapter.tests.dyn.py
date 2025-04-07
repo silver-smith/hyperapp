@@ -301,6 +301,26 @@ async def test_key_adapter_append_child_diff(key_adapter, subscriber, feed):
     assert adapter.cell_data(row_23, 0) == '99'
 
 
+async def test_key_adapter_remove_child_diff(key_adapter, subscriber, feed):
+    adapter = key_adapter
+    adapter.subscribe(subscriber)
+
+    row_1 = adapter.row_id(0, 1)
+    row_11 = adapter.row_id(row_1, 1)
+    assert adapter.cell_data(row_11, 0) == '22'
+
+    await feed.send(TreeDiff.Remove(('2', '22')))
+
+    diff = await subscriber.wait_for_diff()
+    assert isinstance(diff, VisualTreeDiffRemove), repr(diff)
+    assert diff.parent_id == row_1
+    assert diff.idx == 1
+
+    assert adapter.row_count(row_1) == 2
+    row_11_new = adapter.row_id(row_1, 1)
+    assert adapter.cell_data(row_11_new, 0) == '23'  # Shifted from previous position.
+
+
 _sample_fn_is_called = threading.Event()
 
 

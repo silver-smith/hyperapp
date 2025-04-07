@@ -64,12 +64,6 @@ class IndexTreeAdapterMixin:
             id_list[idx] = item_id
             return VisualTreeDiffReplace(parent_id, idx)
 
-    def _remove_item(self, parent_id, id_list, idx):
-        item_id = id_list[idx]
-        del id_list[idx]
-        # del self._id_to_item[item_id]
-        # del self._id_to_parent_id[item_id]
-
 
 class KeyTreeAdapterMixin:
 
@@ -141,12 +135,14 @@ class KeyTreeAdapterMixin:
         if isinstance(diff, TreeDiff.Append):
             self._append_key_item(parent_id, diff.item)
             return VisualTreeDiffAppend(parent_id)
-        assert 0, f"TODO: {diff}"
         id_list = self._get_id_list(parent_id)
-        idx = diff.path[-1]
+        key = diff.path[-1]
+        idx = self._get_key_idx(parent_id, key)
         if isinstance(diff, TreeDiff.Remove):
             self._remove_item(parent_id, id_list, idx)
+            del self._parent_id_key_to_idx[parent_id, key]
             return VisualTreeDiffRemove(parent_id, idx)
+        assert 0, f"TODO: {diff}"
         item_id = next(self._id_counter)
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = diff.item
@@ -217,6 +213,14 @@ class TreeAdapterBase(metaclass=abc.ABCMeta):
         id_list.append(item_id)
         item_idx = len(id_list)
         return item_idx
+
+    def _remove_item(self, parent_id, id_list, idx):
+        item_id = id_list[idx]
+        del id_list[idx]
+        # Those dicts are still used by Qt for some time after removal.
+        # TODO: Uncomment and wrap usages so that key absence be returned to Qt as proper missing/null index.
+        # del self._id_to_item[item_id]
+        # del self._id_to_parent_id[item_id]
 
     def get_item(self, id):
         return self._id_to_item.get(id)
