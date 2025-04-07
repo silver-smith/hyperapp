@@ -283,6 +283,24 @@ async def test_key_adapter_append_root_diff(key_adapter, subscriber, feed):
     assert adapter.cell_data(row_3, 0) == '99'
 
 
+async def test_key_adapter_append_child_diff(key_adapter, subscriber, feed):
+    adapter = key_adapter
+    adapter.subscribe(subscriber)
+
+    row_2 = adapter.row_id(0, 2)
+
+    item = htypes.tree_adapter_tests.key_item('99', "New item")
+    await feed.send(TreeDiff.Append(('3',), item))
+
+    diff = await subscriber.wait_for_diff()
+    assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
+    assert diff.parent_id == row_2
+
+    assert adapter.row_count(row_2) == 4
+    row_23 = adapter.row_id(row_2, 3)
+    assert adapter.cell_data(row_23, 0) == '99'
+
+
 _sample_fn_is_called = threading.Event()
 
 

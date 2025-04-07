@@ -38,12 +38,45 @@ class IndexTreeAdapterMixin:
             'parent': self._id_to_item[parent_id],
             }
 
+    def _apply_diff(self, diff):
+        if isinstance(diff, TreeDiff.Append):
+            parent_path = diff.path
+        else:
+            parent_path = diff.path[:-1]
+        parent_id = 0
+        for idx in parent_path:
+            parent_id = self._get_id_list(parent_id)[idx]
+        if isinstance(diff, TreeDiff.Append):
+            self._append_item(parent_id, diff.item)
+            return VisualTreeDiffAppend(parent_id)
+        id_list = self._get_id_list(parent_id)
+        idx = diff.path[-1]
+        if isinstance(diff, TreeDiff.Remove):
+            self._remove_item(parent_id, id_list, idx)
+            return VisualTreeDiffRemove(parent_id, idx)
+        item_id = next(self._id_counter)
+        self._id_to_parent_id[item_id] = parent_id
+        self._id_to_item[item_id] = diff.item
+        if isinstance(diff, TreeDiff.Insert):
+            id_list.insert(idx, item_id)
+            return VisualTreeDiffInsert(parent_id, idx)
+        if isinstance(diff, TreeDiff.Replace):
+            id_list[idx] = item_id
+            return VisualTreeDiffReplace(parent_id, idx)
+
+    def _remove_item(self, parent_id, id_list, idx):
+        item_id = id_list[idx]
+        del id_list[idx]
+        # del self._id_to_item[item_id]
+        # del self._id_to_parent_id[item_id]
+
 
 class KeyTreeAdapterMixin:
 
     def __init__(self, key_field, key_field_t):
         self._key_field = key_field
         self._key_field_t = key_field_t
+        self._parent_id_key_to_idx = {}
 
     @cached_property
     def model_state_t(self):
@@ -80,6 +113,54 @@ class KeyTreeAdapterMixin:
         key = getattr(item, self._key_field)
         parent_id = self._id_to_parent_id[item_id]
         return [*self._make_key_path(parent_id), key]
+
+    def _get_key_idx(self, parent_id, key):
+        try:
+            return self._parent_id_key_to_idx[parent_id, key]
+        except KeyError:
+            pass
+        id_list = self._get_id_list(parent_id)
+        for idx, item_id in enumerate(id_list):
+            item = self._id_to_item[item_id]
+            item_key = getattr(item, self._key_field)
+            self._parent_id_key_to_idx[parent_id, item_key] = idx
+        return self._parent_id_key_to_idx[parent_id, key]
+
+    def _apply_diff(self, diff):
+        if isinstance(diff, TreeDiff.Append):
+            parent_key_path = diff.path
+        else:
+            parent_key_path = diff.path[:-1]
+        parent_id = 0
+        parent_idx_path = []
+        for key in parent_key_path:
+            id_list = self._get_id_list(parent_id)
+            idx = self._get_key_idx(parent_id, key)
+            parent_idx_path.append(idx)
+            parent_id = id_list[idx]
+        if isinstance(diff, TreeDiff.Append):
+            self._append_key_item(parent_id, diff.item)
+            return VisualTreeDiffAppend(parent_id)
+        assert 0, f"TODO: {diff}"
+        id_list = self._get_id_list(parent_id)
+        idx = diff.path[-1]
+        if isinstance(diff, TreeDiff.Remove):
+            self._remove_item(parent_id, id_list, idx)
+            return VisualTreeDiffRemove(parent_id, idx)
+        item_id = next(self._id_counter)
+        self._id_to_parent_id[item_id] = parent_id
+        self._id_to_item[item_id] = diff.item
+        if isinstance(diff, TreeDiff.Insert):
+            id_list.insert(idx, item_id)
+            return VisualTreeDiffInsert(parent_id, idx)
+        if isinstance(diff, TreeDiff.Replace):
+            id_list[idx] = item_id
+            return VisualTreeDiffReplace(parent_id, idx)
+
+    def _append_key_item(self, parent_id, item):
+        item_idx = self._append_item(parent_id, item)
+        key = getattr(item, self._key_field)
+        self._parent_id_key_to_idx[parent_id, key] = item_idx
 
 
 class TreeAdapterBase(metaclass=abc.ABCMeta):
@@ -128,44 +209,14 @@ class TreeAdapterBase(metaclass=abc.ABCMeta):
         for subscriber in self._subscribers:
             subscriber.process_diff(visual_diff)
 
-    def _apply_diff(self, diff):
-        if isinstance(diff, TreeDiff.Append):
-            parent_path = diff.path
-        else:
-            parent_path = diff.path[:-1]
-        parent_id = 0
-        for idx in parent_path:
-            parent_id = self._get_id_list(parent_id)[idx]
-        if isinstance(diff, TreeDiff.Append):
-            self._append_item(parent_id, diff.item)
-            return VisualTreeDiffAppend(parent_id)
-        item_id_list = self._get_id_list(parent_id)
-        idx = diff.path[-1]
-        if isinstance(diff, TreeDiff.Remove):
-            self._remove_item(parent_id, item_id_list, idx)
-            return VisualTreeDiffRemove(parent_id, idx)
-        item_id = next(self._id_counter)
-        self._id_to_parent_id[item_id] = parent_id
-        self._id_to_item[item_id] = diff.item
-        if isinstance(diff, TreeDiff.Insert):
-            item_id_list.insert(idx, item_id)
-            return VisualTreeDiffInsert(parent_id, idx)
-        if isinstance(diff, TreeDiff.Replace):
-            item_id_list[idx] = item_id
-            return VisualTreeDiffReplace(parent_id, idx)
-
     def _append_item(self, parent_id, item):
-        item_id_list = self._get_id_list(parent_id)
+        id_list = self._get_id_list(parent_id)
         item_id = next(self._id_counter)
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = item
-        item_id_list.append(item_id)
-
-    def _remove_item(self, parent_id, item_id_list, idx):
-        item_id = item_id_list[idx]
-        del item_id_list[idx]
-        # del self._id_to_item[item_id]
-        # del self._id_to_parent_id[item_id]
+        id_list.append(item_id)
+        item_idx = len(id_list)
+        return item_idx
 
     def get_item(self, id):
         return self._id_to_item.get(id)
@@ -197,14 +248,14 @@ class TreeAdapterBase(metaclass=abc.ABCMeta):
     def _populate(self, parent_id):
         item_list = self._retrieve_item_list(parent_id)
         log.info("Tree adapter: retrieved item list for %s/%s: %s", self._model, parent_id, item_list)
-        item_id_list = []
+        id_list = []
         for item in item_list:
             id = next(self._id_counter)
-            item_id_list.append(id)
+            id_list.append(id)
             self._id_to_item[id] = item
             self._id_to_parent_id[id] = parent_id
-        self._id_to_children_id_list[parent_id] = item_id_list
-        return item_id_list
+        self._id_to_children_id_list[parent_id] = id_list
+        return id_list
 
     @abc.abstractmethod
     def _retrieve_item_list(self, parent_id):
