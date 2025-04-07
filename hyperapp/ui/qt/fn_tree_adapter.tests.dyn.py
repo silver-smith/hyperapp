@@ -130,16 +130,38 @@ def feed(feed_factory, model):
     return feed_factory(model)
 
 
-async def test_index_adapter_append_diff(index_adapter, subscriber, feed):
+async def test_index_adapter_append_root_diff(index_adapter, subscriber, feed):
     adapter = index_adapter
     adapter.subscribe(subscriber)
 
-    item = htypes.tree_adapter_tests.item(4, "Forth item")
+    item = htypes.tree_adapter_tests.item(4, "New item")
     await feed.send(TreeDiff.Append((), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
     assert diff.parent_id == 0
+
+    assert adapter.row_count(0) == 4
+    row_3_id = adapter.row_id(0, 3)
+    assert adapter.cell_data(row_3_id, 0) == 4
+
+
+async def test_index_adapter_append_child_diff(index_adapter, subscriber, feed):
+    adapter = index_adapter
+    adapter.subscribe(subscriber)
+
+    row_2_id = adapter.row_id(0, 2)
+
+    item = htypes.tree_adapter_tests.item(24, "New item")
+    await feed.send(TreeDiff.Append((2,), item))
+
+    diff = await subscriber.wait_for_diff()
+    assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
+    assert diff.parent_id == row_2_id
+
+    assert adapter.row_count(row_2_id) == 4
+    row_2_3_id = adapter.row_id(row_2_id, 3)
+    assert adapter.cell_data(row_2_3_id, 0) == 24
 
 
 async def test_fn_key_adapter(model, sample_key_tree_model_fn):
