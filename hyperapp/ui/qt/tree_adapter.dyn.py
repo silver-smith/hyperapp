@@ -113,12 +113,15 @@ class KeyTreeAdapterMixin:
             return self._parent_id_key_to_idx[parent_id, key]
         except KeyError:
             pass
+        self._update_key_indexes(parent_id)
+        return self._parent_id_key_to_idx[parent_id, key]
+
+    def _update_key_indexes(self, parent_id):
         id_list = self._get_id_list(parent_id)
         for idx, item_id in enumerate(id_list):
             item = self._id_to_item[item_id]
             item_key = getattr(item, self._key_field)
             self._parent_id_key_to_idx[parent_id, item_key] = idx
-        return self._parent_id_key_to_idx[parent_id, key]
 
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
@@ -141,14 +144,16 @@ class KeyTreeAdapterMixin:
         if isinstance(diff, TreeDiff.Remove):
             self._remove_item(parent_id, id_list, idx)
             del self._parent_id_key_to_idx[parent_id, key]
+            self._update_key_indexes(parent_id)
             return VisualTreeDiffRemove(parent_id, idx)
-        assert 0, f"TODO: {diff}"
         item_id = next(self._id_counter)
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = diff.item
         if isinstance(diff, TreeDiff.Insert):
             id_list.insert(idx, item_id)
+            self._update_key_indexes(parent_id)
             return VisualTreeDiffInsert(parent_id, idx)
+        assert 0, f"TODO: {diff}"
         if isinstance(diff, TreeDiff.Replace):
             id_list[idx] = item_id
             return VisualTreeDiffReplace(parent_id, idx)
