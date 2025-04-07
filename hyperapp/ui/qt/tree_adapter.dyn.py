@@ -129,11 +129,9 @@ class KeyTreeAdapterMixin:
         else:
             parent_key_path = diff.path[:-1]
         parent_id = 0
-        parent_idx_path = []
         for key in parent_key_path:
             id_list = self._get_id_list(parent_id)
             idx = self._get_key_idx(parent_id, key)
-            parent_idx_path.append(idx)
             parent_id = id_list[idx]
         if isinstance(diff, TreeDiff.Append):
             self._append_item(parent_id, diff.item)
@@ -154,9 +152,9 @@ class KeyTreeAdapterMixin:
             id_list.insert(idx, item_id)
             self._update_key_indexes(parent_id)
             return VisualTreeDiffInsert(parent_id, idx)
-        assert 0, f"TODO: {diff}"
         if isinstance(diff, TreeDiff.Replace):
             id_list[idx] = item_id
+            self._update_key_indexes(parent_id)
             return VisualTreeDiffReplace(parent_id, idx)
 
 
