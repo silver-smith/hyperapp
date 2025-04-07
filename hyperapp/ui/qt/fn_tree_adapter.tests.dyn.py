@@ -70,27 +70,25 @@ def sample_key_tree_model_fn():
         )
 
 
-class Subscriber:
-
-    def __init__(self, queue):
-        self._queue = queue
-
-    def process_diff(self, diff):
-        self._queue.put_nowait(diff)
+@mark.fixture
+def ctx(model):
+    return Context(
+        piece=model,
+        )
 
 
-async def _send_append_diff(feed):
-    item = htypes.tree_adapter_tests.item(4, "Forth item")
-    await feed.send(TreeDiff.Append((), item))
-
-
-async def test_fn_index_adapter(feed_factory, model, sample_index_tree_model_fn):
-    ctx = Context(piece=model)
-    adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+@mark.fixture
+def index_adapter(model, ctx, sample_index_tree_model_fn):
+    item_t = htypes.tree_adapter_tests.item
+    piece = htypes.tree_adapter.fn_index_tree_adapter(
+        item_t=pyobj_creg.actor_to_ref(item_t),
         system_fn=mosaic.put(sample_index_tree_model_fn),
         )
-    adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
+    return fn_tree_adapter.FnIndexTreeAdapter.from_piece(piece, model, ctx)
+
+
+async def test_index_adapter_contents(index_adapter):
+    adapter = index_adapter
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
@@ -108,19 +106,43 @@ async def test_fn_index_adapter(feed_factory, model, sample_index_tree_model_fn)
     assert adapter.path_to_item_id([2]) == adapter.row_id(0, 2)
     assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1_id, 2)
 
+
+class Subscriber:
+
+    def __init__(self, queue):
+        self._queue = queue
+
+    def process_diff(self, diff):
+        self._queue.put_nowait(diff)
+
+    async def wait_for_diff(self):
+        return await asyncio.wait_for(self._queue.get(), timeout=5)
+
+
+@mark.fixture
+def subscriber():
     queue = asyncio.Queue()
-    subscriber = Subscriber(queue)
+    return Subscriber(queue)
+
+
+@mark.fixture
+def feed(feed_factory, model):
+    return feed_factory(model)
+
+
+async def test_index_adapter_append_diff(index_adapter, subscriber, feed):
+    adapter = index_adapter
     adapter.subscribe(subscriber)
 
-    feed = feed_factory(model)
-    asyncio.create_task(_send_append_diff(feed))
+    item = htypes.tree_adapter_tests.item(4, "Forth item")
+    await feed.send(TreeDiff.Append((), item))
 
-    diff = await asyncio.wait_for(queue.get(), timeout=5)
+    diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
     assert diff.parent_id == 0
 
 
-async def test_fn_key_adapter(feed_factory, model, sample_key_tree_model_fn):
+async def test_fn_key_adapter(model, sample_key_tree_model_fn):
     ctx = Context(piece=model)
     adapter_piece = htypes.tree_adapter.fn_key_tree_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
