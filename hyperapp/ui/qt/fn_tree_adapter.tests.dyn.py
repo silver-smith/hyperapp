@@ -235,15 +235,20 @@ async def test_index_adapter_replace_child_diff(index_adapter, subscriber, feed)
     assert adapter.cell_data(row_12_new, 0) == 23  # Should not change.
 
 
-async def test_key_adapter_contents(model, sample_key_tree_model_fn):
-    ctx = Context(piece=model)
-    adapter_piece = htypes.tree_adapter.fn_key_tree_adapter(
-        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+@mark.fixture
+def key_adapter(model, ctx, sample_key_tree_model_fn):
+    item_t = htypes.tree_adapter_tests.item
+    piece = htypes.tree_adapter.fn_key_tree_adapter(
+        item_t=pyobj_creg.actor_to_ref(item_t),
         system_fn=mosaic.put(sample_key_tree_model_fn),
         key_field='id',
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
         )
-    adapter = fn_tree_adapter.FnKeyTreeAdapter.from_piece(adapter_piece, model, ctx)
+    return fn_tree_adapter.FnKeyTreeAdapter.from_piece(piece, model, ctx)
+
+
+async def test_key_adapter_contents(key_adapter):
+    adapter = key_adapter
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
@@ -260,19 +265,6 @@ async def test_key_adapter_contents(model, sample_key_tree_model_fn):
     assert adapter.path_to_item_id([0]) == adapter.row_id(0, 0)
     assert adapter.path_to_item_id([2]) == adapter.row_id(0, 2)
     assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1, 2)
-
-    return
-
-    queue = asyncio.Queue()
-    subscriber = Subscriber(queue)
-    adapter.subscribe(subscriber)
-
-    feed = feed_factory(model)
-    asyncio.create_task(_send_append_diff(feed))
-
-    diff = await asyncio.wait_for(queue.get(), timeout=5)
-    assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
-    assert diff.parent_id == 0
 
 
 _sample_fn_is_called = threading.Event()
