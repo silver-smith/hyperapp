@@ -12,7 +12,10 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.tree_diff import TreeDiff
-from .code.tree_visual_diff import VisualTreeDiffAppend
+from .code.tree_visual_diff import (
+    VisualTreeDiffAppend,
+    VisualTreeDiffRemove,
+    )
 from .fixtures import feed_fixtures
 from .tested.code import fn_tree_adapter
 
@@ -160,8 +163,28 @@ async def test_index_adapter_append_child_diff(index_adapter, subscriber, feed):
     assert diff.parent_id == row_2
 
     assert adapter.row_count(row_2) == 4
-    row_2_3 = adapter.row_id(row_2, 3)
-    assert adapter.cell_data(row_2_3, 0) == 24
+    row_23 = adapter.row_id(row_2, 3)
+    assert adapter.cell_data(row_23, 0) == 24
+
+
+async def test_index_adapter_remove_child_diff(index_adapter, subscriber, feed):
+    adapter = index_adapter
+    adapter.subscribe(subscriber)
+
+    row_1 = adapter.row_id(0, 1)
+    row_11 = adapter.row_id(row_1, 1)
+    assert adapter.cell_data(row_11, 0) == 22
+
+    await feed.send(TreeDiff.Remove((1, 1)))
+
+    diff = await subscriber.wait_for_diff()
+    assert isinstance(diff, VisualTreeDiffRemove), repr(diff)
+    assert diff.parent_id == row_1
+    assert diff.idx == 1
+
+    assert adapter.row_count(row_1) == 2
+    row_11_new = adapter.row_id(row_1, 1)
+    assert adapter.cell_data(row_11_new, 0) == 23
 
 
 async def test_fn_key_adapter(model, sample_key_tree_model_fn):
