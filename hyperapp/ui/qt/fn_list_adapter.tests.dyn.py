@@ -110,9 +110,9 @@ async def _send_replace_diff(feed):
 async def test_key_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     adapter_piece = htypes.list_adapter.key_fn_list_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        system_fn=mosaic.put(sample_list_model_fn),
         key_field='id',
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
+        system_fn=mosaic.put(sample_list_model_fn),
         )
     adapter = fn_list_adapter.FnKeyListAdapter.from_piece(adapter_piece, model, ctx)
 

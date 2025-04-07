@@ -84,8 +84,8 @@ def index_tree_ui_type_layout(piece, system_fn_ref):
 def key_tree_ui_type_layout(piece, system_fn_ref):
     adapter = htypes.tree_adapter.fn_key_tree_adapter(
         item_t=piece.item_t,
-        system_fn=system_fn_ref,
         key_field=piece.key_field,
         key_field_t=piece.key_field_t,
+        system_fn=system_fn_ref,
         )
     return htypes.tree.view(mosaic.put(adapter))

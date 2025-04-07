@@ -99,8 +99,8 @@ def index_list_ui_type_layout(piece, system_fn_ref):
 def key_list_ui_type_layout(piece, system_fn_ref):
     adapter = htypes.list_adapter.key_fn_list_adapter(
         item_t=piece.item_t,
-        system_fn=system_fn_ref,
         key_field=piece.key_field,
         key_field_t=piece.key_field_t,
+        system_fn=system_fn_ref,
         )
     return htypes.list.view(mosaic.put(adapter))

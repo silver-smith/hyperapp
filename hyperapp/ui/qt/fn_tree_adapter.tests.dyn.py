@@ -240,9 +240,9 @@ def key_adapter(model, ctx, sample_key_tree_model_fn):
     item_t = htypes.tree_adapter_tests.key_item
     piece = htypes.tree_adapter.fn_key_tree_adapter(
         item_t=pyobj_creg.actor_to_ref(item_t),
-        system_fn=mosaic.put(sample_key_tree_model_fn),
         key_field='key',
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+        system_fn=mosaic.put(sample_key_tree_model_fn),
         )
     return fn_tree_adapter.FnKeyTreeAdapter.from_piece(piece, model, ctx)
 
