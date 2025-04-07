@@ -95,16 +95,16 @@ async def test_index_adapter_contents(index_adapter):
     assert adapter.column_title(1) == 'text'
 
     assert adapter.row_count(0) == 3
-    row_1_id = adapter.row_id(0, 1)
-    assert adapter.cell_data(row_1_id, 0) == 2
-    assert adapter.cell_data(row_1_id, 1) == "Second item"
-    row_2_id = adapter.row_id(row_1_id, 2)
-    assert adapter.cell_data(row_2_id, 0) == 23
+    row_1 = adapter.row_id(0, 1)
+    assert adapter.cell_data(row_1, 0) == 2
+    assert adapter.cell_data(row_1, 1) == "Second item"
+    row_2 = adapter.row_id(row_1, 2)
+    assert adapter.cell_data(row_2, 0) == 23
 
     assert adapter.path_to_item_id([]) == 0
     assert adapter.path_to_item_id([0]) == adapter.row_id(0, 0)
     assert adapter.path_to_item_id([2]) == adapter.row_id(0, 2)
-    assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1_id, 2)
+    assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1, 2)
 
 
 class Subscriber:
@@ -142,26 +142,26 @@ async def test_index_adapter_append_root_diff(index_adapter, subscriber, feed):
     assert diff.parent_id == 0
 
     assert adapter.row_count(0) == 4
-    row_3_id = adapter.row_id(0, 3)
-    assert adapter.cell_data(row_3_id, 0) == 4
+    row_3 = adapter.row_id(0, 3)
+    assert adapter.cell_data(row_3, 0) == 4
 
 
 async def test_index_adapter_append_child_diff(index_adapter, subscriber, feed):
     adapter = index_adapter
     adapter.subscribe(subscriber)
 
-    row_2_id = adapter.row_id(0, 2)
+    row_2 = adapter.row_id(0, 2)
 
     item = htypes.tree_adapter_tests.item(24, "New item")
     await feed.send(TreeDiff.Append((2,), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
-    assert diff.parent_id == row_2_id
+    assert diff.parent_id == row_2
 
-    assert adapter.row_count(row_2_id) == 4
-    row_2_3_id = adapter.row_id(row_2_id, 3)
-    assert adapter.cell_data(row_2_3_id, 0) == 24
+    assert adapter.row_count(row_2) == 4
+    row_2_3 = adapter.row_id(row_2, 3)
+    assert adapter.cell_data(row_2_3, 0) == 24
 
 
 async def test_fn_key_adapter(model, sample_key_tree_model_fn):
@@ -179,16 +179,16 @@ async def test_fn_key_adapter(model, sample_key_tree_model_fn):
     assert adapter.column_title(1) == 'text'
 
     assert adapter.row_count(0) == 3
-    row_1_id = adapter.row_id(0, 1)
-    assert adapter.cell_data(row_1_id, 0) == 2
-    assert adapter.cell_data(row_1_id, 1) == "Second item"
-    row_2_id = adapter.row_id(row_1_id, 2)
-    assert adapter.cell_data(row_2_id, 0) == 23
+    row_1 = adapter.row_id(0, 1)
+    assert adapter.cell_data(row_1, 0) == 2
+    assert adapter.cell_data(row_1, 1) == "Second item"
+    row_2 = adapter.row_id(row_1, 2)
+    assert adapter.cell_data(row_2, 0) == 23
 
     assert adapter.path_to_item_id([]) == 0
     assert adapter.path_to_item_id([0]) == adapter.row_id(0, 0)
     assert adapter.path_to_item_id([2]) == adapter.row_id(0, 2)
-    assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1_id, 2)
+    assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1, 2)
 
     return
 
@@ -255,11 +255,11 @@ def test_fn_adapter_with_remote_context(
         assert adapter.column_title(1) == 'text'
 
         assert adapter.row_count(0) == 3
-        row_1_id = adapter.row_id(0, 1)
-        assert adapter.cell_data(row_1_id, 0) == 2
-        assert adapter.cell_data(row_1_id, 1) == "Second item"
-        row_2_id = adapter.row_id(row_1_id, 2)
-        assert adapter.cell_data(row_2_id, 0) == 23
+        row_1 = adapter.row_id(0, 1)
+        assert adapter.cell_data(row_1, 0) == 2
+        assert adapter.cell_data(row_1, 1) == "Second item"
+        row_2 = adapter.row_id(row_1, 2)
+        assert adapter.cell_data(row_2, 0) == 23
 
         get_fn_called_flag_call = rpc_call_factory(
             sender_identity=identity,
