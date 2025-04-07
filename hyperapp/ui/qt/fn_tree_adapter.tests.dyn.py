@@ -235,7 +235,7 @@ async def test_index_adapter_replace_child_diff(index_adapter, subscriber, feed)
     assert adapter.cell_data(row_12_new, 0) == 23  # Should not change.
 
 
-async def test_fn_key_adapter(model, sample_key_tree_model_fn):
+async def test_key_adapter_contents(model, sample_key_tree_model_fn):
     ctx = Context(piece=model)
     adapter_piece = htypes.tree_adapter.fn_key_tree_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
@@ -289,7 +289,7 @@ def get_fn_called_flag():
     return _sample_fn_is_called.is_set()
 
 
-def test_fn_adapter_with_remote_context(
+def test_index_adapter_with_remote_context(
         generate_rsa_identity,
         endpoint_registry,
         rpc_endpoint,
@@ -340,7 +340,7 @@ def test_fn_adapter_with_remote_context(
         assert get_fn_called_flag_call()
 
 
-def test_index_tree_ui_type_layout(sample_index_tree_model_fn):
+def test_index_ui_type_layout(sample_index_tree_model_fn):
     system_fn_ref = mosaic.put(sample_index_tree_model_fn)
     piece = htypes.model.index_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.item),
@@ -349,7 +349,7 @@ def test_index_tree_ui_type_layout(sample_index_tree_model_fn):
     assert isinstance(layout, htypes.tree.view)
 
 
-def test_key_tree_ui_type_layout(sample_key_tree_model_fn):
+def test_key_ui_type_layout(sample_key_tree_model_fn):
     system_fn_ref = mosaic.put(sample_key_tree_model_fn)
     piece = htypes.model.key_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.item),
