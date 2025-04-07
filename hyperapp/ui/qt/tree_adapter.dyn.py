@@ -136,7 +136,8 @@ class KeyTreeAdapterMixin:
             parent_idx_path.append(idx)
             parent_id = id_list[idx]
         if isinstance(diff, TreeDiff.Append):
-            self._append_key_item(parent_id, diff.item)
+            self._append_item(parent_id, diff.item)
+            self._update_key_indexes(parent_id)
             return VisualTreeDiffAppend(parent_id)
         id_list = self._get_id_list(parent_id)
         key = diff.path[-1]
@@ -157,11 +158,6 @@ class KeyTreeAdapterMixin:
         if isinstance(diff, TreeDiff.Replace):
             id_list[idx] = item_id
             return VisualTreeDiffReplace(parent_id, idx)
-
-    def _append_key_item(self, parent_id, item):
-        item_idx = self._append_item(parent_id, item)
-        key = getattr(item, self._key_field)
-        self._parent_id_key_to_idx[parent_id, key] = item_idx
 
 
 class TreeAdapterBase(metaclass=abc.ABCMeta):
@@ -216,8 +212,6 @@ class TreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = item
         id_list.append(item_id)
-        item_idx = len(id_list)
-        return item_idx
 
     def _remove_item(self, parent_id, id_list, idx):
         item_id = id_list[idx]
