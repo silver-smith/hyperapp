@@ -56,13 +56,13 @@ def sample_key_tree_model(piece, current_path):
     log.info("Sample key tree fn: %s @ %s", piece, current_path)
     assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
     if current_path:
-        base = current_path[-1]
+        base = int(current_path[-1])
     else:
         base = 0
     return [
-        htypes.tree_adapter_tests.item(base*10 + 1, "First item"),
-        htypes.tree_adapter_tests.item(base*10 + 2, "Second item"),
-        htypes.tree_adapter_tests.item(base*10 + 3, "Third item"),
+        htypes.tree_adapter_tests.key_item(str(base*10 + 1), "First item"),
+        htypes.tree_adapter_tests.key_item(str(base*10 + 2), "Second item"),
+        htypes.tree_adapter_tests.key_item(str(base*10 + 3), "Third item"),
         ]
 
 
@@ -237,12 +237,12 @@ async def test_index_adapter_replace_child_diff(index_adapter, subscriber, feed)
 
 @mark.fixture
 def key_adapter(model, ctx, sample_key_tree_model_fn):
-    item_t = htypes.tree_adapter_tests.item
+    item_t = htypes.tree_adapter_tests.key_item
     piece = htypes.tree_adapter.fn_key_tree_adapter(
         item_t=pyobj_creg.actor_to_ref(item_t),
         system_fn=mosaic.put(sample_key_tree_model_fn),
-        key_field='id',
-        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
+        key_field='key',
+        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
         )
     return fn_tree_adapter.FnKeyTreeAdapter.from_piece(piece, model, ctx)
 
@@ -251,15 +251,15 @@ async def test_key_adapter_contents(key_adapter):
     adapter = key_adapter
 
     assert adapter.column_count() == 2
-    assert adapter.column_title(0) == 'id'
+    assert adapter.column_title(0) == 'key'
     assert adapter.column_title(1) == 'text'
 
     assert adapter.row_count(0) == 3
     row_1 = adapter.row_id(0, 1)
-    assert adapter.cell_data(row_1, 0) == 2
+    assert adapter.cell_data(row_1, 0) == '2'
     assert adapter.cell_data(row_1, 1) == "Second item"
     row_2 = adapter.row_id(row_1, 2)
-    assert adapter.cell_data(row_2, 0) == 23
+    assert adapter.cell_data(row_2, 0) == '23'
 
     assert adapter.path_to_item_id([]) == 0
     assert adapter.path_to_item_id([0]) == adapter.row_id(0, 0)
@@ -271,7 +271,7 @@ async def test_key_adapter_append_root_diff(key_adapter, subscriber, feed):
     adapter = key_adapter
     adapter.subscribe(subscriber)
 
-    item = htypes.tree_adapter_tests.item(99, "New item")
+    item = htypes.tree_adapter_tests.key_item('99', "New item")
     await feed.send(TreeDiff.Append((), item))
 
     diff = await subscriber.wait_for_diff()
@@ -280,7 +280,7 @@ async def test_key_adapter_append_root_diff(key_adapter, subscriber, feed):
 
     assert adapter.row_count(0) == 4
     row_3 = adapter.row_id(0, 3)
-    assert adapter.cell_data(row_3, 0) == 99
+    assert adapter.cell_data(row_3, 0) == '99'
 
 
 _sample_fn_is_called = threading.Event()
@@ -360,9 +360,9 @@ def test_index_ui_type_layout(sample_index_tree_model_fn):
 def test_key_ui_type_layout(sample_key_tree_model_fn):
     system_fn_ref = mosaic.put(sample_key_tree_model_fn)
     piece = htypes.model.key_tree_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.item),
-        key_field='id',
-        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
+        item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.key_item),
+        key_field='key',
+        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
         )
     layout = fn_tree_adapter.key_tree_ui_type_layout(piece, system_fn_ref)
     assert isinstance(layout, htypes.tree.view)
