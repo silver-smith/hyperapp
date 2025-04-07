@@ -267,6 +267,22 @@ async def test_key_adapter_contents(key_adapter):
     assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1, 2)
 
 
+async def test_key_adapter_append_root_diff(key_adapter, subscriber, feed):
+    adapter = key_adapter
+    adapter.subscribe(subscriber)
+
+    item = htypes.tree_adapter_tests.item(99, "New item")
+    await feed.send(TreeDiff.Append((), item))
+
+    diff = await subscriber.wait_for_diff()
+    assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
+    assert diff.parent_id == 0
+
+    assert adapter.row_count(0) == 4
+    row_3 = adapter.row_id(0, 3)
+    assert adapter.cell_data(row_3, 0) == 99
+
+
 _sample_fn_is_called = threading.Event()
 
 
