@@ -381,6 +381,60 @@ def get_fn_called_flag():
     return _sample_fn_is_called.is_set()
 
 
+def test_index_adapter_with_remote_model(
+        generate_rsa_identity,
+        endpoint_registry,
+        rpc_endpoint,
+        rpc_call_factory,
+        subprocess_rpc_server_running,
+        model,
+        ):
+
+    identity = generate_rsa_identity(fast=True)
+    endpoint_registry.register(identity, rpc_endpoint)
+
+    subprocess_name = 'test-remote-fn-tree-adapter-main'
+    with subprocess_rpc_server_running(subprocess_name, identity) as process:
+        log.info("Started: %r", process)
+
+        remote_model = htypes.model.remote_model(
+            model=mosaic.put(model),
+            remote_peer=mosaic.put(process.peer.piece),
+            )
+        ctx = Context(
+            identity=identity,
+            remote_peer=process.peer,
+            )
+        system_fn = htypes.system_fn.ctx_fn(
+            function=pyobj_creg.actor_to_ref(sample_remote_tree_fn),
+            ctx_params=('piece', 'parent'),
+            service_params=(),
+            )
+        adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
+            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.index_item)),
+            system_fn=mosaic.put(system_fn),
+            )
+        adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, remote_model, ctx)
+
+        assert adapter.column_count() == 2
+        assert adapter.column_title(0) == 'id'
+        assert adapter.column_title(1) == 'text'
+
+        assert adapter.row_count(0) == 3
+        row_1 = adapter.row_id(0, 1)
+        assert adapter.cell_data(row_1, 0) == 2
+        assert adapter.cell_data(row_1, 1) == "Second item"
+        row_2 = adapter.row_id(row_1, 2)
+        assert adapter.cell_data(row_2, 0) == 23
+
+        get_fn_called_flag_call = rpc_call_factory(
+            sender_identity=identity,
+            receiver_peer=process.peer,
+            servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
+            )
+        assert get_fn_called_flag_call()
+
+
 def test_index_adapter_with_remote_context(
         generate_rsa_identity,
         endpoint_registry,

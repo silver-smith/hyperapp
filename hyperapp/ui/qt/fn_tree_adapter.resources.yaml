@@ -4,10 +4,12 @@ import:
 - base.mark:mark.module
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.model:index_tree_ui_t
 - legacy_type.model:key_tree_ui_t
+- legacy_type.model:remote_model
 - legacy_type.system:actor_template
 - legacy_type.tree:view
 - legacy_type.tree_adapter:fn_index_tree_adapter
@@ -42,11 +44,13 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
+        htypes.model.remote_model: legacy_type.model:remote_model
         htypes.tree.view: legacy_type.tree:view
         htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
         htypes.tree_adapter.fn_key_tree_adapter: legacy_type.tree_adapter:fn_key_tree_adapter
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
   index_tree_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -65,6 +69,7 @@ definitions:
       service_params:
       - system_fn_creg
       - rpc_call_factory
+      - peer_registry
       - feed_factory
   ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template:
     type: legacy_type.system:actor_template
@@ -74,6 +79,7 @@ definitions:
       service_params:
       - system_fn_creg
       - rpc_call_factory
+      - peer_registry
       - feed_factory
   ui_type_creg-model-index_tree_ui_t.actor-template:
     type: legacy_type.system:actor_template
