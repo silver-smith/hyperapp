@@ -186,7 +186,7 @@ async def test_index_adapter_remove_child_diff(index_adapter, subscriber, feed):
 
     assert adapter.row_count(row_1) == 2
     row_11_new = adapter.row_id(row_1, 1)
-    assert adapter.cell_data(row_11_new, 0) == 23
+    assert adapter.cell_data(row_11_new, 0) == 23  # Shifted from previous position.
 
 
 async def test_index_adapter_insert_child_diff(index_adapter, subscriber, feed):
@@ -209,7 +209,30 @@ async def test_index_adapter_insert_child_diff(index_adapter, subscriber, feed):
     row_11_new = adapter.row_id(row_1, 1)
     row_12_new = adapter.row_id(row_1, 2)
     assert adapter.cell_data(row_11_new, 0) == 99
-    assert adapter.cell_data(row_12_new, 0) == 22
+    assert adapter.cell_data(row_12_new, 0) == 22  # Shifted from previous position.
+
+
+async def test_index_adapter_replace_child_diff(index_adapter, subscriber, feed):
+    adapter = index_adapter
+    adapter.subscribe(subscriber)
+
+    row_1 = adapter.row_id(0, 1)
+    row_11 = adapter.row_id(row_1, 1)
+    assert adapter.cell_data(row_11, 0) == 22
+
+    item = htypes.tree_adapter_tests.item(99, "New item")
+    await feed.send(TreeDiff.Replace((1, 1), item))
+
+    diff = await subscriber.wait_for_diff()
+    assert isinstance(diff, VisualTreeDiffReplace), repr(diff)
+    assert diff.parent_id == row_1
+    assert diff.idx == 1
+
+    assert adapter.row_count(row_1) == 3
+    row_11_new = adapter.row_id(row_1, 1)
+    row_12_new = adapter.row_id(row_1, 2)
+    assert adapter.cell_data(row_11_new, 0) == 99
+    assert adapter.cell_data(row_12_new, 0) == 23  # Should not change.
 
 
 async def test_fn_key_adapter(model, sample_key_tree_model_fn):
