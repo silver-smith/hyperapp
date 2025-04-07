@@ -101,12 +101,12 @@ class KeyTreeAdapterMixin:
 
     def _make_key_path(self, item_id):
         if item_id == 0:
-            return []
+            return ()
         path = []
         item = self._id_to_item[item_id]
         key = getattr(item, self._key_field)
         parent_id = self._id_to_parent_id[item_id]
-        return [*self._make_key_path(parent_id), key]
+        return (*self._make_key_path(parent_id), key)
 
     def _get_key_idx(self, parent_id, key):
         try:
