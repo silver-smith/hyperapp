@@ -9,7 +9,7 @@ from .code.tree_adapter import IndexTreeAdapterMixin, KeyTreeAdapterMixin, FnTre
 
 class FnTreeAdapter(FnTreeAdapterBase):
 
-    def __init__(self, feed_factory, rpc_call_factory, model, item_t, ctx, fn):
+    def __init__(self, rpc_call_factory, feed_factory, model, item_t, ctx, fn):
         super().__init__(feed_factory, model, item_t)
         self._rpc_call_factory = rpc_call_factory
         self._ctx = ctx
@@ -35,24 +35,24 @@ class FnIndexTreeAdapter(FnTreeAdapter, IndexTreeAdapterMixin):
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, rpc_call_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, rpc_call_factory, feed_factory):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
-        return cls(feed_factory, rpc_call_factory, model, item_t, ctx, fn)
+        return cls(rpc_call_factory, feed_factory, model, item_t, ctx, fn)
 
 
 class FnKeyTreeAdapter(FnTreeAdapter, KeyTreeAdapterMixin):
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, rpc_call_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, rpc_call_factory, feed_factory):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         key_field_t = pyobj_creg.invite(piece.key_field_t)
-        return cls(feed_factory, rpc_call_factory, model, item_t, ctx, fn, piece.key_field, key_field_t)
+        return cls(rpc_call_factory, feed_factory, model, item_t, ctx, fn, piece.key_field, key_field_t)
 
-    def __init__(self, feed_factory, rpc_call_factory, model, item_t, ctx, fn, key_field, key_field_t):
-        super().__init__(feed_factory, rpc_call_factory, model, item_t, ctx, fn)
+    def __init__(self, rpc_call_factory, feed_factory, model, item_t, ctx, fn, key_field, key_field_t):
+        super().__init__(rpc_call_factory, feed_factory, model, item_t, ctx, fn)
         KeyTreeAdapterMixin.__init__(self, key_field, key_field_t)
 
 

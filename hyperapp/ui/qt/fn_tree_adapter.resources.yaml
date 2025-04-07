@@ -64,8 +64,8 @@ definitions:
       function: FnIndexTreeAdapter.from_piece
       service_params:
       - system_fn_creg
-      - feed_factory
       - rpc_call_factory
+      - feed_factory
   ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -73,8 +73,8 @@ definitions:
       function: FnKeyTreeAdapter.from_piece
       service_params:
       - system_fn_creg
-      - feed_factory
       - rpc_call_factory
+      - feed_factory
   ui_type_creg-model-index_tree_ui_t.actor-template:
     type: legacy_type.system:actor_template
     value:
