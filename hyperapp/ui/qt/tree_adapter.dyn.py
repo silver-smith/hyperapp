@@ -124,6 +124,11 @@ class TreeAdapterBase(metaclass=abc.ABCMeta):
         log.info("Tree adapter: process diff: %s", diff)
         if not isinstance(diff, (TreeDiff.Append, TreeDiff.Insert, TreeDiff.Replace, TreeDiff.Remove)):
             raise NotImplementedError(diff)
+        visual_diff = self._apply_diff(diff)
+        for subscriber in self._subscribers:
+            subscriber.process_diff(visual_diff)
+
+    def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
             parent_path = diff.path
         else:
@@ -133,22 +138,21 @@ class TreeAdapterBase(metaclass=abc.ABCMeta):
             parent_id = self._get_id_list(parent_id)[idx]
         if isinstance(diff, TreeDiff.Append):
             self._append_item(parent_id, diff.item)
-            return
+            return VisualTreeDiffAppend(parent_id)
         item_id_list = self._get_id_list(parent_id)
         idx = diff.path[-1]
         if isinstance(diff, TreeDiff.Remove):
             self._remove_item(parent_id, item_id_list, idx)
-            return
+            return VisualTreeDiffRemove(parent_id, idx)
         item_id = next(self._id_counter)
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = diff.item
         if isinstance(diff, TreeDiff.Insert):
             item_id_list.insert(idx, item_id)
-            visual_diff = VisualTreeDiffInsert(parent_id, idx)
+            return VisualTreeDiffInsert(parent_id, idx)
         if isinstance(diff, TreeDiff.Replace):
             item_id_list[idx] = item_id
-            visual_diff = VisualTreeDiffReplace(parent_id, idx)
-        self._send_view_diff(visual_diff)
+            return VisualTreeDiffReplace(parent_id, idx)
 
     def _append_item(self, parent_id, item):
         item_id_list = self._get_id_list(parent_id)
@@ -156,20 +160,12 @@ class TreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = item
         item_id_list.append(item_id)
-        visual_diff = VisualTreeDiffAppend(parent_id)
-        self._send_view_diff(visual_diff)
 
     def _remove_item(self, parent_id, item_id_list, idx):
         item_id = item_id_list[idx]
         del item_id_list[idx]
         # del self._id_to_item[item_id]
         # del self._id_to_parent_id[item_id]
-        visual_diff = VisualTreeDiffRemove(parent_id, idx)
-        self._send_view_diff(visual_diff)
-
-    def _send_view_diff(self, visual_diff):
-        for subscriber in self._subscribers:
-            subscriber.process_diff(visual_diff)
 
     def get_item(self, id):
         return self._id_to_item.get(id)
