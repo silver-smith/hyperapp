@@ -14,15 +14,6 @@ log = logging.getLogger(__name__)
 
 class FnListAdapter(FnListAdapterBase):
 
-    @classmethod
-    @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx,
-                   system_fn_creg, rpc_call_factory, feed_factory, column_visible_reg, peer_registry):
-        item_t = pyobj_creg.invite(piece.item_t)
-        fn = system_fn_creg.invite(piece.system_fn)
-        remote_peer, model = cls._resolve_model(peer_registry, model)
-        return cls(rpc_call_factory, feed_factory, column_visible_reg, model, item_t, remote_peer, ctx, fn)
-
     @staticmethod
     def _resolve_model(peer_registry, model):
         if isinstance(model, htypes.model.remote_model):
@@ -63,7 +54,15 @@ class FnListAdapter(FnListAdapterBase):
 
 
 class FnIndexListAdapter(FnListAdapter, IndexListAdapterMixin):
-    pass
+
+    @classmethod
+    @mark.actor.ui_adapter_creg
+    def from_piece(cls, piece, model, ctx,
+                   system_fn_creg, rpc_call_factory, feed_factory, column_visible_reg, peer_registry):
+        item_t = pyobj_creg.invite(piece.item_t)
+        fn = system_fn_creg.invite(piece.system_fn)
+        remote_peer, model = cls._resolve_model(peer_registry, model)
+        return cls(rpc_call_factory, feed_factory, column_visible_reg, model, item_t, remote_peer, ctx, fn)
     
 
 class FnKeyListAdapter(FnListAdapter, KeyListAdapterMixin):
