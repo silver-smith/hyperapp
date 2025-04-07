@@ -14,6 +14,8 @@ from .code.context import Context
 from .code.tree_diff import TreeDiff
 from .code.tree_visual_diff import (
     VisualTreeDiffAppend,
+    VisualTreeDiffInsert,
+    VisualTreeDiffReplace,
     VisualTreeDiffRemove,
     )
 from .fixtures import feed_fixtures
@@ -137,7 +139,7 @@ async def test_index_adapter_append_root_diff(index_adapter, subscriber, feed):
     adapter = index_adapter
     adapter.subscribe(subscriber)
 
-    item = htypes.tree_adapter_tests.item(4, "New item")
+    item = htypes.tree_adapter_tests.item(99, "New item")
     await feed.send(TreeDiff.Append((), item))
 
     diff = await subscriber.wait_for_diff()
@@ -146,7 +148,7 @@ async def test_index_adapter_append_root_diff(index_adapter, subscriber, feed):
 
     assert adapter.row_count(0) == 4
     row_3 = adapter.row_id(0, 3)
-    assert adapter.cell_data(row_3, 0) == 4
+    assert adapter.cell_data(row_3, 0) == 99
 
 
 async def test_index_adapter_append_child_diff(index_adapter, subscriber, feed):
@@ -155,7 +157,7 @@ async def test_index_adapter_append_child_diff(index_adapter, subscriber, feed):
 
     row_2 = adapter.row_id(0, 2)
 
-    item = htypes.tree_adapter_tests.item(24, "New item")
+    item = htypes.tree_adapter_tests.item(99, "New item")
     await feed.send(TreeDiff.Append((2,), item))
 
     diff = await subscriber.wait_for_diff()
@@ -164,7 +166,7 @@ async def test_index_adapter_append_child_diff(index_adapter, subscriber, feed):
 
     assert adapter.row_count(row_2) == 4
     row_23 = adapter.row_id(row_2, 3)
-    assert adapter.cell_data(row_23, 0) == 24
+    assert adapter.cell_data(row_23, 0) == 99
 
 
 async def test_index_adapter_remove_child_diff(index_adapter, subscriber, feed):
@@ -185,6 +187,29 @@ async def test_index_adapter_remove_child_diff(index_adapter, subscriber, feed):
     assert adapter.row_count(row_1) == 2
     row_11_new = adapter.row_id(row_1, 1)
     assert adapter.cell_data(row_11_new, 0) == 23
+
+
+async def test_index_adapter_insert_child_diff(index_adapter, subscriber, feed):
+    adapter = index_adapter
+    adapter.subscribe(subscriber)
+
+    row_1 = adapter.row_id(0, 1)
+    row_11 = adapter.row_id(row_1, 1)
+    assert adapter.cell_data(row_11, 0) == 22
+
+    item = htypes.tree_adapter_tests.item(99, "New item")
+    await feed.send(TreeDiff.Insert((1, 1), item))
+
+    diff = await subscriber.wait_for_diff()
+    assert isinstance(diff, VisualTreeDiffInsert), repr(diff)
+    assert diff.parent_id == row_1
+    assert diff.idx == 1
+
+    assert adapter.row_count(row_1) == 4
+    row_11_new = adapter.row_id(row_1, 1)
+    row_12_new = adapter.row_id(row_1, 2)
+    assert adapter.cell_data(row_11_new, 0) == 99
+    assert adapter.cell_data(row_12_new, 0) == 22
 
 
 async def test_fn_key_adapter(model, sample_key_tree_model_fn):
