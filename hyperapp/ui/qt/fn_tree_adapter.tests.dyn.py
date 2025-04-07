@@ -37,9 +37,9 @@ def sample_index_tree_model(piece, parent):
     else:
         base = 0
     return [
-        htypes.tree_adapter_tests.item(base*10 + 1, "First item"),
-        htypes.tree_adapter_tests.item(base*10 + 2, "Second item"),
-        htypes.tree_adapter_tests.item(base*10 + 3, "Third item"),
+        htypes.tree_adapter_tests.index_item(base*10 + 1, "First item"),
+        htypes.tree_adapter_tests.index_item(base*10 + 2, "Second item"),
+        htypes.tree_adapter_tests.index_item(base*10 + 3, "Third item"),
         ]
 
 
@@ -84,7 +84,7 @@ def ctx(model):
 
 @mark.fixture
 def index_adapter(model, ctx, sample_index_tree_model_fn):
-    item_t = htypes.tree_adapter_tests.item
+    item_t = htypes.tree_adapter_tests.index_item
     piece = htypes.tree_adapter.fn_index_tree_adapter(
         item_t=pyobj_creg.actor_to_ref(item_t),
         system_fn=mosaic.put(sample_index_tree_model_fn),
@@ -139,7 +139,7 @@ async def test_index_adapter_append_root_diff(index_adapter, subscriber, feed):
     adapter = index_adapter
     adapter.subscribe(subscriber)
 
-    item = htypes.tree_adapter_tests.item(99, "New item")
+    item = htypes.tree_adapter_tests.index_item(99, "New item")
     await feed.send(TreeDiff.Append((), item))
 
     diff = await subscriber.wait_for_diff()
@@ -157,7 +157,7 @@ async def test_index_adapter_append_child_diff(index_adapter, subscriber, feed):
 
     row_2 = adapter.row_id(0, 2)
 
-    item = htypes.tree_adapter_tests.item(99, "New item")
+    item = htypes.tree_adapter_tests.index_item(99, "New item")
     await feed.send(TreeDiff.Append((2,), item))
 
     diff = await subscriber.wait_for_diff()
@@ -197,7 +197,7 @@ async def test_index_adapter_insert_child_diff(index_adapter, subscriber, feed):
     row_11 = adapter.row_id(row_1, 1)
     assert adapter.cell_data(row_11, 0) == 22
 
-    item = htypes.tree_adapter_tests.item(99, "New item")
+    item = htypes.tree_adapter_tests.index_item(99, "New item")
     await feed.send(TreeDiff.Insert((1, 1), item))
 
     diff = await subscriber.wait_for_diff()
@@ -220,7 +220,7 @@ async def test_index_adapter_replace_child_diff(index_adapter, subscriber, feed)
     row_11 = adapter.row_id(row_1, 1)
     assert adapter.cell_data(row_11, 0) == 22
 
-    item = htypes.tree_adapter_tests.item(99, "New item")
+    item = htypes.tree_adapter_tests.index_item(99, "New item")
     await feed.send(TreeDiff.Replace((1, 1), item))
 
     diff = await subscriber.wait_for_diff()
@@ -408,7 +408,7 @@ def test_index_adapter_with_remote_context(
             service_params=(),
             )
         adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.index_item)),
             system_fn=mosaic.put(system_fn),
             )
         adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
@@ -435,7 +435,7 @@ def test_index_adapter_with_remote_context(
 def test_index_ui_type_layout(sample_index_tree_model_fn):
     system_fn_ref = mosaic.put(sample_index_tree_model_fn)
     piece = htypes.model.index_tree_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.item),
+        item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.index_item),
         )
     layout = fn_tree_adapter.index_tree_ui_type_layout(piece, system_fn_ref)
     assert isinstance(layout, htypes.tree.view)

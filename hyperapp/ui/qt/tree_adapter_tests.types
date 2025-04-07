@@ -1,6 +1,6 @@
 sample_tree = record
 
-item = record:
+index_item = record:
   id: int
   text: string
 

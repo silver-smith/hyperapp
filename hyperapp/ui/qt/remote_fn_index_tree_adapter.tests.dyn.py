@@ -24,9 +24,9 @@ def sample_tree_fn(piece, parent):
     else:
         base = 0
     return [
-        htypes.tree_adapter_tests.item(base*10 + 1, "First item"),
-        htypes.tree_adapter_tests.item(base*10 + 2, "Second item"),
-        htypes.tree_adapter_tests.item(base*10 + 3, "Third item"),
+        htypes.tree_adapter_tests.index_item(base*10 + 1, "First item"),
+        htypes.tree_adapter_tests.index_item(base*10 + 2, "Second item"),
+        htypes.tree_adapter_tests.index_item(base*10 + 3, "Third item"),
         ]
 
 
@@ -57,7 +57,7 @@ def test_remote_fn_adapter(
             service_params=(),
             )
         adapter_piece = htypes.tree_adapter.remote_fn_index_tree_adapter(
-            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.index_item)),
             # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             system_fn=mosaic.put(system_fn),
             remote_peer=mosaic.put(process.peer.piece),
