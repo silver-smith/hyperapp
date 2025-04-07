@@ -88,7 +88,6 @@ async def test_fn_index_adapter(feed_factory, model, sample_index_tree_model_fn)
     ctx = Context(piece=model)
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
-        # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         system_fn=mosaic.put(sample_index_tree_model_fn),
         )
     adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
@@ -203,7 +202,6 @@ def test_fn_adapter_with_remote_context(
             )
         adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
             item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
-            # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             system_fn=mosaic.put(system_fn),
             )
         adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
