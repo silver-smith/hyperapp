@@ -45,14 +45,11 @@ class FnTreeAdapter(TreeAdapter):
         return getattr(item, self._column_names[column])
 
     def _retrieve_item_list(self, parent_id):
-        additional_kw = {
+        kw = {
             'model': self._model,
             'piece': self._model,
             **self._parent_model_kw(parent_id),
             }
-        return self._call_fn(**additional_kw)
-
-    def _call_fn(self, **kw):
         if self._remote_peer:
             remote_peer = self._remote_peer
         else:
@@ -68,7 +65,8 @@ class FnTreeAdapter(TreeAdapter):
                 receiver_peer=remote_peer,
                 servant_ref=wrapper_partial,
                 )
-            return rpc_call()
+            item_list, children_items = rpc_call()
+            return item_list
         return self._fn.call(self._ctx, **kw)
 
 

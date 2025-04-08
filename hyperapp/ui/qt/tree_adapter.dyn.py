@@ -6,6 +6,9 @@ from functools import cached_property
 
 from hyperapp.boot.htypes import tInt, TList, TOptional, TRecord
 
+from .services import (
+    pyobj_creg,
+    )
 from .code.tree_diff import TreeDiff
 from .code.tree_visual_diff import (
     VisualTreeDiffAppend,
@@ -116,7 +119,26 @@ class KeyTreeAdapterMixin:
         return (*self._make_key_path(parent_id), key)
 
     def _servant_wrapper(self, fn_partial):
-        return self._partial_ref(key_tree_wrapper, servant_ref=fn_partial, key_field=self._key_field)
+        result_t = self._remote_result_t
+        return self._partial_ref(
+            key_tree_wrapper,
+            servant_ref=fn_partial,
+            key_field=self._key_field,
+            result_mt=pyobj_creg.actor_to_piece(result_t),
+            )
+
+    @cached_property
+    def _remote_result_t(self):
+        item_t = self._item_t
+        item_list_t = TList(item_t)
+        sub_rec_t = TRecord('ui_tree', f'remote_result_rec_{item_t.module_name}_{item_t.name}', {
+            'key': self._key_field_t,
+            'item_list': item_list_t,
+            })
+        return TRecord('ui_tree', f'remote_result_{item_t.module_name}_{item_t.name}', {
+            'item_list': item_list_t,
+            'sub_rec_list': TList(sub_rec_t),
+            })
 
     def _get_key_idx(self, parent_id, key):
         try:
