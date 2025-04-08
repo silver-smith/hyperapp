@@ -260,39 +260,3 @@ class TreeAdapterBase(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _retrieve_item_list(self, parent_id):
         pass
-
-
-class FnTreeAdapterBase(TreeAdapterBase, metaclass=abc.ABCMeta):
-
-    def __init__(self, feed_factory, model, item_t):
-        super().__init__(model, item_t)
-        self._column_names = sorted(self._item_t.fields)
-        try:
-            self._feed = feed_factory(model)
-        except KeyError:
-            self._feed = None
-        else:
-            self._feed.subscribe(self)
-
-    def column_count(self):
-        return len(self._column_names)
-
-    def column_title(self, column):
-        return self._column_names[column]
-
-    def cell_data(self, id, column):
-        item = self._id_to_item[id]
-        return getattr(item, self._column_names[column])
-
-    def _retrieve_item_list(self, parent_id):
-        additional_kw = {
-            'model': self._model,
-            'piece': self._model,
-            'feed': self._feed,
-            **self._parent_model_kw(parent_id),
-            }
-        return self._call_fn(**additional_kw)
-
-    @abc.abstractmethod
-    def _call_fn(self, **kw):
-        pass

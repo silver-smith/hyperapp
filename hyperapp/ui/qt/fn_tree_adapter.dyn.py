@@ -5,10 +5,10 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.tree_adapter import IndexTreeAdapterMixin, KeyTreeAdapterMixin, FnTreeAdapterBase
+from .code.tree_adapter import IndexTreeAdapterMixin, KeyTreeAdapterMixin, TreeAdapterBase
 
 
-class FnTreeAdapter(FnTreeAdapterBase):
+class FnTreeAdapter(TreeAdapterBase):
 
     @staticmethod
     def _resolve_model(peer_registry, model):
@@ -20,11 +20,37 @@ class FnTreeAdapter(FnTreeAdapterBase):
         return (remote_peer, model)
 
     def __init__(self, rpc_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn):
-        super().__init__(feed_factory, model, item_t)
+        super().__init__(model, item_t)
+        self._column_names = sorted(self._item_t.fields)
         self._rpc_call_factory = rpc_call_factory
         self._remote_peer = remote_peer
         self._ctx = ctx
         self._fn = fn
+        try:
+            self._feed = feed_factory(model)
+        except KeyError:
+            self._feed = None
+        else:
+            self._feed.subscribe(self)
+
+    def column_count(self):
+        return len(self._column_names)
+
+    def column_title(self, column):
+        return self._column_names[column]
+
+    def cell_data(self, id, column):
+        item = self._id_to_item[id]
+        return getattr(item, self._column_names[column])
+
+    def _retrieve_item_list(self, parent_id):
+        additional_kw = {
+            'model': self._model,
+            'piece': self._model,
+            'feed': self._feed,
+            **self._parent_model_kw(parent_id),
+            }
+        return self._call_fn(**additional_kw)
 
     def _call_fn(self, **kw):
         if self._remote_peer:
