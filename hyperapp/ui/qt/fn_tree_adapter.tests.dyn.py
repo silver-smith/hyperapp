@@ -30,7 +30,7 @@ def model():
 
 
 def sample_index_tree_model(piece, parent):
-    log.info("Sample index tree fn: %s @ %s", piece, parent)
+    log.info("Sample index tree model: %s @ %s", piece, parent)
     assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
     if parent:
         base = parent.id
@@ -370,9 +370,16 @@ async def test_key_adapter_replace_child_diff(key_adapter, subscriber, feed):
 _sample_fn_is_called = threading.Event()
 
 
-def sample_remote_tree_fn(piece, parent):
-    log.info("Sample remote tree fn: %s", piece)
+def sample_remote_index_tree_model(piece, parent):
+    log.info("Sample remote index tree model: %s @ %s", piece, parent)
     result = sample_index_tree_model(piece, parent)
+    _sample_fn_is_called.set()
+    return result
+
+
+def sample_remote_key_tree_model(piece, current_path):
+    log.info("Sample remote key tree model: %s @ %s", piece, current_path)
+    result = sample_key_tree_model(piece, current_path)
     _sample_fn_is_called.set()
     return result
 
@@ -393,7 +400,7 @@ def test_index_adapter_with_remote_model(
     identity = generate_rsa_identity(fast=True)
     endpoint_registry.register(identity, rpc_endpoint)
 
-    subprocess_name = 'test-remote-fn-tree-adapter-main'
+    subprocess_name = 'test-remote-fn-index-tree-adapter-remote-model-main'
     with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
@@ -406,7 +413,7 @@ def test_index_adapter_with_remote_model(
             remote_peer=process.peer,
             )
         system_fn = htypes.system_fn.ctx_fn(
-            function=pyobj_creg.actor_to_ref(sample_remote_tree_fn),
+            function=pyobj_creg.actor_to_ref(sample_remote_index_tree_model),
             ctx_params=('piece', 'parent'),
             service_params=(),
             )
@@ -435,6 +442,62 @@ def test_index_adapter_with_remote_model(
         assert get_fn_called_flag_call()
 
 
+def test_key_adapter_with_remote_model(
+        generate_rsa_identity,
+        endpoint_registry,
+        rpc_endpoint,
+        rpc_call_factory,
+        subprocess_rpc_server_running,
+        model,
+        ):
+
+    identity = generate_rsa_identity(fast=True)
+    endpoint_registry.register(identity, rpc_endpoint)
+
+    subprocess_name = 'test-remote-fn-key-tree-adapter-remote-model-main'
+    with subprocess_rpc_server_running(subprocess_name, identity) as process:
+        log.info("Started: %r", process)
+
+        remote_model = htypes.model.remote_model(
+            model=mosaic.put(model),
+            remote_peer=mosaic.put(process.peer.piece),
+            )
+        ctx = Context(
+            identity=identity,
+            remote_peer=process.peer,
+            )
+        system_fn = htypes.system_fn.ctx_fn(
+            function=pyobj_creg.actor_to_ref(sample_remote_key_tree_model),
+            ctx_params=('piece', 'current_path'),
+            service_params=(),
+            )
+        adapter_piece = htypes.tree_adapter.fn_key_tree_adapter(
+            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.key_item)),
+            key_field='key',
+            key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+            system_fn=mosaic.put(system_fn),
+            )
+        adapter = fn_tree_adapter.FnKeyTreeAdapter.from_piece(adapter_piece, remote_model, ctx)
+
+        assert adapter.column_count() == 2
+        assert adapter.column_title(0) == 'key'
+        assert adapter.column_title(1) == 'text'
+
+        assert adapter.row_count(0) == 3
+        row_1 = adapter.row_id(0, 1)
+        assert adapter.cell_data(row_1, 0) == '2'
+        assert adapter.cell_data(row_1, 1) == "Second item"
+        row_2 = adapter.row_id(row_1, 2)
+        assert adapter.cell_data(row_2, 0) == '23'
+
+        get_fn_called_flag_call = rpc_call_factory(
+            sender_identity=identity,
+            receiver_peer=process.peer,
+            servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
+            )
+        assert get_fn_called_flag_call()
+
+
 def test_index_adapter_with_remote_context(
         generate_rsa_identity,
         endpoint_registry,
@@ -447,7 +510,7 @@ def test_index_adapter_with_remote_context(
     identity = generate_rsa_identity(fast=True)
     endpoint_registry.register(identity, rpc_endpoint)
 
-    subprocess_name = 'test-remote-fn-tree-adapter-main'
+    subprocess_name = 'test-remote-fn-index-tree-adapter-remote-context-main'
     with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
@@ -457,7 +520,7 @@ def test_index_adapter_with_remote_context(
             remote_peer=process.peer,
             )
         system_fn = htypes.system_fn.ctx_fn(
-            function=pyobj_creg.actor_to_ref(sample_remote_tree_fn),
+            function=pyobj_creg.actor_to_ref(sample_remote_index_tree_model),
             ctx_params=('piece', 'parent'),
             service_params=(),
             )
