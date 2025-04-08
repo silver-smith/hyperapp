@@ -140,6 +140,11 @@ class KeyTreeAdapterMixin:
             'sub_rec_list': TList(sub_rec_t),
             })
 
+    def _children_rec_to_item_id(self, parent_id, rec):
+        id_list = self._get_id_list(parent_id)
+        idx = self._get_key_idx(parent_id, rec.key)
+        return id_list[idx]
+
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
             parent_key_path = diff.path
@@ -276,11 +281,16 @@ class TreeAdapter(metaclass=abc.ABCMeta):
         try:
             return self._id_to_children_id_list[parent_id]
         except KeyError:
-            return self._populate(parent_id)
+            pass
+        self._populate(parent_id)
+        return self._id_to_children_id_list[parent_id]
 
     def _populate(self, parent_id):
         item_list = self._retrieve_item_list(parent_id)
         log.info("Tree adapter: retrieved item list for %s/%s: %s", self._model, parent_id, item_list)
+        self._store_item_list(parent_id, item_list)
+
+    def _store_item_list(self, parent_id, item_list):
         id_list = []
         for item in item_list:
             id = next(self._id_counter)
@@ -288,8 +298,3 @@ class TreeAdapter(metaclass=abc.ABCMeta):
             self._id_to_item[id] = item
             self._id_to_parent_id[id] = parent_id
         self._id_to_children_id_list[parent_id] = id_list
-        return id_list
-
-    @abc.abstractmethod
-    def _retrieve_item_list(self, parent_id):
-        pass

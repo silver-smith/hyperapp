@@ -1,3 +1,5 @@
+import logging
+
 from . import htypes
 from .services import (
     mosaic,
@@ -6,6 +8,8 @@ from .services import (
     )
 from .code.mark import mark
 from .code.tree_adapter import IndexTreeAdapterMixin, KeyTreeAdapterMixin, TreeAdapter
+
+log = logging.getLogger(__name__)
 
 
 class FnTreeAdapter(TreeAdapter):
@@ -44,7 +48,7 @@ class FnTreeAdapter(TreeAdapter):
         item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
-    def _retrieve_item_list(self, parent_id):
+    def _populate(self, parent_id):
         kw = {
             'model': self._model,
             'piece': self._model,
@@ -58,16 +62,30 @@ class FnTreeAdapter(TreeAdapter):
             except KeyError:
                 remote_peer = None
         if remote_peer:
-            fn_partial = self._fn.partial_ref(self._ctx, **kw)
-            wrapper_partial = self._servant_wrapper(fn_partial)
-            rpc_call = self._rpc_call_factory(
-                sender_identity=self._ctx.identity,
-                receiver_peer=remote_peer,
-                servant_ref=wrapper_partial,
-                )
-            item_list, children_items = rpc_call()
-            return item_list
-        return self._fn.call(self._ctx, **kw)
+            self._remote_populate(parent_id, kw, remote_peer)
+        else:
+            self._local_populate(parent_id, kw)
+
+    def _local_populate(self, parent_id, kw):
+        item_list = self._fn.call(self._ctx, **kw)
+        log.info("Fn tree adapter: retrieved local items for %s/%s: %s", self._model, parent_id, item_list)
+        self._store_item_list(parent_id, item_list)
+
+    def _remote_populate(self, parent_id, kw, remote_peer):
+        fn_partial = self._fn.partial_ref(self._ctx, **kw)
+        wrapper_partial = self._servant_wrapper(fn_partial)
+        rpc_call = self._rpc_call_factory(
+            sender_identity=self._ctx.identity,
+            receiver_peer=remote_peer,
+            servant_ref=wrapper_partial,
+            )
+        item_list, children_rec_list = rpc_call()
+        log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._model, parent_id, item_list)
+        self._store_item_list(parent_id, item_list)
+        for rec in children_rec_list:
+            item_id = self._children_rec_to_item_id(parent_id, rec)
+            log.info("Fn tree adapter: retrieved remote children for %s/%s: %s", self._model, item_id, rec.item_list)
+            self._store_item_list(item_id, rec.item_list)
 
 
 class FnIndexTreeAdapter(FnTreeAdapter, IndexTreeAdapterMixin):

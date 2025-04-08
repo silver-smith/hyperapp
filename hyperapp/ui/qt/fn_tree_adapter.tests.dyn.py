@@ -384,8 +384,10 @@ def sample_remote_key_tree_model(piece, current_path):
     return result
 
 
-def get_fn_called_flag():
-    return _sample_fn_is_called.is_set()
+def pop_fn_called_flag():
+    is_set = _sample_fn_is_called.is_set()
+    _sample_fn_is_called.clear()
+    return is_set
 
 
 def test_index_adapter_with_remote_model(
@@ -423,10 +425,10 @@ def test_index_adapter_with_remote_model(
             )
         adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, remote_model, ctx)
 
-        get_fn_called_flag_call = rpc_call_factory(
+        pop_fn_called_flag_call = rpc_call_factory(
             sender_identity=identity,
             receiver_peer=process.peer,
-            servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
+            servant_ref=pyobj_creg.actor_to_ref(pop_fn_called_flag),
             )
 
         assert adapter.column_count() == 2
@@ -440,7 +442,7 @@ def test_index_adapter_with_remote_model(
         row_2 = adapter.row_id(row_1, 2)
         assert adapter.cell_data(row_2, 0) == 23
 
-        assert get_fn_called_flag_call()
+        assert pop_fn_called_flag_call()
 
 
 def test_key_adapter_with_remote_model(
@@ -480,10 +482,10 @@ def test_key_adapter_with_remote_model(
             )
         adapter = fn_tree_adapter.FnKeyTreeAdapter.from_piece(adapter_piece, remote_model, ctx)
 
-        get_fn_called_flag_call = rpc_call_factory(
+        pop_fn_called_flag_call = rpc_call_factory(
             sender_identity=identity,
             receiver_peer=process.peer,
-            servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
+            servant_ref=pyobj_creg.actor_to_ref(pop_fn_called_flag),
             )
 
         assert adapter.column_count() == 2
@@ -494,10 +496,14 @@ def test_key_adapter_with_remote_model(
         row_1 = adapter.row_id(0, 1)
         assert adapter.cell_data(row_1, 0) == '2'
         assert adapter.cell_data(row_1, 1) == "Second item"
+
+        assert pop_fn_called_flag_call()
+
         row_2 = adapter.row_id(row_1, 2)
         assert adapter.cell_data(row_2, 0) == '23'
 
-        assert get_fn_called_flag_call()
+        # When root items are requested children items should be retrieved too.
+        assert not pop_fn_called_flag_call()
 
 
 def test_index_adapter_with_remote_context(
@@ -532,10 +538,10 @@ def test_index_adapter_with_remote_context(
             )
         adapter = fn_tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
-        get_fn_called_flag_call = rpc_call_factory(
+        pop_fn_called_flag_call = rpc_call_factory(
             sender_identity=identity,
             receiver_peer=process.peer,
-            servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
+            servant_ref=pyobj_creg.actor_to_ref(pop_fn_called_flag),
             )
 
         assert adapter.column_count() == 2
@@ -546,10 +552,11 @@ def test_index_adapter_with_remote_context(
         row_1 = adapter.row_id(0, 1)
         assert adapter.cell_data(row_1, 0) == 2
         assert adapter.cell_data(row_1, 1) == "Second item"
+
         row_2 = adapter.row_id(row_1, 2)
         assert adapter.cell_data(row_2, 0) == 23
 
-        assert get_fn_called_flag_call()
+        assert pop_fn_called_flag_call()
 
 
 def test_index_ui_type_layout(sample_index_tree_model_fn):
