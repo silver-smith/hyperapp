@@ -1,12 +1,16 @@
+import logging
 from pathlib import Path
 
 from . import htypes
 from .code.mark import mark
 
+log = logging.getLogger(__name__)
+
 
 @mark.model(key='name')
 def fs_model(piece, current_path):
     fs_dir = Path('/').joinpath(*current_path)
+    log.info("FS: loading dir: %s", fs_dir)
     if not fs_dir.is_dir():
         return []
     try:
