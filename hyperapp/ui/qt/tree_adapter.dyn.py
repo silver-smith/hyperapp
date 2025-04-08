@@ -140,21 +140,6 @@ class KeyTreeAdapterMixin:
             'sub_rec_list': TList(sub_rec_t),
             })
 
-    def _get_key_idx(self, parent_id, key):
-        try:
-            return self._parent_id_key_to_idx[parent_id, key]
-        except KeyError:
-            pass
-        self._update_key_indexes(parent_id)
-        return self._parent_id_key_to_idx[parent_id, key]
-
-    def _update_key_indexes(self, parent_id):
-        id_list = self._get_id_list(parent_id)
-        for idx, item_id in enumerate(id_list):
-            item = self._id_to_item[item_id]
-            item_key = getattr(item, self._key_field)
-            self._parent_id_key_to_idx[parent_id, item_key] = idx
-
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
             parent_key_path = diff.path
@@ -188,6 +173,21 @@ class KeyTreeAdapterMixin:
             id_list[idx] = item_id
             self._update_key_indexes(parent_id)
             return VisualTreeDiffReplace(parent_id, idx)
+
+    def _get_key_idx(self, parent_id, key):
+        try:
+            return self._parent_id_key_to_idx[parent_id, key]
+        except KeyError:
+            pass
+        self._update_key_indexes(parent_id)
+        return self._parent_id_key_to_idx[parent_id, key]
+
+    def _update_key_indexes(self, parent_id):
+        id_list = self._get_id_list(parent_id)
+        for idx, item_id in enumerate(id_list):
+            item = self._id_to_item[item_id]
+            item_key = getattr(item, self._key_field)
+            self._parent_id_key_to_idx[parent_id, item_key] = idx
 
 
 class TreeAdapter(metaclass=abc.ABCMeta):
