@@ -13,11 +13,15 @@ from .code.tree_visual_diff import (
     VisualTreeDiffReplace,
     VisualTreeDiffRemove,
     )
+from .code.tree_servant_wrapper import index_tree_wrapper, key_tree_wrapper
 
 log = logging.getLogger(__name__)
 
 
 class IndexTreeAdapterMixin:
+
+    def __init__(self, partial_ref):
+        self._partial_ref = partial_ref
 
     @cached_property
     def model_state_t(self):
@@ -37,6 +41,9 @@ class IndexTreeAdapterMixin:
         return {
             'parent': self._id_to_item[parent_id],
             }
+
+    def _servant_wrapper(self, fn_partial):
+        return self._partial_ref(index_tree_wrapper, servant_ref=fn_partial)
 
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
@@ -67,7 +74,8 @@ class IndexTreeAdapterMixin:
 
 class KeyTreeAdapterMixin:
 
-    def __init__(self, key_field, key_field_t):
+    def __init__(self, partial_ref, key_field, key_field_t):
+        self._partial_ref = partial_ref
         self._key_field = key_field
         self._key_field_t = key_field_t
         self._parent_id_key_to_idx = {}
@@ -106,6 +114,9 @@ class KeyTreeAdapterMixin:
         key = getattr(item, self._key_field)
         parent_id = self._id_to_parent_id[item_id]
         return (*self._make_key_path(parent_id), key)
+
+    def _servant_wrapper(self, fn_partial):
+        return self._partial_ref(key_tree_wrapper, servant_ref=fn_partial, key_field=self._key_field)
 
     def _get_key_idx(self, parent_id, key):
         try:
