@@ -199,7 +199,6 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         additional_kw = {
             'model': self._model,
             'piece': self._model,
-            'feed': self._feed,
             }
         self._item_list = self._call_fn(**additional_kw)
 

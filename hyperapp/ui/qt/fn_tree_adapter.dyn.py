@@ -47,7 +47,6 @@ class FnTreeAdapter(TreeAdapter):
         additional_kw = {
             'model': self._model,
             'piece': self._model,
-            'feed': self._feed,
             **self._parent_model_kw(parent_id),
             }
         return self._call_fn(**additional_kw)
