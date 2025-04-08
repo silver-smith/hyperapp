@@ -100,8 +100,6 @@ import:
 - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
 - ui.qt.list:list-view.view-template
 - ui.qt.menu_bar:menu_bar-view.view-template
-- ui.qt.remote_fn_index_tree_adapter:ui_adapter_creg-tree_adapter-remote_fn_index_tree_adapter.actor-template
-- ui.qt.remote_fn_list_adapter:ui_adapter_creg-list_adapter-remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
 - ui.qt.tabs:tabs-view-open_tab_list.command-cfg-item
 - ui.qt.tabs:tabs-view.view-template
@@ -358,8 +356,6 @@ definitions:
       - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-template
       - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template
-      - ui.qt.remote_fn_index_tree_adapter:ui_adapter_creg-tree_adapter-remote_fn_index_tree_adapter.actor-template
-      - ui.qt.remote_fn_list_adapter:ui_adapter_creg-list_adapter-remote_fn_list_adapter.actor-template
       - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
       - ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-template
       - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template

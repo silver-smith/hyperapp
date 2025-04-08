@@ -10,8 +10,3 @@ key_fn_list_adapter = record:
   key_field: string
   key_field_t: ref
   system_fn: ref
-
-remote_fn_list_adapter = record:
-  item_t: ref
-  system_fn: ref
-  remote_peer: ref
