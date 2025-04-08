@@ -30,7 +30,8 @@ async def _send_diff(feed):
 
 
 @mark.model
-def feed_sample_list(piece, feed):
+def feed_sample_list(piece, feed_factory):
+    feed = feed_factory(piece)
     asyncio.create_task(_send_diff(feed))
     return [
         htypes.sample_list.item(1, "first", "First sample"),

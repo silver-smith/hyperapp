@@ -21,7 +21,7 @@ def test_sample_list():
 async def test_feed_sample_list(feed_factory):
     piece = htypes.sample_list.feed_sample_list()
     feed = feed_factory(piece)
-    value = sample_list.feed_sample_list(piece, feed)
+    value = sample_list.feed_sample_list(piece)
     assert value
     await feed.wait_for_diffs(count=1)
 

@@ -126,8 +126,8 @@ definitions:
       function: feed_sample_list
       ctx_params:
       - piece
-      - feed
-      service_params: []
+      service_params:
+      - feed_factory
   sample_list-sample_list.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:
