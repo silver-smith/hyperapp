@@ -5,10 +5,10 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.tree_adapter import IndexTreeAdapterMixin, KeyTreeAdapterMixin, TreeAdapterBase
+from .code.tree_adapter import IndexTreeAdapterMixin, KeyTreeAdapterMixin, TreeAdapter
 
 
-class FnTreeAdapter(TreeAdapterBase):
+class FnTreeAdapter(TreeAdapter):
 
     @staticmethod
     def _resolve_model(peer_registry, model):

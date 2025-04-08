@@ -15,12 +15,12 @@ from .code.mark import mark
 from .code.system_fn import ContextFn
 from .code.model_command import model_command_ctx
 from .code.list_adapter import index_list_model_state_t
-from .code.tree_adapter import IndexTreeAdapterMixin, TreeAdapterBase
+from .code.tree_adapter import IndexTreeAdapterMixin, TreeAdapter
 
 log = logging.getLogger(__name__)
 
 
-class ListAsTreeAdapter(TreeAdapterBase, IndexTreeAdapterMixin):
+class ListAsTreeAdapter(TreeAdapter, IndexTreeAdapterMixin):
 
     @dataclass
     class _Layer:

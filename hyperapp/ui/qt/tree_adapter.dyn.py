@@ -157,7 +157,7 @@ class KeyTreeAdapterMixin:
             return VisualTreeDiffReplace(parent_id, idx)
 
 
-class TreeAdapterBase(metaclass=abc.ABCMeta):
+class TreeAdapter(metaclass=abc.ABCMeta):
 
     def __init__(self, model, item_t):
         self._model = model
