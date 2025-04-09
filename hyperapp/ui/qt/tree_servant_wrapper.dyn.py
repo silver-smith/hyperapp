@@ -15,9 +15,9 @@ def index_tree_wrapper(servant_ref, grand_parent, is_lateral, lateral_parent, re
     servant = pyobj_creg.invite(servant_ref)
     parent = servant.keywords['parent']
     log.info("Index tree servant wrapper: Loading items for %s using %s", parent, servant)
-    item_list = servant()
     lateral_item_list_list = []
     if is_lateral:
+        item_list = None
         log.info("Index tree servant wrapper: Loading siblings for %s, children for %s", lateral_parent, grapd_parent)
         kw = {
             **servant.keywords,
@@ -25,6 +25,7 @@ def index_tree_wrapper(servant_ref, grand_parent, is_lateral, lateral_parent, re
             }
         lateral_parent_list = servant.func(**kw)
     else:
+        item_list = tuple(servant())
         log.info("Index tree servant wrapper: Loading children for %s", lateral_parent)
         lateral_parent_list = item_list
     for item in lateral_parent_list:
@@ -34,7 +35,7 @@ def index_tree_wrapper(servant_ref, grand_parent, is_lateral, lateral_parent, re
             }
         items = servant.func(**kw)
         lateral_item_list_list.append(tuple(items))
-    return result_t(tuple(item_list), tuple(lateral_item_list_list))
+    return result_t(item_list, tuple(lateral_item_list_list))
 
 
 def key_tree_wrapper(servant_ref, key_field, is_lateral, result_mt):
@@ -42,9 +43,9 @@ def key_tree_wrapper(servant_ref, key_field, is_lateral, result_mt):
     servant = pyobj_creg.invite(servant_ref)
     current_path = servant.keywords['current_path']
     log.info("Key tree servant wrapper: Loading items for %s using %s", current_path, servant)
-    item_list = servant()
     lateral_item_list_list = []
     if is_lateral:
+        item_list = None
         parent_path = current_path[:-1]
         log.info("Key tree servant wrapper: Loading siblings for %s, children for %s", current_path, parent_path)
         kw = {
@@ -53,6 +54,7 @@ def key_tree_wrapper(servant_ref, key_field, is_lateral, result_mt):
             }
         lateral_parent_list = servant.func(**kw)
     else:
+        item_list = tuple(servant())
         parent_path = current_path
         log.info("Key tree servant wrapper: Loading children for %s", current_path)
         lateral_parent_list = item_list
@@ -64,4 +66,4 @@ def key_tree_wrapper(servant_ref, key_field, is_lateral, result_mt):
             }
         items = servant.func(**kw)
         lateral_item_list_list.append(tuple(items))
-    return result_t(tuple(item_list), tuple(lateral_item_list_list))
+    return result_t(item_list, tuple(lateral_item_list_list))

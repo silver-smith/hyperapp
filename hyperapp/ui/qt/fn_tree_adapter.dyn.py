@@ -1,7 +1,7 @@
 import logging
 from functools import cached_property
 
-from hyperapp.boot.htypes import TList, TRecord
+from hyperapp.boot.htypes import TList, TOptional, TRecord
 
 from . import htypes
 from .services import (
@@ -95,7 +95,8 @@ class FnTreeAdapter(TreeAdapter):
             )
         item_list, lateral_item_list_list = rpc_call()
         log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._model, parent_id, item_list)
-        self._store_item_list(parent_id, item_list)
+        if item_list:
+            self._store_item_list(parent_id, item_list)
         lateral_id_list = self._id_to_children_id_list[lateral_parent_id]
         for idx, item_list in enumerate(lateral_item_list_list):
             item_id = lateral_id_list[idx]
@@ -107,7 +108,7 @@ class FnTreeAdapter(TreeAdapter):
         item_t = self._item_t
         item_list_t = TList(item_t)
         return TRecord('ui_tree', f'remote_result_{item_t.module_name}_{item_t.name}', {
-            'item_list': item_list_t,
+            'item_list': TOptional(item_list_t),
             'lateral_item_list_list': TList(item_list_t),
             })
 
