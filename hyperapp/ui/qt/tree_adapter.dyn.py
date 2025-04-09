@@ -55,10 +55,6 @@ class IndexTreeAdapterMixin:
             result_mt=pyobj_creg.actor_to_piece(self._remote_result_t),
             )
 
-    @property
-    def _lateral_result_rec_key(self):
-        return {}
-
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
             parent_path = diff.path
@@ -137,10 +133,6 @@ class KeyTreeAdapterMixin:
             is_lateral=is_lateral,
             result_mt=pyobj_creg.actor_to_piece(self._remote_result_t),
             )
-
-    @property
-    def _lateral_result_rec_key(self):
-        return {'key': self._key_field_t}
 
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):

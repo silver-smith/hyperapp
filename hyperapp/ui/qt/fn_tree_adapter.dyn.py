@@ -93,26 +93,22 @@ class FnTreeAdapter(TreeAdapter):
             receiver_peer=remote_peer,
             servant_ref=wrapper_partial,
             )
-        item_list, children_rec_list = rpc_call()
+        item_list, lateral_item_list_list = rpc_call()
         log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._model, parent_id, item_list)
         self._store_item_list(parent_id, item_list)
         lateral_id_list = self._id_to_children_id_list[lateral_parent_id]
-        for idx, rec in enumerate(children_rec_list):
+        for idx, item_list in enumerate(lateral_item_list_list):
             item_id = lateral_id_list[idx]
-            self._store_item_list(item_id, rec.item_list)
+            self._store_item_list(item_id, item_list)
             self._lateral_ids.add(item_id)
 
     @cached_property
     def _remote_result_t(self):
         item_t = self._item_t
         item_list_t = TList(item_t)
-        lateral_rec_t = TRecord('ui_tree', f'remote_result_lateral_rec_{item_t.module_name}_{item_t.name}', {
-            **self._lateral_result_rec_key,
-            'item_list': item_list_t,
-            })
         return TRecord('ui_tree', f'remote_result_{item_t.module_name}_{item_t.name}', {
             'item_list': item_list_t,
-            'lateral_rec_list': TList(lateral_rec_t),
+            'lateral_item_list_list': TList(item_list_t),
             })
 
 
