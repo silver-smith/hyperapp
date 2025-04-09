@@ -22,12 +22,18 @@ definitions:
     value:
       key: rsa_peer_2
       value: string_2
+  config_item-rsa_peer_3:
+    type: legacy_type.data_service:config_item
+    value:
+      key: rsa_peer_3
+      value: string_3
   peer_label_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-rsa_peer_2
       - config_item-rsa_peer_1
+      - config_item-rsa_peer_3
   rsa_peer_1:
     type: legacy_type.rsa_identity:rsa_peer
     value:
@@ -36,8 +42,15 @@ definitions:
     type: legacy_type.rsa_identity:rsa_peer
     value:
       public_key_pem: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUEzYzdVc29MZC8zemdQb3d2enVKawpwL0ROZkcxWkNKR1dGRmVGN2Q1WlN2NE9UMm1BM1d6cFpQc1pMSUcyQlBMazdFVmYrS0lUYnRFVklNTyszWk5PCktheXV2RGlXQk01NFFLTnlQUkcvTmxKdmVDamRtbEdDSzl6TlJFTkk4OGY2dmtBTjNkZjBUcHFHYnVYL2lzNkEKdVBmMnZ1QVhQVnRWVTZtNVUwaWJ0LzVPRFo0aVZYT0pTb0lleFgrNUVPOG9MdkpKRElodkZhTDB6eHcwRFh1aworb2VOSXNORTNSVU5LNXY3ZnFIWCt0cXJQalJBYWFqQU9vOWVSeExzeVcyTDBFS2w1VmdWUE9tb2ppVE1HSFNTCnE0R0N3Y29OYTAybXFuY3hGcDcyTmF5cmw1M1BjMmxCZzBSWmhvRFJibW1zaTM4NFZ5KzMxdlVmNDRzc1o0OSsKR2MwTEpPTTJzRzRYcURPS2JWNkVDd2hxaHdsM2xmcXdEeSs4NzVpaWZrMDA0RHBhVlhOZ2J6blllYnJCMlVMOQpiTHhDbkJUeWxuNTVpSzNxd2c2MWtPUlJQOFJHalE3c1liamlqcGo0WlVoc29FZXlMMGhadGhUWi8xOURKOXRVCldjS29LeWZrMkNZVUZnYXhNUHg1TXVyZ1dwUWZkbGhyQzZrZk8zWHJFUTJncVNVN0dSQUZEVzI0bTdsQWxLS2kKOERnR2NHQmNFYVZ3eldNWGRmYjBTVGJnN0RIbWxhOFVERVlmWXEzcDErVnRrbUlpV0xFVXU2b1ZCSVZDWmpmdgp1Zlo0RnYyN3JibDVtbWs3RVo5eUE0M0U2YnZJZkRRWHVWd1VjbzBXSk0zSXU1SzU1QkZ3aUFjZUlzR1o2Z1p5CmppSWE2K2hySWZtQU0vNGZhTnd5MDNVQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=
+  rsa_peer_3:
+    type: legacy_type.rsa_identity:rsa_peer
+    value:
+      public_key_pem: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUEwWm9QY0VWcGVoSUlSb3grTGVjdwpYbnBEVmxLcDREcDcwQTZzelRJcHIya0gwaHJsWTJUek5PTmJIS3NUS0JONjN3V0tHS0dwTSt4NFNZWjN1eVNrCkYwcnd0aU5yU1lYbExYdE1obndCaTM2eENYYnlndmxyenJlM3R3ZVlocmplcm5rTXJrUjNXOEVPNjNVamZvK0sKczVRRUFtNDZDNDNYNlB3L1JxVytSSWlSRjdIUzFEdzM2OEJaaHQzNFFqazJZVkR1TGlxRjArUUxKZVd5c0NxcQp3R0RjK0JPM2VMS2JZK3l4YnRiMURqY1JKeWxYc2NxK1o3a3JPV2xOS3FNOVcyUkJ1WjRZMnBRNFlRMzlaNjZDCmd0TWNJWUNBbXVZdGFRTmhBS0IxeldvTllrRzk2U0h1cEVZeElkZFVUNUFVZlIvRDdTRzZZdWhTTGJYNmdjd3IKa2g2YzV5K1Y4T0dLZXYxUTNidzdpcUxsYmhxRHFBeDRnckZnTTVVcHVYV1ZheDNEZGFGKzJXVUYvTm1KNXZhbQpUOW8rUGFRaTF1YjdWT0llUjF4d2M0SDFVYzlocVB6eWdnNEtoUkdYQ3ZZaXg2dFNtUGVIZmtwK2xxdnNTSnZJCitkR3VDREljNVZLL3FPWjRoOUJmd21IN3FZTUViNzRiTWhsSXNnSUlpdEd3RVdOTmt4Y2wrSCsrM2t6bjBUSVEKelBhczNNR3NoZUJyeksweVp6cm5BdnBnU01oVkdUeVFoM2FGb21kZVkzZFgyUVF0SGlEang4L2F1bHl0bTdvLwpObFRSMGI3ejNKRnRmNG1rU1dPRVFMSktSK1owUTZJNVB0UEZDUWVlTGl0OVJRRGErNENJOWRRZXdwZEh2VXQzCkVYWVNFeHdSM25BZkpJc3RYMklVUlRrQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=
   string_1:
     type: legacy_type.builtin:string
     value:host2  string_2:
     type: legacy_type.builtin:string
     value: localhost
+  string_3:
+    type: legacy_type.builtin:string
+    value:host3zt
