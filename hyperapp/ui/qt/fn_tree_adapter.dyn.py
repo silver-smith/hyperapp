@@ -96,8 +96,9 @@ class FnTreeAdapter(TreeAdapter):
         item_list, children_rec_list = rpc_call()
         log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._model, parent_id, item_list)
         self._store_item_list(parent_id, item_list)
+        lateral_id_list = self._id_to_children_id_list[lateral_parent_id]
         for idx, rec in enumerate(children_rec_list):
-            item_id = self._children_rec_to_item_id(lateral_parent_id, idx, rec)
+            item_id = lateral_id_list[idx]
             self._store_item_list(item_id, rec.item_list)
             self._lateral_ids.add(item_id)
 

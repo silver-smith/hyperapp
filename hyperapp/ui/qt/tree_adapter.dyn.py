@@ -59,10 +59,6 @@ class IndexTreeAdapterMixin:
     def _lateral_result_rec_key(self):
         return {}
 
-    def _children_rec_to_item_id(self, parent_id, idx, rec):
-        id_list = self._get_id_list(parent_id)
-        return id_list[idx]
-
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
             parent_path = diff.path
@@ -145,11 +141,6 @@ class KeyTreeAdapterMixin:
     @property
     def _lateral_result_rec_key(self):
         return {'key': self._key_field_t}
-
-    def _children_rec_to_item_id(self, parent_id, idx, rec):
-        id_list = self._get_id_list(parent_id)
-        idx = self._get_key_idx(parent_id, rec.key)
-        return id_list[idx]
 
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
