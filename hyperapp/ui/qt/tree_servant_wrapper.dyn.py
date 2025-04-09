@@ -46,7 +46,7 @@ def key_tree_wrapper(servant_ref, key_field, is_lateral, result_mt):
     lateral_item_list_list = []
     if is_lateral:
         parent_path = current_path[:-1]
-        log.info("Key tree servant wrapper: Loading siblings for %s", parent_path)
+        log.info("Key tree servant wrapper: Loading siblings for %s, children for %s", current_path, parent_path)
         kw = {
             **servant.keywords,
             'current_path': parent_path,
