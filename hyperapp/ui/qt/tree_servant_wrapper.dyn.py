@@ -53,9 +53,9 @@ def key_tree_wrapper(servant_ref, key_field, is_lateral, result_mt):
             }
         lateral_parent_list = servant.func(**kw)
     else:
+        parent_path = current_path
         log.info("Key tree servant wrapper: Loading children for %s", current_path)
         lateral_parent_list = item_list
-        parent_path = current_path
     for item in lateral_parent_list:
         key = getattr(item, key_field)
         kw = {
