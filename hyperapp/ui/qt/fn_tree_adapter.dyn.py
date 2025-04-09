@@ -1,4 +1,7 @@
 import logging
+from functools import cached_property
+
+from hyperapp.boot.htypes import TList, TRecord
 
 from . import htypes
 from .services import (
@@ -75,12 +78,16 @@ class FnTreeAdapter(TreeAdapter):
     def _remote_populate(self, parent_id, kw, remote_peer):
         fn_partial = self._fn.partial_ref(self._ctx, **kw)
         if parent_id != 0 and (pp_id := self._id_to_parent_id[parent_id]) in self._lateral_ids:
+            grand_parent = self._id_to_item[pp_id]
             is_lateral = True
             lateral_parent_id = pp_id
+            lateral_parent = self._id_to_item[pp_id]
         else:
+            grand_parent = None
             is_lateral = False
             lateral_parent_id = parent_id
-        wrapper_partial = self._servant_wrapper(fn_partial, is_lateral)
+            lateral_parent = self._id_to_item[parent_id]
+        wrapper_partial = self._servant_wrapper(fn_partial, grand_parent, is_lateral, lateral_parent)
         rpc_call = self._rpc_call_factory(
             sender_identity=self._ctx.identity,
             receiver_peer=remote_peer,
@@ -89,10 +96,23 @@ class FnTreeAdapter(TreeAdapter):
         item_list, children_rec_list = rpc_call()
         log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._model, parent_id, item_list)
         self._store_item_list(parent_id, item_list)
-        for rec in children_rec_list:
-            item_id = self._children_rec_to_item_id(lateral_parent_id, rec)
+        for idx, rec in enumerate(children_rec_list):
+            item_id = self._children_rec_to_item_id(lateral_parent_id, idx, rec)
             self._store_item_list(item_id, rec.item_list)
             self._lateral_ids.add(item_id)
+
+    @cached_property
+    def _remote_result_t(self):
+        item_t = self._item_t
+        item_list_t = TList(item_t)
+        lateral_rec_t = TRecord('ui_tree', f'remote_result_lateral_rec_{item_t.module_name}_{item_t.name}', {
+            **self._lateral_result_rec_key,
+            'item_list': item_list_t,
+            })
+        return TRecord('ui_tree', f'remote_result_{item_t.module_name}_{item_t.name}', {
+            'item_list': item_list_t,
+            'lateral_rec_list': TList(lateral_rec_t),
+            })
 
 
 class FnIndexTreeAdapter(FnTreeAdapter, IndexTreeAdapterMixin):

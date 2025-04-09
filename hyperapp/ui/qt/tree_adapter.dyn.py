@@ -45,8 +45,23 @@ class IndexTreeAdapterMixin:
             'parent': self._id_to_item[parent_id],
             }
 
-    def _servant_wrapper(self, fn_partial, is_lateral):
-        return self._partial_ref(index_tree_wrapper, servant_ref=fn_partial)
+    def _servant_wrapper(self, fn_partial, grand_parent, is_lateral, lateral_parent):
+        return self._partial_ref(
+            index_tree_wrapper,
+            servant_ref=fn_partial,
+            grand_parent=grand_parent,
+            is_lateral=is_lateral,
+            lateral_parent=lateral_parent,
+            result_mt=pyobj_creg.actor_to_piece(self._remote_result_t),
+            )
+
+    @property
+    def _lateral_result_rec_key(self):
+        return {}
+
+    def _children_rec_to_item_id(self, parent_id, idx, rec):
+        id_list = self._get_id_list(parent_id)
+        return id_list[idx]
 
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
@@ -118,30 +133,20 @@ class KeyTreeAdapterMixin:
         parent_id = self._id_to_parent_id[item_id]
         return (*self._make_key_path(parent_id), key)
 
-    def _servant_wrapper(self, fn_partial, is_lateral):
-        result_t = self._remote_result_t
+    def _servant_wrapper(self, fn_partial, grand_parent, is_lateral, lateral_parent):
         return self._partial_ref(
             key_tree_wrapper,
             servant_ref=fn_partial,
             key_field=self._key_field,
             is_lateral=is_lateral,
-            result_mt=pyobj_creg.actor_to_piece(result_t),
+            result_mt=pyobj_creg.actor_to_piece(self._remote_result_t),
             )
 
-    @cached_property
-    def _remote_result_t(self):
-        item_t = self._item_t
-        item_list_t = TList(item_t)
-        sub_rec_t = TRecord('ui_tree', f'remote_result_rec_{item_t.module_name}_{item_t.name}', {
-            'key': self._key_field_t,
-            'item_list': item_list_t,
-            })
-        return TRecord('ui_tree', f'remote_result_{item_t.module_name}_{item_t.name}', {
-            'item_list': item_list_t,
-            'sub_rec_list': TList(sub_rec_t),
-            })
+    @property
+    def _lateral_result_rec_key(self):
+        return {'key': self._key_field_t}
 
-    def _children_rec_to_item_id(self, parent_id, rec):
+    def _children_rec_to_item_id(self, parent_id, idx, rec):
         id_list = self._get_id_list(parent_id)
         idx = self._get_key_idx(parent_id, rec.key)
         return id_list[idx]

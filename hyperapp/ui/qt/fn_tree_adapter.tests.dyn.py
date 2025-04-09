@@ -439,10 +439,13 @@ def test_index_adapter_with_remote_model(
         row_1 = adapter.row_id(0, 1)
         assert adapter.cell_data(row_1, 0) == 2
         assert adapter.cell_data(row_1, 1) == "Second item"
-        row_2 = adapter.row_id(row_1, 2)
-        assert adapter.cell_data(row_2, 0) == 23
 
         assert pop_fn_called_flag_call()
+
+        row_2 = adapter.row_id(row_1, 2)
+        assert adapter.cell_data(row_2, 0) == 23
+        # When root items are requested children items should be retrieved too.
+        assert not pop_fn_called_flag_call()
 
 
 def test_key_adapter_with_remote_model(
@@ -501,7 +504,6 @@ def test_key_adapter_with_remote_model(
 
         row_2 = adapter.row_id(row_1, 2)
         assert adapter.cell_data(row_2, 0) == '23'
-
         # When root items are requested children items should be retrieved too.
         assert not pop_fn_called_flag_call()
 
