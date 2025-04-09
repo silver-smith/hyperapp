@@ -18,7 +18,7 @@ def index_tree_wrapper(servant_ref, grand_parent, is_lateral, lateral_parent, re
     lateral_item_list_list = []
     if is_lateral:
         item_list = None
-        log.info("Index tree servant wrapper: Loading siblings for %s, children for %s", lateral_parent, grapd_parent)
+        log.info("Index tree servant wrapper: Loading siblings for %s, children for %s", lateral_parent, grand_parent)
         kw = {
             **servant.keywords,
             'parent': grand_parent,

@@ -442,10 +442,15 @@ def test_index_adapter_with_remote_model(
 
         assert pop_fn_called_flag_call()
 
-        row_2 = adapter.row_id(row_1, 2)
-        assert adapter.cell_data(row_2, 0) == 23
+        row_12 = adapter.row_id(row_1, 2)
+        assert adapter.cell_data(row_12, 0) == 23
         # When root items are requested children items should be retrieved too.
         assert not pop_fn_called_flag_call()
+
+        # Lateral loading check.
+        row_120 = adapter.row_id(row_12, 0)
+        assert adapter.cell_data(row_120, 0) == 231
+        assert pop_fn_called_flag_call()
 
 
 def test_key_adapter_with_remote_model(
@@ -502,10 +507,15 @@ def test_key_adapter_with_remote_model(
 
         assert pop_fn_called_flag_call()
 
-        row_2 = adapter.row_id(row_1, 2)
-        assert adapter.cell_data(row_2, 0) == '23'
+        row_12 = adapter.row_id(row_1, 2)
+        assert adapter.cell_data(row_12, 0) == '23'
         # When root items are requested children items should be retrieved too.
         assert not pop_fn_called_flag_call()
+
+        # Lateral loading check.
+        row_120 = adapter.row_id(row_12, 0)
+        assert adapter.cell_data(row_120, 0) == '231'
+        assert pop_fn_called_flag_call()
 
 
 def test_index_adapter_with_remote_context(
