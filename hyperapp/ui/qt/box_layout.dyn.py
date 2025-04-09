@@ -14,6 +14,30 @@ from .code.view import Item, View
 log = logging.getLogger(__name__)
 
 
+class BoxLayoutWidget(QtWidgets.QWidget):
+
+    def __init__(self, focus_widget_idx):
+        super().__init__()
+        self._focusable = False
+        self._focus_widget_idx = focus_widget_idx
+
+    def init_widget(self, focusable):
+        self._focusable = focusable
+        if focusable and self._focus_widget_idx is not None and self.isVisible():
+            self._set_item_focus()
+
+    def setVisible(self, visible):
+        super().setVisible(visible)
+        if visible and self._focusable and self._focus_widget_idx is not None:
+            self._set_item_focus()
+
+    def _set_item_focus(self):
+        layout = self.layout()
+        w = layout.itemAt(self._focus_widget_idx).widget()
+        if w:
+            w.setFocus()
+
+
 class BoxLayoutView(View):
 
     _Element = namedtuple('_Element', 'view focusable stretch')
@@ -64,7 +88,15 @@ class BoxLayoutView(View):
             )
 
     def construct_widget(self, state, ctx):
-        widget = QtWidgets.QWidget()
+        focus_widget_idx = None
+        if state and state.current < len(self._elements) and self._elements[state.current].focusable:
+            focus_widget_idx = state.current
+        else:
+            for idx, elt in enumerate(self._elements):
+                if elt.focusable:
+                    focus_widget_idx = idx
+                    break
+        widget = BoxLayoutWidget(focus_widget_idx)
         layout = QtWidgets.QBoxLayout(self._direction, widget)
         for idx, elt in enumerate(self._elements):
             if state and elt.view:
@@ -75,11 +107,10 @@ class BoxLayoutView(View):
                 layout.addWidget(elt.view.construct_widget(elt_state, ctx), stretch=elt.stretch)
             else:
                 layout.addStretch(stretch=elt.stretch)
-        if state and state.current < len(self._elements):
-            w = layout.itemAt(state.current).widget()
-            if w:  # None for a stretch.
-                w.setFocus()
         return widget
+
+    def init_widget(self, widget, focusable):
+        widget.init_widget(focusable)
 
     def replace_child_widget(self, widget, idx, new_child_widget):
         elt = self._elements[idx]
@@ -102,6 +133,7 @@ class BoxLayoutView(View):
     def widget_state(self, widget):
         layout = widget.layout()
         elements = []
+        focused_idx = 0
         for idx, elt in enumerate(self._elements):
             w = layout.itemAt(idx).widget()
             if elt.view:
@@ -109,8 +141,10 @@ class BoxLayoutView(View):
             else:
                 elt_state = None
             elements.append(mosaic.put_opt(elt_state))
+            if w and w.hasFocus():
+                focused_idx = idx
         return htypes.box_layout.state(
-            current=layout.count() - 1,  # TODO
+            current=focused_idx,
             elements=tuple(elements),
             )
 
