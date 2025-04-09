@@ -45,7 +45,7 @@ class IndexTreeAdapterMixin:
             'parent': self._id_to_item[parent_id],
             }
 
-    def _servant_wrapper(self, fn_partial):
+    def _servant_wrapper(self, fn_partial, is_lateral):
         return self._partial_ref(index_tree_wrapper, servant_ref=fn_partial)
 
     def _apply_diff(self, diff):
@@ -118,12 +118,13 @@ class KeyTreeAdapterMixin:
         parent_id = self._id_to_parent_id[item_id]
         return (*self._make_key_path(parent_id), key)
 
-    def _servant_wrapper(self, fn_partial):
+    def _servant_wrapper(self, fn_partial, is_lateral):
         result_t = self._remote_result_t
         return self._partial_ref(
             key_tree_wrapper,
             servant_ref=fn_partial,
             key_field=self._key_field,
+            is_lateral=is_lateral,
             result_mt=pyobj_creg.actor_to_piece(result_t),
             )
 

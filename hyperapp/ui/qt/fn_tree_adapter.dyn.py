@@ -31,6 +31,7 @@ class FnTreeAdapter(TreeAdapter):
         self._column_names = sorted(self._item_t.fields)
         self._ctx = ctx
         self._fn = fn
+        self._lateral_ids = set()
         try:
             self._feed = feed_factory(model)
         except KeyError:
@@ -73,7 +74,13 @@ class FnTreeAdapter(TreeAdapter):
 
     def _remote_populate(self, parent_id, kw, remote_peer):
         fn_partial = self._fn.partial_ref(self._ctx, **kw)
-        wrapper_partial = self._servant_wrapper(fn_partial)
+        if parent_id != 0 and (pp_id := self._id_to_parent_id[parent_id]) in self._lateral_ids:
+            is_lateral = True
+            lateral_parent_id = pp_id
+        else:
+            is_lateral = False
+            lateral_parent_id = parent_id
+        wrapper_partial = self._servant_wrapper(fn_partial, is_lateral)
         rpc_call = self._rpc_call_factory(
             sender_identity=self._ctx.identity,
             receiver_peer=remote_peer,
@@ -83,9 +90,9 @@ class FnTreeAdapter(TreeAdapter):
         log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._model, parent_id, item_list)
         self._store_item_list(parent_id, item_list)
         for rec in children_rec_list:
-            item_id = self._children_rec_to_item_id(parent_id, rec)
-            log.info("Fn tree adapter: retrieved remote children for %s/%s: %s", self._model, item_id, rec.item_list)
+            item_id = self._children_rec_to_item_id(lateral_parent_id, rec)
             self._store_item_list(item_id, rec.item_list)
+            self._lateral_ids.add(item_id)
 
 
 class FnIndexTreeAdapter(FnTreeAdapter, IndexTreeAdapterMixin):
