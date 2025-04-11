@@ -18,6 +18,7 @@ import:
 - legacy_type.ref_list:item
 - legacy_type.ref_list:model
 - legacy_type.ref_list:storage
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
   add_folder:
@@ -57,6 +58,17 @@ definitions:
       name: add_folder_d
       base: null
       fields: {}
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: format_model
+  formatter_creg-ref_list-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.ref_list:model
+      function: format_model
+      service_params: []
   open:
     type: legacy_type.builtin:attribute
     value:

@@ -62,6 +62,7 @@ import:
 - models.peer_list:peer_list-model.feed-template
 - models.peer_list:peer_list-model.model-cfg-item
 - models.peer_list:peer_list_reg.service
+- models.ref_list:formatter_creg-ref_list-model.actor-template
 - models.ref_list:open_ref_list.global-model-command
 - models.ref_list:ref_list-model-add_folder.command-cfg-item
 - models.ref_list:ref_list-model-open.command-cfg-item
@@ -111,6 +112,7 @@ definitions:
       - models.model_list:formatter_creg-model_list-model.actor-template
       - models.model_list:formatter_creg-model_list-model_arg.actor-template
       - models.peer_list:formatter_creg-peer_list-model.actor-template
+      - models.ref_list:formatter_creg-ref_list-model.actor-template
       - models.show_current_context:formatter_creg-show_current_context-model.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config

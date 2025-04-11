@@ -18,10 +18,10 @@ ref_list_yaml_format = '''
   folders:
   - id: folder_1
     parent_id: null
-    name: Folder A
+    name: Folder 1
   - id: folder_2
     parent_id: null
-    name: Folder B
+    name: Folder 2
   refs:
   - id: ref_1
     parent_id: null
@@ -44,7 +44,12 @@ def formatter_creg_config():
 
 @mark.fixture
 def root_model():
-    return htypes.ref_list.model(parent_id=None)
+    return htypes.ref_list.model(parent_id=None, folder_path=())
+
+
+@mark.fixture
+def folder_2_model():
+    return htypes.ref_list.model(parent_id='folder_2', folder_path=('Folder 2',))
 
 
 @mark.fixture
@@ -65,17 +70,17 @@ def test_root_model(root_model, mock_storage_path):
         item_list = ref_list.ref_list_model(root_model)
     assert type(item_list) is list
     assert item_list == [
-        htypes.ref_list.item('folder_1', 'Folder A'),
-        htypes.ref_list.item('folder_2', 'Folder B'),
+        htypes.ref_list.item('folder_1', 'Folder 1'),
+        htypes.ref_list.item('folder_2', 'Folder 2'),
         htypes.ref_list.item('ref_1', 'sample-model(123)'),
         ]
 
 
-def test_open_folder(root_model, mock_storage_path):
+def test_open_folder(root_model, folder_2_model, mock_storage_path):
     with patch.object(ref_list, '_STORAGE_PATH', mock_storage_path):
-        current_key = 'folder_2'
+        current_key = folder_2_model.parent_id
         piece = ref_list.open(root_model, current_key)
-    assert piece == htypes.ref_list.model(parent_id='folder_2')
+    assert piece == folder_2_model
 
 
 def test_add_root_folder(root_model, mock_storage_path):
@@ -84,3 +89,8 @@ def test_add_root_folder(root_model, mock_storage_path):
     assert piece == root_model
     assert type(folder_id) is str
     mock_storage_path.write_bytes.assert_called_once()
+
+
+def test_formatter(folder_2_model):
+    text = ref_list.format_model(folder_2_model)
+    assert text == "Ref list: /Folder 2/"

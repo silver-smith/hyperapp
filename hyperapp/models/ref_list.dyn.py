@@ -107,7 +107,14 @@ def open(piece, current_key):
     ref_list = _get_ref_list()
     try:
         folder = ref_list.get_folder(current_key)
-        return htypes.ref_list.model(parent_id=folder.id)
+        path = [folder.name]
+        while folder.parent_id:
+            folder = ref_list.get_folder(folder.parent_id)
+            path = [folder.name, *path]
+        return htypes.ref_list.model(
+            parent_id=folder.id,
+            folder_path=tuple(path),
+            )
     except KeyError:
         ref = ref_list.get_ref(current_key)
         return web.summon(ref.ref)
@@ -122,4 +129,12 @@ def add_folder(piece, name):
 
 @mark.global_command
 def open_ref_list():
-    return htypes.ref_list.model(parent_id=None)
+    return htypes.ref_list.model(parent_id=None, folder_path=())
+
+
+@mark.actor.formatter_creg
+def format_model(piece):
+    path = "/"
+    for name in piece.folder_path:
+        path += name + "/"
+    return f"Ref list: {path}"
