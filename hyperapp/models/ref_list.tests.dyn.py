@@ -62,12 +62,12 @@ def mock_storage_path():
         )
     path = Mock()
     path.read_bytes.return_value = ref_list_yaml_text.encode()
-    return path
+    with patch.object(ref_list, '_STORAGE_PATH', path):
+        yield path
 
 
 def test_root_model(root_model, mock_storage_path):
-    with patch.object(ref_list, '_STORAGE_PATH', mock_storage_path):
-        item_list = ref_list.ref_list_model(root_model)
+    item_list = ref_list.ref_list_model(root_model)
     assert type(item_list) is list
     assert item_list == [
         htypes.ref_list.item('folder_1', 'Folder 1'),
@@ -77,22 +77,19 @@ def test_root_model(root_model, mock_storage_path):
 
 
 def test_open_folder(root_model, folder_2_model, mock_storage_path):
-    with patch.object(ref_list, '_STORAGE_PATH', mock_storage_path):
-        current_key = folder_2_model.parent_id
-        piece = ref_list.open(root_model, current_key)
+    current_key = folder_2_model.parent_id
+    piece = ref_list.open(root_model, current_key)
     assert piece == folder_2_model
 
 
 def test_open_parent(root_model, folder_2_model, mock_storage_path):
-    with patch.object(ref_list, '_STORAGE_PATH', mock_storage_path):
-        piece, key = ref_list.open_parent(folder_2_model)
+    piece, key = ref_list.open_parent(folder_2_model)
     assert piece == root_model
     assert key == folder_2_model.parent_id
 
 
 def test_add_root_folder(root_model, mock_storage_path):
-    with patch.object(ref_list, '_STORAGE_PATH', mock_storage_path):
-        piece, folder_id = ref_list.add_folder(root_model, 'New folder')
+    piece, folder_id = ref_list.add_folder(root_model, 'New folder')
     assert piece == root_model
     assert type(folder_id) is str
     mock_storage_path.write_bytes.assert_called_once()
