@@ -112,3 +112,8 @@ async def test_run_command(lcs, piece):
     result = await model_commands.run_command(piece, current_item, ctx, lcs)
     navigator.view.open.assert_called_once()
     assert navigator.view.open.call_args.args[1] == 'sample-fn-2: a-service'
+
+
+def test_format_model(piece):
+    title = model_commands.format_model(piece)
+    assert type(title) is str

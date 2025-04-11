@@ -45,6 +45,7 @@ import:
 - models.identity_command:command_creg-identity_command-identity_command.actor-template
 - models.identity_command:model_commands-model-add_identity_command.command-cfg-item
 - models.identity_command:model_commands-model.feed-template
+- models.model_commands:formatter_creg-model_commands-model.actor-template
 - models.model_commands:model_commands-model-run_command.command-cfg-item
 - models.model_commands:model_commands-model.model-cfg-item
 - models.model_commands:open_model_commands.global-model-command
@@ -110,6 +111,7 @@ definitions:
       - models.data_browser:formatter_creg-data_browser-record_view.actor-template
       - models.global_commands:formatter_creg-global_commands-command_arg.actor-template
       - models.global_commands:formatter_creg-global_commands-model.actor-template
+      - models.model_commands:formatter_creg-model_commands-model.actor-template
       - models.model_list:formatter_creg-model_list-model.actor-template
       - models.model_list:formatter_creg-model_list-model_arg.actor-template
       - models.peer_list:formatter_creg-peer_list-model.actor-template

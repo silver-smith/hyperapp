@@ -53,3 +53,10 @@ def open_model_commands(piece, model_state):
         model=mosaic.put(piece),
         model_state=mosaic.put(model_state),
         )
+
+
+@mark.actor.formatter_creg
+def format_model(piece, format):
+    model = web.summon(piece.model)
+    model_title = format(model)
+    return f"Commands for: {model_title}"

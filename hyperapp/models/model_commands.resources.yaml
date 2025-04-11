@@ -14,10 +14,23 @@ import:
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model_commands:model
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - models.command_list_model:command_list_model.module
 - ui.model_command:model_command.module
 definitions:
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_commands.module
+      attr_name: format_model
+  formatter_creg-model_commands-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.model_commands:model
+      function: format_model
+      service_params:
+      - format
   list_model_commands:
     type: legacy_type.builtin:attribute
     value:
