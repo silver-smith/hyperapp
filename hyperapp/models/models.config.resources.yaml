@@ -225,7 +225,7 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: models.ref_list:add_folder.open-d
-      value: shortcut_A
+      value: shortcut_F
   config_item-models.ref_list-add_ref.open-d:
     type: legacy_type.data_service:config_item
     value:
@@ -264,9 +264,6 @@ definitions:
     value:
       items:
       - config_item-crud-layout_k-models.peer_list-add
-  shortcut_A:
-    type: legacy_type.builtin:string
-    value: A
   shortcut_Alt_B:
     type: legacy_type.builtin:string
     value: Alt+B
@@ -300,6 +297,9 @@ definitions:
   shortcut_Del:
     type: legacy_type.builtin:string
     value: Del
+  shortcut_F:
+    type: legacy_type.builtin:string
+    value: F
   shortcut_Ins:
     type: legacy_type.builtin:string
     value: Ins
