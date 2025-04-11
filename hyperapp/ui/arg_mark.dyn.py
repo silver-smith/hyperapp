@@ -14,8 +14,11 @@ from .code.context_view import ContextView
 log = logging.getLogger(__name__)
 
 
+model_mark_prefix = 'mark-'
+
+
 def model_mark_name(model_t):
-    return f'mark-{model_t.full_name}'
+    return f'{model_mark_prefix}{model_t.full_name}'
 
 
 def value_mark_name(value_t):

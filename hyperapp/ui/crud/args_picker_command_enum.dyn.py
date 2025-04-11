@@ -14,7 +14,7 @@ from .code.command import CommandKind
 from .code.command_groups import default_command_groups
 from .code.model_command import UnboundModelCommand
 from .code.ui_command import UnboundUiCommand
-from .code.arg_mark import value_mark_name
+from .code.arg_mark import model_mark_prefix, value_mark_name
 from .code.canned_args_command_fn import CannedArgsCommandFn
 from .code.command_args import args_dict_to_tuple, args_t_tuple_to_dict
 from .code.args_picker_fn import ArgsPickerFn
@@ -61,11 +61,15 @@ class UnboundArgsPickerCommandEnumerator:
     def enum_commands(self, ctx):
         log.debug("Run args picker command enumerator: %r (%s)", self, self._required_args)
         args, required_args = self._pick_args_from_context(ctx)
-        if required_args:
-            command = self._args_picker_command(args, required_args)
+        if htypes.builtin.ref in required_args.values():
+            log.warning("Args picker for references is not yet implemented")
+            result = []
         else:
-            command = self._canned_args_command(args)
-        result = [command]
+            if required_args:
+                command = self._args_picker_command(args, required_args)
+            else:
+                command = self._canned_args_command(args)
+            result = [command]
         log.debug("Run args picker command enumerator %r result: %r", self, result)
         return result
 
@@ -91,7 +95,10 @@ class UnboundArgsPickerCommandEnumerator:
         args = {}
         required_args = {}
         for name, t in self._required_args.items():
-            value = self._pick_arg(ctx, name, t)
+            if t is htypes.builtin.ref:
+                value = self._pick_ref_arg(ctx)
+            else:
+                value = self._pick_arg(ctx, name, t)
             if value is None:
                 required_args[name] = t
             else:
@@ -110,6 +117,12 @@ class UnboundArgsPickerCommandEnumerator:
             return None
         if required_t is value_t:
             return value
+        return None
+
+    def _pick_ref_arg(self, ctx):
+        for name, value in reversed(ctx.items()):
+            if name.startswith(model_mark_prefix):
+                return mosaic.put(value)
         return None
 
     def _canned_args_command(self, args):
