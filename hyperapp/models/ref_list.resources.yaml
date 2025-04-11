@@ -101,6 +101,37 @@ definitions:
       name: open_d
       base: null
       fields: {}
+  open_parent:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: open_parent
+  open_parent.d:
+    type: open_parent_d
+    value: {}
+  open_parent.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_parent
+      ctx_params:
+      - piece
+      service_params: []
+  open_parent.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_parent.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: open_parent.fn
+  open_parent_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: ref_list
+      name: open_parent_d
+      base: null
+      fields: {}
   open_ref_list:
     type: legacy_type.builtin:attribute
     value:
@@ -141,6 +172,11 @@ definitions:
     value:
       t: legacy_type.ref_list:model
       command: open.model-command
+  ref_list-model-open_parent.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.ref_list:model
+      command: open_parent.model-command
   ref_list-model.key-list-ui-t:
     type: legacy_type.model:key_list_ui_t
     value:

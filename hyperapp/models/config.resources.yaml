@@ -66,6 +66,7 @@ import:
 - models.ref_list:open_ref_list.global-model-command
 - models.ref_list:ref_list-model-add_folder.command-cfg-item
 - models.ref_list:ref_list-model-open.command-cfg-item
+- models.ref_list:ref_list-model-open_parent.command-cfg-item
 - models.ref_list:ref_list-model.model-cfg-item
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
 - models.show_current_context:formatter_creg-show_current_context-model.actor-template
@@ -157,6 +158,7 @@ definitions:
       - models.model_commands:model_commands-model-run_command.command-cfg-item
       - models.peer_list:peer_list-model-remove.command-cfg-item
       - models.ref_list:ref_list-model-open.command-cfg-item
+      - models.ref_list:ref_list-model-open_parent.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
   model_reg:
     type: legacy_type.system:item_list_config

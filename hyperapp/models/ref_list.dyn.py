@@ -120,6 +120,19 @@ def open(piece, current_key):
         return web.summon(ref.ref)
 
 
+@mark.command
+def open_parent(piece):
+    if not piece.parent_id:
+        return
+    ref_list = _get_ref_list()
+    folder = ref_list.get_folder(piece.parent_id)
+    piece = htypes.ref_list.model(
+        parent_id=folder.parent_id,
+        folder_path=piece.folder_path[:-1],
+        )
+    return (piece, folder.id)
+
+
 @mark.command(args=['name'])
 def add_folder(piece, name):
     ref_list = _get_ref_list()

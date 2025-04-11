@@ -83,6 +83,13 @@ def test_open_folder(root_model, folder_2_model, mock_storage_path):
     assert piece == folder_2_model
 
 
+def test_open_parent(root_model, folder_2_model, mock_storage_path):
+    with patch.object(ref_list, '_STORAGE_PATH', mock_storage_path):
+        piece, key = ref_list.open_parent(folder_2_model)
+    assert piece == root_model
+    assert key == folder_2_model.parent_id
+
+
 def test_add_root_folder(root_model, mock_storage_path):
     with patch.object(ref_list, '_STORAGE_PATH', mock_storage_path):
         piece, folder_id = ref_list.add_folder(root_model, 'New folder')
