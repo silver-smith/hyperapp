@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 def index_list_model_state_t(item_t):
     return TRecord('ui_list', f'list_model_state_{item_t.module_name}_{item_t.name}', {
         'current_idx': tInt,
-        'current_item': TOptional(item_t),
+        'current_item': item_t,
         })
 
 
@@ -26,7 +26,7 @@ def key_list_model_state_t(item_t, key_field, key_field_t):
     return TRecord('ui_list', f'list_model_state_{item_t.module_name}_{item_t.name}', {
         'current_key': key_field_t,
         f'current_{key_field}': key_field_t,
-        'current_item': TOptional(item_t),
+        'current_item': item_t,
         })
 
 
