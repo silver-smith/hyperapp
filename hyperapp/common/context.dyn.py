@@ -35,6 +35,14 @@ class Context:
         except KeyError:
             return default_value
 
+    def items(self):
+        if not self._next:
+            return self._items.items()
+        return [
+            *self._next.items(),
+            *self._items.items(),
+            ]
+
     def update(self, **kw):
         self._items.update(kw)
 
