@@ -1,0 +1,21 @@
+model = record:
+  parent_id: string opt
+
+item = record:
+  id: string
+  name: string
+
+
+folder = record:
+  id: string
+  parent_id: string opt
+  name: string
+
+ref = record:
+  id: string
+  parent_id: string opt
+  ref: ref
+
+storage = record:
+  folders: folder list
+  refs: ref list

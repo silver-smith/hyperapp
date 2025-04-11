@@ -1,0 +1,135 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.builtin:string
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:cfg_item
+- legacy_type.command:model_args_picker_command_enumerator
+- legacy_type.command:model_command
+- legacy_type.command:open_args_picker_command_d
+- legacy_type.model:key_list_ui_t
+- legacy_type.model:model
+- legacy_type.ref_list:folder
+- legacy_type.ref_list:item
+- legacy_type.ref_list:model
+- legacy_type.ref_list:storage
+- legacy_type.system_fn:ctx_fn
+definitions:
+  add_folder:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: add_folder
+  add_folder.commit-d:
+    type: add_folder_d
+    value: {}
+  add_folder.commit-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: add_folder
+      ctx_params:
+      - piece
+      - name
+      service_params: []
+  add_folder.model-command-enumerator:
+    type: legacy_type.command:model_args_picker_command_enumerator
+    value:
+      name: add_folder
+      is_global: false
+      required_args:
+        name: legacy_type.builtin:string
+      args_picker_command_d: add_folder.open-d
+      commit_command_d: add_folder.commit-d
+      commit_fn: add_folder.commit-fn
+  add_folder.open-d:
+    type: legacy_type.command:open_args_picker_command_d
+    value:
+      commit_command_d: add_folder.commit-d
+  add_folder_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: ref_list
+      name: add_folder_d
+      base: null
+      fields: {}
+  open_ref_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: open_ref_list
+  open_ref_list.d:
+    type: open_ref_list_d
+    value: {}
+  open_ref_list.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_ref_list
+      ctx_params: []
+      service_params: []
+  open_ref_list.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_ref_list.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_ref_list.fn
+  open_ref_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: ref_list
+      name: open_ref_list_d
+      base: null
+      fields: {}
+  ref_list-model-add_folder.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.ref_list:model
+      command: add_folder.model-command-enumerator
+  ref_list-model.key-list-ui-t:
+    type: legacy_type.model:key_list_ui_t
+    value:
+      item_t: legacy_type.ref_list:item
+      key_field: id
+      key_field_t: legacy_type.builtin:string
+  ref_list-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: ref_list-model.key-list-ui-t
+      system_fn: ref_list-model.system-fn
+  ref_list-model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.ref_list:model
+      value: ref_list-model.model
+  ref_list-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: ref_list_model
+      ctx_params:
+      - piece
+      service_params:
+      - format
+  ref_list.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: ref_list
+      file_name: ref_list.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.ref_list.folder: legacy_type.ref_list:folder
+        htypes.ref_list.item: legacy_type.ref_list:item
+        htypes.ref_list.model: legacy_type.ref_list:model
+        htypes.ref_list.storage: legacy_type.ref_list:storage
+        services.web: builtins:web.service
+  ref_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: ref_list_model
