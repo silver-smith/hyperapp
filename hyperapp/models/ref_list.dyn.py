@@ -21,20 +21,20 @@ class RefList:
 
     def __init__(self, storage_path):
         self._storage_path = storage_path
-        self._folders = []
-        self._refs = []
+        self._folders = {}
+        self._refs = {}
         self._loaded = False
 
     def enum_items(self, format, parent_id=None):
         self._ensure_loaded()
-        for folder in self._folders:
+        for folder in self._folders.values():
             if folder.parent_id != parent_id:
                 continue
             yield htypes.ref_list.item(
                 id=folder.id,
                 name=folder.name,
                 )
-        for ref in self._refs:
+        for ref in self._refs.values():
             if ref.parent_id != parent_id:
                 continue
             piece = web.summon(ref.ref)
@@ -44,6 +44,14 @@ class RefList:
                 name=name,
                 )
 
+    def get_folder(self, item_id):
+        self._ensure_loaded()
+        return self._folders[item_id]
+
+    def get_ref(self, item_id):
+        self._ensure_loaded()
+        return self._refs[item_id]
+
     def append_folder(self, parent_id, name):
         self._ensure_loaded()
         folder = htypes.ref_list.folder(
@@ -51,7 +59,7 @@ class RefList:
             parent_id=parent_id,
             name=name,
             )
-        self._folders.append(folder)
+        self._folders[folder.id] = folder
         self._save()
         return folder.id
 
@@ -66,8 +74,8 @@ class RefList:
         except FileNotFoundError:
             return
         storage = packet_coders.decode('yaml', yaml_data, htypes.ref_list.storage)
-        self._folders = list(storage.folders)
-        self._refs = list(storage.refs)
+        self._folders = {folder.id: folder for folder in storage.folders}
+        self._refs = {ref.id: ref for ref in storage.refs}
         # for folder in storage.folders:
         #     self._folders.append(folder)
         #         self._Folder(folder.id, folder.parent_id, folder.name))
@@ -77,8 +85,8 @@ class RefList:
 
     def _save(self):
         storage = htypes.ref_list.storage(
-            folders=tuple(self._folders),
-            refs=tuple(self._refs),
+            folders=tuple(self._folders.values()),
+            refs=tuple(self._refs.values()),
             )
         yaml_data = packet_coders.encode('yaml', storage)
         self._storage_path.write_bytes(yaml_data)
@@ -92,6 +100,17 @@ def _get_ref_list():
 def ref_list_model(piece, format):
     ref_list = _get_ref_list()
     return list(ref_list.enum_items(format, piece.parent_id))
+
+
+@mark.command
+def open(piece, current_key):
+    ref_list = _get_ref_list()
+    try:
+        folder = ref_list.get_folder(current_key)
+        return htypes.ref_list.model(parent_id=folder.id)
+    except KeyError:
+        ref = ref_list.get_ref(current_key)
+        return web.summon(ref.ref)
 
 
 @mark.command(args=['name'])

@@ -57,6 +57,38 @@ definitions:
       name: add_folder_d
       base: null
       fields: {}
+  open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: open
+  open.d:
+    type: open_d
+    value: {}
+  open.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open
+      ctx_params:
+      - piece
+      - current_key
+      service_params: []
+  open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open.fn
+  open_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: ref_list
+      name: open_d
+      base: null
+      fields: {}
   open_ref_list:
     type: legacy_type.builtin:attribute
     value:
@@ -92,6 +124,11 @@ definitions:
     value:
       t: legacy_type.ref_list:model
       command: add_folder.model-command-enumerator
+  ref_list-model-open.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.ref_list:model
+      command: open.model-command
   ref_list-model.key-list-ui-t:
     type: legacy_type.model:key_list_ui_t
     value:
