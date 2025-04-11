@@ -31,6 +31,20 @@ ref_list_yaml_format = '''
 '''
 
 
+@mark.fixture
+def mock_storage_path():
+    ref_1_piece = htypes.ref_list_tests.sample_model(id=123)
+    ref_1 = mosaic.put(ref_1_piece)
+    ref_list_yaml_text = ref_list_yaml_format.format(
+        ref_1_hash_algorithm=ref_1.hash_algorithm,
+        ref_1_hash=base64.b64encode(ref_1.hash).decode('ascii'),
+        )
+    path = Mock()
+    path.read_bytes.return_value = ref_list_yaml_text.encode()
+    with patch.object(ref_list, '_STORAGE_PATH', path):
+        yield path
+
+
 def format_sample_model(piece):
     return f'sample-model({piece.id})'
 
@@ -50,20 +64,6 @@ def root_model():
 @mark.fixture
 def folder_2_model():
     return htypes.ref_list.model(parent_id='folder_2', folder_path=('Folder 2',))
-
-
-@mark.fixture
-def mock_storage_path():
-    ref_1_piece = htypes.ref_list_tests.sample_model(id=123)
-    ref_1 = mosaic.put(ref_1_piece)
-    ref_list_yaml_text = ref_list_yaml_format.format(
-        ref_1_hash_algorithm=ref_1.hash_algorithm,
-        ref_1_hash=base64.b64encode(ref_1.hash).decode('ascii'),
-        )
-    path = Mock()
-    path.read_bytes.return_value = ref_list_yaml_text.encode()
-    with patch.object(ref_list, '_STORAGE_PATH', path):
-        yield path
 
 
 def test_root_model(root_model, mock_storage_path):
