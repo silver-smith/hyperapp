@@ -80,7 +80,7 @@ def piece():
 def test_list_model_commands(lcs, piece):
     ctx = Context()
     item_list = model_commands.list_model_commands(piece, ctx, lcs)
-    assert 'sample_command_2' in [item.name for item in item_list]
+    assert 'Sample command 2' in [item.name for item in item_list]
 
 
 @mark.config_fixture('model_layout_reg')

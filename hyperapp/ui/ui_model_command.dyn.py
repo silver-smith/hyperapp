@@ -13,8 +13,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.directory import d_to_name
-from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase
+from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase, command_d_text
 from .code.command_groups import default_command_groups
 from .code.model_command import UnboundModelCommand
 
@@ -176,10 +175,10 @@ def custom_ui_global_model_commands(lcs):
 
 class CommandItem:
 
-    def __init__(self, d, model_command_d, command, enabled=True):
+    def __init__(self, format, d, model_command_d, command, enabled=True):
         self.d = d
         self.model_command_d = model_command_d
-        self.name = d_to_name(d)
+        self.name = command_d_text(format, d)
         self.command = command
         self.enabled = enabled
 
@@ -200,6 +199,7 @@ class CommandItemList:
 
     def __init__(
             self,
+            format,
             view_reg,
             visualizer,
             command_creg,
@@ -207,6 +207,7 @@ class CommandItemList:
             custom_commands,
             lcs,
             ):
+        self._format = format
         self._view_reg = view_reg
         self._visualizer = visualizer
         self._command_creg = command_creg
@@ -246,7 +247,7 @@ class CommandItemList:
             # Override default wrapped model_command if custom layout is configured.
             ui_d_to_command[ui_command_d] = ui_command
         self._d_to_item_cache = {
-            d: CommandItem(d, command.model_command_d, command)
+            d: CommandItem(self._format, d, command.model_command_d, command)
             for d, command in ui_d_to_command.items()
             }
         return self._d_to_item_cache
@@ -295,6 +296,7 @@ class ModelCommandItemList(CommandItemList):
 
     def __init__(
             self,
+            format,
             view_reg,
             visualizer,
             command_creg,
@@ -304,6 +306,7 @@ class ModelCommandItemList(CommandItemList):
             lcs,
             ):
         super().__init__(
+            format,
             view_reg,
             visualizer,
             command_creg,
@@ -327,6 +330,7 @@ class GlobalCommandItemList(CommandItemList):
         
 @mark.service
 def ui_model_command_items(
+        format,
         view_reg,
         visualizer,
         command_creg,
@@ -340,6 +344,7 @@ def ui_model_command_items(
     model_commands = get_model_commands(model_t, ctx)
     custom_commands = custom_ui_model_commands(lcs, model_t)
     return ModelCommandItemList(
+        format,
         view_reg,
         visualizer,
         command_creg,
@@ -352,6 +357,7 @@ def ui_model_command_items(
 
 @mark.service
 def ui_global_command_items(
+        format,
         view_reg,
         visualizer,
         command_creg,
@@ -361,6 +367,7 @@ def ui_global_command_items(
         ):
     custom_commands = custom_ui_global_model_commands(lcs)
     return GlobalCommandItemList(
+        format,
         view_reg,
         visualizer,
         command_creg,

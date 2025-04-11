@@ -59,7 +59,7 @@ def piece():
 def test_list_global_commands(lcs, piece):
     ctx = Context()
     item_list = global_commands.list_global_commands(piece, lcs)
-    assert 'sample_command' in [item.name for item in item_list]
+    assert 'Sample command' in [item.name for item in item_list]
 
 
 @mark.config_fixture('model_layout_reg')
