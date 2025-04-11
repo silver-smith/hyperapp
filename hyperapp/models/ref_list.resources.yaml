@@ -6,6 +6,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.builtin:ref
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
@@ -17,6 +18,7 @@ import:
 - legacy_type.ref_list:folder
 - legacy_type.ref_list:item
 - legacy_type.ref_list:model
+- legacy_type.ref_list:ref
 - legacy_type.ref_list:storage
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
@@ -56,6 +58,43 @@ definitions:
     value:
       module_name: ref_list
       name: add_folder_d
+      base: null
+      fields: {}
+  add_ref:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: add_ref
+  add_ref.commit-d:
+    type: add_ref_d
+    value: {}
+  add_ref.commit-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: add_ref
+      ctx_params:
+      - piece
+      - ref
+      service_params: []
+  add_ref.model-command-enumerator:
+    type: legacy_type.command:model_args_picker_command_enumerator
+    value:
+      name: add_ref
+      is_global: false
+      required_args:
+        ref: legacy_type.builtin:ref
+      args_picker_command_d: add_ref.open-d
+      commit_command_d: add_ref.commit-d
+      commit_fn: add_ref.commit-fn
+  add_ref.open-d:
+    type: legacy_type.command:open_args_picker_command_d
+    value:
+      commit_command_d: add_ref.commit-d
+  add_ref_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: ref_list
+      name: add_ref_d
       base: null
       fields: {}
   format_model:
@@ -167,6 +206,11 @@ definitions:
     value:
       t: legacy_type.ref_list:model
       command: add_folder.model-command-enumerator
+  ref_list-model-add_ref.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.ref_list:model
+      command: add_ref.model-command-enumerator
   ref_list-model-open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -211,6 +255,7 @@ definitions:
         htypes.ref_list.folder: legacy_type.ref_list:folder
         htypes.ref_list.item: legacy_type.ref_list:item
         htypes.ref_list.model: legacy_type.ref_list:model
+        htypes.ref_list.ref: legacy_type.ref_list:ref
         htypes.ref_list.storage: legacy_type.ref_list:storage
         services.web: builtins:web.service
   ref_list_model:

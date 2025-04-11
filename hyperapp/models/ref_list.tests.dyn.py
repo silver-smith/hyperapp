@@ -95,6 +95,15 @@ def test_add_root_folder(root_model, mock_storage_path):
     mock_storage_path.write_bytes.assert_called_once()
 
 
+def test_add_ref(folder_2_model, mock_storage_path):
+    ref_2_piece = htypes.ref_list_tests.sample_model(id=456)
+    ref_2 = mosaic.put(ref_2_piece)
+    piece, ref_id = ref_list.add_ref(folder_2_model, ref_2)
+    assert piece == folder_2_model
+    assert type(ref_id) is str
+    mock_storage_path.write_bytes.assert_called_once()
+
+
 def test_formatter(folder_2_model):
     text = ref_list.format_model(folder_2_model)
     assert text == "Ref list: /Folder 2/"

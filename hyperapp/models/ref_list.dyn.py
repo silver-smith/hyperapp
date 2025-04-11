@@ -63,6 +63,17 @@ class RefList:
         self._save()
         return folder.id
 
+    def append_ref(self, parent_id, ref):
+        self._ensure_loaded()
+        ref_item = htypes.ref_list.ref(
+            id=str(uuid.uuid4()),
+            parent_id=parent_id,
+            ref=ref,
+            )
+        self._refs[ref_item.id] = ref_item
+        self._save()
+        return ref_item.id
+
     def _ensure_loaded(self):
         if not self._loaded:
             self._read()
@@ -138,6 +149,13 @@ def add_folder(piece, name):
     ref_list = _get_ref_list()
     folder_id = ref_list.append_folder(piece.parent_id, name)
     return (piece, folder_id)
+
+
+@mark.command(args=['ref'])
+def add_ref(piece, ref):
+    ref_list = _get_ref_list()
+    ref_id = ref_list.append_ref(piece.parent_id, ref)
+    return (piece, ref_id)
 
 
 @mark.global_command

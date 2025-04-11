@@ -37,6 +37,7 @@ import:
 - models.peer_list:run_command.commit-d
 - models.peer_list:run_command.open-d
 - models.ref_list:add_folder.open-d
+- models.ref_list:add_ref.open-d
 - models.ref_list:open.d
 - models.ref_list:open_parent.d
 - models.ref_list:open_ref_list.d
@@ -225,6 +226,11 @@ definitions:
     value:
       key: models.ref_list:add_folder.open-d
       value: shortcut_A
+  config_item-models.ref_list-add_ref.open-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.ref_list:add_ref.open-d
+      value: shortcut_Ins
   config_item-models.ref_list-open.d:
     type: legacy_type.data_service:config_item
     value:
@@ -344,6 +350,7 @@ definitions:
       - config_item-models.ref_list-open.d
       - config_item-models.ref_list-open_parent.d
       - config_item-models.ref_list-add_folder.open-d
+      - config_item-models.ref_list-add_ref.open-d
   static_str_adapter:
     type: legacy_type.str_adapter:static_str_adapter
     value: {}
