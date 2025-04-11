@@ -112,7 +112,7 @@ def open(piece, current_key):
             folder = ref_list.get_folder(folder.parent_id)
             path = [folder.name, *path]
         return htypes.ref_list.model(
-            parent_id=folder.id,
+            parent_id=current_key,
             folder_path=tuple(path),
             )
     except KeyError:
