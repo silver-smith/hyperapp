@@ -218,6 +218,9 @@ class SystemJob:
         if isinstance(last_cause, htypes.rpc.server_error):
             for entry in last_cause.traceback:
                 line_list += [line + '\n' for line in entry.splitlines()]
+        if isinstance(last_cause, SyntaxError):
+            line = f'  File "{last_cause.filename}", line {last_cause.lineno}\n{last_cause.text}'
+            line_list.append(line)
         return line_list
 
     def _raise_error(self, x, module_name=None):
