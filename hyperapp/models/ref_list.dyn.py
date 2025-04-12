@@ -92,7 +92,7 @@ class RefList:
 
 @mark.service
 def ref_list(file_bundle_factory):
-    file_bundle = file_bundle_factory(_STORAGE_PATH)
+    file_bundle = file_bundle_factory(_STORAGE_PATH, encoding='cdr')
     return RefList(file_bundle)
 
 
