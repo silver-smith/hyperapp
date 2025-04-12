@@ -23,7 +23,6 @@ import:
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model:remote_model
-- legacy_type.model_list:model_arg
 - legacy_type.peer_list:bundle
 - legacy_type.peer_list:item
 - legacy_type.peer_list:model
@@ -32,6 +31,7 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
+- ui.ui_model_command:ui_model_command.module
 definitions:
   add:
     type: legacy_type.builtin:attribute
@@ -100,16 +100,19 @@ definitions:
       ctx_params:
       - piece
       - current_item
-      - model
+      - command
+      - identity
+      - ctx
       service_params:
       - peer_registry
+      - global_model_command_reg
   open_model.model-command-enumerator:
     type: legacy_type.command:model_args_picker_command_enumerator
     value:
       name: open_model
       is_global: false
       required_args:
-        model: legacy_type.model_list:model_arg
+        command: legacy_type.global_commands:command_arg
       args_picker_command_d: open_model.open-d
       commit_command_d: open_model.commit-d
       commit_fn: open_model.commit-fn
@@ -213,6 +216,7 @@ definitions:
       import_list:
         code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
+        code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.builtin.bundle: legacy_type.builtin:bundle
         htypes.model.remote_model: legacy_type.model:remote_model
         htypes.peer_list.bundle: legacy_type.peer_list:bundle

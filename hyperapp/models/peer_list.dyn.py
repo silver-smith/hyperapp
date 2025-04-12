@@ -15,6 +15,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.list_diff import IndexListDiff
+from .code.ui_model_command import split_command_result
 
 log = logging.getLogger(__name__)
 
@@ -130,19 +131,21 @@ async def remove(piece, current_idx, current_item, feed_factory, peer_list_reg):
         await feed.send(IndexListDiff.Remove(current_idx))
 
 
-@mark.command(args=['model'])
-def open_model(piece, current_item, model, peer_registry):
-    model_t = pyobj_creg.invite(model.model_t)
+@mark.command(args=['command'])
+async def open_model(piece, current_item, command, identity, ctx, peer_registry, global_model_command_reg):
+    command_d = web.summon(command.d)
+    command = global_model_command_reg[command_d]
     peer = peer_registry.invite(current_item.peer)
-    log.info("Peer list: Open model %s @ %s (%s)", model_t, current_item.name, repr(peer))
-    if model_t.fields:
-        log.info("Model %s has fields, do not know how to make an instance", model_t)
-        return
-    model = model_t()
-    return htypes.model.remote_model(
+    log.info("Peer list: Open model from global command %s @ %s (%s)", command, current_item.name, repr(peer))
+    bound_command = command.bind(ctx)
+    result = await bound_command.run()
+    log.info("Run global command result: %s", result)
+    model, key = split_command_result(result)
+    remote_model = htypes.model.remote_model(
         model=mosaic.put(model),
         remote_peer=mosaic.put(peer.piece),
         )
+    return (remote_model, key)
 
 
 @mark.command(args=['command'])

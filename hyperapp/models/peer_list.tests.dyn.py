@@ -95,14 +95,6 @@ def current_item(generate_rsa_identity):
         )
 
 
-def test_open_model(piece, current_item):
-    model = htypes.model_list.model_arg(
-        model_t=pyobj_creg.actor_to_ref(htypes.peer_list_tests.sample_model),
-        )
-    remote_model = peer_list.open_model(piece, current_item, model)
-    assert isinstance(remote_model, htypes.model.remote_model)
-
-
 def _sample_fn():
     return 'sample-fn'
 
@@ -136,16 +128,32 @@ def rpc_call_factory(receiver_peer, sender_identity, servant_ref):
     return call
 
 
-async def test_run_global_command(generate_rsa_identity, piece, current_item, command_d):
-    identity = generate_rsa_identity(fast=True)
-    ctx = Context(
+@mark.fixture
+def identity(generate_rsa_identity):
+    return generate_rsa_identity(fast=True)
+
+
+@mark.fixture
+def ctx(identity):
+    return Context(
         identity=identity,
         )
+
+
+async def test_run_global_command(identity, ctx, piece, current_item, command_d):
     command = htypes.global_commands.command_arg(
         d=mosaic.put(command_d),
         )
     result = await peer_list.run_command(piece, current_item, command, identity, ctx)
     assert result == "Sample result"
+
+
+async def test_open_model(ctx, piece, current_item, command_d):
+    command = htypes.global_commands.command_arg(
+        d=mosaic.put(command_d),
+        )
+    remote_model, key = await peer_list.open_model(piece, current_item, command, identity, ctx)
+    assert isinstance(remote_model, htypes.model.remote_model)
 
 
 def test_open():
