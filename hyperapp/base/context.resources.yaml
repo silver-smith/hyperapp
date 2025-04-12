@@ -1,8 +1,8 @@
-# Automatically generated file. Do not edit.
-
 import:
 - legacy_type.builtin:python_module
+
 definitions:
+
   context.module:
     type: legacy_type.builtin:python_module
     value:

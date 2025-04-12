@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.context:context.module
 - base.mark:mark.module
 - base.reconstructors:reconstructors.module
 - builtins:hyperapp_dir.service
 - builtins:mosaic.service
-- common.context:context.module
 - lcs.lcs:lcs.module
 - legacy_type.auto_tabs:view
 - legacy_type.box_layout:element
@@ -39,7 +39,7 @@ definitions:
       module_name: client
       file_name: client.dyn.py
       import_list:
-        code.context: common.context:context.module
+        code.context: base.context:context.module
         code.controller: ui.controller:controller.module
         code.lcs: lcs.lcs:lcs.module
         code.mark: base.mark:mark.module

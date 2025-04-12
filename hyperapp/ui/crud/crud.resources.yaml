@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.context:context.module
 - base.mark:mark.module
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
-- common.context:context.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:string
@@ -96,7 +96,7 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.construct_default_form: ui.construct_default_form:construct_default_form.module
-        code.context: common.context:context.module
+        code.context: base.context:context.module
         code.context_view: ui.qt.context_view:context_view.module
         code.mark: base.mark:mark.module
         code.record_adapter: ui.record_adapter:record_adapter.module
