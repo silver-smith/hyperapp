@@ -22,16 +22,17 @@ class NavigatorView(View):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, view_reg, model_layout_reg):
+    def from_piece(cls, piece, ctx, view_reg, model_layout_reg, error_view):
         model = web.summon(piece.current_model)
         model_ctx = ctx.clone_with(model=model)
         layout_k = web.summon_opt(piece.layout_k)
         current_view = view_reg.invite(piece.current_view, model_ctx)
-        return cls(model_layout_reg, current_view, model, layout_k, piece.prev, piece.next)
+        return cls(model_layout_reg, error_view, current_view, model, layout_k, piece.prev, piece.next)
 
-    def __init__(self, model_layout_reg, current_view, model, layout_k, prev, next):
+    def __init__(self, model_layout_reg, error_view, current_view, model, layout_k, prev, next):
         super().__init__()
         self._model_layout_reg = model_layout_reg
+        self._error_view = error_view
         self._current_view = current_view
         self._current_layout = current_view.piece
         self._model = model  # piece
@@ -87,20 +88,33 @@ class NavigatorView(View):
             )
 
     def open(self, ctx, model, view, widget, key=None, layout_k=None, set_layout=True):
+        try:
+            self._safe_open(ctx, model, view, widget, key, layout_k, set_layout)
+        except Exception as x:
+            log.exception("Navigator: Error opening %r", model)
+            model, view = self._error_view(x, ctx)
+            self._safe_open(ctx, model, view, widget)
+
+    def _safe_open(self, ctx, model, view, widget, key=None, layout_k=None, set_layout=False):
         history_rec = self._history_rec(widget)
-        self._current_view = view
-        self._current_layout = view.piece
-        self._model = model
         if set_layout and layout_k is None:
             model_t = deduce_t(model)
             layout_k = htypes.ui.model_layout_k(
                 model_t=pyobj_creg.actor_to_ref(model_t),
                 )
+        state = view.make_widget_state(key)
+        prev_view = self._current_view
+        self._current_view = view  # Used inside _replace_widget.
+        try:
+            self._replace_widget(ctx, state)
+        except:
+            self._current_view = prev_view
+            raise
+        self._current_layout = view.piece
+        self._model = model
         self._layout_k = layout_k
         self._prev = mosaic.put(history_rec)
         self._next = None
-        state = view.make_widget_state(key)
-        self._replace_widget(ctx, state)
 
     def go_back(self, ctx, widget, view_reg):
         if not self._prev:

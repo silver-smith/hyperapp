@@ -39,6 +39,7 @@ definitions:
       service_params:
       - view_reg
       - model_layout_reg
+      - error_view
   go_back:
     type: legacy_type.builtin:attribute
     value:
