@@ -16,9 +16,6 @@ _STORAGE_PATH = Path.home() / '.local/share/hyperapp/server/ref_list.yaml'
 
 class RefList:
 
-    # _Folder = namedtuple('RefList._Folder', 'id parent_id name')
-    # _Ref = namedtuple('RefList._Ref', 'id parent_id ref')
-
     def __init__(self, storage_path):
         self._storage_path = storage_path
         self._folders = {}
@@ -87,12 +84,6 @@ class RefList:
         storage = packet_coders.decode('yaml', yaml_data, htypes.ref_list.storage)
         self._folders = {folder.id: folder for folder in storage.folders}
         self._refs = {ref.id: ref for ref in storage.refs}
-        # for folder in storage.folders:
-        #     self._folders.append(folder)
-        #         self._Folder(folder.id, folder.parent_id, folder.name))
-        # for ref in storage.refs:
-        #     self._refs.append(
-        #         self._Ref(folder.id, folder.parent_id, folder.name))
 
     def _save(self):
         storage = htypes.ref_list.storage(
