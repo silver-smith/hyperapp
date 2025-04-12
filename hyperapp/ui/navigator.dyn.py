@@ -52,7 +52,10 @@ class NavigatorView(View):
             )
             
     def construct_widget(self, state, ctx):
-        return self._current_view.construct_widget(state, ctx)
+        return self._construct_widget(self._current_view, state, ctx)
+
+    def _construct_widget(self, view, state, ctx):
+        return view.construct_widget(state, ctx)
 
     def get_current(self, widget):
         return 0
@@ -70,11 +73,11 @@ class NavigatorView(View):
     def widget_state(self, widget):
         return self._current_view.widget_state(widget)
 
-    def _replace_widget(self, ctx, state):
-        new_widget = self.construct_widget(state, ctx)
+    def _replace_widget(self, new_view, ctx, state):
+        new_widget = self._construct_widget(new_view, state, ctx)
         self._ctl_hook.replace_parent_widget(new_widget)
         self._ctl_hook.context_changed()
-        self._ctl_hook.element_replaced(0, self._current_view, new_widget)
+        self._ctl_hook.element_replaced(0, new_view, new_widget)
 
     def _history_rec(self, widget):
         model_t = deduce_t(self._model)
@@ -95,22 +98,17 @@ class NavigatorView(View):
             model, view = self._error_view(x, ctx)
             self._safe_open(ctx, model, view, widget)
 
-    def _safe_open(self, ctx, model, view, widget, key=None, layout_k=None, set_layout=False):
+    def _safe_open(self, ctx, model, new_view, widget, key=None, layout_k=None, set_layout=False):
         history_rec = self._history_rec(widget)
         if set_layout and layout_k is None:
             model_t = deduce_t(model)
             layout_k = htypes.ui.model_layout_k(
                 model_t=pyobj_creg.actor_to_ref(model_t),
                 )
-        state = view.make_widget_state(key)
-        prev_view = self._current_view
-        self._current_view = view  # Used inside _replace_widget.
-        try:
-            self._replace_widget(ctx, state)
-        except:
-            self._current_view = prev_view
-            raise
-        self._current_layout = view.piece
+        state = new_view.make_widget_state(key)
+        self._replace_widget(new_view, ctx, state)
+        self._current_view = new_view
+        self._current_layout = new_view.piece
         self._model = model
         self._layout_k = layout_k
         self._prev = mosaic.put(history_rec)
@@ -124,13 +122,14 @@ class NavigatorView(View):
         prev_model = web.summon(prev.model)
         prev_state = web.summon(prev.state)
         model_ctx = ctx.pop().clone_with(model=prev_model)
-        self._current_view = view_reg.invite(prev.view, model_ctx)
-        self._current_layout = self._current_view.piece
+        new_view = view_reg.invite(prev.view, model_ctx)
+        self._replace_widget(new_view, ctx, prev_state)
+        self._current_view = new_view
+        self._current_layout = new_view.piece
         self._model = web.summon(prev.model)
         self._layout_k = web.summon_opt(prev.layout_k)
         self._prev = prev.prev
         self._next = mosaic.put(history_rec)
-        self._replace_widget(ctx, prev_state)
 
     def go_forward(self, ctx, widget, view_reg):
         if not self._next:
@@ -140,13 +139,14 @@ class NavigatorView(View):
         next_model = web.summon(next.model)
         next_state = web.summon(next.state)
         model_ctx = ctx.pop().clone_with(model=next_model)
-        self._current_view = view_reg.invite(next.view, model_ctx)
-        self._current_layout = self._current_view.piece
+        new_view = view_reg.invite(next.view, model_ctx)
+        self._replace_widget(new_view, ctx, next_state)
+        self._current_view = new_view
+        self._current_layout = new_view.piece
         self._model = web.summon(next.model)
         self._layout_k = web.summon_opt(next.layout_k)
         self._prev = mosaic.put(history_rec)
         self._next = next.next
-        self._replace_widget(ctx, next_state)
 
     def _set_layout(self, layout):
         if self._layout_k is not None:
