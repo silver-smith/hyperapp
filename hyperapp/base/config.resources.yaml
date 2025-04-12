@@ -40,6 +40,7 @@ import:
 - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-template
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
+- base.system_fn_creg:system_fn_creg.service
 - base.transport.endpoint:endpoint_registry.service
 - base.transport.endpoint:endpoint_thread_pool.service
 - base.transport.identity:identity_registry.service
@@ -165,6 +166,7 @@ definitions:
       - base.system.config_layer:resource_name_creg.service
       - base.system.system_stop:stop_signal.service
       - base.system.system_stop:system_failed.service
+      - base.system_fn_creg:system_fn_creg.service
       - base.transport.endpoint:endpoint_registry.service
       - base.transport.endpoint:endpoint_thread_pool.service
       - base.transport.identity:identity_registry.service

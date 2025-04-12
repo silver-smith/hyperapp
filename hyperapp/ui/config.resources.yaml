@@ -125,7 +125,6 @@ import:
 - ui.str_adapter:resource_name_creg-str_adapter-static_str_adapter.actor-template
 - ui.str_adapter:ui_adapter_creg-str_adapter-static_str_adapter.actor-template
 - ui.system_fn:system_fn_creg-system_fn-ctx_fn.actor-template
-- ui.system_fn_creg:system_fn_creg.service
 - ui.tab_groups:tabs-view-move_tab_to_new_group.command-cfg-item
 - ui.text_toggle_editable:text-edit_view-toggle_editable.command-cfg-item
 - ui.text_toggle_editable:text-readonly_view-toggle_editable.command-cfg-item
@@ -318,7 +317,6 @@ definitions:
       - ui.remote_command:remote_command_from_model_command.service
       - ui.selector:selector_reg.service
       - ui.shortcut_reg:shortcut_reg.service
-      - ui.system_fn_creg:system_fn_creg.service
       - ui.ui_adapter_creg:ui_adapter_creg.service
       - ui.ui_command:get_view_commands.service
       - ui.ui_command:get_view_element_commands.service
