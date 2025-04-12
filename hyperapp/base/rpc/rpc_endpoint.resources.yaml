@@ -11,9 +11,11 @@ import:
 - legacy_type.rpc:response
 - legacy_type.rpc:server_error
 - legacy_type.rpc:service_target
+- legacy_type.rpc:system_fn_target
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
+- base.context:context.module
 - base.system.system:dict_config_ctl
 
 definitions:
@@ -31,6 +33,7 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
+        code.context: base.context:context.module
 
   rpc_message_creg:
     type: legacy_type.builtin:attribute
@@ -171,6 +174,20 @@ definitions:
       t: legacy_type.rpc:function_target
       function: run_function_target
       service_params: []
+
+  run_system_fn_target:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: run_system_fn_target
+
+  rpc_target_creg-rpc-system_fn_target.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rpc:system_fn_target
+      function: run_system_fn_target
+      service_params:
+      - system_fn_creg
 
   run_service_target:
     type: legacy_type.builtin:attribute

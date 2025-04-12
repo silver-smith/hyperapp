@@ -43,6 +43,10 @@ class ContextFn:
             'ctx': ctx,
             }
 
+    @property
+    def ctx_params(self):
+        return self._ctx_params
+
     def missing_params(self, ctx, **kw):
         fn_kw = self.fn_kw(ctx, **kw)
         return self._ctx_params_set - fn_kw.keys()

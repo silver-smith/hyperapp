@@ -14,6 +14,9 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
+DEFAULT_TIMEOUT = 10
+
+
 def _param_value_to_ref(value):
     t = deduce_t(value)
     if type(value) is list:
@@ -40,6 +43,23 @@ def rpc_submit_target_factory(transport, rpc_request_futures, receiver_peer, sen
 
 
 class RpcServantWrapper:
+
+    def __init__(self):
+        self._wrapper = None
+
+    def set(self, wrapper):
+        self._wrapper = wrapper
+
+    def reset(self):
+        self._wrapper = None
+
+    def wrap(self, servant_ref, kw):
+        if self._wrapper is None:
+            return (servant_ref, kw)
+        return self._wrapper(servant_ref, kw)
+
+
+class RpcSystemServantWrapper:
 
     def __init__(self):
         self._wrapper = None
@@ -100,6 +120,23 @@ def rpc_submit_factory(rpc_submit_target_factory, rpc_servant_wrapper, receiver_
     return submit
 
 
+def rpc_system_fn_submit_factory(rpc_submit_target_factory, rpc_system_servant_wrapper, receiver_peer, sender_identity, fn):
+    submit_factory = rpc_submit_target_factory(receiver_peer, sender_identity)
+
+    def submit(**kw):
+        wrapped_fn, wrapped_kw = rpc_system_servant_wrapper.wrap(fn, kw)
+        params = _kw_to_params(wrapped_kw)
+        target = htypes.rpc.system_fn_target(
+            fn=mosaic.put(wrapped_fn.piece),
+            params=params,
+            )
+        log.info("Rpc system call: receiver=%s fn=%s (%s): send rpc request: %s",
+                 receiver_peer, wrapped_fn.piece, wrapped_kw, target)
+        return submit_factory(target)
+
+    return submit
+
+
 def service_submit_factory(rpc_submit_target_factory, rpc_service_wrapper, receiver_peer, sender_identity, service_name):
     submit_factory = rpc_submit_target_factory(receiver_peer, sender_identity)
 
@@ -128,7 +165,7 @@ def rpc_wait_for_future(future, timeout_sec):
     return result
 
 
-def rpc_call_factory(rpc_submit_factory, rpc_wait_for_future, receiver_peer, sender_identity, servant_ref, timeout_sec=10):
+def rpc_call_factory(rpc_submit_factory, rpc_wait_for_future, receiver_peer, sender_identity, servant_ref, timeout_sec=DEFAULT_TIMEOUT):
     submit_factory = rpc_submit_factory(receiver_peer, sender_identity, servant_ref)
     def call(**kw):
         future = submit_factory(**kw)
@@ -136,7 +173,15 @@ def rpc_call_factory(rpc_submit_factory, rpc_wait_for_future, receiver_peer, sen
     return call
 
 
-def service_call_factory(service_submit_factory, rpc_wait_for_future, receiver_peer, sender_identity, service_name, timeout_sec=10):
+def rpc_system_call_factory(rpc_system_fn_submit_factory, rpc_wait_for_future, receiver_peer, sender_identity, fn, timeout_sec=DEFAULT_TIMEOUT):
+    submit_factory = rpc_system_fn_submit_factory(receiver_peer, sender_identity, fn)
+    def call(**kw):
+        future = submit_factory(**kw)
+        return rpc_wait_for_future(future, timeout_sec)
+    return call
+
+
+def service_call_factory(service_submit_factory, rpc_wait_for_future, receiver_peer, sender_identity, service_name, timeout_sec=DEFAULT_TIMEOUT):
     submit_factory = service_submit_factory(receiver_peer, sender_identity, service_name)
     def call(**kw):
         future = submit_factory(**kw)

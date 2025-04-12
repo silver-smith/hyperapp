@@ -24,6 +24,10 @@ function_target = record:
   servant_ref: ref
   params: param list
 
+system_fn_target = record:
+  fn: ref
+  params: param list
+
 service_target = record:
   service_name: string
   params: param list
