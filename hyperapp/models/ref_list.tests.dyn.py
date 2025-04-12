@@ -1,5 +1,4 @@
-import base64
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from . import htypes
 from .services import (
@@ -32,17 +31,32 @@ ref_list_yaml_format = '''
 
 
 @mark.fixture
-def mock_storage_path():
+def file_bundle_factory():
     ref_1_piece = htypes.ref_list_tests.sample_model(id=123)
-    ref_1 = mosaic.put(ref_1_piece)
-    ref_list_yaml_text = ref_list_yaml_format.format(
-        ref_1_hash_algorithm=ref_1.hash_algorithm,
-        ref_1_hash=base64.b64encode(ref_1.hash).decode('ascii'),
+    storage = htypes.ref_list.storage(
+        folders=(
+            htypes.ref_list.folder(
+                id='folder_1',
+                parent_id=None,
+                name="Folder 1",
+                ),
+            htypes.ref_list.folder(
+                id='folder_2',
+                parent_id=None,
+                name="Folder 2",
+                ),
+            ),
+        refs=(
+            htypes.ref_list.ref(
+                id='ref_1',
+                parent_id=None,
+                ref=mosaic.put(ref_1_piece),
+                ),
+            ),
         )
-    path = Mock()
-    path.read_bytes.return_value = ref_list_yaml_text.encode()
-    with patch.object(ref_list, '_STORAGE_PATH', path):
-        yield path
+    file_bundle = Mock()
+    file_bundle.load_piece.return_value = storage
+    return file_bundle
 
 
 def format_sample_model(piece):
@@ -66,7 +80,7 @@ def folder_2_model():
     return htypes.ref_list.model(parent_id='folder_2', folder_path=('Folder 2',))
 
 
-def test_root_model(root_model, mock_storage_path):
+def test_root_model(root_model):
     item_list = ref_list.ref_list_model(root_model)
     assert type(item_list) is list
     assert item_list == [
@@ -76,32 +90,32 @@ def test_root_model(root_model, mock_storage_path):
         ]
 
 
-def test_open_folder(root_model, folder_2_model, mock_storage_path):
+def test_open_folder(root_model, folder_2_model):
     current_key = folder_2_model.parent_id
     piece = ref_list.open(root_model, current_key)
     assert piece == folder_2_model
 
 
-def test_open_parent(root_model, folder_2_model, mock_storage_path):
+def test_open_parent(root_model, folder_2_model):
     piece, key = ref_list.open_parent(folder_2_model)
     assert piece == root_model
     assert key == folder_2_model.parent_id
 
 
-def test_add_root_folder(root_model, mock_storage_path):
+def test_add_root_folder(root_model, file_bundle_factory):
     piece, folder_id = ref_list.add_folder(root_model, 'New folder')
     assert piece == root_model
     assert type(folder_id) is str
-    mock_storage_path.write_bytes.assert_called_once()
+    file_bundle_factory.save_piece.assert_called_once()
 
 
-def test_add_ref(folder_2_model, mock_storage_path):
+def test_add_ref(folder_2_model, file_bundle_factory):
     ref_2_piece = htypes.ref_list_tests.sample_model(id=456)
     ref_2 = mosaic.put(ref_2_piece)
     piece, ref_id = ref_list.add_ref(folder_2_model, ref_2)
     assert piece == folder_2_model
     assert type(ref_id) is str
-    mock_storage_path.write_bytes.assert_called_once()
+    file_bundle_factory.save_piece.assert_called_once()
 
 
 def test_formatter(folder_2_model):

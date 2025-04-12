@@ -2,8 +2,6 @@ import uuid
 from collections import namedtuple
 from pathlib import Path
 
-from hyperapp.boot.htypes.packet_coders import packet_coders
-
 from . import htypes
 from .services import (
     web,
@@ -11,13 +9,13 @@ from .services import (
 from .code.mark import mark
 
 
-_STORAGE_PATH = Path.home() / '.local/share/hyperapp/server/ref_list.yaml'
+_STORAGE_PATH = Path.home() / '.local/share/hyperapp/server/ref_list.cdr'
 
 
 class RefList:
 
-    def __init__(self, storage_path):
-        self._storage_path = storage_path
+    def __init__(self, file_bundle):
+        self._file_bundle = file_bundle
         self._folders = {}
         self._refs = {}
         self._loaded = False
@@ -78,10 +76,9 @@ class RefList:
 
     def _read(self):
         try:
-            yaml_data = self._storage_path.read_bytes()
+            storage = self._file_bundle.load_piece()
         except FileNotFoundError:
             return
-        storage = packet_coders.decode('yaml', yaml_data, htypes.ref_list.storage)
         self._folders = {folder.id: folder for folder in storage.folders}
         self._refs = {ref.id: ref for ref in storage.refs}
 
@@ -90,23 +87,22 @@ class RefList:
             folders=tuple(self._folders.values()),
             refs=tuple(self._refs.values()),
             )
-        yaml_data = packet_coders.encode('yaml', storage)
-        self._storage_path.write_bytes(yaml_data)
+        self._file_bundle.save_piece(storage)
 
 
-def _get_ref_list():
-    return RefList(_STORAGE_PATH)
+@mark.service
+def ref_list(file_bundle_factory):
+    file_bundle = file_bundle_factory(_STORAGE_PATH)
+    return RefList(file_bundle)
 
 
 @mark.model(key='id')
-def ref_list_model(piece, format):
-    ref_list = _get_ref_list()
+def ref_list_model(piece, format, ref_list):
     return list(ref_list.enum_items(format, piece.parent_id))
 
 
 @mark.command
-def open(piece, current_key):
-    ref_list = _get_ref_list()
+def open(piece, current_key, ref_list):
     try:
         folder = ref_list.get_folder(current_key)
         path = [folder.name]
@@ -123,10 +119,9 @@ def open(piece, current_key):
 
 
 @mark.command
-def open_parent(piece):
+def open_parent(piece, ref_list):
     if not piece.parent_id:
         return
-    ref_list = _get_ref_list()
     folder = ref_list.get_folder(piece.parent_id)
     piece = htypes.ref_list.model(
         parent_id=folder.parent_id,
@@ -136,15 +131,13 @@ def open_parent(piece):
 
 
 @mark.command(args=['name'])
-def add_folder(piece, name):
-    ref_list = _get_ref_list()
+def add_folder(piece, name, ref_list):
     folder_id = ref_list.append_folder(piece.parent_id, name)
     return (piece, folder_id)
 
 
 @mark.command(args=['ref'])
-def add_ref(piece, ref):
-    ref_list = _get_ref_list()
+def add_ref(piece, ref, ref_list):
     ref_id = ref_list.append_ref(piece.parent_id, ref)
     return (piece, ref_id)
 

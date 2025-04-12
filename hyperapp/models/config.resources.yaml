@@ -70,6 +70,7 @@ import:
 - models.ref_list:ref_list-model-open.command-cfg-item
 - models.ref_list:ref_list-model-open_parent.command-cfg-item
 - models.ref_list:ref_list-model.model-cfg-item
+- models.ref_list:ref_list.service
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
 - models.show_current_context:formatter_creg-show_current_context-model.actor-template
 - models.show_current_context:show_current_context-model.model-cfg-item
@@ -195,6 +196,7 @@ definitions:
     value:
       items:
       - models.peer_list:peer_list_reg.service
+      - models.ref_list:ref_list.service
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:

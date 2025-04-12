@@ -21,6 +21,8 @@ import:
 - legacy_type.ref_list:ref
 - legacy_type.ref_list:storage
 - legacy_type.system:actor_template
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
 definitions:
   add_folder:
@@ -38,7 +40,8 @@ definitions:
       ctx_params:
       - piece
       - name
-      service_params: []
+      service_params:
+      - ref_list
   add_folder.model-command-enumerator:
     type: legacy_type.command:model_args_picker_command_enumerator
     value:
@@ -75,7 +78,8 @@ definitions:
       ctx_params:
       - piece
       - ref
-      service_params: []
+      service_params:
+      - ref_list
   add_ref.model-command-enumerator:
     type: legacy_type.command:model_args_picker_command_enumerator
     value:
@@ -123,7 +127,8 @@ definitions:
       ctx_params:
       - piece
       - current_key
-      service_params: []
+      service_params:
+      - ref_list
   open.model-command:
     type: legacy_type.command:model_command
     value:
@@ -154,7 +159,8 @@ definitions:
       function: open_parent
       ctx_params:
       - piece
-      service_params: []
+      service_params:
+      - ref_list
   open_parent.model-command:
     type: legacy_type.command:model_command
     value:
@@ -201,6 +207,11 @@ definitions:
       name: open_ref_list_d
       base: null
       fields: {}
+  ref_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: ref_list
   ref_list-model-add_folder.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -245,6 +256,7 @@ definitions:
       - piece
       service_params:
       - format
+      - ref_list
   ref_list.module:
     type: legacy_type.builtin:python_module
     value:
@@ -258,8 +270,21 @@ definitions:
         htypes.ref_list.ref: legacy_type.ref_list:ref
         htypes.ref_list.storage: legacy_type.ref_list:storage
         services.web: builtins:web.service
+  ref_list.service:
+    type: legacy_type.system:service_template
+    value:
+      name: ref_list
+      ctl: system-dict_config_ctl.ctl
+      function: ref_list
+      service_params:
+      - file_bundle_factory
+      want_config: false
+      free_params: []
   ref_list_model:
     type: legacy_type.builtin:attribute
     value:
       object: ref_list.module
       attr_name: ref_list_model
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}
