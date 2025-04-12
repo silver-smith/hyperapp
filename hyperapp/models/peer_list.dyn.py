@@ -146,7 +146,8 @@ def open_model(piece, current_item, model, peer_registry):
 
 
 @mark.command(args=['command'])
-async def run_command(piece, current_item, command, identity, ctx, peer_registry, global_model_command_reg, remote_command_from_model_command):
+async def run_command(piece, current_item, command, identity, ctx,
+                      peer_registry, global_model_command_reg, remote_command_from_model_command):
     command_d = web.summon(command.d)
     peer = peer_registry.invite(current_item.peer)
     log.info("Peer list: Run global command %s @ %s (%s)", command_d, current_item.name, repr(peer))
