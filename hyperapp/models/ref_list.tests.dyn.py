@@ -13,23 +13,6 @@ def test_open():
     assert isinstance(piece, htypes.ref_list.model)
 
 
-ref_list_yaml_format = '''
-  folders:
-  - id: folder_1
-    parent_id: null
-    name: Folder 1
-  - id: folder_2
-    parent_id: null
-    name: Folder 2
-  refs:
-  - id: ref_1
-    parent_id: null
-    ref:
-      hash_algorithm: {ref_1_hash_algorithm}
-      hash: {ref_1_hash}
-'''
-
-
 @mark.fixture
 def file_bundle_factory():
     ref_1_piece = htypes.ref_list_tests.sample_model(id=123)
