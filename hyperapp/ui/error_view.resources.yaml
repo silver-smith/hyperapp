@@ -1,0 +1,37 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
+definitions:
+  error_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: error_view.module
+      attr_name: error_view
+  error_view.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: error_view
+      file_name: error_view.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+  error_view.service:
+    type: legacy_type.system:service_template
+    value:
+      name: error_view
+      ctl: system-dict_config_ctl.ctl
+      function: error_view
+      service_params:
+      - view_reg
+      - visualizer
+      want_config: false
+      free_params:
+      - exception
+      - ctx
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}
