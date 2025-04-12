@@ -261,7 +261,10 @@ class _Item:
 
     def element_replaced_hook(self, idx, new_view, new_widget):
         log.info("Controller: Element replaced @%s #%d -> %s", self, idx, new_view)
-        self._replace_child_item(idx)
+        # When a view calls element_replaced hook it may not yet be in new consistent state. For example, navigator.
+        # So, we need to postpone this, because we will call this view inside.
+        loop = asyncio.get_running_loop()
+        loop.call_soon(self._replace_child_item, idx)
 
     def element_inserted_hook(self, idx):
         view_items = self.view.items()
