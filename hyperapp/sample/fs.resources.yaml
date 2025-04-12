@@ -12,8 +12,20 @@ import:
 - legacy_type.fs:model
 - legacy_type.model:key_tree_ui_t
 - legacy_type.model:model
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fs.module
+      attr_name: format_model
+  formatter_creg-fs-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.fs:model
+      function: format_model
+      service_params: []
   fs-model.key-tree-ui-t:
     type: legacy_type.model:key_tree_ui_t
     value:

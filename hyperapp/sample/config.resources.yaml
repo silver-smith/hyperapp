@@ -3,6 +3,7 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- sample.fs:formatter_creg-fs-model.actor-template
 - sample.fs:fs-model.model-cfg-item
 - sample.fs:open_fs.global-model-command
 - sample.sample_commands:open_sample_static_list.global-model-command
@@ -65,6 +66,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - sample.fs:formatter_creg-fs-model.actor-template
       - sample.sample_list:formatter_creg-sample_list-feed_sample_list.actor-template
       - sample.sample_list:formatter_creg-sample_list-sample_list.actor-template
       - sample.sample_tree:formatter_creg-sample_tree-sample_tree.actor-template

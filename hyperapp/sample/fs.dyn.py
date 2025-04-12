@@ -36,3 +36,8 @@ def fs_model(piece, current_path):
 @mark.global_command
 def open_fs():
     return htypes.fs.model()
+
+
+@mark.actor.formatter_creg
+def format_model(piece):
+    return "FS"

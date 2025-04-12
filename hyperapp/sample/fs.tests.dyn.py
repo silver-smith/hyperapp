@@ -23,3 +23,8 @@ def test_model(piece):
     assert type(item_list) is list
     assert item_list
     assert isinstance(item_list[0], htypes.fs.item)
+
+
+def test_formatter(piece):
+    title = fs.format_model(piece)
+    assert type(title) is str
