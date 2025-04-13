@@ -50,7 +50,7 @@ class IndexTreeAdapterMixin:
     def _call_servant_wrapper(
             self, receiver_peer, sender_identity, fn_piece, model, grand_parent, is_lateral, lateral_parent, parent):
         wrapped_fn = ContextFn(
-            rpc_system_call_factory=self._rpc_system_call_factory, 
+            rpc_system_call_factory=self._rpc_system_call_factory,
             ctx_params=('servant_fn_piece', 'model', 'parent', 'grand_parent', 'is_lateral', 'lateral_parent', 'result_mt'),
             service_params=('system_fn_creg',),
             raw_fn=index_tree_wrapper,
@@ -141,7 +141,7 @@ class KeyTreeAdapterMixin:
     def _call_servant_wrapper(
             self, receiver_peer, sender_identity, fn_piece, model, grand_parent, is_lateral, lateral_parent, current_path):
         wrapped_fn = ContextFn(
-            rpc_system_call_factory=self._rpc_system_call_factory, 
+            rpc_system_call_factory=self._rpc_system_call_factory,
             ctx_params=('servant_fn_piece', 'model', 'current_path', 'key_field', 'is_lateral', 'result_mt'),
             service_params=('system_fn_creg',),
             raw_fn=key_tree_wrapper,
