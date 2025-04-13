@@ -25,9 +25,9 @@ def _sample_fn_3(model, state):
 
 
 @mark.config_fixture('global_model_command_reg')
-def global_model_command_reg_config(partial_ref):
+def global_model_command_reg_config(rpc_system_call_factory):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('view', 'state'),
         service_params=(),
         raw_fn=_sample_fn_1,
@@ -42,9 +42,9 @@ def global_model_command_reg_config(partial_ref):
 
 
 @mark.config_fixture('model_command_reg')
-def model_command_reg_config(partial_ref):
+def model_command_reg_config(rpc_system_call_factory):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('view', 'state'),
         service_params=(),
         raw_fn=_sample_fn_2,

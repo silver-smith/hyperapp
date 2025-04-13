@@ -43,12 +43,12 @@ class FnListAdapter(FnListAdapterBase):
             except KeyError:
                 remote_peer = None
         if remote_peer:
-            rpc_call = self._rpc_call_factory(
-                sender_identity=self._ctx.identity,
+            return self._fn.rpc_call(
                 receiver_peer=remote_peer,
-                servant_ref=self._fn.partial_ref(self._ctx, **kw),
+                sender_identity=self._ctx.identity,
+                ctx=self._ctx,
+                **kw,
                 )
-            return rpc_call()
         else:
             return self._fn.call(self._ctx, **kw)
 

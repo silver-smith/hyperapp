@@ -29,9 +29,9 @@ def _sample_fn_2(model, sample_service):
 
 
 @mark.config_fixture('model_command_reg')
-def model_command_reg_config(partial_ref):
+def model_command_reg_config(rpc_system_call_factory):
     system_fn_1 = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('model',),
         service_params=('sample_service',),
         raw_fn=_sample_fn_1,
@@ -43,7 +43,7 @@ def model_command_reg_config(partial_ref):
         properties=htypes.command.properties(False, False, False),
         )
     system_fn_2 = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('model',),
         service_params=('sample_service',),
         raw_fn=_sample_fn_2,

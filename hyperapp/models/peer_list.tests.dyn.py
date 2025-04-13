@@ -105,9 +105,9 @@ def command_d():
 
 
 @mark.config_fixture('global_model_command_reg')
-def global_model_command_reg_config(partial_ref, command_d):
+def global_model_command_reg_config(rpc_system_call_factory, command_d):
     fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
@@ -122,7 +122,7 @@ def global_model_command_reg_config(partial_ref, command_d):
 
 
 @mark.fixture
-def rpc_call_factory(receiver_peer, sender_identity, servant_ref):
+def rpc_system_call_factory(receiver_peer, sender_identity, fn):
     def call():
         return "Sample result"
     return call

@@ -67,7 +67,7 @@ definitions:
       t: legacy_type.tree_adapter:fn_index_tree_adapter
       function: FnIndexTreeAdapter.from_piece
       service_params:
-      - partial_ref
+      - rpc_system_call_factory
       - system_fn_creg
       - rpc_call_factory
       - peer_registry
@@ -78,7 +78,7 @@ definitions:
       t: legacy_type.tree_adapter:fn_key_tree_adapter
       function: FnKeyTreeAdapter.from_piece
       service_params:
-      - partial_ref
+      - rpc_system_call_factory
       - system_fn_creg
       - rpc_call_factory
       - peer_registry

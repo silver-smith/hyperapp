@@ -16,9 +16,9 @@ def _sample_fn(model, state):
 
 
 @mark.config_fixture('model_command_reg')
-def model_command_reg_config(partial_ref):
+def model_command_reg_config(rpc_system_call_factory):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
         raw_fn=_sample_fn,

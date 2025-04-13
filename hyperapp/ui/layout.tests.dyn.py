@@ -80,9 +80,9 @@ def _sample_auto_tabs_command():
 
 
 @mark.config_fixture('view_ui_command_reg')
-def view_ui_command_reg_config(partial_ref):
+def view_ui_command_reg_config(rpc_system_call_factory):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_auto_tabs_command,

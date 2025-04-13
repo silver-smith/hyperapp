@@ -30,9 +30,9 @@ def lcs():
     return lcs
 
 
-def test_command_item_to_item(partial_ref, format, view_reg, visualizer, shortcut_reg, lcs):
+def test_command_item_to_item(rpc_system_call_factory, format, view_reg, visualizer, shortcut_reg, lcs):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('view', 'state'),
         service_params=(),
         raw_fn=_sample_fn,

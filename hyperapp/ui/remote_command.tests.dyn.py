@@ -11,7 +11,7 @@ from .tested.code import remote_command
 
 
 @mark.fixture
-def rpc_call_factory(receiver_peer, sender_identity, servant_ref):
+def rpc_system_call_factory(receiver_peer, sender_identity, fn):
     def call():
         return "Sample result"
     return call
@@ -31,11 +31,11 @@ def remote_model(generate_rsa_identity):
         )
 
 
-async def test_remote_command_from_model_command(partial_ref, generate_rsa_identity, remote_command_from_model_command, remote_model):
+async def test_remote_command_from_model_command(rpc_system_call_factory, generate_rsa_identity, remote_command_from_model_command, remote_model):
     my_identity = generate_rsa_identity(fast=True)
     remote_identity = generate_rsa_identity(fast=True)
     fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,

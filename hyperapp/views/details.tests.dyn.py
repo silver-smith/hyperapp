@@ -21,9 +21,9 @@ def command_d():
 
 
 @mark.fixture
-def unbound_command(partial_ref, command_d):
+def unbound_command(rpc_system_call_factory, command_d):
     fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=details_command,

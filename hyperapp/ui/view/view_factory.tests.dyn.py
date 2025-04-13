@@ -22,9 +22,9 @@ def test_service(view_factory_reg, ctx):
     assert factory_reg.items(ctx, model=None) == []
 
 
-def test_item(partial_ref, format, visualizer_reg):
+def test_item(rpc_system_call_factory, format, visualizer_reg):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
@@ -52,16 +52,16 @@ def _sample_get(k):
     assert isinstance(k, htypes.view_factory_tests.sample_item_k)
 
 
-def test_multi_key(partial_ref, format, visualizer_reg, ctx):
+def test_multi_key(rpc_system_call_factory, format, visualizer_reg, ctx):
     list_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_list,
         bound_fn=_sample_list,
         )
     get_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_get,

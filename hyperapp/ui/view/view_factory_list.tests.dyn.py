@@ -20,9 +20,9 @@ def ctx():
 
 
 @mark.fixture
-def factory(partial_ref, format, visualizer_reg):
+def factory(rpc_system_call_factory, format, visualizer_reg):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
@@ -42,9 +42,9 @@ def factory(partial_ref, format, visualizer_reg):
 
 
 @mark.fixture
-def model_factory(partial_ref, format, visualizer_reg):
+def model_factory(rpc_system_call_factory, format, visualizer_reg):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
@@ -64,9 +64,9 @@ def model_factory(partial_ref, format, visualizer_reg):
 
 
 @mark.fixture
-def ui_t_factory(partial_ref, format, visualizer_reg):
+def ui_t_factory(rpc_system_call_factory, format, visualizer_reg):
     system_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,

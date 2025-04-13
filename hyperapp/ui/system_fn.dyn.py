@@ -3,23 +3,24 @@ from functools import partial
 from . import htypes
 from .services import pyobj_creg
 from .code.mark import mark
+from .code.rpc_call import DEFAULT_TIMEOUT
 
 
 class ContextFn:
 
     @classmethod
     @mark.actor.system_fn_creg
-    def from_piece(cls, piece, system, partial_ref):
+    def from_piece(cls, piece, system, rpc_system_call_factory):
         fn = pyobj_creg.invite(piece.function)
         bound_fn = system.bind_services(fn, piece.service_params)
-        return cls(partial_ref, piece.ctx_params, piece.service_params, fn, bound_fn)
+        return cls(rpc_system_call_factory, piece.ctx_params, piece.service_params, fn, bound_fn)
 
-    def __init__(self, partial_ref, ctx_params, service_params, raw_fn, bound_fn):
-        self._partial_ref = partial_ref
+    def __init__(self, rpc_system_call_factory, ctx_params, service_params, raw_fn, bound_fn=None):
+        self._rpc_system_call_factory = rpc_system_call_factory
         self._ctx_params = ctx_params
         self._service_params = service_params
         self._raw_fn = raw_fn
-        self._bound_fn = bound_fn
+        self._bound_fn = bound_fn  # Can be None if we use this only to create it's piece.
 
     def __repr__(self):
         return f"<ContextFn: {self._raw_fn}({self._ctx_params}/{self._service_params})>"
@@ -87,7 +88,11 @@ class ContextFn:
             kw['state'] = view.widget_state(widget)
         return kw
 
-    def partial_ref(self, ctx, **kw):
-        assert not self._service_params  # TODO: Remote call for system fn with service params.
+    def rpc_call(self, receiver_peer, sender_identity, ctx, timeout_sec=DEFAULT_TIMEOUT, **kw):
+        rpc_call = self._rpc_system_call_factory(
+            receiver_peer=receiver_peer,
+            sender_identity=sender_identity,
+            fn=self,
+            )
         ctx_kw = self._fn_kw(ctx, kw)
-        return self._partial_ref(self._raw_fn, **ctx_kw)
+        return rpc_call(**ctx_kw)

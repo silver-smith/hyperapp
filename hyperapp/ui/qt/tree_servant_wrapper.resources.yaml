@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.context:context.module
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
 definitions:
@@ -10,4 +11,5 @@ definitions:
       module_name: tree_servant_wrapper
       file_name: tree_servant_wrapper.dyn.py
       import_list:
+        code.context: base.context:context.module
         services.pyobj_creg: builtins:pyobj_creg.service

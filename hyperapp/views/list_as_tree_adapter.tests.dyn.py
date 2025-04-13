@@ -109,9 +109,9 @@ class MockSubscriber:
 
 
 @mark.fixture
-def open_command_1(partial_ref):
+def open_command_1(rpc_system_call_factory):
     open_1_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=sample_fn_1_open,
@@ -125,9 +125,9 @@ def open_command_1(partial_ref):
 
 
 @mark.fixture
-def open_command_2(partial_ref):
+def open_command_2(rpc_system_call_factory):
     open_2_fn = ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=sample_fn_2_open,

@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.rpc.rpc_call:rpc_call.module
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -25,6 +26,7 @@ definitions:
       file_name: system_fn.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        code.rpc_call: base.rpc.rpc_call:rpc_call.module
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.pyobj_creg: builtins:pyobj_creg.service
   system_fn_creg-system_fn-ctx_fn.actor-template:
@@ -34,4 +36,4 @@ definitions:
       function: ContextFn.from_piece
       service_params:
       - system
-      - partial_ref
+      - rpc_system_call_factory

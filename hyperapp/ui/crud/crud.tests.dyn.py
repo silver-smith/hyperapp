@@ -71,9 +71,9 @@ def _sample_selector_pick(piece, current_item):
 
 
 @mark.fixture
-def _sample_selector_get_fn(partial_ref):
+def _sample_selector_get_fn(rpc_system_call_factory):
     return ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('value',),
         service_params=(),
         raw_fn=_sample_selector_get,
@@ -82,9 +82,9 @@ def _sample_selector_get_fn(partial_ref):
 
 
 @mark.fixture
-def _sample_selector_pick_fn(partial_ref):
+def _sample_selector_pick_fn(rpc_system_call_factory):
     return ContextFn(
-        partial_ref=partial_ref, 
+        rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=_sample_selector_pick,
