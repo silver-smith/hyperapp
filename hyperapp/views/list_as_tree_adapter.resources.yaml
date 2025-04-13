@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.system_fn:system_fn.module
 - builtins:deduce_t.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -13,7 +14,6 @@ import:
 - ui.model_command:model_command.module
 - ui.qt.list_adapter:list_adapter.module
 - ui.qt.tree_adapter:tree_adapter.module
-- ui.system_fn:system_fn.module
 definitions:
   ListAsTreeAdapter:
     type: legacy_type.builtin:attribute
@@ -34,7 +34,7 @@ definitions:
         code.list_adapter: ui.qt.list_adapter:list_adapter.module
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
-        code.system_fn: ui.system_fn:system_fn.module
+        code.system_fn: base.system_fn:system_fn.module
         code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
         htypes.list_as_tree_adapter.adapter: legacy_type.list_as_tree_adapter:adapter
         htypes.model.index_list_ui_t: legacy_type.model:index_list_ui_t

@@ -124,7 +124,6 @@ import:
 - ui.shortcut_reg:shortcut_reg.service
 - ui.str_adapter:resource_name_creg-str_adapter-static_str_adapter.actor-template
 - ui.str_adapter:ui_adapter_creg-str_adapter-static_str_adapter.actor-template
-- ui.system_fn:system_fn_creg-system_fn-ctx_fn.actor-template
 - ui.tab_groups:tabs-view-move_tab_to_new_group.command-cfg-item
 - ui.text_toggle_editable:text-edit_view-toggle_editable.command-cfg-item
 - ui.text_toggle_editable:text-readonly_view-toggle_editable.command-cfg-item
@@ -345,7 +344,6 @@ definitions:
       - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
       - ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-template
       - ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-template
-      - ui.system_fn:system_fn_creg-system_fn-ctx_fn.actor-template
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:

@@ -44,6 +44,7 @@ import:
 - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-template
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
+- base.system_fn:system_fn_creg-system_fn-ctx_fn.actor-template
 - base.system_fn_creg:system_fn_creg.service
 - base.transport.endpoint:endpoint_registry.service
 - base.transport.endpoint:endpoint_thread_pool.service
@@ -91,6 +92,7 @@ definitions:
         rpc_target_creg: rpc_target_creg
         signature_registry: signature_registry
         system: system
+        system_fn_creg: system_fn_creg
   identity_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -190,3 +192,8 @@ definitions:
       - base.transport.tcp_transport:tcp_client_factory.service
       - base.transport.tcp_transport:tcp_server_factory.service
       - base.transport.transport:transport.service
+  system_fn_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.system_fn:system_fn_creg-system_fn-ctx_fn.actor-template

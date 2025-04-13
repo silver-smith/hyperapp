@@ -2,12 +2,12 @@
 
 import:
 - base.context:context.module
+- base.system_fn:system_fn.module
 - builtins:pyobj_creg.service
 - common.tree_diff:tree_diff.module
 - legacy_type.builtin:python_module
 - ui.qt.tree_servant_wrapper:tree_servant_wrapper.module
 - ui.qt.tree_visual_diff:tree_visual_diff.module
-- ui.system_fn:system_fn.module
 definitions:
   tree_adapter.module:
     type: legacy_type.builtin:python_module
@@ -16,7 +16,7 @@ definitions:
       file_name: tree_adapter.dyn.py
       import_list:
         code.context: base.context:context.module
-        code.system_fn: ui.system_fn:system_fn.module
+        code.system_fn: base.system_fn:system_fn.module
         code.tree_diff: common.tree_diff:tree_diff.module
         code.tree_servant_wrapper: ui.qt.tree_servant_wrapper:tree_servant_wrapper.module
         code.tree_visual_diff: ui.qt.tree_visual_diff:tree_visual_diff.module

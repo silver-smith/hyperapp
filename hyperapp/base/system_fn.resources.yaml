@@ -1,34 +1,36 @@
-# Automatically generated file. Do not edit.
-
 import:
-- base.mark:mark.module
+
 - base.rpc.rpc_call:rpc_call.module
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+
 definitions:
-  ContextFn:
-    type: legacy_type.builtin:attribute
-    value:
-      object: system_fn.module
-      attr_name: ContextFn
-  ContextFn.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ContextFn
-      attr_name: from_piece
+
   system_fn.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: system_fn
       file_name: system_fn.dyn.py
       import_list:
-        code.mark: base.mark:mark.module
         code.rpc_call: base.rpc.rpc_call:rpc_call.module
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.pyobj_creg: builtins:pyobj_creg.service
+
+  ContextFn:
+    type: legacy_type.builtin:attribute
+    value:
+      object: system_fn.module
+      attr_name: ContextFn
+
+  ContextFn.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ContextFn
+      attr_name: from_piece
+
   system_fn_creg-system_fn-ctx_fn.actor-template:
     type: legacy_type.system:actor_template
     value:

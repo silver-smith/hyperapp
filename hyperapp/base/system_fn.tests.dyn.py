@@ -48,17 +48,17 @@ def piece():
         )
 
 
-def test_construct(piece):
-    fn = system_fn.ContextFn.from_piece(piece)
+def test_construct(system_fn_creg, piece):
+    fn = system_fn_creg.animate(piece)
     assert isinstance(fn, system_fn.ContextFn)
     assert fn.piece == piece
 
 
-def test_call(view, widget, piece):
+def test_call(system_fn_creg, view, widget, piece):
     ctx = Context(
         view=view,
         widget=weakref.ref(widget),
         )
-    fn = system_fn.ContextFn.from_piece(piece)
+    fn = system_fn_creg.animate(piece)
     result = fn.call(ctx)
     assert result == 'sample-fn: a-state, a-service', repr(result)

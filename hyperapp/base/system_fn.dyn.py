@@ -2,14 +2,12 @@ from functools import partial
 
 from . import htypes
 from .services import pyobj_creg
-from .code.mark import mark
 from .code.rpc_call import DEFAULT_TIMEOUT
 
 
 class ContextFn:
 
     @classmethod
-    @mark.actor.system_fn_creg
     def from_piece(cls, piece, system, rpc_system_call_factory):
         fn = pyobj_creg.invite(piece.function)
         bound_fn = system.bind_services(fn, piece.service_params)
