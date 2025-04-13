@@ -63,17 +63,20 @@ class RpcSystemServantWrapper:
 
     def __init__(self):
         self._wrapper = None
+        self._rpc_system_call_factory = None
 
-    def set(self, wrapper):
+    def set(self, wrapper, rpc_system_call_factory):
         self._wrapper = wrapper
+        self._rpc_system_call_factory = rpc_system_call_factory
 
     def reset(self):
         self._wrapper = None
+        self._rpc_system_call_factory = None
 
-    def wrap(self, servant_ref, kw):
+    def wrap(self, fn, kw):
         if self._wrapper is None:
-            return (servant_ref, kw)
-        return self._wrapper(servant_ref, kw)
+            return (fn, kw)
+        return self._wrapper(rpc_system_call_factory, fn, kw)
 
 
 class RpcServiceWrapper:

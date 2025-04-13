@@ -11,6 +11,8 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
+from .code.context import Context
+from .code.system_fn import ContextFn
 from .code.config_ctl import (
     DictConfigCtl,
     item_pieces_to_data,
@@ -162,9 +164,9 @@ class FailedTestResult(SystemJobResult):
         pass
 
 
-def _catch_errors(fn, **kw):
+def _catch_errors(fn, *args, **kw):
     try:
-        return fn(**kw)
+        return fn(*args, **kw)
     except UnknownServiceError as x:
         raise htypes.rc_job.unknown_service_error(x.service_name) from x
     except ConfigItemMissingError as x:
@@ -179,6 +181,12 @@ def _catch_errors(fn, **kw):
 def rpc_servant_wrapper(_real_servant_ref, **kw):
     servant = pyobj_creg.invite(_real_servant_ref)
     return _catch_errors(servant, **kw)
+
+
+def rpc_system_servant_wrapper(_real_fn_piece, system_fn_creg, **kw):
+    real_fn = system_fn_creg.animate(_real_fn_piece)
+    ctx = Context(**kw)
+    return _catch_errors(real_fn.call, ctx)
 
 
 def rpc_service_wrapper(system, _real_service_name, **kw):
@@ -315,9 +323,12 @@ class TestJob(SystemJob):
 
     def _run_system(self, system):
         rpc_servant_wrapper = system['rpc_servant_wrapper']
+        rpc_system_servant_wrapper = system['rpc_system_servant_wrapper']
         rpc_service_wrapper = system['rpc_service_wrapper']
         subprocess_rpc_main = system['subprocess_rpc_main']
+        rpc_system_call_factory = system['rpc_system_call_factory']
         rpc_servant_wrapper.set(self._wrap_rpc_servant)
+        rpc_system_servant_wrapper.set(self._wrap_rpc_system_servant, rpc_system_call_factory)
         rpc_service_wrapper.set(self._wrap_rpc_service)
         subprocess_rpc_main.set(test_subprocess_rpc_main)
         try:
@@ -360,6 +371,16 @@ class TestJob(SystemJob):
         wrapped_servant_ref = pyobj_creg.actor_to_ref(rpc_servant_wrapper)
         wrapped_kw = {'_real_servant_ref': servant_ref, **kw}
         return (wrapped_servant_ref, wrapped_kw)
+
+    def _wrap_rpc_system_servant(self, rpc_system_call_factory, fn, kw):
+        wrapped_fn = ContextFn(
+            rpc_system_call_factory=rpc_system_call_factory,
+            ctx_params=('_real_fn_piece', *fn.ctx_params),
+            service_params=('system_fn_creg',),
+            raw_fn=rpc_system_servant_wrapper,
+            )
+        wrapped_kw = {'_real_fn_piece': fn.piece, **kw}
+        return (wrapped_fn, wrapped_kw)
 
     def _wrap_rpc_service(self, service_name, kw):
         wrapped_kw = {'_real_service_name': service_name, **kw}

@@ -1,9 +1,11 @@
 import:
 
+- base.context:context.module
 - base.system.config_ctl:config_ctl.module
 - base.system.config_layer:config_layer.module
 - base.system.system:dict_config_ctl
 - base.system.system:system.module
+- base.system_fn:system_fn.module
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
@@ -47,13 +49,15 @@ definitions:
         services.pyobj_creg: builtins:pyobj_creg.service
         code.config_ctl: base.system.config_ctl:config_ctl.module
         code.config_layer: base.system.config_layer:config_layer.module
+        code.context: base.context:context.module
         code.python_src: rc.python_src:python_src.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.system: base.system.system:system.module
-        code.system_probe: rc.system_probe:system_probe.module
+        code.system_fn: base.system_fn:system_fn.module
         code.system_job: rc.system_job:system_job.module
+        code.system_probe: rc.system_probe:system_probe.module
 
   SucceededTestResult:
     type: legacy_type.builtin:attribute
