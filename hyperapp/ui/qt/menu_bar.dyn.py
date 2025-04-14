@@ -77,6 +77,8 @@ class MenuBarView(View):
         if shortcut and shortcut not in used_shortcuts:
             action.setShortcut(shortcut)
             used_shortcuts.add(shortcut)
+        tooltip = str(cmd.d)
         if not cmd.enabled:
-            action.setToolTip(cmd.disabled_reason)
+            tooltip += '\n' + cmd.disabled_reason
+        action.setToolTip(tooltip)
         return action

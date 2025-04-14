@@ -93,6 +93,8 @@ class CommandPaneView(View):
         if shortcut and shortcut not in used_shortcuts:
             button.setShortcut(shortcut)
             used_shortcuts.add(shortcut)
+        tooltip = str(cmd.d)
         if not cmd.enabled:
-            button.setToolTip(cmd.disabled_reason)
+            tooltip += '\n' + cmd.disabled_reason
+        button.setToolTip(tooltip)
         return button
