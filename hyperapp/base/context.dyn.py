@@ -1,5 +1,11 @@
 import inspect
 
+from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
+
+from .services import (
+    deduce_t,
+    )
+
 
 class Context:
 
@@ -43,6 +49,13 @@ class Context:
             *self._items.items(),
             ]
 
+    def data_items(self):
+        return [
+            (key, value)
+            for key, value in self.items()
+            if self._is_data(value)
+            ]
+
     def update(self, **kw):
         self._items.update(kw)
 
@@ -83,6 +96,20 @@ class Context:
             return {**self._next.as_dict(), **self._items}
         else:
             return self._items
+
+    def as_data_dict(self):
+        return {
+            key: value
+            for key, value in self.data_items()
+            }
+
+    @staticmethod
+    def _is_data(value):
+        try:
+            deduce_t(value)
+            return True
+        except DeduceTypeError:
+            return False
 
     @staticmethod
     def attributes(obj):
