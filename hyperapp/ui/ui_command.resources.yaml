@@ -46,6 +46,7 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: get_view_commands
       service_params:
+      - error_view
       - view_reg
       - visualizer
       - view_ui_command_reg

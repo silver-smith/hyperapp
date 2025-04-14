@@ -142,6 +142,7 @@ definitions:
       - view
       service_params:
       - system_fn_creg
+      - error_view
       - view_reg
       - visualizer
   crud_commit_command_enum.ui-command-enumerator:

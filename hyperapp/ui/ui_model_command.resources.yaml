@@ -83,6 +83,7 @@ definitions:
       function: ui_global_command_items
       service_params:
       - format
+      - error_view
       - view_reg
       - visualizer
       - command_creg
@@ -122,6 +123,7 @@ definitions:
       function: ui_model_command_items
       service_params:
       - format
+      - error_view
       - view_reg
       - visualizer
       - command_creg

@@ -125,6 +125,7 @@ def universal_ui_command_enumerator_reg(config):
 
 @mark.service
 def get_view_commands(
+        error_view,
         view_reg,
         visualizer,
         view_ui_command_reg,
@@ -137,7 +138,7 @@ def get_view_commands(
         ):
     view_t = deduce_t(view.piece)
     ui_model_command_list = [
-        wrap_model_command_to_ui_command(view_reg, visualizer, cmd)
+        wrap_model_command_to_ui_command(error_view, view_reg, visualizer, cmd)
         for cmd in view_ui_model_command_reg(view_t)
         ]
     command_list = [
