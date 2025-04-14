@@ -254,7 +254,7 @@ class SystemJob:
                 key = pyobj_creg.invite(x.t)
                 req = CfgItemReq(x.service_name, key, self._tested_modules)
                 self.incomplete_error(module_name, error_msg, missing_reqs={req})
-            raise
+            self._raise_error(x)
         except PythonModuleResourceImportError as x:
             self._raise_import_error(x)
         except UnknownServiceError as x:
