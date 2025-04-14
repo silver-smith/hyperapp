@@ -42,9 +42,10 @@ definitions:
       ctx_params:
       - piece
       - identity
+      - ctx
       service_params:
       - peer_registry
-      - model_command_reg
+      - get_model_commands
       - remote_command_from_model_command
   remote_command_enum.model-command-enumerator:
     type: legacy_type.command:model_command_enumerator

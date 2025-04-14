@@ -60,4 +60,7 @@ async def test_remote_command_from_model_command(rpc_system_call_factory, genera
 
 def test_enum(generate_rsa_identity, remote_model):
     my_identity = generate_rsa_identity(fast=True)
-    command_list = remote_command.remote_command_enum(remote_model, my_identity)
+    ctx = Context(
+        model=remote_model,
+        )
+    command_list = remote_command.remote_command_enum(remote_model, my_identity, ctx)

@@ -62,10 +62,10 @@ def remote_command_from_model_command(rpc_call_factory, identity, remote_peer, c
 
 
 @mark.command_enum
-def remote_command_enum(piece, identity, peer_registry, model_command_reg, remote_command_from_model_command):
+def remote_command_enum(piece, identity, ctx, peer_registry, get_model_commands, remote_command_from_model_command):
     model, model_t = web.summon_with_t(piece.model)
     remote_peer = peer_registry.invite(piece.remote_peer)
-    command_list = model_command_reg(model_t)
+    command_list = get_model_commands(model_t, ctx)
     return [
         remote_command_from_model_command(identity, remote_peer, command)
         for command in command_list
