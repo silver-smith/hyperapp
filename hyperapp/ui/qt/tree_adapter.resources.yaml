@@ -1,7 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- base.context:context.module
 - base.system_fn:system_fn.module
 - builtins:pyobj_creg.service
 - common.tree_diff:tree_diff.module
@@ -15,7 +14,6 @@ definitions:
       module_name: tree_adapter
       file_name: tree_adapter.dyn.py
       import_list:
-        code.context: base.context:context.module
         code.system_fn: base.system_fn:system_fn.module
         code.tree_diff: common.tree_diff:tree_diff.module
         code.tree_servant_wrapper: ui.qt.tree_servant_wrapper:tree_servant_wrapper.module

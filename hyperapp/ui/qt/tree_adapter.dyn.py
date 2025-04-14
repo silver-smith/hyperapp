@@ -9,7 +9,6 @@ from hyperapp.boot.htypes import tInt, TList, TOptional, TRecord
 from .services import (
     pyobj_creg,
     )
-from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.tree_diff import TreeDiff
 from .code.tree_visual_diff import (
@@ -48,18 +47,19 @@ class IndexTreeAdapterMixin:
             }
 
     def _call_servant_wrapper(
-            self, receiver_peer, sender_identity, fn_piece, model, grand_parent, is_lateral, lateral_parent, parent):
+            self, receiver_peer, sender_identity, ctx, fn, model, grand_parent, is_lateral, lateral_parent, parent):
+        ctx_params = set(fn.ctx_params) - {'piece', 'model', 'parent'}
         wrapped_fn = ContextFn(
             rpc_system_call_factory=self._rpc_system_call_factory,
-            ctx_params=('servant_fn_piece', 'model', 'parent', 'grand_parent', 'is_lateral', 'lateral_parent', 'result_mt'),
+            ctx_params=('servant_fn_piece', 'model', 'parent', 'grand_parent', 'is_lateral', 'lateral_parent', 'result_mt', *ctx_params),
             service_params=('system_fn_creg',),
             raw_fn=index_tree_wrapper,
             )
         return wrapped_fn.rpc_call(
             sender_identity=sender_identity,
             receiver_peer=receiver_peer,
-            ctx=Context(),
-            servant_fn_piece=fn_piece,
+            ctx=ctx,
+            servant_fn_piece=fn.piece,
             model=model,
             parent=parent,
             grand_parent=grand_parent,
@@ -139,18 +139,19 @@ class KeyTreeAdapterMixin:
         return (*self._make_key_path(parent_id), key)
 
     def _call_servant_wrapper(
-            self, receiver_peer, sender_identity, fn_piece, model, grand_parent, is_lateral, lateral_parent, current_path):
+            self, receiver_peer, sender_identity, ctx, fn, model, grand_parent, is_lateral, lateral_parent, current_path):
+        ctx_params = set(fn.ctx_params) - {'piece', 'model', 'current_path'}
         wrapped_fn = ContextFn(
             rpc_system_call_factory=self._rpc_system_call_factory,
-            ctx_params=('servant_fn_piece', 'model', 'current_path', 'key_field', 'is_lateral', 'result_mt'),
+            ctx_params=('servant_fn_piece', 'model', 'current_path', 'key_field', 'is_lateral', 'result_mt', *ctx_params),
             service_params=('system_fn_creg',),
             raw_fn=key_tree_wrapper,
             )
         return wrapped_fn.rpc_call(
             sender_identity=sender_identity,
             receiver_peer=receiver_peer,
-            ctx=Context(),
-            servant_fn_piece=fn_piece,
+            ctx=ctx,
+            servant_fn_piece=fn.piece,
             model=model,
             current_path=current_path,
             key_field=self._key_field,

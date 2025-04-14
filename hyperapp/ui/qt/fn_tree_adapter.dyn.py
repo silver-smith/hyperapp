@@ -74,7 +74,6 @@ class FnTreeAdapter(TreeAdapter):
         log.info("Fn tree adapter: retrieved local items for %s/%s: %s", self._model, parent_id, item_list)
         self._store_item_list(parent_id, item_list)
 
-    # Note: We currently ignore ctx for remote calls.
     def _remote_populate(self, parent_id, remote_peer):
         if parent_id != 0 and (pp_id := self._id_to_parent_id[parent_id]) in self._lateral_ids:
             grand_parent = self._id_to_item[pp_id]
@@ -89,7 +88,8 @@ class FnTreeAdapter(TreeAdapter):
         item_list, lateral_item_list_list = self._call_servant_wrapper(
             receiver_peer=remote_peer,
             sender_identity=self._ctx.identity,
-            fn_piece=self._fn.piece,
+            ctx=self._ctx,
+            fn=self._fn,
             model=self._model,
             grand_parent=grand_parent,
             is_lateral=is_lateral,

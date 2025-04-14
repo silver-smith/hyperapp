@@ -29,9 +29,10 @@ def model():
     return htypes.tree_adapter_tests.sample_tree()
 
 
-def sample_index_tree_model(piece, parent):
+def sample_index_tree_model(piece, parent, sample_ctx):
     log.info("Sample index tree model: %s @ %s", piece, parent)
     assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
+    assert sample_ctx == 'sample-ctx'
     if parent:
         base = parent.id
     else:
@@ -47,14 +48,15 @@ def sample_index_tree_model(piece, parent):
 def sample_index_tree_model_fn():
     return htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_index_tree_model),
-        ctx_params=('piece', 'parent'),
+        ctx_params=('piece', 'parent', 'sample_ctx'),
         service_params=(),
         )
 
 
-def sample_key_tree_model(piece, current_path):
+def sample_key_tree_model(piece, current_path, sample_ctx):
     log.info("Sample key tree fn: %s @ %s", piece, current_path)
     assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
+    assert sample_ctx == 'sample-ctx'
     if current_path:
         base = int(current_path[-1])
     else:
@@ -70,7 +72,7 @@ def sample_key_tree_model(piece, current_path):
 def sample_key_tree_model_fn():
     return htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_key_tree_model),
-        ctx_params=('piece', 'current_path'),
+        ctx_params=('piece', 'current_path', 'sample_ctx'),
         service_params=(),
         )
 
@@ -79,6 +81,7 @@ def sample_key_tree_model_fn():
 def ctx(model):
     return Context(
         piece=model,
+        sample_ctx='sample-ctx',
         )
 
 
@@ -370,16 +373,16 @@ async def test_key_adapter_replace_child_diff(key_adapter, subscriber, feed):
 _sample_fn_is_called = threading.Event()
 
 
-def sample_remote_index_tree_model(piece, parent):
+def sample_remote_index_tree_model(piece, parent, sample_ctx):
     log.info("Sample remote index tree model: %s @ %s", piece, parent)
-    result = sample_index_tree_model(piece, parent)
+    result = sample_index_tree_model(piece, parent, sample_ctx)
     _sample_fn_is_called.set()
     return result
 
 
-def sample_remote_key_tree_model(piece, current_path):
+def sample_remote_key_tree_model(piece, current_path, sample_ctx):
     log.info("Sample remote key tree model: %s @ %s", piece, current_path)
-    result = sample_key_tree_model(piece, current_path)
+    result = sample_key_tree_model(piece, current_path, sample_ctx)
     _sample_fn_is_called.set()
     return result
 
@@ -413,10 +416,11 @@ def test_index_adapter_with_remote_model(
         ctx = Context(
             identity=identity,
             remote_peer=process.peer,
+            sample_ctx='sample-ctx',
             )
         system_fn = htypes.system_fn.ctx_fn(
             function=pyobj_creg.actor_to_ref(sample_remote_index_tree_model),
-            ctx_params=('piece', 'parent'),
+            ctx_params=('piece', 'parent', 'sample_ctx'),
             service_params=(),
             )
         adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
@@ -476,10 +480,11 @@ def test_key_adapter_with_remote_model(
         ctx = Context(
             identity=identity,
             remote_peer=process.peer,
+            sample_ctx='sample-ctx',
             )
         system_fn = htypes.system_fn.ctx_fn(
             function=pyobj_creg.actor_to_ref(sample_remote_key_tree_model),
-            ctx_params=('piece', 'current_path'),
+            ctx_params=('piece', 'current_path', 'sample_ctx'),
             service_params=(),
             )
         adapter_piece = htypes.tree_adapter.fn_key_tree_adapter(
@@ -538,10 +543,11 @@ def test_index_adapter_with_remote_context(
             piece=model,
             identity=identity,
             remote_peer=process.peer,
+            sample_ctx='sample-ctx',
             )
         system_fn = htypes.system_fn.ctx_fn(
             function=pyobj_creg.actor_to_ref(sample_remote_index_tree_model),
-            ctx_params=('piece', 'parent'),
+            ctx_params=('piece', 'parent', 'sample_ctx'),
             service_params=(),
             )
         adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(

@@ -11,13 +11,14 @@ from .code.context import Context
 log = logging.getLogger(__name__)
 
 
-def index_tree_wrapper(servant_fn_piece, model, parent, grand_parent, is_lateral, lateral_parent, result_mt, system_fn_creg):
+def index_tree_wrapper(servant_fn_piece, model, parent, grand_parent, is_lateral, lateral_parent, result_mt, system_fn_creg, **kw):
     result_t = pyobj_creg.animate(result_mt)
     servant_fn = system_fn_creg.animate(servant_fn_piece)
     log.info("Index tree servant wrapper: Loading items for %s using %s", parent, servant_fn)
     ctx = Context(
         model=model,
         piece=model,
+        **kw,
         )
     lateral_item_list_list = []
     if is_lateral:
@@ -34,13 +35,14 @@ def index_tree_wrapper(servant_fn_piece, model, parent, grand_parent, is_lateral
     return result_t(item_list, tuple(lateral_item_list_list))
 
 
-def key_tree_wrapper(servant_fn_piece, model, current_path, key_field, is_lateral, result_mt, system_fn_creg):
+def key_tree_wrapper(servant_fn_piece, model, current_path, key_field, is_lateral, result_mt, system_fn_creg, **kw):
     result_t = pyobj_creg.animate(result_mt)
     servant_fn = system_fn_creg.animate(servant_fn_piece)
     log.info("Key tree servant wrapper: Loading items for %s using %s", current_path, servant_fn)
     ctx = Context(
         model=model,
         piece=model,
+        **kw,
         )
     lateral_item_list_list = []
     if is_lateral:
