@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.rpc.rpc_call:rpc_call.module
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -29,6 +30,7 @@ definitions:
       import_list:
         code.command_args: ui.crud.command_args:command_args.module
         code.mark: base.mark:mark.module
+        code.rpc_call: base.rpc.rpc_call:rpc_call.module
         htypes.command.canned_args_command_fn: legacy_type.command:canned_args_command_fn
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
@@ -51,3 +53,4 @@ definitions:
       function: CannedArgsCommandFn.from_piece
       service_params:
       - system_fn_creg
+      - rpc_system_call_factory

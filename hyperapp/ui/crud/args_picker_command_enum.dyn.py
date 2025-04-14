@@ -26,14 +26,15 @@ class UnboundArgsPickerCommandEnumerator:
 
     @classmethod
     @mark.actor.command_creg
-    def from_piece(cls, piece, crud, system_fn_creg, editor_default_reg):
+    def from_piece(cls, piece, crud, editor_default_reg, rpc_system_call_factory, system_fn_creg):
         required_args = args_t_tuple_to_dict(piece.required_args)
         args_picker_command_d = web.summon(piece.args_picker_command_d)
         commit_command_d = web.summon(piece.commit_command_d)
         commit_fn = system_fn_creg.invite(piece.commit_fn)
         return cls(
-            crud=crud,
             system_fn_creg=system_fn_creg,
+            rpc_system_call_factory=rpc_system_call_factory,
+            crud=crud,
             editor_default_reg=editor_default_reg,
             name=piece.name,
             is_global=piece.is_global,
@@ -43,10 +44,11 @@ class UnboundArgsPickerCommandEnumerator:
             commit_fn=commit_fn,
             )
 
-    def __init__(self, crud, system_fn_creg, editor_default_reg, name, is_global, required_args,
+    def __init__(self, system_fn_creg, rpc_system_call_factory, crud, editor_default_reg, name, is_global, required_args,
                  args_picker_command_d, commit_command_d, commit_fn):
-        self._crud = crud
         self._system_fn_creg = system_fn_creg
+        self._rpc_system_call_factory = rpc_system_call_factory
+        self._crud = crud
         self._editor_default_reg = editor_default_reg
         self._name = name
         self._is_global = is_global
@@ -126,7 +128,7 @@ class UnboundArgsPickerCommandEnumerator:
         return None
 
     def _canned_args_command(self, args):
-        fn = CannedArgsCommandFn(args, self._commit_fn)
+        fn = CannedArgsCommandFn(self._rpc_system_call_factory, args, self._commit_fn)
         properties = htypes.command.properties(
             is_global=self._is_global,
             uses_state=False,

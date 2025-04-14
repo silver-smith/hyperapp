@@ -71,8 +71,9 @@ definitions:
       function: UnboundArgsPickerModelCommandEnumerator.from_piece
       service_params:
       - crud
-      - system_fn_creg
       - editor_default_reg
+      - rpc_system_call_factory
+      - system_fn_creg
   command_creg-command-ui_args_picker_command_enumerator.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -80,8 +81,9 @@ definitions:
       function: UnboundArgsPickerUiCommandEnumerator.from_piece
       service_params:
       - crud
-      - system_fn_creg
       - editor_default_reg
+      - rpc_system_call_factory
+      - system_fn_creg
   format_open_args_picker_command_d:
     type: legacy_type.builtin:attribute
     value:
