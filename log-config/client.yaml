@@ -5,7 +5,7 @@ formatters:
   simple:
     format: '%(asctime)-15s  %(message).200s'
   full:
-    format: '%(asctime)-15s %(name)-44s %(levelname)-8s %(message).500s'
+    format: '%(asctime)-15s %(name)-44s %(levelname)-8s %(message).2000s'
 
 handlers:
   console:

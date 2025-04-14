@@ -3,7 +3,7 @@ disable_existing_loggers: False
 
 formatters:
   simple:
-    format: '%(asctime)-15s  %(message).200s'
+    format: '%(asctime)-15s  %(message).2000s'
   full:
     format: '%(asctime)-15s %(filename)-30s %(lineno)4d %(levelname)-8s %(message)s'
 
