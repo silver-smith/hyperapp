@@ -45,6 +45,9 @@ class View(metaclass=abc.ABCMeta):
     def make_widget_state(self, key):
         return None
 
+    def set_current_key(self, widget, key):
+        pass
+
     @abc.abstractmethod
     def widget_state(self, widget):
         pass

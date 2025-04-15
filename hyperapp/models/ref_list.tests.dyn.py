@@ -96,7 +96,7 @@ def test_add_ref(folder_2_model, file_bundle_factory):
     ref_2_piece = htypes.ref_list_tests.sample_model(id=456)
     ref_2 = mosaic.put(ref_2_piece)
     piece, ref_id = ref_list.add_ref(folder_2_model, ref_2)
-    assert piece == folder_2_model
+    assert piece is None
     assert type(ref_id) is str
     file_bundle_factory.save_piece.assert_called_once()
 

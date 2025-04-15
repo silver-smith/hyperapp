@@ -114,6 +114,9 @@ class NavigatorView(View):
         self._prev = mosaic.put(history_rec)
         self._next = None
 
+    def set_current_key(self, widget, key):
+        self._current_view.set_current_key(widget, key)
+
     def go_back(self, ctx, widget, view_reg):
         if not self._prev:
             return

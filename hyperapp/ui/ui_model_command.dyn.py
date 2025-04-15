@@ -106,6 +106,12 @@ class BoundUiModelCommand(BoundCommandBase):
         self._open(navigator_w, model, key)
 
     def _open(self, navigator_w, model, key):
+        if model is None:
+            if key is None:
+                return
+            log.info("Model command %r: Set current key: %r", self.name, key)
+            self._navigator_rec.view.set_current_key(navigator_w, key)
+            return
         view_piece = self._visualizer(self._ctx, model)
         model_ctx = self._ctx.pop().clone_with(model=model)
         view = self._view_reg.animate(view_piece, model_ctx)

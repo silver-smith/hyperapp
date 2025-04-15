@@ -139,7 +139,7 @@ def add_folder(piece, name, ref_list):
 @mark.command(args=['ref'])
 def add_ref(piece, ref, ref_list):
     ref_id = ref_list.append_ref(piece.parent_id, ref)
-    return (piece, ref_id)
+    return (None, ref_id)
 
 
 @mark.global_command

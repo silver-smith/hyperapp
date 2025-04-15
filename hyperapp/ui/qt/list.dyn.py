@@ -130,9 +130,7 @@ class ListView(View):
         widget.setCurrentIndex(widget.model().createIndex(0, 0))
         widget.resizeColumnsToContents()
         # model.dataChanged.connect(partial(self._on_data_changed, widget))
-        if isinstance(state, htypes.list.state):
-            index = model.createIndex(state.current_idx, 0)
-            widget.setCurrentIndex(index)
+        self._apply_state(widget, state)
         widget.clearSelection()
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
@@ -146,6 +144,15 @@ class ListView(View):
     def widget_state(self, widget):
         idx = widget.currentIndex().row()
         return htypes.list.state(current_idx=idx)
+
+    def set_current_key(self, widget, key):
+        state = self._adapter.make_list_state(key)
+        self._apply_state(widget, state)
+
+    def _apply_state(self, widget, state):
+        if isinstance(state, htypes.list.state):
+            index = widget.model().createIndex(state.current_idx, 0)
+            widget.setCurrentIndex(index)
 
     def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
