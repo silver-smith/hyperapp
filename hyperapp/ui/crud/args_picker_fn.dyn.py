@@ -53,6 +53,11 @@ class ArgsPickerFn:
             commit_fn=mosaic.put(self._commit_fn.piece),
             )
 
+    @property
+    def ctx_params(self):
+        commit_params = set(self._commit_fn.ctx_params) - self._args.keys() - self._required_args.keys()
+        return [*self._required_kw, *commit_params]
+
     def missing_params(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
         return self._required_kw - ctx_kw.keys()
