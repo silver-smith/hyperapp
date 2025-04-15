@@ -1,0 +1,45 @@
+#! /bin/bash
+
+# Based on Python appimage.
+
+# If running from an extracted image, then export ARGV0 and APPDIR
+if [ -z "${APPIMAGE}" ]; then
+    export ARGV0="$0"
+
+    self=$(readlink -f -- "$0") # Protect spaces (issue 55)
+    export APPDIR="${self%/*}"
+fi
+
+# Resolve the calling command (preserving symbolic links).
+export APPIMAGE_COMMAND=$(command -v -- "$ARGV0")
+
+# Export TCl/Tk
+export TCL_LIBRARY="${APPDIR}/usr/share/tcltk/tcl8.6"
+export TK_LIBRARY="${APPDIR}/usr/share/tcltk/tk8.6"
+export TKPATH="${TK_LIBRARY}"
+
+# Export SSL certificate
+export SSL_CERT_FILE="${APPDIR}/opt/_internal/certs.pem"
+
+export LOG_CFG=server
+
+case "$1" in
+  server)
+    projects=base,rc,common,ui,models,sample,server
+    main=server_main
+    shift
+    ;;
+  client)
+    projects=base,rc,common,ui,models,views,sample,lcs,client
+    main=client_main
+    shift
+    ;;
+  *)
+    echo "Usage: $APPIMAGE_COMMAND (server|client)"
+    exit 1
+    ;;
+esac
+
+cd "$APPDIR/hyperapp"
+set -x
+"$APPDIR/opt/python3.11/bin/python3.11" boot.py "$projects" "$main" "$@"
