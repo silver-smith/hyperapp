@@ -117,9 +117,9 @@ def test_command_list(details_commands, ctx, model, model_state):
     assert len(k_list) == 1
 
 
-async def test_get(command_creg, visualizer, details_commands, model, model_state, ctx, unbound_command):
+async def test_get(error_view, command_creg, visualizer, details_commands, model, model_state, ctx, unbound_command):
     k = htypes.details.factory_k(
         command=mosaic.put(unbound_command.piece),
         )
-    view_piece = await details.details_get(k, model, model_state, ctx, command_creg, visualizer)
+    view_piece = await details.details_get(k, model, model_state, ctx, error_view, command_creg, visualizer)
     assert view_piece

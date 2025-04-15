@@ -55,6 +55,7 @@ definitions:
       - model_state
       - ctx
       service_params:
+      - error_view
       - command_creg
       - visualizer
 

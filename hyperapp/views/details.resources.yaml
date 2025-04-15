@@ -15,6 +15,7 @@ import:
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
 - ui.model_command:model_command.module
+- ui.ui_model_command:ui_model_command.module
 - ui.view.view:view.module
 - ui.wrapper_view:wrapper_view.module
 definitions:
@@ -37,6 +38,7 @@ definitions:
       - ctx
       service_params:
       - view_reg
+      - error_view
       - command_creg
       - visualizer
   details-view.view-template:
@@ -52,6 +54,7 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
+        code.ui_model_command: ui.ui_model_command:ui_model_command.module
         code.view: ui.view.view:view.module
         code.wrapper_view: ui.wrapper_view:wrapper_view.module
         htypes.details.factory_k: legacy_type.details:factory_k
