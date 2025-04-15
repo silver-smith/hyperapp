@@ -129,3 +129,12 @@ def test_ui_global_command_items_get_items(ui_global_command_items, lcs):
         # sample_command_3_d from lcs has no matching global command.
         htypes.ui_model_command_tests.sample_command_4_d(),  # configured by lcs.
         }, d_set
+
+
+def test_split_command_result():
+    result = htypes.command.remote_command_result(
+        model=mosaic.put('sample-model'),
+        key=None,
+        )
+    model, key = ui_model_command.split_command_result(result)
+    assert model == 'sample-model'

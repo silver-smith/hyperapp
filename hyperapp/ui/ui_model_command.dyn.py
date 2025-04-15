@@ -22,10 +22,16 @@ log = logging.getLogger(__name__)
 
 def split_command_result(result):
     if type(result) is tuple and len(result) == 2:
-        result, key = result
+        model, key = result
+    elif isinstance(result, htypes.command.remote_command_result):
+        model = web.summon_opt(result.model)
+        key = web.summon_opt(result.key)
     else:
+        model = result
         key = None
-    return (result, key)
+    if type(model) is list:
+        model = tuple(model)
+    return (model, key)
 
 
 class UnboundUiModelCommand(UnboundCommandBase):
@@ -96,17 +102,15 @@ class BoundUiModelCommand(BoundCommandBase):
             result = self._error_view(x, self._ctx)
         if result is None:
             return None
-        piece, key = split_command_result(result)
-        if type(piece) is list:
-            piece = tuple(piece)
-        self._open(navigator_w, piece, key)
+        model, key = split_command_result(result)
+        self._open(navigator_w, model, key)
 
-    def _open(self, navigator_w, piece, key):
-        view_piece = self._visualizer(self._ctx, piece)
-        model_ctx = self._ctx.pop().clone_with(model=piece)
+    def _open(self, navigator_w, model, key):
+        view_piece = self._visualizer(self._ctx, model)
+        model_ctx = self._ctx.pop().clone_with(model=model)
         view = self._view_reg.animate(view_piece, model_ctx)
         log.info("Model command %r: visualizing with view: %s", self.name, view)
-        self._navigator_rec.view.open(self._ctx, piece, view, navigator_w, key=key)
+        self._navigator_rec.view.open(self._ctx, model, view, navigator_w, key=key)
 
 
 class CustomCommands:

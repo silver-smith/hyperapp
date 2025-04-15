@@ -123,7 +123,7 @@ def global_model_command_reg_config(rpc_system_call_factory, command_d):
 
 @mark.fixture
 def rpc_system_call_factory(receiver_peer, sender_identity, fn):
-    def call():
+    def call(**kw):
         return "Sample result"
     return call
 

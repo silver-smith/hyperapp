@@ -59,6 +59,11 @@ args_picker_command_fn = record:
   commit_fn: ref
 
 
+remote_command_result = record:
+  model: ref opt
+  key: ref opt
+
+
 # LCS selector for model to ui_model_command set mapping.
 custom_model_commands_lcs_d = record
 

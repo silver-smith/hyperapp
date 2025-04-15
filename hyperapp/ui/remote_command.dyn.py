@@ -3,32 +3,50 @@ import logging
 from . import htypes
 from .services import (
     deduce_t,
+    mosaic,
     web,
     )
 from .code.mark import mark
+from .code.context import Context
+from .code.system_fn import ContextFn
+from .code.rpc_call import DEFAULT_TIMEOUT
 from .code.model_command import UnboundModelCommand, BoundModelCommand
+from .code.ui_model_command import split_command_result
 
 log = logging.getLogger(__name__)
 
 
+def remote_command_wrapper(command_fn_piece, system_fn_creg, **kw):
+    command_fn = system_fn_creg.animate(command_fn_piece)
+    ctx = Context(**kw)
+    result = command_fn.call(ctx)
+    if result is None:
+        return result
+    model, key = split_command_result(result)
+    return htypes.command.remote_command_result(
+        model=mosaic.put_opt(model),
+        key=mosaic.put_opt(key),
+        )
+
+
 class UnboundRemoteCommand(UnboundModelCommand):
 
-    def __init__(self, rpc_call_factory, d, ctx_fn, properties, identity, remote_peer):
+    def __init__(self, rpc_system_call_factory, d, ctx_fn, properties, identity, remote_peer):
         super().__init__(d, ctx_fn, properties)
-        self._rpc_call_factory = rpc_call_factory
+        self._rpc_system_call_factory = rpc_system_call_factory
         self._identity = identity
         self._remote_peer = remote_peer
 
     def bind(self, ctx):
         return BoundRemoteCommand(
-            self._rpc_call_factory, self._d, self._ctx_fn, ctx, self._properties, self._identity, self._remote_peer)
+            self._rpc_system_call_factory, self._d, self._ctx_fn, ctx, self._properties, self._identity, self._remote_peer)
 
 
 class BoundRemoteCommand(BoundModelCommand):
 
-    def __init__(self, rpc_call_factory, d, ctx_fn, ctx, properties, identity, remote_peer):
+    def __init__(self, rpc_system_call_factory, d, ctx_fn, ctx, properties, identity, remote_peer):
         super().__init__(d, ctx_fn, ctx, properties)
-        self._rpc_call_factory = rpc_call_factory
+        self._rpc_system_call_factory = rpc_system_call_factory
         self._identity = identity
         self._remote_peer = remote_peer
 
@@ -47,18 +65,25 @@ class BoundRemoteCommand(BoundModelCommand):
             else:
                 ctx = self._ctx
         log.info("Run remote command: %r", self)
-        result = self._ctx_fn.rpc_call(
+        wrapper_fn = ContextFn(
+            rpc_system_call_factory=self._rpc_system_call_factory,
+            ctx_params=('command_fn_piece', *self._ctx_fn.ctx_params),
+            service_params=('system_fn_creg',),
+            raw_fn=remote_command_wrapper,
+            )
+        result = wrapper_fn.rpc_call(
             receiver_peer=self._remote_peer,
             sender_identity=self._identity,
             ctx=ctx,
+            command_fn_piece=self._ctx_fn.piece,
             )
         log.info("Run remote command %r result: [%s] %r", self, type(result), result)
         return result
 
 
 @mark.service
-def remote_command_from_model_command(rpc_call_factory, identity, remote_peer, command):
-    return UnboundRemoteCommand(rpc_call_factory, command.d, command.fn, command.properties, identity, remote_peer)
+def remote_command_from_model_command(rpc_system_call_factory, identity, remote_peer, command):
+    return UnboundRemoteCommand(rpc_system_call_factory, command.d, command.fn, command.properties, identity, remote_peer)
 
 
 @mark.command_enum
