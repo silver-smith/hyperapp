@@ -10,6 +10,7 @@ import:
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
+- legacy_type.command:model_command_fn
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.command:ui_command
@@ -22,7 +23,6 @@ import:
 - legacy_type.command_resource:ui_command_template_ctr
 - legacy_type.command_resource:universal_ui_command_template_ctr
 - legacy_type.system:actor_template
-- legacy_type.system_fn:ctx_fn
 - rc.d_type:d_type.module
 - rc.rc_constructor:rc_constructor.module
 
@@ -53,7 +53,7 @@ definitions:
         htypes.command_resource.ui_command_enumerator_template_ctr: legacy_type.command_resource:ui_command_enumerator_template_ctr
         htypes.command_resource.ui_command_template_ctr: legacy_type.command_resource:ui_command_template_ctr
         htypes.command_resource.universal_ui_command_template_ctr: legacy_type.command_resource:universal_ui_command_template_ctr
-        htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
+        htypes.command.model_command_fn: legacy_type.command:model_command_fn
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module

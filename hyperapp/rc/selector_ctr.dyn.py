@@ -28,7 +28,7 @@ class SelectorTemplateCtrBase(ModuleCtr):
         ready_tgt.set_provider(resource_tgt)
         resolved_tgt.resolve(self)
 
-    def make_function(self, types, python_module, name_to_res):
+    def make_function(self, types, fn_type, python_module, name_to_res):
         object = python_module
         prefix = []
         for name in self._attr_qual_name:
@@ -38,7 +38,7 @@ class SelectorTemplateCtrBase(ModuleCtr):
                 )
             name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
-        system_fn = htypes.system_fn.ctx_fn(
+        system_fn = fn_type(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
@@ -148,9 +148,9 @@ class SelectorCtr(Constructor):
 
     def make_component(self, types, python_module, name_to_res):
         get_fn = self._get_resolved_tgt.constructor.make_function(
-            types, python_module, name_to_res)
+            types, htypes.command.model_command_fn, python_module, name_to_res)
         pick_fn = self._pick_resolved_tgt.constructor.make_function(
-            types, python_module, name_to_res)
+            types, htypes.system_fn.ctx_fn, python_module, name_to_res)
         template = htypes.selector.template(
             value_t=pyobj_creg.actor_to_ref(self._value_t),
             model_t=pyobj_creg.actor_to_ref(self._model_t),

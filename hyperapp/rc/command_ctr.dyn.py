@@ -131,7 +131,7 @@ class CommandTemplateCtr(Constructor):
             if name_to_res is not None:
                 name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
-        fn = htypes.system_fn.ctx_fn(
+        fn = htypes.command.model_command_fn(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
