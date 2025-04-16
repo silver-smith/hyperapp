@@ -32,7 +32,7 @@ class ContextFn:
             )
 
     def call(self, ctx, **kw):
-        ctx_kw = self._fn_kw(ctx, kw)
+        ctx_kw = self.call_kw(ctx, **kw)
         return self._bound_fn(**ctx_kw)
 
     def fn_kw(self, ctx, **kw):
@@ -54,8 +54,8 @@ class ContextFn:
     def _ctx_params_set(self):
         return set(self._ctx_params)
 
-    def _fn_kw(self, ctx, additional_kw):
-        fn_kw = self.fn_kw(ctx, **additional_kw)
+    def call_kw(self, ctx, **kw):
+        fn_kw = self.fn_kw(ctx, **kw)
         missing_params = self._ctx_params_set - fn_kw.keys()
         if missing_params:
             missing_str = ", ".join(missing_params)
@@ -85,12 +85,3 @@ class ContextFn:
         if 'state' in self._ctx_params_set:
             kw['state'] = view.widget_state(widget)
         return kw
-
-    def rpc_call(self, receiver_peer, sender_identity, ctx, timeout_sec=DEFAULT_TIMEOUT, **kw):
-        rpc_call = self._rpc_system_call_factory(
-            receiver_peer=receiver_peer,
-            sender_identity=sender_identity,
-            fn=self,
-            )
-        ctx_kw = self._fn_kw(ctx, kw)
-        return rpc_call(**ctx_kw)

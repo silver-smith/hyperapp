@@ -43,23 +43,11 @@ class CannedArgsCommandFn:
         return self._commit_fn.missing_params(ctx, **kw) - self._args.keys()
 
     def call(self, ctx, **kw):
-        command_ctx = ctx.clone_with(
-            **kw,
-            **self._args,
-            )
-        return self._commit_fn.call(command_ctx)
+        call_kw = self.call_kw(ctx, **kw)
+        return self._commit_fn.call(ctx, **call_kw)
 
-    def rpc_call(self, receiver_peer, sender_identity, ctx, timeout_sec=DEFAULT_TIMEOUT, **kw):
-        rpc_call = self._rpc_system_call_factory(
-            receiver_peer=receiver_peer,
-            sender_identity=sender_identity,
-            fn=self,
-            )
-        kw = {
-            **ctx.as_data_dict(),
-            **kw,
-            }
-        return rpc_call(**kw)
+    def call_kw(self, ctx, **kw):
+        return self._commit_fn.call_kw(ctx, **kw, **self._args)
 
 
 def _pretify_arg_value(format, value):

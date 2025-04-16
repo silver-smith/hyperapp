@@ -47,17 +47,20 @@ class IndexTreeAdapterMixin:
             }
 
     def _call_servant_wrapper(
-            self, receiver_peer, sender_identity, ctx, fn, model, grand_parent, is_lateral, lateral_parent, parent):
+            self, receiver_peer, sender_identity, ctx, fn, model, grand_parent, is_lateral, lateral_parent, parent, **kw):
         ctx_params = set(fn.ctx_params) - {'piece', 'model', 'parent'}
-        wrapped_fn = ContextFn(
+        wrapper_fn = ContextFn(
             rpc_system_call_factory=self._rpc_system_call_factory,
             ctx_params=('servant_fn_piece', 'model', 'parent', 'grand_parent', 'is_lateral', 'lateral_parent', 'result_mt', *ctx_params),
             service_params=('system_fn_creg',),
             raw_fn=index_tree_wrapper,
             )
-        return wrapped_fn.rpc_call(
-            sender_identity=sender_identity,
+        rpc_call = self._rpc_system_call_factory(
             receiver_peer=receiver_peer,
+            sender_identity=sender_identity,
+            fn=wrapper_fn,
+            )
+        call_kw = wrapper_fn.call_kw(
             ctx=ctx,
             servant_fn_piece=fn.piece,
             model=model,
@@ -66,7 +69,9 @@ class IndexTreeAdapterMixin:
             is_lateral=is_lateral,
             lateral_parent=lateral_parent,
             result_mt=pyobj_creg.actor_to_piece(self._remote_result_t),
+            **kw,
             )
+        return rpc_call(**call_kw)
 
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):
@@ -139,17 +144,20 @@ class KeyTreeAdapterMixin:
         return (*self._make_key_path(parent_id), key)
 
     def _call_servant_wrapper(
-            self, receiver_peer, sender_identity, ctx, fn, model, grand_parent, is_lateral, lateral_parent, current_path):
+            self, receiver_peer, sender_identity, ctx, fn, model, grand_parent, is_lateral, lateral_parent, current_path, **kw):
         ctx_params = set(fn.ctx_params) - {'piece', 'model', 'current_path'}
-        wrapped_fn = ContextFn(
+        wrapper_fn = ContextFn(
             rpc_system_call_factory=self._rpc_system_call_factory,
             ctx_params=('servant_fn_piece', 'model', 'current_path', 'key_field', 'is_lateral', 'result_mt', *ctx_params),
             service_params=('system_fn_creg',),
             raw_fn=key_tree_wrapper,
             )
-        return wrapped_fn.rpc_call(
-            sender_identity=sender_identity,
+        rpc_call = self._rpc_system_call_factory(
             receiver_peer=receiver_peer,
+            sender_identity=sender_identity,
+            fn=wrapper_fn,
+            )
+        call_kw = wrapper_fn.call_kw(
             ctx=ctx,
             servant_fn_piece=fn.piece,
             model=model,
@@ -157,7 +165,9 @@ class KeyTreeAdapterMixin:
             key_field=self._key_field,
             is_lateral=is_lateral,
             result_mt=pyobj_creg.actor_to_piece(self._remote_result_t),
+            **kw
             )
+        return rpc_call(**call_kw)
 
     def _apply_diff(self, diff):
         if isinstance(diff, TreeDiff.Append):

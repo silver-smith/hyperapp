@@ -133,7 +133,7 @@ definitions:
       function: FnIndexListAdapter.from_piece
       service_params:
       - system_fn_creg
-      - rpc_call_factory
+      - rpc_system_call_factory
       - feed_factory
       - column_visible_reg
       - peer_registry
@@ -144,7 +144,7 @@ definitions:
       function: FnKeyListAdapter.from_piece
       service_params:
       - system_fn_creg
-      - rpc_call_factory
+      - rpc_system_call_factory
       - feed_factory
       - column_visible_reg
       - peer_registry

@@ -48,11 +48,13 @@ class BoundRemoteCommand(BoundModelCommand):
             else:
                 ctx = self._ctx
         log.info("Run remote command: %r", self)
-        result = self._ctx_fn.rpc_call(
+        rpc_call = self._rpc_system_call_factory(
             receiver_peer=self._remote_peer,
             sender_identity=self._identity,
-            ctx=ctx,
+            fn=self._ctx_fn,
             )
+        kw = self._ctx_fn.call_kw(ctx)
+        result = rpc_call(**kw)
         log.info("Run remote command %r result: [%s] %r", self, type(result), result)
         return result
 
