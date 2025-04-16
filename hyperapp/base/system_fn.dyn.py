@@ -21,7 +21,7 @@ class ContextFn:
         self._bound_fn = bound_fn  # Can be None if we use this only to create it's piece.
 
     def __repr__(self):
-        return f"<ContextFn: {self._raw_fn}({self._ctx_params}/{self._service_params})>"
+        return f"<{self.__class__.__name__}: {self._raw_fn}({self._ctx_params}/{self._service_params})>"
 
     @property
     def piece(self):
