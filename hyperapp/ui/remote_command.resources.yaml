@@ -1,24 +1,19 @@
 # Automatically generated file. Do not edit.
 
 import:
-- base.context:context.module
 - base.mark:mark.module
-- base.rpc.rpc_call:rpc_call.module
-- base.system_fn:system_fn.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
-- legacy_type.command:command_result
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:model_command_fn
 - legacy_type.model:remote_model
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.model_command:model_command.module
-- ui.ui_model_command:ui_model_command.module
 definitions:
   model-remote_model-remote_command_enum.command-cfg-item:
     type: legacy_type.command:cfg_item
@@ -31,13 +26,8 @@ definitions:
       module_name: remote_command
       file_name: remote_command.dyn.py
       import_list:
-        code.context: base.context:context.module
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
-        code.rpc_call: base.rpc.rpc_call:rpc_call.module
-        code.system_fn: base.system_fn:system_fn.module
-        code.ui_model_command: ui.ui_model_command:ui_model_command.module
-        htypes.command.command_result: legacy_type.command:command_result
         htypes.model.remote_model: legacy_type.model:remote_model
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service

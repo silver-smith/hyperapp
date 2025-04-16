@@ -7,26 +7,9 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.context import Context
-from .code.system_fn import ContextFn
-from .code.rpc_call import DEFAULT_TIMEOUT
 from .code.model_command import UnboundModelCommand, BoundModelCommand
-from .code.ui_model_command import split_command_result
 
 log = logging.getLogger(__name__)
-
-
-def remote_command_wrapper(command_fn_piece, system_fn_creg, **kw):
-    command_fn = system_fn_creg.animate(command_fn_piece)
-    ctx = Context(**kw)
-    result = command_fn.call(ctx)
-    if result is None:
-        return result
-    model, key = split_command_result(result)
-    return htypes.command.command_result(
-        model=mosaic.put_opt(model),
-        key=mosaic.put_opt(key),
-        )
 
 
 class UnboundRemoteCommand(UnboundModelCommand):
@@ -65,17 +48,10 @@ class BoundRemoteCommand(BoundModelCommand):
             else:
                 ctx = self._ctx
         log.info("Run remote command: %r", self)
-        wrapper_fn = ContextFn(
-            rpc_system_call_factory=self._rpc_system_call_factory,
-            ctx_params=('command_fn_piece', *self._ctx_fn.ctx_params),
-            service_params=('system_fn_creg',),
-            raw_fn=remote_command_wrapper,
-            )
-        result = wrapper_fn.rpc_call(
+        result = self._ctx_fn.rpc_call(
             receiver_peer=self._remote_peer,
             sender_identity=self._identity,
             ctx=ctx,
-            command_fn_piece=self._ctx_fn.piece,
             )
         log.info("Run remote command %r result: [%s] %r", self, type(result), result)
         return result
