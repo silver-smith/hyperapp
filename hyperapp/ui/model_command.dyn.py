@@ -5,9 +5,11 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
+from .code.system_fn import ContextFn
 from .code.command import UnboundCommand, BoundCommand
 from .code.command_enumerator import UnboundCommandEnumerator
 from .code.list_config_ctl import DictListConfigCtl, FlatListConfigCtl
@@ -22,6 +24,43 @@ def model_command_ctx(ctx, model, model_state):
         model_state=model_state,
         **ctx.attributes(model_state),
         )
+
+
+class ModelCommandFn(ContextFn):
+
+    @classmethod
+    @mark.actor.system_fn_creg
+    def from_piece(cls, piece, system, rpc_system_call_factory):
+        return super().from_piece(piece, system, rpc_system_call_factory)
+
+    @property
+    def piece(self):
+        return htypes.command.model_command_fn(
+            function=pyobj_creg.actor_to_ref(self._raw_fn),
+            ctx_params=tuple(self._ctx_params),
+            service_params=tuple(self._service_params),
+            )
+
+    def call(self, ctx, **kw):
+        result = super().call(ctx, **kw)
+        return self._prepare_result(result)
+
+    @staticmethod
+    def _prepare_result(result):
+        if result is None:
+            return result
+        if type(result) is tuple and len(result) == 2:
+            model, key = result
+        else:
+            model = result
+            key = None
+        if type(model) is list:
+            model = tuple(model)
+        return htypes.command.remote_command_result(
+            model=mosaic.put_opt(model),
+            key=mosaic.put_opt(key),
+            )
+
 
 
 class UnboundModelCommand(UnboundCommand):

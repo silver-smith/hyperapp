@@ -1,3 +1,6 @@
+from system_fn import ctx_fn
+
+
 cfg_item = record:
   t: ref
   command: ref
@@ -19,6 +22,8 @@ ui_command = record(fn_command)
 model_command = record(fn_command)
 ui_command_enumerator = record(command_enumerator)
 model_command_enumerator = record(command_enumerator)
+
+model_command_fn = record(ctx_fn)
 
 
 arg_t = record:

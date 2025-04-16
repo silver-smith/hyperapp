@@ -62,6 +62,7 @@ import:
 - ui.model_command:global_model_command_reg.service
 - ui.model_command:model_command_enumerator_reg.service
 - ui.model_command:model_command_reg.service
+- ui.model_command:system_fn_creg-command-model_command_fn.actor-template
 - ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
 - ui.model_layout_reg:model_layout_reg.service
 - ui.navigator:navigator-view-go_back.command-cfg-item
@@ -344,6 +345,7 @@ definitions:
       - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
       - ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-template
       - ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-template
+      - ui.model_command:system_fn_creg-command-model_command_fn.actor-template
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:
