@@ -55,6 +55,8 @@ class ModelCommandFn(ModelCommandFnBase):
 
     @staticmethod
     def _prepare_result(result):
+        if isinstance(result, htypes.command.command_result):
+            return result
         if result is None:
             return result
         if type(result) is tuple and len(result) == 2:
