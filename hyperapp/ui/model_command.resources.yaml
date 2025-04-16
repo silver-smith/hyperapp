@@ -9,10 +9,10 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.command:command_result
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:model_command_fn
-- legacy_type.command:remote_command_result
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.list_config_ctl:flat_list_config_ctl
 - legacy_type.system:actor_template
@@ -95,9 +95,9 @@ definitions:
         code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
         code.mark: base.mark:mark.module
         code.system_fn: base.system_fn:system_fn.module
+        htypes.command.command_result: legacy_type.command:command_result
         htypes.command.model_command: legacy_type.command:model_command
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
-        htypes.command.remote_command_result: legacy_type.command:remote_command_result
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

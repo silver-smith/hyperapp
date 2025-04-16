@@ -73,4 +73,4 @@ def test_enum(generate_rsa_identity, remote_model):
 
 def test_command_wrapper(system_fn_creg, sample_command_fn):
     result = remote_command.remote_command_wrapper(sample_command_fn.piece, system_fn_creg)
-    assert isinstance(result, htypes.command.remote_command_result)
+    assert isinstance(result, htypes.command.command_result)

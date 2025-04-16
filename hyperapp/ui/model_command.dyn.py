@@ -56,7 +56,7 @@ class ModelCommandFn(ContextFn):
             key = None
         if type(model) is list:
             model = tuple(model)
-        return htypes.command.remote_command_result(
+        return htypes.command.command_result(
             model=mosaic.put_opt(model),
             key=mosaic.put_opt(key),
             )

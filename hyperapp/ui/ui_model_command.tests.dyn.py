@@ -132,7 +132,7 @@ def test_ui_global_command_items_get_items(ui_global_command_items, lcs):
 
 
 def test_split_command_result():
-    result = htypes.command.remote_command_result(
+    result = htypes.command.command_result(
         model=mosaic.put('sample-model'),
         key=None,
         )

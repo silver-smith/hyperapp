@@ -25,6 +25,10 @@ model_command_enumerator = record(command_enumerator)
 
 model_command_fn = record(ctx_fn)
 
+command_result = record:
+  model: ref opt
+  key: ref opt
+
 
 arg_t = record:
   name: string
@@ -62,11 +66,6 @@ args_picker_command_fn = record:
   required_args: arg_t list
   commit_command_d: ref
   commit_fn: ref
-
-
-remote_command_result = record:
-  model: ref opt
-  key: ref opt
 
 
 # LCS selector for model to ui_model_command set mapping.

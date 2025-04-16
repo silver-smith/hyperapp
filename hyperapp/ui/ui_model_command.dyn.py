@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 def split_command_result(result):
     if type(result) is tuple and len(result) == 2:
         model, key = result
-    elif isinstance(result, htypes.command.remote_command_result):
+    elif isinstance(result, htypes.command.command_result):
         model = web.summon_opt(result.model)
         key = web.summon_opt(result.key)
     else:

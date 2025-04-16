@@ -23,7 +23,7 @@ def remote_command_wrapper(command_fn_piece, system_fn_creg, **kw):
     if result is None:
         return result
     model, key = split_command_result(result)
-    return htypes.command.remote_command_result(
+    return htypes.command.command_result(
         model=mosaic.put_opt(model),
         key=mosaic.put_opt(key),
         )
