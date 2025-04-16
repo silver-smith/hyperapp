@@ -5,8 +5,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.system_fn import ContextFn
-from .code.model_command import UnboundModelCommand
+from .code.model_command import ModelCommandFn, UnboundModelCommand
 from .code.list_adapter import index_list_model_state_t
 from .tested.code import details
 
@@ -22,7 +21,7 @@ def command_d():
 
 @mark.fixture
 def unbound_command(rpc_system_call_factory, command_d):
-    fn = ContextFn(
+    fn = ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),

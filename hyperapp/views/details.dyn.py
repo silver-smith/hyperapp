@@ -9,7 +9,6 @@ from .services import (
 from .code.mark import mark
 from .code.view import Item
 from .code.model_command import model_command_ctx
-from .code.ui_model_command import split_command_result
 from .code.wrapper_view import WrapperView
 
 log = logging.getLogger(__name__)
@@ -23,9 +22,9 @@ async def _run_details_command(error_view, ctx, unbound_command, model, model_st
         result = await bound_command.run()
     except Exception as x:
         log.exception("Error running details command %r", bound_command)
-        result = error_view(x, ctx)
-    model, key = split_command_result(result)
-    return model
+        model, view = error_view(x, ctx)
+        return model
+    return web.summon(result.model)
 
 
 def _details_context(ctx, details_model):
