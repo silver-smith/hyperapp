@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:model_command_fn
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.label:state
@@ -96,7 +97,7 @@ definitions:
     type: set_label_text_d
     value: {}
   set_label_text.commit-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: set_label_text
       ctx_params:

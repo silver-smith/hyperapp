@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.fs:item
 - legacy_type.fs:model
 - legacy_type.model:key_tree_ui_t
@@ -73,7 +74,7 @@ definitions:
     type: open_fs_d
     value: {}
   open_fs.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_fs
       ctx_params: []

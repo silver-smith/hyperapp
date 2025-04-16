@@ -11,6 +11,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
 - legacy_type.context_view:state
 - legacy_type.navigator:view
@@ -46,7 +47,7 @@ definitions:
     type: add_mark_d
     value: {}
   add_mark.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: add_mark
       ctx_params:
@@ -111,7 +112,7 @@ definitions:
     type: remove_mark_d
     value: {}
   remove_mark.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: remove_mark
       ctx_params:

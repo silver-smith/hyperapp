@@ -12,6 +12,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:model
@@ -34,7 +35,7 @@ definitions:
     type: add_folder_d
     value: {}
   add_folder.commit-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: add_folder
       ctx_params:
@@ -72,7 +73,7 @@ definitions:
     type: add_ref_d
     value: {}
   add_ref.commit-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: add_ref
       ctx_params:
@@ -121,7 +122,7 @@ definitions:
     type: open_d
     value: {}
   open.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open
       ctx_params:
@@ -154,7 +155,7 @@ definitions:
     type: open_parent_d
     value: {}
   open_parent.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_parent
       ctx_params:
@@ -186,7 +187,7 @@ definitions:
     type: open_ref_list_d
     value: {}
   open_ref_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_ref_list
       ctx_params: []

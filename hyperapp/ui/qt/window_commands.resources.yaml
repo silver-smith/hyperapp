@@ -5,8 +5,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
+- legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
-- legacy_type.system_fn:ctx_fn
 - legacy_type.window:pos
 - legacy_type.window:state
 - legacy_type.window:view
@@ -22,7 +22,7 @@ definitions:
     type: legacy_type.window_commands:duplicate_window_d
     value: {}
   duplicate_window.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: duplicate_window
       ctx_params:
@@ -48,7 +48,7 @@ definitions:
     type: legacy_type.window_commands:quit_d
     value: {}
   quit.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: quit
       ctx_params:

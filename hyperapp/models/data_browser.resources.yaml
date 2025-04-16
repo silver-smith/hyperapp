@@ -10,6 +10,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.data_browser:browse_current_model_d
 - legacy_type.data_browser:list_item
 - legacy_type.data_browser:list_open_d
@@ -37,7 +38,7 @@ definitions:
     type: legacy_type.data_browser:browse_current_model_d
     value: {}
   browse_current_model.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: browse_current_model
       ctx_params:
@@ -210,7 +211,7 @@ definitions:
     type: legacy_type.data_browser:list_open_d
     value: {}
   list_open.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: list_open
       ctx_params:
@@ -235,7 +236,7 @@ definitions:
     type: legacy_type.data_browser:record_open_d
     value: {}
   record_open.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: record_open
       ctx_params:
@@ -260,7 +261,7 @@ definitions:
     type: legacy_type.data_browser:ref_list_open_d
     value: {}
   ref_list_open.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: ref_list_open
       ctx_params:

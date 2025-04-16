@@ -5,8 +5,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
+- legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
-- legacy_type.system_fn:ctx_fn
 - legacy_type.text:edit_view
 - legacy_type.text:readonly_view
 - legacy_type.text_toggle_editable:toggle_editable_d
@@ -39,7 +39,7 @@ definitions:
     type: legacy_type.text_toggle_editable:toggle_editable_d
     value: {}
   toggle_editable.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: toggle_editable
       ctx_params:

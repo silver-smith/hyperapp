@@ -7,6 +7,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.data_browser:record_view
 - legacy_type.file_bundles:item
 - legacy_type.file_bundles:open_d
@@ -66,7 +67,7 @@ definitions:
     type: legacy_type.file_bundles:open_d
     value: {}
   open.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open
       ctx_params:
@@ -92,7 +93,7 @@ definitions:
     type: legacy_type.file_bundles:open_file_bundle_list_d
     value: {}
   open_file_bundle_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_file_bundle_list
       ctx_params: []

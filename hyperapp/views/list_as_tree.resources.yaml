@@ -14,6 +14,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
@@ -180,7 +181,7 @@ definitions:
     type: open_layers_d
     value: {}
   open_layers.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_layers
       ctx_params:
@@ -213,7 +214,7 @@ definitions:
     type: open_opener_commands_d
     value: {}
   open_opener_commands.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_opener_commands
       ctx_params:
@@ -250,7 +251,7 @@ definitions:
     type: switch_list_to_tree_d
     value: {}
   switch_list_to_tree.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: switch_list_to_tree
       ctx_params:
@@ -285,7 +286,7 @@ definitions:
     type: toggle_open_command_d
     value: {}
   toggle_open_command.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: toggle_open_command
       ctx_params:

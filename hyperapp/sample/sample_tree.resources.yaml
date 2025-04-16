@@ -9,6 +9,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.feed:feed_template
 - legacy_type.feed:index_tree_feed_type
 - legacy_type.model:index_tree_ui_t
@@ -29,7 +30,7 @@ definitions:
     type: append_tree_item_d
     value: {}
   append_tree_item.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: append_tree_item
       ctx_params:
@@ -90,7 +91,7 @@ definitions:
     type: insert_tree_item_d
     value: {}
   insert_tree_item.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: insert_tree_item
       ctx_params:
@@ -124,7 +125,7 @@ definitions:
     type: open_sample_fn_tree_d
     value: {}
   open_sample_fn_tree.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_sample_fn_tree
       ctx_params: []
@@ -154,7 +155,7 @@ definitions:
     type: remove_tree_item_d
     value: {}
   remove_tree_item.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: remove_tree_item
       ctx_params:

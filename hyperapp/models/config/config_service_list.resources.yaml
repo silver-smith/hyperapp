@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.config_service_list:item
 - legacy_type.config_service_list:model
 - legacy_type.model:index_list_ui_t
@@ -58,7 +59,7 @@ definitions:
     type: open_config_service_list_d
     value: {}
   open_config_service_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_config_service_list
       ctx_params: []

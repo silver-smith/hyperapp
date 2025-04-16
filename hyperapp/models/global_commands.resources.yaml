@@ -10,6 +10,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command_list_model:item
 - legacy_type.global_commands:command_arg
 - legacy_type.global_commands:model
@@ -61,7 +62,7 @@ definitions:
       get_fn: global_commands-command_arg.selector.get.system-fn
       pick_fn: global_commands-command_arg.selector.pick.system-fn
   global_commands-command_arg.selector.get.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: global_command_get
       ctx_params:
@@ -130,7 +131,7 @@ definitions:
     type: open_global_commands_d
     value: {}
   open_global_commands.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_global_commands
       ctx_params: []
@@ -160,7 +161,7 @@ definitions:
     type: run_command_d
     value: {}
   run_command.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: run_command
       ctx_params:

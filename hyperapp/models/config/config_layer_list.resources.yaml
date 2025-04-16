@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.config_layer_list:item
 - legacy_type.config_layer_list:layer
 - legacy_type.config_layer_list:model
@@ -29,7 +30,7 @@ definitions:
       get_fn: config_layer_list-layer.selector.get.system-fn
       pick_fn: config_layer_list-layer.selector.pick.system-fn
   config_layer_list-layer.selector.get.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: layer_get
       ctx_params:
@@ -96,7 +97,7 @@ definitions:
     type: open_config_layer_list_d
     value: {}
   open_config_layer_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_config_layer_list
       ctx_params: []

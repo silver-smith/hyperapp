@@ -12,6 +12,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.config_item_list:item
 - legacy_type.config_item_list:model
 - legacy_type.config_layer_list:layer
@@ -164,7 +165,7 @@ definitions:
     type: open_config_item_list_d
     value: {}
   open_config_item_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_config_item_list
       ctx_params:
@@ -196,7 +197,7 @@ definitions:
     type: open_config_key_d
     value: {}
   open_config_key.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_config_key
       ctx_params:

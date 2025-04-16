@@ -10,6 +10,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command_list_model:item
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
@@ -87,7 +88,7 @@ definitions:
     type: open_model_commands_d
     value: {}
   open_model_commands.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_model_commands
       ctx_params:
@@ -119,7 +120,7 @@ definitions:
     type: run_command_d
     value: {}
   run_command.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: run_command
       ctx_params:

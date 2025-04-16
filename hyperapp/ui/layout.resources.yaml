@@ -11,6 +11,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enumerator
+- legacy_type.command:model_command_fn
 - legacy_type.command_groups:pane_2_d
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
@@ -40,7 +41,7 @@ definitions:
     type: legacy_type.layout:add_view_command_d
     value: {}
   add_view_command.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: add_view_command
       ctx_params:
@@ -62,7 +63,7 @@ definitions:
       object: layout.module
       attr_name: enum_layout_tree_commands
   enum_layout_tree_commands.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: enum_layout_tree_commands
       ctx_params:
@@ -186,7 +187,7 @@ definitions:
     type: legacy_type.layout:open_layout_tree_d
     value: {}
   open_layout_tree.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_layout_tree
       ctx_params: []
@@ -209,7 +210,7 @@ definitions:
     type: legacy_type.layout:open_view_item_commands_d
     value: {}
   open_view_item_commands.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_view_item_commands
       ctx_params:
@@ -234,7 +235,7 @@ definitions:
     type: legacy_type.layout:set_escape_shortcut_d
     value: {}
   set_escape_shortcut.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: set_escape_shortcut
       ctx_params:
@@ -262,7 +263,7 @@ definitions:
     type: legacy_type.layout:set_shortcut_d
     value: {}
   set_shortcut.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: set_shortcut
       ctx_params:

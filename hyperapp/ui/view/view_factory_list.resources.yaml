@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.selector:template
@@ -28,7 +29,7 @@ definitions:
     type: open_view_factory_list_d
     value: {}
   open_view_factory_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_view_factory_list
       ctx_params: []
@@ -74,7 +75,7 @@ definitions:
       get_fn: view_factory-factory.selector.get.system-fn
       pick_fn: view_factory-factory.selector.pick.system-fn
   view_factory-factory.selector.get.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: view_factory_list_get
       ctx_params:

@@ -16,6 +16,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
@@ -42,7 +43,7 @@ definitions:
     type: add_d
     value: {}
   add.commit-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: add
       ctx_params:
@@ -94,7 +95,7 @@ definitions:
     type: open_model_d
     value: {}
   open_model.commit-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_model
       ctx_params:
@@ -136,7 +137,7 @@ definitions:
     type: open_peer_list_d
     value: {}
   open_peer_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_peer_list
       ctx_params: []
@@ -257,7 +258,7 @@ definitions:
     type: remove_d
     value: {}
   remove.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: remove
       ctx_params:
@@ -292,7 +293,7 @@ definitions:
     type: run_command_d
     value: {}
   run_command.commit-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: run_command
       ctx_params:

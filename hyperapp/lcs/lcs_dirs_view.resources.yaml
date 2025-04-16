@@ -9,6 +9,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.lcs_dirs_view:item
 - legacy_type.lcs_dirs_view:lcs_dirs_items_d
 - legacy_type.lcs_dirs_view:lcs_open_dirs_d
@@ -27,7 +28,7 @@ definitions:
     type: legacy_type.lcs_dirs_view:lcs_dirs_items_d
     value: {}
   lcs_dirs_items.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: lcs_dirs_items
       ctx_params:
@@ -96,7 +97,7 @@ definitions:
     type: legacy_type.lcs_dirs_view:lcs_open_dirs_d
     value: {}
   lcs_open_dirs.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: lcs_open_dirs
       ctx_params:

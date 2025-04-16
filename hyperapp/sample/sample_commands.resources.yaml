@@ -7,11 +7,11 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.sample_commands:system_info_item
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_tree:sample_tree
-- legacy_type.system_fn:ctx_fn
 definitions:
   details:
     type: legacy_type.builtin:attribute
@@ -22,7 +22,7 @@ definitions:
     type: details_d
     value: {}
   details.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: details
       ctx_params:
@@ -54,7 +54,7 @@ definitions:
     type: open_sample_static_list_d
     value: {}
   open_sample_static_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_sample_static_list
       ctx_params: []
@@ -84,7 +84,7 @@ definitions:
     type: open_sample_static_text_1_d
     value: {}
   open_sample_static_text_1.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_sample_static_text_1
       ctx_params: []
@@ -114,7 +114,7 @@ definitions:
     type: open_sample_static_text_2_d
     value: {}
   open_sample_static_text_2.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_sample_static_text_2
       ctx_params: []
@@ -163,7 +163,7 @@ definitions:
     type: sample_tree_info_d
     value: {}
   sample_tree_info.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: sample_tree_info
       ctx_params:
@@ -194,7 +194,7 @@ definitions:
     type: show_state_d
     value: {}
   show_state.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: show_state
       ctx_params:
@@ -225,7 +225,7 @@ definitions:
     type: system_info_d
     value: {}
   system_info.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: system_info
       ctx_params: []

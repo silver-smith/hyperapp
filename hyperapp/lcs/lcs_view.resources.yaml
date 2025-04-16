@@ -12,6 +12,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.crud:open_command_fn
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
@@ -45,7 +46,7 @@ definitions:
     type: legacy_type.lcs_view:lcs_open_piece_d
     value: {}
   lcs_open_piece.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: lcs_open_piece
       ctx_params:
@@ -70,7 +71,7 @@ definitions:
     type: legacy_type.lcs_view:lcs_remove_d
     value: {}
   lcs_remove.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: lcs_remove
       ctx_params:
@@ -218,7 +219,7 @@ definitions:
     type: open_lcs_view_d
     value: {}
   open_lcs_view.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_lcs_view
       ctx_params: []

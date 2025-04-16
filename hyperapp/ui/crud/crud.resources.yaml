@@ -11,6 +11,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:model_command_fn
 - legacy_type.command:properties
 - legacy_type.command:ui_command_enumerator
 - legacy_type.crud:arg
@@ -135,7 +136,7 @@ definitions:
       object: crud.module
       attr_name: crud_commit_command_enum
   crud_commit_command_enum.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: crud_commit_command_enum
       ctx_params:

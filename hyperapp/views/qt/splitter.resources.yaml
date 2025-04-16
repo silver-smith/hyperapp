@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
 - legacy_type.navigator:view
 - legacy_type.splitter:state
@@ -50,7 +51,7 @@ definitions:
     type: split_horizontally_d
     value: {}
   split_horizontally.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: split_horizontally
       ctx_params:
@@ -107,7 +108,7 @@ definitions:
     type: unwrap_d
     value: {}
   unwrap.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: unwrap
       ctx_params:

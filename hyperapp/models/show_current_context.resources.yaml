@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.show_current_context:item
@@ -60,7 +61,7 @@ definitions:
     type: show_current_context_d
     value: {}
   show_current_context.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: show_current_context
       ctx_params:

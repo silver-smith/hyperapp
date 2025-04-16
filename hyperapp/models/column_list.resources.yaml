@@ -15,6 +15,7 @@ import:
 - legacy_type.column_list:view
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
@@ -92,7 +93,7 @@ definitions:
     type: legacy_type.column_list:open_column_list_d
     value: {}
   open_column_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_column_list
       ctx_params:
@@ -116,7 +117,7 @@ definitions:
     type: legacy_type.column_list:toggle_visibility_d
     value: {}
   toggle_visibility.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: toggle_visibility
       ctx_params:

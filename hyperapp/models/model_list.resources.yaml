@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model_list:item
@@ -70,7 +71,7 @@ definitions:
       get_fn: model_list-model_arg.selector.get.system-fn
       pick_fn: model_list-model_arg.selector.pick.system-fn
   model_list-model_arg.selector.get.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: model_list_get
       ctx_params:
@@ -120,7 +121,7 @@ definitions:
     type: open_model_list_d
     value: {}
   open_model_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_model_list
       ctx_params: []

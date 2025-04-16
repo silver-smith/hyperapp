@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command:properties
 - legacy_type.command_list_model:item
 - legacy_type.feed:feed_template
@@ -17,7 +18,6 @@ import:
 - legacy_type.identity_command:identity_command
 - legacy_type.model_commands:model
 - legacy_type.system:actor_template
-- legacy_type.system_fn:ctx_fn
 - models.command_list_model:command_list_model.module
 - ui.command:command.module
 - ui.directory:directory.module
@@ -43,7 +43,7 @@ definitions:
     type: legacy_type.identity_command:add_identity_command_d
     value: {}
   add_identity_command.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: add_identity_command
       ctx_params:

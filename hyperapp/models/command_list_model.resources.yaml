@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command_list_model:form
 - legacy_type.command_list_model:item
 - legacy_type.command_list_model:set_shortcut_d
@@ -195,7 +196,7 @@ definitions:
     type: legacy_type.command_list_model:set_shortcut_d
     value: {}
   set_shortcut.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: set_shortcut
       ctx_params:
