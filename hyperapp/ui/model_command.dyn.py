@@ -1,3 +1,4 @@
+import inspect
 import logging
 from functools import partial
 
@@ -41,8 +42,10 @@ class ModelCommandFn(ContextFn):
             service_params=tuple(self._service_params),
             )
 
-    def call(self, ctx, **kw):
+    async def call(self, ctx, **kw):
         result = super().call(ctx, **kw)
+        if inspect.iscoroutine(result):
+            result = await result
         return self._prepare_result(result)
 
     @staticmethod

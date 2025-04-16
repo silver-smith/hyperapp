@@ -32,10 +32,10 @@ def ctx():
     return Context()
 
 
-def test_command_fn(ctx, sample_command_fn):
+async def test_command_fn(ctx, sample_command_fn):
     fn = model_command.ModelCommandFn.from_piece(sample_command_fn)
     assert fn.piece == sample_command_fn
-    result = fn.call(ctx, model="Sample model", state="Sample state")
+    result = await fn.call(ctx, model="Sample model", state="Sample state")
     assert isinstance(result, htypes.command.command_result)
 
 
