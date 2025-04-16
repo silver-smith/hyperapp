@@ -99,7 +99,9 @@ class BoundUiModelCommand(BoundCommandBase):
             result = await self._model_command.run()
         except Exception as x:
             log.exception("Error running command %r", self._model_command)
-            result = self._error_view(x, self._ctx)
+            model, model_ctx, view_piece = self._error_view(x, self._ctx)
+            self._open_view(navigator_w, model, model_ctx, view_piece)
+            return
         if result is None:
             return None
         model, key = split_command_result(result)
@@ -114,6 +116,9 @@ class BoundUiModelCommand(BoundCommandBase):
             return
         view_piece = self._visualizer(self._ctx, model)
         model_ctx = self._ctx.pop().clone_with(model=model)
+        self._open_view(navigator_w, model, model_ctx, view_piece, key)
+
+    def _open_view(self, navigator_w, model, model_ctx, view_piece, key=None):
         view = self._view_reg.animate(view_piece, model_ctx)
         log.info("Model command %r: visualizing with view: %s", self.name, view)
         self._navigator_rec.view.open(self._ctx, model, view, navigator_w, key=key)

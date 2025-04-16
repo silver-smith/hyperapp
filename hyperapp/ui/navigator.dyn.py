@@ -27,10 +27,11 @@ class NavigatorView(View):
         model_ctx = ctx.clone_with(model=model)
         layout_k = web.summon_opt(piece.layout_k)
         current_view = view_reg.invite(piece.current_view, model_ctx)
-        return cls(model_layout_reg, error_view, current_view, model, layout_k, piece.prev, piece.next)
+        return cls(view_reg, model_layout_reg, error_view, current_view, model, layout_k, piece.prev, piece.next)
 
-    def __init__(self, model_layout_reg, error_view, current_view, model, layout_k, prev, next):
+    def __init__(self, view_reg, model_layout_reg, error_view, current_view, model, layout_k, prev, next):
         super().__init__()
+        self._view_reg = view_reg
         self._model_layout_reg = model_layout_reg
         self._error_view = error_view
         self._current_view = current_view
@@ -95,7 +96,8 @@ class NavigatorView(View):
             self._safe_open(ctx, model, view, widget, key, layout_k, set_layout)
         except Exception as x:
             log.exception("Navigator: Error opening %r", model)
-            model, view = self._error_view(x, ctx)
+            model, model_ctx, view_piece = self._error_view(x, ctx)
+            view = self._view_reg.animate(view_piece, model_ctx)
             self._safe_open(ctx, model, view, widget)
 
     def _safe_open(self, ctx, model, new_view, widget, key=None, layout_k=None, set_layout=False):

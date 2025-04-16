@@ -9,5 +9,4 @@ def error_view(view_reg, visualizer, exception, ctx):
     model = str(exception) + '\n\n' + ''.join(tb_lines)
     view_piece = visualizer(ctx, model)
     model_ctx = ctx.clone_with(model=model)
-    view = view_reg.animate(view_piece, model_ctx)
-    return (model, view)
+    return (model, model_ctx, view_piece)

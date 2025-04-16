@@ -15,16 +15,19 @@ log = logging.getLogger(__name__)
 
 
 
-async def _run_details_command(error_view, ctx, unbound_command, model, model_state):
+async def _run_details_command(error_view, visualizer, ctx, unbound_command, model, model_state):
     command_ctx = model_command_ctx(ctx, model, model_state)
     bound_command = unbound_command.bind(command_ctx)
     try:
         result = await bound_command.run()
     except Exception as x:
         log.exception("Error running details command %r", bound_command)
-        model, view = error_view(x, ctx)
-        return model
-    return web.summon(result.model)
+        details_model, details_ctx, view_piece = error_view(x, ctx)
+    else:
+        details_model = web.summon(result.model)
+        details_ctx = _details_context(ctx, details_model)
+        view_piece = visualizer(details_ctx, details_model)
+    return (details_model, details_ctx, view_piece)
 
 
 def _details_context(ctx, details_model):
@@ -78,9 +81,8 @@ class DetailsView(WrapperView):
         return [Item('base', self._base_view, focusable=False)]
 
     async def _update_details_view(self, ctx, model_state, widget):
-        details_model = await _run_details_command(self._error_view, ctx, self._unbound_command, ctx.model, model_state)
-        details_ctx = _details_context(ctx, details_model)
-        details_view_piece = self._visualizer(details_ctx, details_model)
+        details_model, details_ctx, details_view_piece = await _run_details_command(
+            self._error_view, self._visualizer, ctx, self._unbound_command, ctx.model, model_state)
         details_view = self._view_reg.animate(details_view_piece, details_ctx)
         details_widget = details_view.construct_widget(None, details_ctx)
         self.replace_child(ctx, widget, 0, details_view, details_widget)
@@ -125,11 +127,10 @@ def details_command_list(model, model_state, ctx, details_commands):
 
 async def details_get(k, model, model_state, ctx, error_view, command_creg, visualizer):
     unbound_command = command_creg.invite(k.command)
-    details_model = await _run_details_command(error_view, ctx, unbound_command, model, model_state)
-    details_ctx = _details_context(ctx, details_model)
-    details_view = visualizer(details_ctx, details_model)
+    details_model, details_ctx, details_view_piece = await _run_details_command(
+        error_view, visualizer, ctx, unbound_command, model, model_state)
     return htypes.details.view(
         command=k.command,
         details_model=mosaic.put(details_model),
-        details_view=mosaic.put(details_view),
+        details_view=mosaic.put(details_view_piece),
         )
