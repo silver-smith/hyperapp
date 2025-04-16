@@ -7,9 +7,11 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
+from .code.system_fn import ContextFn
 from .code.command import UnboundCommand, BoundCommand, CommandKind
 from .code.command_enumerator import UnboundCommandEnumerator
 from .code.command_groups import default_command_groups
@@ -17,6 +19,34 @@ from .code.list_config_ctl import DictListConfigCtl, FlatListConfigCtl
 from .code.ui_model_command import wrap_model_command_to_ui_command
 
 log = logging.getLogger(__name__)
+
+
+class UiCommandEnumFn(ContextFn):
+
+    @classmethod
+    @mark.actor.system_fn_creg
+    def from_piece(cls, piece, system, rpc_system_call_factory):
+        return super().from_piece(piece, system, rpc_system_call_factory)
+
+    @property
+    def piece(self):
+        return htypes.command.ui_command_enum_fn(
+            function=pyobj_creg.actor_to_ref(self._raw_fn),
+            ctx_params=tuple(self._ctx_params),
+            service_params=tuple(self._service_params),
+            )
+
+    def call(self, ctx, **kw):
+        result = super().call(ctx, **kw)
+        return self._prepare_result(result)
+
+    @staticmethod
+    def _prepare_result(result):
+        if result is None:
+            return result
+        if type(result) is list:
+            result = tuple(result)
+        return result
 
 
 class UnboundUiCommand(UnboundCommand):

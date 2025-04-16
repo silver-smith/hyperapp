@@ -24,6 +24,8 @@ ui_command_enumerator = record(command_enumerator)
 model_command_enumerator = record(command_enumerator)
 
 model_command_fn = record(ctx_fn)
+model_command_enum_fn = record(ctx_fn)
+ui_command_enum_fn = record(ctx_fn)
 
 command_result = record:
   model: ref opt

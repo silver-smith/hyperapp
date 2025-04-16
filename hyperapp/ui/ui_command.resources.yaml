@@ -2,12 +2,15 @@
 
 import:
 - base.mark:mark.module
+- base.system_fn:system_fn.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:ui_command
+- legacy_type.command:ui_command_enum_fn
 - legacy_type.command:ui_command_enumerator
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.list_config_ctl:flat_list_config_ctl
@@ -20,6 +23,16 @@ import:
 - ui.list_config_ctl:list_config_ctl.module
 - ui.ui_model_command:ui_model_command.module
 definitions:
+  UiCommandEnumFn:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command.module
+      attr_name: UiCommandEnumFn
+  UiCommandEnumFn.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UiCommandEnumFn
+      attr_name: from_piece
   command_creg-command-ui_command.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -85,6 +98,14 @@ definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
+  system_fn_creg-command-ui_command_enum_fn.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:ui_command_enum_fn
+      function: UiCommandEnumFn.from_piece
+      service_params:
+      - system
+      - rpc_system_call_factory
   ui_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -96,10 +117,13 @@ definitions:
         code.command_groups: ui.command_groups:command_groups.module
         code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
         code.mark: base.mark:mark.module
+        code.system_fn: base.system_fn:system_fn.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.command.ui_command: legacy_type.command:ui_command
+        htypes.command.ui_command_enum_fn: legacy_type.command:ui_command_enum_fn
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
   ui_command_enumerator_from_piece:
     type: legacy_type.builtin:attribute

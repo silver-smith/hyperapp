@@ -17,6 +17,8 @@ def _is_state_param(name):
 
 class CommandTemplateCtr(Constructor):
 
+    _command_fn_t = htypes.command.model_command_fn
+
     def __init__(self, module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args):
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
@@ -131,7 +133,7 @@ class CommandTemplateCtr(Constructor):
             if name_to_res is not None:
                 name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
-        fn = htypes.command.model_command_fn(
+        fn = self._command_fn_t(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
@@ -263,6 +265,7 @@ class UniversalUiCommandTemplateCtr(UntypedCommandTemplateCtr):
 class UiCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 
     _template_ctr_t = htypes.command_resource.ui_command_enumerator_template_ctr
+    _command_fn_t = htypes.command.ui_command_enum_fn
     _is_global = False
     _direct_command_resource_suffix = 'ui-command-enumerator'
 
@@ -287,6 +290,7 @@ class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
 class ModelCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 
     _template_ctr_t = htypes.command_resource.model_command_enumerator_template_ctr
+    _command_fn_t = htypes.command.model_command_enum_fn
     _is_global = False
     _direct_command_resource_suffix = 'model-command-enumerator'
 

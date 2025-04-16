@@ -22,6 +22,19 @@ def sample_command_fn():
         )
 
 
+def _sample_command_enum(model, state, sample_service):
+    return []
+
+
+@mark.fixture
+def sample_command_enum_fn():
+    return htypes.command.model_command_enum_fn(
+        function=pyobj_creg.actor_to_ref(_sample_command_enum),
+        ctx_params=('model', 'state'),
+        service_params=('sample_service',),
+        )
+
+
 @mark.fixture
 def sample_service():
     return 'a-service'
@@ -37,6 +50,13 @@ async def test_command_fn(ctx, sample_command_fn):
     assert fn.piece == sample_command_fn
     result = await fn.call(ctx, model="Sample model", state="Sample state")
     assert isinstance(result, htypes.command.command_result)
+
+
+def test_command_enum_fn(ctx, sample_command_enum_fn):
+    enum = model_command.ModelCommandEnumFn.from_piece(sample_command_enum_fn)
+    assert enum.piece == sample_command_enum_fn
+    result = enum.call(ctx, model="Sample model", state="Sample state")
+    assert type(result) is tuple
 
 
 def test_model_command_from_piece(sample_command_fn):

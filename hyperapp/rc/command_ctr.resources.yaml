@@ -9,12 +9,14 @@ import:
 - legacy_type.command:properties
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
+- legacy_type.command:model_command_enum_fn
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:model_command_fn
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.command:ui_command
 - legacy_type.command:ui_command_enumerator
+- legacy_type.command:ui_command_enum_fn
 - legacy_type.command_resource:arg
 - legacy_type.command_resource:global_model_command_template_ctr
 - legacy_type.command_resource:model_command_enumerator_template_ctr
@@ -41,10 +43,12 @@ definitions:
         htypes.command.properties: legacy_type.command:properties
         htypes.command.model_args_picker_command_enumerator: legacy_type.command:model_args_picker_command_enumerator
         htypes.command.model_command: legacy_type.command:model_command
+        htypes.command.model_command_enum_fn: legacy_type.command:model_command_enum_fn
         htypes.command.model_command_enumerator: legacy_type.command:model_command_enumerator
         htypes.command.open_args_picker_command_d: legacy_type.command:open_args_picker_command_d
         htypes.command.ui_args_picker_command_enumerator: legacy_type.command:ui_args_picker_command_enumerator
         htypes.command.ui_command: legacy_type.command:ui_command
+        htypes.command.ui_command_enum_fn: legacy_type.command:ui_command_enum_fn
         htypes.command.ui_command_enumerator: legacy_type.command:ui_command_enumerator
         htypes.command_resource.arg: legacy_type.command_resource:arg
         htypes.command_resource.global_model_command_template_ctr: legacy_type.command_resource:global_model_command_template_ctr

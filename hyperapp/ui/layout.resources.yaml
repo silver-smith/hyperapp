@@ -10,6 +10,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_enum_fn
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:model_command_fn
 - legacy_type.command_groups:pane_2_d
@@ -63,7 +64,7 @@ definitions:
       object: layout.module
       attr_name: enum_layout_tree_commands
   enum_layout_tree_commands.fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.command:model_command_enum_fn
     value:
       function: enum_layout_tree_commands
       ctx_params:

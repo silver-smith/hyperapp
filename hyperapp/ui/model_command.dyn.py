@@ -27,7 +27,7 @@ def model_command_ctx(ctx, model, model_state):
         )
 
 
-class ModelCommandFn(ContextFn):
+class ModelCommandFnBase(ContextFn):
 
     @classmethod
     @mark.actor.system_fn_creg
@@ -36,11 +36,16 @@ class ModelCommandFn(ContextFn):
 
     @property
     def piece(self):
-        return htypes.command.model_command_fn(
+        return self._fn_t(
             function=pyobj_creg.actor_to_ref(self._raw_fn),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
+
+
+class ModelCommandFn(ModelCommandFnBase):
+
+    _fn_t = htypes.command.model_command_fn
 
     async def call(self, ctx, **kw):
         result = super().call(ctx, **kw)
@@ -63,6 +68,23 @@ class ModelCommandFn(ContextFn):
             model=mosaic.put_opt(model),
             key=mosaic.put_opt(key),
             )
+
+
+class ModelCommandEnumFn(ModelCommandFnBase):
+
+    _fn_t = htypes.command.model_command_enum_fn
+
+    def call(self, ctx, **kw):
+        result = super().call(ctx, **kw)
+        return self._prepare_result(result)
+
+    @staticmethod
+    def _prepare_result(result):
+        if result is None:
+            return result
+        if type(result) is list:
+            result = tuple(result)
+        return result
 
 
 
