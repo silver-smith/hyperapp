@@ -26,9 +26,9 @@ class FnTreeAdapter(TreeAdapter):
             remote_peer = None
         return (remote_peer, model)
 
-    def __init__(self, rpc_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn):
+    def __init__(self, rpc_system_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn):
         super().__init__(model, item_t)
-        self._rpc_call_factory = rpc_call_factory
+        self._rpc_system_call_factory = rpc_system_call_factory
         self._remote_peer = remote_peer
         self._column_names = sorted(self._item_t.fields)
         self._ctx = ctx
@@ -85,17 +85,24 @@ class FnTreeAdapter(TreeAdapter):
             is_lateral = False
             lateral_parent_id = parent_id
             lateral_parent = self._id_to_item[parent_id]
-        item_list, lateral_item_list_list = self._call_servant_wrapper(
-            receiver_peer=remote_peer,
-            sender_identity=self._ctx.identity,
+        wrapper_fn = self._servant_wrapper(self._fn)
+        call_kw = wrapper_fn.call_kw(
             ctx=self._ctx,
-            fn=self._fn,
+            servant_fn_piece=self._fn.piece,
             model=self._model,
             grand_parent=grand_parent,
             is_lateral=is_lateral,
             lateral_parent=lateral_parent,
+            result_mt=pyobj_creg.actor_to_piece(self._remote_result_t),
             **self._parent_model_kw(parent_id),
+            **self._servant_wrapper_kw(),
             )
+        rpc_call = self._rpc_system_call_factory(
+            receiver_peer=remote_peer,
+            sender_identity=self._ctx.identity,
+            fn=wrapper_fn,
+            )
+        item_list, lateral_item_list_list = rpc_call(**call_kw)
         log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._model, parent_id, item_list)
         if item_list:
             self._store_item_list(parent_id, item_list)
@@ -119,33 +126,33 @@ class FnIndexTreeAdapter(FnTreeAdapter, IndexTreeAdapterMixin):
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, rpc_system_call_factory, system_fn_creg, rpc_call_factory, peer_registry, feed_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, rpc_system_call_factory, peer_registry, feed_factory):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         remote_peer, model = cls._resolve_model(peer_registry, model)
-        return cls(rpc_system_call_factory, rpc_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn)
+        return cls(rpc_system_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn)
 
-    def __init__(self, rpc_system_call_factory, rpc_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn):
-        super().__init__(rpc_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn)
-        IndexTreeAdapterMixin.__init__(self, rpc_system_call_factory)
+    def __init__(self, rpc_system_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn):
+        super().__init__(rpc_system_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn)
+        IndexTreeAdapterMixin.__init__(self)
 
 
 class FnKeyTreeAdapter(FnTreeAdapter, KeyTreeAdapterMixin):
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, rpc_system_call_factory, system_fn_creg, rpc_call_factory, peer_registry, feed_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, rpc_system_call_factory, peer_registry, feed_factory):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         remote_peer, model = cls._resolve_model(peer_registry, model)
         key_field_t = pyobj_creg.invite(piece.key_field_t)
-        return cls(rpc_system_call_factory, rpc_call_factory, feed_factory,
+        return cls(rpc_system_call_factory, feed_factory,
                    model, item_t, remote_peer, ctx, fn, piece.key_field, key_field_t)
 
-    def __init__(self, rpc_system_call_factory, rpc_call_factory, feed_factory,
+    def __init__(self, rpc_system_call_factory, feed_factory,
                  model, item_t, remote_peer, ctx, fn, key_field, key_field_t):
-        super().__init__(rpc_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn)
-        KeyTreeAdapterMixin.__init__(self, rpc_system_call_factory, key_field, key_field_t)
+        super().__init__(rpc_system_call_factory, feed_factory, model, item_t, remote_peer, ctx, fn)
+        KeyTreeAdapterMixin.__init__(self, key_field, key_field_t)
 
 
 @mark.actor.ui_type_creg

@@ -67,9 +67,8 @@ definitions:
       t: legacy_type.tree_adapter:fn_index_tree_adapter
       function: FnIndexTreeAdapter.from_piece
       service_params:
-      - rpc_system_call_factory
       - system_fn_creg
-      - rpc_call_factory
+      - rpc_system_call_factory
       - peer_registry
       - feed_factory
   ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template:
@@ -78,9 +77,8 @@ definitions:
       t: legacy_type.tree_adapter:fn_key_tree_adapter
       function: FnKeyTreeAdapter.from_piece
       service_params:
-      - rpc_system_call_factory
       - system_fn_creg
-      - rpc_call_factory
+      - rpc_system_call_factory
       - peer_registry
       - feed_factory
   ui_type_creg-model-index_tree_ui_t.actor-template:
