@@ -5,13 +5,17 @@ from .code.mark import mark
 
 
 @mark.global_command
-async def open_sample_static_text_1():
-    return "Sample text 1"
+async def open_sample_static_text():
+    return "Sample text"
 
 
 @mark.global_command
-async def open_sample_static_text_2():
-    return "Sample text 2"
+async def open_sample_wiki_text():
+    return """
+        Sample wiki text
+        This is ref#[1].
+        And this is ref#[2].
+    """
 
 
 @mark.global_command

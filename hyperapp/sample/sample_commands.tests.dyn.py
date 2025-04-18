@@ -2,13 +2,13 @@ from . import htypes
 from .tested.code import sample_commands
 
 
-async def test_open_sample_static_text_1():
-    text = await sample_commands.open_sample_static_text_1()
+async def test_open_sample_static_text():
+    text = await sample_commands.open_sample_static_text()
     assert text
 
 
-async def test_open_sample_static_text_2():
-    text = await sample_commands.open_sample_static_text_2()
+async def test_open_sample_wiki_text():
+    text = await sample_commands.open_sample_wiki_text()
     assert text
 
 

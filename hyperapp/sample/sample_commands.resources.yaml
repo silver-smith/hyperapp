@@ -75,64 +75,64 @@ definitions:
       name: open_sample_static_list_d
       base: null
       fields: {}
-  open_sample_static_text_1:
+  open_sample_static_text:
     type: legacy_type.builtin:attribute
     value:
       object: sample_commands.module
-      attr_name: open_sample_static_text_1
-  open_sample_static_text_1.d:
-    type: open_sample_static_text_1_d
+      attr_name: open_sample_static_text
+  open_sample_static_text.d:
+    type: open_sample_static_text_d
     value: {}
-  open_sample_static_text_1.fn:
+  open_sample_static_text.fn:
     type: legacy_type.command:model_command_fn
     value:
-      function: open_sample_static_text_1
+      function: open_sample_static_text
       ctx_params: []
       service_params: []
-  open_sample_static_text_1.global-model-command:
+  open_sample_static_text.global-model-command:
     type: legacy_type.command:model_command
     value:
-      d: open_sample_static_text_1.d
+      d: open_sample_static_text.d
       properties:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_sample_static_text_1.fn
-  open_sample_static_text_1_d:
+      system_fn: open_sample_static_text.fn
+  open_sample_static_text_d:
     type: legacy_type.builtin:record_mt
     value:
       module_name: sample_commands
-      name: open_sample_static_text_1_d
+      name: open_sample_static_text_d
       base: null
       fields: {}
-  open_sample_static_text_2:
+  open_sample_wiki_text:
     type: legacy_type.builtin:attribute
     value:
       object: sample_commands.module
-      attr_name: open_sample_static_text_2
-  open_sample_static_text_2.d:
-    type: open_sample_static_text_2_d
+      attr_name: open_sample_wiki_text
+  open_sample_wiki_text.d:
+    type: open_sample_wiki_text_d
     value: {}
-  open_sample_static_text_2.fn:
+  open_sample_wiki_text.fn:
     type: legacy_type.command:model_command_fn
     value:
-      function: open_sample_static_text_2
+      function: open_sample_wiki_text
       ctx_params: []
       service_params: []
-  open_sample_static_text_2.global-model-command:
+  open_sample_wiki_text.global-model-command:
     type: legacy_type.command:model_command
     value:
-      d: open_sample_static_text_2.d
+      d: open_sample_wiki_text.d
       properties:
         is_global: true
         uses_state: false
         remotable: true
-      system_fn: open_sample_static_text_2.fn
-  open_sample_static_text_2_d:
+      system_fn: open_sample_wiki_text.fn
+  open_sample_wiki_text_d:
     type: legacy_type.builtin:record_mt
     value:
       module_name: sample_commands
-      name: open_sample_static_text_2_d
+      name: open_sample_wiki_text_d
       base: null
       fields: {}
   sample_commands.module:
