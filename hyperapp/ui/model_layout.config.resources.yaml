@@ -8,6 +8,9 @@ import:
 - legacy_type.system:system_config
 - legacy_type.text:edit_view
 - legacy_type.ui:model_layout_k
+- legacy_type.wiki:adapter
+- legacy_type.wiki:wiki
+- legacy_type.wiki:wiki_view
 
 definitions:
 
@@ -23,6 +26,7 @@ definitions:
       items:
       - config_item-int.layout-item
       - config_item-string.layout-item
+      - config_item-wiki.layout-item
 
   config_item-int.layout-item:
     type: legacy_type.data_service:config_item
@@ -62,4 +66,24 @@ definitions:
 
   static_str_adapter:
     type: legacy_type.str_adapter:static_str_adapter
+    value: {}
+
+  config_item-wiki.layout-item:
+    type: legacy_type.data_service:config_item
+    value:
+      key: model_layout_k-wiki
+      value: wiki.layout
+
+  model_layout_k-wiki:
+    type: legacy_type.ui:model_layout_k
+    value:
+      model_t: legacy_type.wiki:wiki
+
+  wiki.layout:
+    type: legacy_type.wiki:wiki_view
+    value:
+      adapter: static_wiki_adapter
+
+  static_wiki_adapter:
+    type: legacy_type.wiki:adapter
     value: {}

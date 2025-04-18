@@ -111,8 +111,12 @@ import:
 - ui.qt.text:text_edit.view-factory-template
 - ui.qt.text:text_view.view-factory-template
 - ui.qt.tree:tree-view.view-template
-- ui.qt.wiki:wiki-view.view-template
+- ui.qt.wiki:resource_name_creg-wiki-adapter.actor-template
+- ui.qt.wiki:ui_adapter_creg-wiki-adapter.actor-template
+- ui.qt.wiki:wiki-text_view.view-template
+- ui.qt.wiki:wiki-wiki_view.view-template
 - ui.qt.wiki:wiki.view-factory-template
+- ui.qt.wiki:wiki_text.view-factory-template
 - ui.qt.window:window-view.view-template
 - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
 - ui.qt.window_commands:window-view-quit.command-cfg-item
@@ -290,6 +294,7 @@ definitions:
       - ui.crud.crud:resource_name_creg-crud-layout_k.actor-template
       - ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-template
       - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
+      - ui.qt.wiki:resource_name_creg-wiki-adapter.actor-template
       - ui.str_adapter:resource_name_creg-str_adapter-static_str_adapter.actor-template
       - ui.visualizer:resource_name_creg-ui-model_layout_k.actor-template
   selector_reg:
@@ -365,6 +370,7 @@ definitions:
       - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template
       - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
+      - ui.qt.wiki:ui_adapter_creg-wiki-adapter.actor-template
       - ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-template
       - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template
       - ui.record_field_adapter:ui_adapter_creg-record_field_adapter-record_field_adapter.actor-template
@@ -414,6 +420,7 @@ definitions:
       - ui.qt.text:text_edit.view-factory-template
       - ui.qt.text:text_view.view-factory-template
       - ui.qt.wiki:wiki.view-factory-template
+      - ui.qt.wiki:wiki_text.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -435,7 +442,8 @@ definitions:
       - ui.qt.text:text-edit_view.view-template
       - ui.qt.text:text-readonly_view.view-template
       - ui.qt.tree:tree-view.view-template
-      - ui.qt.wiki:wiki-view.view-template
+      - ui.qt.wiki:wiki-text_view.view-template
+      - ui.qt.wiki:wiki-wiki_view.view-template
       - ui.qt.window:window-view.view-template
   view_ui_command_reg:
     type: legacy_type.system:item_list_config

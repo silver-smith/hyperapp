@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -14,14 +16,26 @@ def ctx():
 
 
 @mark.fixture
-def adapter():
+def str_adapter():
     return htypes.str_adapter.static_str_adapter()
 
 
 @mark.fixture
-def piece(adapter):
-    return htypes.wiki.view(
-        adapter=mosaic.put(adapter),
+def wiki_adapter():
+    return htypes.wiki.adapter()
+
+
+@mark.fixture
+def text_piece(str_adapter):
+    return htypes.wiki.text_view(
+        adapter=mosaic.put(str_adapter),
+        )
+
+
+@mark.fixture
+def wiki_piece(wiki_adapter):
+    return htypes.wiki.wiki_view(
+        adapter=mosaic.put(wiki_adapter),
         )
 
 
@@ -30,21 +44,51 @@ def state():
     return htypes.wiki.state()
 
 
-def test_view(qapp, ctx, piece, state):
-    model = """
-        Sample wiki text
-        This is ref#[1].
-        And this is ref#[2].
-    """
-    view = wiki.WikiView.from_piece(piece, model, ctx)
-    assert view.piece == piece
+@mark.fixture
+def model():
+    return htypes.wiki.wiki(
+        text="Sample value",
+        refs=(),
+        )
+
+
+def test_adapter(ctx, wiki_adapter, model):
+    adapter = wiki.StaticWikiAdapter.from_piece(wiki_adapter, model, ctx)
+    assert adapter.model == model
+    assert adapter.get_text() == model.text
+
+
+def test_adapter_resource_name(wiki_adapter):
+    gen = Mock()
+    name = wiki.static_wiki_adapter_resource_name(wiki_adapter, gen)
+    assert type(name) is str
+
+
+def test_text_view(qapp, ctx, text_piece, state):
+    model = "Sample wiki text"
+    view = wiki.WikiTextView.from_piece(text_piece, model, ctx)
+    assert view.piece == text_piece
     widget = view.construct_widget(state, ctx)
     widget_state = view.widget_state(widget)
     assert isinstance(widget_state, htypes.wiki.state)
     assert widget_state == state
 
 
-def test_view_factory():
+def test_wiki_view(qapp, ctx, wiki_piece, state, model):
+    view = wiki.WikiView.from_piece(wiki_piece, model, ctx)
+    assert view.piece == wiki_piece
+    widget = view.construct_widget(state, ctx)
+    widget_state = view.widget_state(widget)
+    assert isinstance(widget_state, htypes.wiki.state)
+    assert widget_state == state
+
+
+def test_text_view_factory():
     model = "Sample wiki text"
+    piece = wiki.wiki_text(model, adapter=None)
+    assert isinstance(piece, htypes.wiki.text_view)
+
+
+def test_wiki_view_factory(model):
     piece = wiki.wiki(model, adapter=None)
-    assert isinstance(piece, htypes.wiki.view)
+    assert isinstance(piece, htypes.wiki.wiki_view)

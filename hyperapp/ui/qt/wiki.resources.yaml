@@ -9,12 +9,46 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.str_adapter:static_str_adapter
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:template
+- legacy_type.wiki:adapter
 - legacy_type.wiki:state
-- legacy_type.wiki:view
+- legacy_type.wiki:text_view
+- legacy_type.wiki:wiki
+- legacy_type.wiki:wiki_view
 - ui.view.view:view.module
 definitions:
+  StaticWikiAdapter:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: StaticWikiAdapter
+  StaticWikiAdapter.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: StaticWikiAdapter
+      attr_name: from_piece
+  WikiTextView:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: WikiTextView
+  WikiTextView.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: WikiTextView
+      attr_name: from_piece
+  WikiTextView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: WikiTextView.from_piece
+      ctx_params:
+      - piece
+      - model
+      - ctx
+      service_params:
+      - ui_adapter_creg
   WikiView:
     type: legacy_type.builtin:attribute
     value:
@@ -35,15 +69,37 @@ definitions:
       - ctx
       service_params:
       - ui_adapter_creg
+  resource_name_creg-wiki-adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.wiki:adapter
+      function: static_wiki_adapter_resource_name
+      service_params: []
+  static_wiki_adapter_resource_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: static_wiki_adapter_resource_name
+  ui_adapter_creg-wiki-adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.wiki:adapter
+      function: StaticWikiAdapter.from_piece
+      service_params: []
   wiki:
     type: legacy_type.builtin:attribute
     value:
       object: wiki.module
       attr_name: wiki
-  wiki-view.view-template:
+  wiki-text_view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
-      t: legacy_type.wiki:view
+      t: legacy_type.wiki:text_view
+      system_fn: WikiTextView_from_piece.system-fn
+  wiki-wiki_view.view-template:
+    type: legacy_type.cfg_item:typed_fn_cfg_item
+    value:
+      t: legacy_type.wiki:wiki_view
       system_fn: WikiView_from_piece.system-fn
   wiki.k:
     type: wiki_k
@@ -58,7 +114,8 @@ definitions:
         code.view: ui.view.view:view.module
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.wiki.state: legacy_type.wiki:state
-        htypes.wiki.view: legacy_type.wiki:view
+        htypes.wiki.text_view: legacy_type.wiki:text_view
+        htypes.wiki.wiki_view: legacy_type.wiki:wiki_view
         services.mosaic: builtins:mosaic.service
   wiki.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -72,9 +129,9 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: wiki.k
-      model_t: legacy_type.builtin:string
+      model_t: legacy_type.wiki:wiki
       ui_t_t: null
-      view_t: legacy_type.wiki:view
+      view_t: legacy_type.wiki:wiki_view
       is_wrapper: false
       view_ctx_params:
       - piece
@@ -86,5 +143,41 @@ definitions:
     value:
       module_name: wiki
       name: wiki_k
+      base: null
+      fields: {}
+  wiki_text:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: wiki_text
+  wiki_text.k:
+    type: wiki_text_k
+    value: {}
+  wiki_text.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: wiki_text
+      ctx_params:
+      - piece
+      - adapter
+      service_params: []
+  wiki_text.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: wiki_text.k
+      model_t: legacy_type.builtin:string
+      ui_t_t: null
+      view_t: legacy_type.wiki:text_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: wiki_text.system-fn
+  wiki_text_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki
+      name: wiki_text_k
       base: null
       fields: {}

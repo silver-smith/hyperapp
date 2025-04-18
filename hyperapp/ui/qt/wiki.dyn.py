@@ -14,7 +14,38 @@ from .code.view import View
 log = logging.getLogger(__name__)
 
 
-class WikiView(View):
+class StaticWikiAdapter:
+
+    @classmethod
+    @mark.actor.ui_adapter_creg
+    def from_piece(cls, piece, model, ctx):
+        return cls(model)
+
+    def __init__(self, wiki):
+        self._wiki = wiki
+
+    @property
+    def model(self):
+        return self._wiki
+
+    def get_text(self):
+        return self._wiki.text
+
+    def text_to_value(self, text):
+        return text
+
+    def value_changed(self, new_value):
+        if new_value == self._wiki:
+            return
+        log.debug("Static wiki adapter: Ignoring new value: %r", new_value)
+
+
+@mark.actor.resource_name_creg
+def static_wiki_adapter_resource_name(piece, gen):
+    return 'static_wiki_adapter'
+
+
+class WikiTextView(View):
 
     @classmethod
     @mark.view
@@ -29,7 +60,7 @@ class WikiView(View):
 
     @property
     def piece(self):
-        return htypes.wiki.view(
+        return htypes.wiki.text_view(
             adapter=self._adapter_ref,
             )
 
@@ -60,7 +91,7 @@ class WikiView(View):
         return self._adapter.text_to_value(text)
 
     def _on_anchor_clicked(self, url):
-        log.info('Wiki view: Anchor clicked: url.path=%r', url.path())
+        log.info('Wiki text view: Anchor clicked: url.path=%r', url.path())
 
     def _text_to_html(self, text):
         return docutils.core.publish_string(
@@ -70,10 +101,32 @@ class WikiView(View):
             ).decode()
 
 
+class WikiView(WikiTextView):
+
+    @property
+    def piece(self):
+        return htypes.wiki.wiki_view(
+            adapter=self._adapter_ref,
+            )
+
+    def _on_anchor_clicked(self, url):
+        log.info('Wiki view: Anchor clicked: url.path=%r', url.path())
+
+
+
+@mark.view_factory.model_t
+def wiki_text(piece, adapter=None):
+    if adapter is None:
+        adapter = htypes.str_adapter.static_str_adapter()
+    return htypes.wiki.text_view(
+        adapter=mosaic.put(adapter),
+        )
+
+
 @mark.view_factory.model_t
 def wiki(piece, adapter=None):
     if adapter is None:
         adapter = htypes.str_adapter.static_str_adapter()
-    return htypes.wiki.view(
+    return htypes.wiki.wiki_view(
         adapter=mosaic.put(adapter),
         )

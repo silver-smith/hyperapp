@@ -1,4 +1,13 @@
-view = record:
+wiki = record:
+  text: string
+  refs: ref list
+
+adapter = record
+
+text_view = record:
+  adapter: ref
+
+wiki_view = record:
   adapter: ref
 
 state = record

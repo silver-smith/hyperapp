@@ -12,11 +12,15 @@ async def open_sample_static_text():
 
 @mark.global_command
 async def open_sample_wiki_text():
-    return textwrap.dedent("""
+    text = textwrap.dedent("""
         Sample wiki text
         This is `ref#1 <1>`_.
         And this is `ref#2 <2>`_.
         """)
+    return htypes.wiki.wiki(
+        text=text,
+        refs=(),
+        )
 
 
 @mark.global_command
