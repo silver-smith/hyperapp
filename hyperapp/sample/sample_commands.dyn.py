@@ -1,4 +1,5 @@
 import os
+import textwrap
 
 from . import htypes
 from .code.mark import mark
@@ -11,11 +12,11 @@ async def open_sample_static_text():
 
 @mark.global_command
 async def open_sample_wiki_text():
-    return """
+    return textwrap.dedent("""
         Sample wiki text
-        This is ref#[1].
-        And this is ref#[2].
-    """
+        This is `ref#1 <1>`_.
+        And this is `ref#2 <2>`_.
+        """)
 
 
 @mark.global_command

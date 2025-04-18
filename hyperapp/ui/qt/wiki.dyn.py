@@ -1,6 +1,7 @@
 import logging
-import re
 
+import docutils_tinyhtml
+import docutils.core
 from PySide6 import QtWidgets
 
 from . import htypes
@@ -62,7 +63,11 @@ class WikiView(View):
         log.info('Wiki view: Anchor clicked: url.path=%r', url.path())
 
     def _text_to_html(self, text):
-        return re.sub(r'\[([^\]]+)\]', r'<a href="\1">\1</a>', text or '')
+        return docutils.core.publish_string(
+            text,
+            writer=docutils_tinyhtml.Writer(),
+            writer_name='html',
+            ).decode()
 
 
 @mark.view_factory.model_t
