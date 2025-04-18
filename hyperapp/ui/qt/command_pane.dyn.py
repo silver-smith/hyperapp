@@ -85,7 +85,7 @@ class CommandPaneView(View):
     def _make_button(self, cmd, used_shortcuts):
         text = command_text(self._format, cmd)
         shortcut = self._shortcut_reg.get(cmd.d)
-        if shortcut:
+        if shortcut and shortcut not in used_shortcuts:
             text += f' ({shortcut})'
         button = QtWidgets.QPushButton(
             text, focusPolicy=QtCore.Qt.NoFocus, enabled=cmd.enabled)
