@@ -233,6 +233,11 @@ definitions:
     value:
       t: legacy_type.ref_list:model
       command: open_parent.model-command
+  ref_list-model-remove.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.ref_list:model
+      command: remove.model-command
   ref_list-model.key-list-ui-t:
     type: legacy_type.model:key_list_ui_t
     value:
@@ -286,6 +291,39 @@ definitions:
     value:
       object: ref_list.module
       attr_name: ref_list_model
+  remove:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_list.module
+      attr_name: remove
+  remove.d:
+    type: remove_d
+    value: {}
+  remove.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: remove
+      ctx_params:
+      - piece
+      - current_id
+      service_params:
+      - ref_list
+  remove.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: remove.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: remove.fn
+  remove_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: ref_list
+      name: remove_d
+      base: null
+      fields: {}
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

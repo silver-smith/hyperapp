@@ -69,6 +69,7 @@ import:
 - models.ref_list:ref_list-model-add_ref.command-cfg-item
 - models.ref_list:ref_list-model-open.command-cfg-item
 - models.ref_list:ref_list-model-open_parent.command-cfg-item
+- models.ref_list:ref_list-model-remove.command-cfg-item
 - models.ref_list:ref_list-model.model-cfg-item
 - models.ref_list:ref_list.service
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
@@ -164,6 +165,7 @@ definitions:
       - models.peer_list:peer_list-model-remove.command-cfg-item
       - models.ref_list:ref_list-model-open.command-cfg-item
       - models.ref_list:ref_list-model-open_parent.command-cfg-item
+      - models.ref_list:ref_list-model-remove.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
   model_reg:
     type: legacy_type.system:item_list_config

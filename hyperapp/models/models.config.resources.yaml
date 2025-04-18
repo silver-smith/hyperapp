@@ -45,6 +45,7 @@ import:
 - models.ref_list:open.d
 - models.ref_list:open_parent.d
 - models.ref_list:open_ref_list.d
+- models.ref_list:remove.d
 - models.show_current_context:show_current_context.d
 definitions:
   bool-false:
@@ -271,6 +272,11 @@ definitions:
     value:
       key: models.ref_list:open_ref_list.d
       value: shortcut_Alt_R
+  config_item-models.ref_list-remove.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.ref_list:remove.d
+      value: shortcut_Del
   config_item-models.show_current_context-show_current_context.d:
     type: legacy_type.data_service:config_item
     value:
@@ -390,6 +396,7 @@ definitions:
       - config_item-models.ref_list-add_ref.open-d
       - config_item-models.ref_list-add_folder.commit-d
       - config_item-canned_arg_command_d_1
+      - config_item-models.ref_list-remove.d
   static_str_adapter:
     type: legacy_type.str_adapter:static_str_adapter
     value: {}

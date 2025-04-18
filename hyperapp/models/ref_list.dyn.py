@@ -47,6 +47,14 @@ class RefList:
         self._ensure_loaded()
         return self._refs[item_id]
 
+    def remove(self, item_id):
+        self._ensure_loaded()
+        try:
+            del self._folders[item_id]
+        except KeyError:
+            del self._refs[item_id]
+        self._save()
+
     def append_folder(self, parent_id, name):
         self._ensure_loaded()
         folder = htypes.ref_list.folder(
@@ -140,6 +148,11 @@ def add_folder(piece, name, ref_list):
 def add_ref(piece, ref, ref_list):
     ref_id = ref_list.append_ref(piece.parent_id, ref)
     return (None, ref_id)
+
+
+@mark.command
+def remove(piece, current_id, ref_list):
+    ref_list.remove(current_id)
 
 
 @mark.global_command

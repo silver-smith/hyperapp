@@ -101,6 +101,11 @@ def test_add_ref(folder_2_model, file_bundle_factory):
     file_bundle_factory.save_piece.assert_called_once()
 
 
+def test_remove_folder(root_model, file_bundle_factory):
+    ref_list.remove(root_model, 'folder_1')
+    file_bundle_factory.save_piece.assert_called_once()
+
+
 def test_formatter(folder_2_model):
     text = ref_list.format_model(folder_2_model)
     assert text == "Ref list: /Folder 2/"
