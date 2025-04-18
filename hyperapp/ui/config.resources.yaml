@@ -111,6 +111,8 @@ import:
 - ui.qt.text:text_edit.view-factory-template
 - ui.qt.text:text_view.view-factory-template
 - ui.qt.tree:tree-view.view-template
+- ui.qt.wiki:wiki-view.view-template
+- ui.qt.wiki:wiki.view-factory-template
 - ui.qt.window:window-view.view-template
 - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
 - ui.qt.window_commands:window-view-quit.command-cfg-item
@@ -411,6 +413,7 @@ definitions:
       - ui.qt.line_edit:line_view.view-factory-template
       - ui.qt.text:text_edit.view-factory-template
       - ui.qt.text:text_view.view-factory-template
+      - ui.qt.wiki:wiki.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -432,6 +435,7 @@ definitions:
       - ui.qt.text:text-edit_view.view-template
       - ui.qt.text:text-readonly_view.view-template
       - ui.qt.tree:tree-view.view-template
+      - ui.qt.wiki:wiki-view.view-template
       - ui.qt.window:window-view.view-template
   view_ui_command_reg:
     type: legacy_type.system:item_list_config

@@ -1,0 +1,90 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:mosaic.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.builtin:string
+- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.str_adapter:static_str_adapter
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:template
+- legacy_type.wiki:state
+- legacy_type.wiki:view
+- ui.view.view:view.module
+definitions:
+  WikiView:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: WikiView
+  WikiView.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: WikiView
+      attr_name: from_piece
+  WikiView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: WikiView.from_piece
+      ctx_params:
+      - piece
+      - model
+      - ctx
+      service_params:
+      - ui_adapter_creg
+  wiki:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: wiki
+  wiki-view.view-template:
+    type: legacy_type.cfg_item:typed_fn_cfg_item
+    value:
+      t: legacy_type.wiki:view
+      system_fn: WikiView_from_piece.system-fn
+  wiki.k:
+    type: wiki_k
+    value: {}
+  wiki.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: wiki
+      file_name: wiki.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        code.view: ui.view.view:view.module
+        htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
+        htypes.wiki.state: legacy_type.wiki:state
+        htypes.wiki.view: legacy_type.wiki:view
+        services.mosaic: builtins:mosaic.service
+  wiki.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: wiki
+      ctx_params:
+      - piece
+      - adapter
+      service_params: []
+  wiki.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: wiki.k
+      model_t: legacy_type.builtin:string
+      ui_t_t: null
+      view_t: legacy_type.wiki:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: wiki.system-fn
+  wiki_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki
+      name: wiki_k
+      base: null
+      fields: {}
