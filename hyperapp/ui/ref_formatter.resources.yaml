@@ -1,0 +1,30 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:ref
+- legacy_type.system:actor_template
+definitions:
+  format_ref:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_formatter.module
+      attr_name: format_ref
+  formatter_creg-builtin-ref.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.builtin:ref
+      function: format_ref
+      service_params:
+      - format
+  ref_formatter.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: ref_formatter
+      file_name: ref_formatter.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        services.web: builtins:web.service
