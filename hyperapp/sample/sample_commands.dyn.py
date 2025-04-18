@@ -2,6 +2,9 @@ import os
 import textwrap
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 
 
@@ -17,9 +20,17 @@ async def open_sample_wiki_text():
         This is `ref#1 <1>`_.
         And this is `ref#2 <2>`_.
         """)
+    ref_items = tuple([
+        htypes.sample_list.item(1, "First", "First item"),
+        htypes.sample_list.item(2, "Second", "Second item"),
+        htypes.sample_list.item(3, "Third", "Third item"),
+        ])
     return htypes.wiki.wiki(
         text=text,
-        refs=(),
+        refs=(
+            htypes.wiki.wiki_ref('1', mosaic.put("Ref 1 target text")),
+            htypes.wiki.wiki_ref('2', mosaic.put(ref_items)),
+            ),
         )
 
 

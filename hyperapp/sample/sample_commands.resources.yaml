@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
@@ -13,6 +14,7 @@ import:
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_tree:sample_tree
 - legacy_type.wiki:wiki
+- legacy_type.wiki:wiki_ref
 definitions:
   details:
     type: legacy_type.builtin:attribute
@@ -146,6 +148,8 @@ definitions:
         htypes.sample_commands.system_info_item: legacy_type.sample_commands:system_info_item
         htypes.sample_list.item: legacy_type.sample_list:item
         htypes.wiki.wiki: legacy_type.wiki:wiki
+        htypes.wiki.wiki_ref: legacy_type.wiki:wiki_ref
+        services.mosaic: builtins:mosaic.service
   sample_list-sample_list-details.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

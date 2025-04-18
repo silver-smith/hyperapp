@@ -7,6 +7,7 @@ from PySide6 import QtWidgets
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code.mark import mark
 from .code.view import View
@@ -23,6 +24,10 @@ class StaticWikiAdapter:
 
     def __init__(self, wiki):
         self._wiki = wiki
+        self._id_to_ref = {
+          ref.id: ref.target
+          for ref in wiki.refs
+          }
 
     @property
     def model(self):
@@ -31,6 +36,9 @@ class StaticWikiAdapter:
     def get_text(self):
         return self._wiki.text
 
+    def get_ref(self, id):
+        return self._id_to_ref[id]
+      
     def text_to_value(self, text):
         return text
 
@@ -103,6 +111,18 @@ class WikiTextView(View):
 
 class WikiView(WikiTextView):
 
+    @classmethod
+    @mark.view
+    def from_piece(cls, piece, model, ctx, ui_adapter_creg, view_reg, visualizer):
+        adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
+        return cls(view_reg, visualizer, piece.adapter, adapter, ctx)
+
+    def __init__(self, view_reg, visualizer, adapter_ref, adapter, ctx):
+        super().__init__(adapter_ref, adapter)
+        self._view_reg = view_reg
+        self._visualizer = visualizer
+        self._ctx = ctx
+
     @property
     def piece(self):
         return htypes.wiki.wiki_view(
@@ -111,7 +131,21 @@ class WikiView(WikiTextView):
 
     def _on_anchor_clicked(self, url):
         log.info('Wiki view: Anchor clicked: url.path=%r', url.path())
+        self._open_ref(url.path())
 
+    def _open_ref(self, ref_id):
+        target_ref = self._adapter.get_ref(ref_id)
+        model = web.summon(target_ref)
+        log.info('Wiki view: Open target: %r', model)
+        navigator_rec = self._ctl_hook.navigator
+        navigator_w = navigator_rec.widget_wr()
+        if navigator_w is None:
+            raise RuntimeError("Navigator widget is gone")
+        view_piece = self._visualizer(self._ctx, model)
+        model_ctx = self._ctx.clone_with(model=model)
+        view = self._view_reg.animate(view_piece, model_ctx)
+        log.info("Wiki view: visualizing with view: %s", view)
+        navigator_rec.view.open(self._ctx, model, view, navigator_w)
 
 
 @mark.view_factory.model_t

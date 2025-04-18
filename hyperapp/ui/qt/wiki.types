@@ -1,6 +1,10 @@
+wiki_ref = record:
+  id: string
+  target: ref
+
 wiki = record:
   text: string
-  refs: ref list
+  refs: wiki_ref list
 
 adapter = record
 
