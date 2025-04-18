@@ -43,11 +43,17 @@ class CannedArgsCommandFn:
         return self._commit_fn.missing_params(ctx, **kw) - self._args.keys()
 
     async def call(self, ctx, **kw):
-        call_kw = self.call_kw(ctx, **kw)
-        return await self._commit_fn.call(ctx, **call_kw)
+        call_ctx = ctx.clone_with(
+            **self.call_kw(ctx, **kw),
+            )
+        return await self._commit_fn.call(call_ctx)
 
     def call_kw(self, ctx, **kw):
-        return self._commit_fn.call_kw(ctx, **kw, **self._args)
+        call_ctx = ctx.clone_with(
+            **kw,
+            **self._args,
+            )
+        return self._commit_fn.call_kw(call_ctx)
 
 
 def _pretify_arg_value(format, value):
