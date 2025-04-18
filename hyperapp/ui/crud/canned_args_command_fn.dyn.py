@@ -42,9 +42,9 @@ class CannedArgsCommandFn:
     def missing_params(self, ctx, **kw):
         return self._commit_fn.missing_params(ctx, **kw) - self._args.keys()
 
-    def call(self, ctx, **kw):
+    async def call(self, ctx, **kw):
         call_kw = self.call_kw(ctx, **kw)
-        return self._commit_fn.call(ctx, **call_kw)
+        return await self._commit_fn.call(ctx, **call_kw)
 
     def call_kw(self, ctx, **kw):
         return self._commit_fn.call_kw(ctx, **kw, **self._args)

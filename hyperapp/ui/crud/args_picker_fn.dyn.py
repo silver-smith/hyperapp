@@ -74,14 +74,14 @@ class ArgsPickerFn:
             args['element_idx'] = ctx.element_idx
         return args
 
-    def call(self, ctx, **kw):
+    async def call(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
-        return self._open(
+        return await self._open(
             navigator_rec=ctx_kw['navigator'],
             ctx=ctx,
             )
 
-    def _open(self, navigator_rec, ctx):
+    async def _open(self, navigator_rec, ctx):
         if len(self._required_args) > 1:
             required_str = ', '.join(name for name, t in self._required_args.items())
             raise RuntimeError(f"More than 1 args to pick is not supported: {required_str}")
@@ -93,7 +93,7 @@ class ArgsPickerFn:
         except KeyError:
             get_default_fn = None
         commit_args = {**self._args, **self._can_crud_args(ctx)}
-        return self._crud.open_view(
+        return await self._crud.open_view(
             navigator_rec=navigator_rec,
             ctx=ctx,
             value_t=value_t,

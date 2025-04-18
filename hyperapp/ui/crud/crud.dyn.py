@@ -141,21 +141,21 @@ class CrudOpenFn:
         ctx_kw = {**ctx.as_dict(), **kw}
         return self._required_kw - ctx_kw.keys()
 
-    def call(self, ctx, **kw):
+    async def call(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
-        return self._open(
+        return await self._open(
             navigator_rec=ctx_kw['navigator'],
             model=ctx_kw['model'],
             current_item=ctx_kw['current_item'],
             ctx=ctx,
             )
 
-    def _open(self, navigator_rec, model, current_item, ctx):
+    async def _open(self, navigator_rec, model, current_item, ctx):
         args = {
             name: getattr(current_item, name)
             for name in self._key_fields
             }
-        self._crud.open_view(
+        await self._crud.open_view(
             navigator_rec=navigator_rec,
             ctx=ctx,
             value_t=self._value_t,
@@ -227,7 +227,7 @@ class Crud:
             commit_command_d=mosaic.put(commit_command_d),
             )
 
-    def open_view(
+    async def open_view(
             self,
             navigator_rec,
             ctx,
@@ -254,7 +254,7 @@ class Crud:
                 value = None
             else:
                 value = self._run_init(ctx, init_action_fn, model, init_args)
-            selector_result = get_fn.call(ctx, value=value)
+            selector_result = await get_fn.call(ctx, value=value)
             selector_model, key = split_command_result(selector_result)
             base_view_piece = self._visualizer(ctx, selector_model)
             new_model = selector_model
