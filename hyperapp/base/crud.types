@@ -6,6 +6,7 @@ view = record:
   base_view: ref
   label: string
   model: ref opt  # Real model - base model for crud get and post commands.
+  remote_peer: ref opt
   commit_command_d: ref
   args: arg list
   pick_fn: ref opt

@@ -2,6 +2,7 @@ from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.context import Context
 from .tested.code import canned_args_command_fn
@@ -12,7 +13,7 @@ async def _sample_fn(arg):
 
 
 async def test_command(partial_ref):
-    commit_fn = htypes.system_fn.ctx_fn(
+    commit_fn = htypes.command.model_command_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
         ctx_params=('arg',),
         service_params=(),
@@ -28,7 +29,8 @@ async def test_command(partial_ref):
     ctx = Context()
     assert not fn.missing_params(ctx)
     result = await fn.call(ctx)
-    assert result == 'result: sample-value'
+    result_model = web.summon(result.model)
+    assert result_model == 'result: sample-value'
 
 
 def test_format_d():

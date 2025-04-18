@@ -42,22 +42,24 @@ class CrudContextView(ContextView):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, system_fn_creg, view_reg, model_layout_reg, crud):
+    def from_piece(cls, piece, ctx, system_fn_creg, peer_registry, view_reg, model_layout_reg, crud):
         base_view = view_reg.invite(piece.base_view, ctx)
         model = web.summon_opt(piece.model)
+        remote_peer = peer_registry.invite_opt(piece.remote_peer)
         commit_command_d = web.summon(piece.commit_command_d)
         return cls(
-            system_fn_creg, model_layout_reg, crud, base_view, piece.label, model,
+            system_fn_creg, model_layout_reg, crud, base_view, piece.label, model, remote_peer,
             commit_command_d, _args_tuple_to_dict(piece.args), piece.pick_fn, piece.commit_fn, piece.commit_value_field)
 
     def __init__(
-            self, system_fn_creg, model_layout_reg, crud, base_view, label, model,
+            self, system_fn_creg, model_layout_reg, crud, base_view, label, model, remote_peer,
             commit_command_d, args, pick_fn_ref, commit_fn_ref, commit_value_field):
         super().__init__(base_view, label)
         self._system_fn_creg = system_fn_creg
         self._model_layout_reg = model_layout_reg
         self._crud = crud
         self._model = model
+        self._remote_peer = remote_peer
         self._commit_command_d = commit_command_d
         self._args = args
         self._pick_fn_ref = pick_fn_ref
@@ -71,6 +73,7 @@ class CrudContextView(ContextView):
             base_view=mosaic.put(self._base_view.piece),
             label=self._label,
             model=mosaic.put_opt(self._model),
+            remote_peer=mosaic.put(self._remote_peer.piece) if self._remote_peer else None,
             commit_command_d=mosaic.put(self._commit_command_d),
             args=_args_dict_to_tuple(self._args),
             pick_fn=self._pick_fn_ref,
@@ -94,7 +97,7 @@ class CrudContextView(ContextView):
         pick_fn = self._system_fn_creg.invite_opt(self._pick_fn_ref)
         commit_fn = self._system_fn_creg.invite(self._commit_fn_ref)
         return UnboundCrudCommitCommand(
-            self._crud, self._commit_command_d, self._model, self._args, pick_fn, commit_fn, self._commit_value_field)
+            self._crud, self._remote_peer, self._commit_command_d, self._model, self._args, pick_fn, commit_fn, self._commit_value_field)
 
 
 class CrudOpenFn:
@@ -238,6 +241,7 @@ class Crud:
             commit_action_fn_ref,
             commit_value_field,
             model,
+            remote_peer=None,
             init_args=None,
             commit_args=None,
             ):
@@ -283,6 +287,7 @@ class Crud:
             base_view=mosaic.put(base_view_piece),
             label=label,
             model=mosaic.put(model),
+            remote_peer=mosaic.put(remote_peer.piece) if remote_peer else None,
             commit_command_d=mosaic.put(commit_command_d),
             args=_args_dict_to_tuple(commit_args),
             pick_fn=mosaic.put(pick_fn.piece) if pick_fn else None,
@@ -341,9 +346,10 @@ def crud(canned_ctl_item_factory, system_fn_creg, visualizer, view_reg, selector
 
 class UnboundCrudCommitCommand(UnboundCommandBase):
 
-    def __init__(self, crud, d, model, args, pick_fn, commit_fn, commit_value_field):
+    def __init__(self, crud, remote_peer, d, model, args, pick_fn, commit_fn, commit_value_field):
         super().__init__(d)
         self._crud = crud
+        self._remote_peer = remote_peer
         self._model = model
         self._args = args
         self._pick_fn = pick_fn
@@ -360,14 +366,16 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
 
     def bind(self, ctx):
         return BoundCrudCommitCommand(
-            self._crud, self._d, self.properties, self._model, self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
+            self._crud, self._remote_peer, self._d, self.properties, self._model,
+            self._args, self._pick_fn, self._commit_fn, self._commit_value_field, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
 
-    def __init__(self, crud, d, properties, model, args, pick_fn, commit_fn, commit_value_field, ctx):
+    def __init__(self, crud, remote_peer, d, properties, model, args, pick_fn, commit_fn, commit_value_field, ctx):
         super().__init__(d, ctx)
         self._crud = crud
+        self._remote_peer = remote_peer
         self._properties = properties
         self._model = model
         self._args = args
@@ -405,7 +413,7 @@ class BoundCrudCommitCommand(BoundCommandBase):
             self._ctx, self._model, self._args,
             kw={self._commit_value_field: value},
             )
-        result = self._commit_fn.call(fn_ctx)
+        result = self._commit_fn.call(fn_ctx, remote_peer=self._remote_peer)
         if inspect.iscoroutine(result):
             result = await result
         return result

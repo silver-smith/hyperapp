@@ -74,14 +74,15 @@ class ArgsPickerFn:
             args['element_idx'] = ctx.element_idx
         return args
 
-    async def call(self, ctx, **kw):
+    async def call(self, ctx, remote_peer=None, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
         return await self._open(
             navigator_rec=ctx_kw['navigator'],
             ctx=ctx,
+            remote_peer=remote_peer,
             )
 
-    async def _open(self, navigator_rec, ctx):
+    async def _open(self, navigator_rec, ctx, remote_peer):
         if len(self._required_args) > 1:
             required_str = ', '.join(name for name, t in self._required_args.items())
             raise RuntimeError(f"More than 1 args to pick is not supported: {required_str}")
@@ -103,6 +104,7 @@ class ArgsPickerFn:
             commit_action_fn_ref=mosaic.put(self._commit_fn.piece),
             commit_value_field=value_field,
             model=commit_args.get('model'),
+            remote_peer=remote_peer,
             commit_args=commit_args,
             )
 

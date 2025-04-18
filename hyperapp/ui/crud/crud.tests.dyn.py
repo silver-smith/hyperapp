@@ -135,6 +135,7 @@ def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, commit_co
         base_view=mosaic.put(base_view_piece),
         label="Sample CRUD context",
         model=mosaic.put(model),
+        remote_peer=None,
         commit_command_d=mosaic.put(commit_command_d),
         args=(htypes.crud.arg('id', mosaic.put(item_id)),),
         pick_fn=mosaic.put_opt(pick_fn),
@@ -165,7 +166,7 @@ def model_layout_reg(commit_command_layout_k):
     return reg
 
 
-async def test_context_view(view_reg, model_layout_reg, qapp, ctx, view_piece_ctr):
+async def test_crud_context_view(view_reg, model_layout_reg, qapp, ctx, view_piece_ctr):
     piece = view_piece_ctr(11, pick_fn=None)
     view = crud.CrudContextView.from_piece(piece, ctx)
     state = None
