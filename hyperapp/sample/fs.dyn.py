@@ -11,26 +11,25 @@ log = logging.getLogger(__name__)
 def fs_model(piece, current_path):
     fs_dir = Path('/').joinpath(*current_path)
     log.info("FS: loading dir: %s", fs_dir)
-    if not fs_dir.is_dir():
-        return []
     try:
-        kid_list = list(fs_dir.iterdir())
+        if not fs_dir.is_dir():
+            return []
+        item_list = []
+        for item_path in fs_dir.iterdir():
+            if item_path.name.startswith('.'):
+                continue
+            if item_path.is_file():
+                size = item_path.stat().st_size
+            else:
+                size = None
+            item = htypes.fs.item(
+                name=item_path.name,
+                size=size,
+                )
+            item_list.append(item)
+        return item_list
     except PermissionError:
         return []
-    item_list = []
-    for item_path in kid_list:
-        if item_path.name.startswith('.'):
-            continue
-        if item_path.is_file():
-            size = item_path.stat().st_size
-        else:
-            size = None
-        item = htypes.fs.item(
-            name=item_path.name,
-            size=size,
-            )
-        item_list.append(item)
-    return item_list
 
 
 @mark.global_command
