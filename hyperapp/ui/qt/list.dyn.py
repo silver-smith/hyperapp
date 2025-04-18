@@ -160,9 +160,9 @@ class ListView(View):
             )
 
     def _model_state(self, widget):
-        if not self._adapter.row_count():
-            return None
         idx = widget.currentIndex().row()
+        if idx >= self._adapter.row_count():
+            return None
         current_item = self._adapter.get_item(idx)
         return self._adapter.make_model_state(current_idx=idx, current_item=current_item)
 
