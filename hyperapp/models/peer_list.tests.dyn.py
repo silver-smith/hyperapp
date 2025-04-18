@@ -9,8 +9,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.system_fn import ContextFn
-from .code.model_command import UnboundModelCommand
+from .code.model_command import ModelCommandFn, UnboundModelCommand
 from .fixtures import feed_fixtures
 from .tested.code import peer_list
 
@@ -106,7 +105,7 @@ def command_d():
 
 @mark.config_fixture('global_model_command_reg')
 def global_model_command_reg_config(rpc_system_call_factory, command_d):
-    fn = ContextFn(
+    fn = ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
@@ -140,11 +139,11 @@ def ctx(identity):
         )
 
 
-async def test_run_global_command(identity, ctx, piece, current_item, command_d):
+async def test_run_global_command(ctx, piece, current_item, command_d):
     command = htypes.global_commands.command_arg(
         d=mosaic.put(command_d),
         )
-    result = await peer_list.run_command(piece, current_item, command, identity, ctx)
+    result = await peer_list.run_command(piece, current_item, command, ctx)
     assert result == "Sample result"
 
 
@@ -152,7 +151,7 @@ async def test_open_model(ctx, piece, current_item, command_d):
     command = htypes.global_commands.command_arg(
         d=mosaic.put(command_d),
         )
-    remote_model, key = await peer_list.open_model(piece, current_item, command, identity, ctx)
+    remote_model, key = await peer_list.open_model(piece, current_item, command, ctx)
     assert isinstance(remote_model, htypes.model.remote_model)
 
 

@@ -43,7 +43,6 @@ definitions:
       function: remote_command_enum
       ctx_params:
       - piece
-      - identity
       - ctx
       service_params:
       - peer_registry
@@ -64,11 +63,9 @@ definitions:
       name: remote_command_from_model_command
       ctl: system-dict_config_ctl.ctl
       function: remote_command_from_model_command
-      service_params:
-      - rpc_system_call_factory
+      service_params: []
       want_config: false
       free_params:
-      - identity
       - remote_peer
       - command
   system-dict_config_ctl.ctl:

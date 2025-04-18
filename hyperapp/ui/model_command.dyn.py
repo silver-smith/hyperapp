@@ -47,7 +47,15 @@ class ModelCommandFn(ModelCommandFnBase):
 
     _fn_t = htypes.command.model_command_fn
 
-    async def call(self, ctx, **kw):
+    async def call(self, ctx, remote_peer=None, **kw):
+        if remote_peer:
+            rpc_call = self._rpc_system_call_factory(
+                receiver_peer=remote_peer,
+                sender_identity=ctx.identity,
+                fn=self,
+                )
+            kw = self.call_kw(ctx)
+            return rpc_call(**kw)
         result = super().call(ctx, **kw)
         if inspect.iscoroutine(result):
             result = await result

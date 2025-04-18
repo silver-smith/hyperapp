@@ -102,7 +102,6 @@ definitions:
       - piece
       - current_item
       - command
-      - identity
       - ctx
       service_params:
       - peer_registry
@@ -300,7 +299,6 @@ definitions:
       - piece
       - current_item
       - command
-      - identity
       - ctx
       service_params:
       - peer_registry

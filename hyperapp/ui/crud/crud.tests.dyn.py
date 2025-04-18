@@ -11,6 +11,7 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
+from .code.model_command import ModelCommandFn
 from .code.selector import Selector
 from .fixtures import qapp_fixtures
 from .tested.code import crud
@@ -72,7 +73,7 @@ def _sample_selector_pick(piece, current_item):
 
 @mark.fixture
 def _sample_selector_get_fn(rpc_system_call_factory):
-    return ContextFn(
+    return ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('value',),
         service_params=(),
@@ -201,7 +202,7 @@ def test_record_adapter(_sample_crud_get_fn, ctx, model, commit_command_d):
 
 
 @mark.fixture
-def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_crud_update_fn, commit_command_d, value_t, item_id):
+async def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_crud_update_fn, commit_command_d, value_t, item_id):
     piece = htypes.crud.open_command_fn(
         name='edit',
         value_t=pyobj_creg.actor_to_ref(value_t),
@@ -220,18 +221,18 @@ def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sample_cr
         current_item=htypes.crud_tests.sample_item(id=item_id),
         )
     assert not fn.missing_params(ctx)
-    new_model = fn.call(ctx)
+    new_model = await fn.call(ctx)
     navigator_rec.view.open.assert_called_once()
 
 
-def test_open_command_fn_to_form(run_open_command_fn_test):
+async def test_open_command_fn_to_form(run_open_command_fn_test):
     value_t = htypes.crud_tests.sample_record
-    run_open_command_fn_test(value_t, item_id=11)
+    await run_open_command_fn_test(value_t, item_id=11)
 
 
-def test_open_command_fn_to_str(run_open_command_fn_test):
+async def test_open_command_fn_to_str(run_open_command_fn_test):
     value_t = htypes.builtin.string
-    run_open_command_fn_test(value_t, item_id=33)
+    await run_open_command_fn_test(value_t, item_id=33)
 
 
 @mark.config_fixture('selector_reg')
@@ -252,9 +253,9 @@ def view_reg_config():
         }
 
 
-def test_open_command_fn_to_selector(run_open_command_fn_test):
+async def test_open_command_fn_to_selector(run_open_command_fn_test):
     value_t = htypes.crud_tests.sample_selector
-    run_open_command_fn_test(value_t, item_id=22)
+    await run_open_command_fn_test(value_t, item_id=22)
 
 
 async def test_command_enum_for_form(view_reg, ctx, view_piece_ctr, model):

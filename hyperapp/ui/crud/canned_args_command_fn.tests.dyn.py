@@ -7,11 +7,11 @@ from .code.context import Context
 from .tested.code import canned_args_command_fn
 
 
-def _sample_fn(arg):
+async def _sample_fn(arg):
     return f'result: {arg}'
 
 
-def test_command(partial_ref):
+async def test_command(partial_ref):
     commit_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
         ctx_params=('arg',),
@@ -27,7 +27,7 @@ def test_command(partial_ref):
     assert fn.piece == piece
     ctx = Context()
     assert not fn.missing_params(ctx)
-    result = fn.call(ctx)
+    result = await fn.call(ctx)
     assert result == 'result: sample-value'
 
 

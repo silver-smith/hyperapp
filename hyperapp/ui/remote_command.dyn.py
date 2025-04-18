@@ -14,23 +14,18 @@ log = logging.getLogger(__name__)
 
 class UnboundRemoteCommand(UnboundModelCommand):
 
-    def __init__(self, rpc_system_call_factory, d, ctx_fn, properties, identity, remote_peer):
+    def __init__(self, d, ctx_fn, properties, remote_peer):
         super().__init__(d, ctx_fn, properties)
-        self._rpc_system_call_factory = rpc_system_call_factory
-        self._identity = identity
         self._remote_peer = remote_peer
 
     def bind(self, ctx):
-        return BoundRemoteCommand(
-            self._rpc_system_call_factory, self._d, self._ctx_fn, ctx, self._properties, self._identity, self._remote_peer)
+        return BoundRemoteCommand(self._d, self._ctx_fn, ctx, self._properties, self._remote_peer)
 
 
 class BoundRemoteCommand(BoundModelCommand):
 
-    def __init__(self, rpc_system_call_factory, d, ctx_fn, ctx, properties, identity, remote_peer):
+    def __init__(self, d, ctx_fn, ctx, properties, remote_peer):
         super().__init__(d, ctx_fn, ctx, properties)
-        self._rpc_system_call_factory = rpc_system_call_factory
-        self._identity = identity
         self._remote_peer = remote_peer
 
     async def _run(self):
@@ -48,28 +43,22 @@ class BoundRemoteCommand(BoundModelCommand):
             else:
                 ctx = self._ctx
         log.info("Run remote command: %r", self)
-        rpc_call = self._rpc_system_call_factory(
-            receiver_peer=self._remote_peer,
-            sender_identity=self._identity,
-            fn=self._ctx_fn,
-            )
-        kw = self._ctx_fn.call_kw(ctx)
-        result = rpc_call(**kw)
+        result = await self._ctx_fn.call(ctx, remote_peer=self._remote_peer)
         log.info("Run remote command %r result: [%s] %r", self, type(result), result)
         return result
 
 
 @mark.service
-def remote_command_from_model_command(rpc_system_call_factory, identity, remote_peer, command):
-    return UnboundRemoteCommand(rpc_system_call_factory, command.d, command.fn, command.properties, identity, remote_peer)
+def remote_command_from_model_command(remote_peer, command):
+    return UnboundRemoteCommand(command.d, command.fn, command.properties, remote_peer)
 
 
 @mark.command_enum
-def remote_command_enum(piece, identity, ctx, peer_registry, get_model_commands, remote_command_from_model_command):
+def remote_command_enum(piece, ctx, peer_registry, get_model_commands, remote_command_from_model_command):
     model, model_t = web.summon_with_t(piece.model)
     remote_peer = peer_registry.invite(piece.remote_peer)
     command_list = get_model_commands(model_t, ctx)
     return [
-        remote_command_from_model_command(identity, remote_peer, command)
+        remote_command_from_model_command(remote_peer, command)
         for command in command_list
         ]

@@ -4,8 +4,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.system_fn import ContextFn
-from .code.model_command import UnboundModelCommand
+from .code.model_command import ModelCommandFn, UnboundModelCommand
 from .tested.code import remote_command
 
 
@@ -13,17 +12,17 @@ from .tested.code import remote_command
 @mark.fixture
 def rpc_system_call_factory(receiver_peer, sender_identity, fn):
     def call(**kw):
-        return "Sample result"
+        return "remote-sample-result"
     return call
 
 
 def sample_command():
-    return 'sample-result'
+    return 'local-sample-result'
 
 
 @mark.fixture
 def sample_command_fn(rpc_system_call_factory):
-    return ContextFn(
+    return ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
         service_params=(),
@@ -52,20 +51,22 @@ async def test_remote_command_from_model_command(
         ctx_fn=sample_command_fn,
         properties=htypes.command.properties(False, False, False),
         )
-    command = remote_command_from_model_command(my_identity, remote_identity.peer, model_command)
+    command = remote_command_from_model_command(remote_identity.peer, model_command)
     assert isinstance(command, remote_command.UnboundRemoteCommand)
     # Test run method, pick model.remote_model type.
     ctx = Context(
+        identity=my_identity,
         model=remote_model,
         )
     bound_command = command.bind(ctx)
     result = await bound_command.run()
-    assert result == "Sample result"
+    assert result == "remote-sample-result", result
 
 
 def test_enum(generate_rsa_identity, remote_model):
     my_identity = generate_rsa_identity(fast=True)
     ctx = Context(
+        identity=my_identity,
         model=remote_model,
         )
-    command_list = remote_command.remote_command_enum(remote_model, my_identity, ctx)
+    command_list = remote_command.remote_command_enum(remote_model, ctx)
