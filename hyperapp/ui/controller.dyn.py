@@ -464,6 +464,11 @@ class CtlHook:
             path=tuple(self._item.path),
             )
 
+    @property
+    def navigator(self):
+        rctx = Context()
+        return self._item.navigator_rec(rctx)
+
     def current_changed(self):
         self._item.current_changed_hook()
 
