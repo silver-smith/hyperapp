@@ -17,8 +17,6 @@ def _is_state_param(name):
 
 class CommandTemplateCtr(Constructor):
 
-    _command_fn_t = htypes.command.model_command_fn
-
     def __init__(self, module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args):
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
@@ -281,9 +279,40 @@ class UiCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 
 class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
 
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(
+            module_name=piece.module_name,
+            attr_qual_name=piece.attr_qual_name,
+            service_name=piece.service_name,
+            enum_service_name=piece.enum_service_name,
+            ctx_params=piece.ctx_params,
+            service_params=piece.service_params,
+            args=cls._args_dict(piece.args),
+            t=pyobj_creg.invite(piece.t),
+            command_fn_t=pyobj_creg.invite(piece.command_fn_t),
+            )
+
+    def __init__(self, module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args, t, command_fn_t):
+        super().__init__(module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args, t)
+        self._command_fn_t = command_fn_t
+
+    @property
+    def piece(self):
+        return htypes.command_resource.model_command_template_ctr(
+            module_name=self._module_name,
+            attr_qual_name=tuple(self._attr_qual_name),
+            service_name=self._service_name,
+            enum_service_name=self._enum_service_name,
+            ctx_params=tuple(self._ctx_params),
+            service_params=tuple(self._service_params),
+            args=self._args_tuple,
+            t=pyobj_creg.actor_to_ref(self._t),
+            command_fn_t=pyobj_creg.actor_to_ref(self._command_fn_t),
+            )
+
     _command_t = htypes.command.model_command
     _enum_command_t = htypes.command.model_args_picker_command_enumerator
-    _template_ctr_t = htypes.command_resource.model_command_template_ctr
     _is_global = False
     _direct_command_resource_suffix = 'model-command'
     _command_enum_resource_suffix = 'model-command-enumerator'
@@ -307,6 +336,7 @@ class ModelCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 class GlobalModelCommandTemplateCtr(UntypedCommandTemplateCtr):
 
     _command_t = htypes.command.model_command
+    _command_fn_t = htypes.command.model_command_fn
     _template_ctr_t = htypes.command_resource.global_model_command_template_ctr
     _is_global = True
     _direct_command_resource_suffix = 'global-model-command'

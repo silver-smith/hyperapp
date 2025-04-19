@@ -1,5 +1,6 @@
 from hyperapp.boot.htypes import Type
 
+from . import htypes
 from .services import deduce_t
 from .code.command_ctr import (
     UiCommandTemplateCtr,
@@ -150,6 +151,10 @@ class UiCommandEnumeratorProbe(CommandProbe):
 
 class ModelCommandProbe(CommandProbe):
 
+    def __init__(self, system_probe, ctr_collector, module_name, args, fn, command_fn_t, t=None):
+        super().__init__(system_probe, ctr_collector, module_name, args, fn, t)
+        self._command_fn_t = command_fn_t
+
     def _add_constructor(self, params):
         if self._t:
             t = self._t
@@ -160,6 +165,7 @@ class ModelCommandProbe(CommandProbe):
             service_name='model_command_reg',
             enum_service_name='model_command_enumerator_reg',
             t=t,
+            command_fn_t=self._command_fn_t,
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -241,7 +247,16 @@ class UiCommandEnumeratorDecorator(TypedCommandDecorator):
 
 
 class ModelCommandDecorator(TypedCommandDecorator):
-    _probe_class = ModelCommandProbe
+
+    def __init__(self, system, ctr_collector, module_name, args, t, command_fn_t):
+        super().__init__(system, ctr_collector, module_name, args, t)
+        self._command_fn_t = command_fn_t
+
+    def __call__(self, fn):
+        check_not_classmethod(fn)
+        check_is_function(fn)
+        return ModelCommandProbe(
+            self._system, self._ctr_collector, self._module_name, self._args, fn, self._command_fn_t, self._t)
 
 
 class ModelCommandEnumeratorDecorator(TypedCommandDecorator):
@@ -310,14 +325,29 @@ class UiCommandEnumeratorMarker(CommandMarker):
 class ModelCommandMarker(CommandMarker):
 
     def __call__(self, fn_or_t=None, *, args=None):
+        command_fn_t = htypes.command.model_command_fn
         if fn_or_t is None:
-            return ModelCommandDecorator(self._system, self._ctr_collector, self._module_name, args, t=fn_or_t)
+            return ModelCommandDecorator(
+                self._system, self._ctr_collector, self._module_name, args, t=fn_or_t, command_fn_t=command_fn_t)
         if isinstance(fn_or_t, Type):
             # Type-specialized variant (@mark.command(my_type)).
-            return ModelCommandDecorator(self._system, self._ctr_collector, self._module_name, args, t=fn_or_t)
+            return ModelCommandDecorator(
+                self._system, self._ctr_collector, self._module_name, args, t=fn_or_t, command_fn_t=commant_t)
         # Not type-specialized variant  (@mark.command).
         check_is_function(fn_or_t)
-        return ModelCommandProbe(self._system, self._ctr_collector, self._module_name, args, fn=fn_or_t)
+        return ModelCommandProbe(
+            self._system, self._ctr_collector, self._module_name, args, fn=fn_or_t, command_fn_t=command_fn_t)
+
+    def add(self, fn=None, *, args=None):
+        command_fn_t = htypes.command.model_command_add_fn
+        if fn is None:
+            return ModelCommandDecorator(
+                self._system, self._ctr_collector, self._module_name, args, t=fn, command_fn_t=command_fn_t)
+        if isinstance(fn, Type):
+            raise RuntimeError(f"Model add commands type specialization is not supported: {fn!r}")
+        check_is_function(fn)
+        return ModelCommandProbe(
+            self._system, self._ctr_collector, self._module_name, args, fn=fn, command_fn_t=command_fn_t)
 
 
 class ModelCommandEnumeratorMarker(CommandMarker):

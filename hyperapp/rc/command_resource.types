@@ -11,6 +11,7 @@ command_ctr = record:
   service_params: string list
   args: arg list
 
+
 typed_command_ctr = record(command_ctr):
   t: ref
 
@@ -19,6 +20,9 @@ untyped_command_ctr = record(command_ctr)
 ui_command_template_ctr = record(typed_command_ctr)
 universal_ui_command_template_ctr = record(untyped_command_ctr)
 ui_command_enumerator_template_ctr = record(typed_command_ctr)
-model_command_template_ctr = record(typed_command_ctr)
+
+model_command_template_ctr = record(typed_command_ctr):
+  command_fn_t: ref
+
 model_command_enumerator_template_ctr = record(typed_command_ctr)
 global_model_command_template_ctr = record(untyped_command_ctr)
