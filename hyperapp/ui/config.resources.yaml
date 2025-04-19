@@ -67,6 +67,8 @@ import:
 - ui.model_command:system_fn_creg-command-model_command_fn.actor-template
 - ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
 - ui.model_layout_reg:model_layout_reg.service
+- ui.model_servant:model_servant.service
+- ui.model_servant:model_to_servant_dict.service
 - ui.navigator:navigator-view-go_back.command-cfg-item
 - ui.navigator:navigator-view-go_forward.command-cfg-item
 - ui.navigator:navigator-view.view-template
@@ -325,6 +327,8 @@ definitions:
       - ui.model_command:model_command_enumerator_reg.service
       - ui.model_command:model_command_reg.service
       - ui.model_layout_reg:model_layout_reg.service
+      - ui.model_servant:model_servant.service
+      - ui.model_servant:model_to_servant_dict.service
       - ui.peer_label_reg:peer_label_reg.service
       - ui.remote_command:remote_command_from_model_command.service
       - ui.selector:selector_reg.service

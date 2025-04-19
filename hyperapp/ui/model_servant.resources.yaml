@@ -1,0 +1,49 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
+definitions:
+  model_servant:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_servant.module
+      attr_name: model_servant
+  model_servant.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: model_servant
+      file_name: model_servant.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+  model_servant.service:
+    type: legacy_type.system:service_template
+    value:
+      name: model_servant
+      ctl: system-dict_config_ctl.ctl
+      function: model_servant
+      service_params:
+      - model_to_servant_dict
+      want_config: false
+      free_params:
+      - model
+  model_to_servant_dict:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_servant.module
+      attr_name: model_to_servant_dict
+  model_to_servant_dict.service:
+    type: legacy_type.system:service_template
+    value:
+      name: model_to_servant_dict
+      ctl: system-dict_config_ctl.ctl
+      function: model_to_servant_dict
+      service_params: []
+      want_config: false
+      free_params: []
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}

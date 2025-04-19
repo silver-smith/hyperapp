@@ -26,10 +26,11 @@ class FnListAdapter(FnListAdapterBase):
             remote_peer = None
         return (remote_peer, model)
 
-    def __init__(self, system_fn_creg, rpc_system_call_factory, feed_factory, column_visible_reg, model, item_t, remote_peer, ctx, fn):
+    def __init__(self, system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg, model, item_t, remote_peer, ctx, fn):
         super().__init__(feed_factory, column_visible_reg, model, item_t)
         self._system_fn_creg = system_fn_creg
         self._rpc_system_call_factory = rpc_system_call_factory
+        self._model_servant = model_servant
         self._remote_peer = remote_peer
         self._ctx = ctx
         self._fn = fn
@@ -65,10 +66,14 @@ class FnListAdapter(FnListAdapterBase):
     def _wrapper_fn(self):
         return ContextFn(
             rpc_system_call_factory=self._rpc_system_call_factory,
-            ctx_params=('servant_fn_piece', *self._fn.ctx_params),
-            service_params=('system_fn_creg',),
+            ctx_params=('servant_fn_piece', 'model', *self._fn.ctx_params),
+            service_params=('system_fn_creg', 'model_servant'),
             raw_fn=list_wrapper,
-            bound_fn=partial(list_wrapper, system_fn_creg=self._system_fn_creg),
+            bound_fn=partial(
+                list_wrapper,
+                system_fn_creg=self._system_fn_creg,
+                model_servant=self._model_servant,
+                ),
             )
 
 
@@ -77,11 +82,11 @@ class FnIndexListAdapter(FnListAdapter, IndexListAdapterMixin):
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx,
-                   system_fn_creg, rpc_system_call_factory, feed_factory, column_visible_reg, peer_registry):
+                   system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg, peer_registry):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         remote_peer, model = cls._resolve_model(peer_registry, model)
-        return cls(system_fn_creg, rpc_system_call_factory, feed_factory, column_visible_reg, model, item_t, remote_peer, ctx, fn)
+        return cls(system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg, model, item_t, remote_peer, ctx, fn)
     
 
 class FnKeyListAdapter(FnListAdapter, KeyListAdapterMixin):
@@ -89,17 +94,18 @@ class FnKeyListAdapter(FnListAdapter, KeyListAdapterMixin):
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx,
-                   system_fn_creg, rpc_system_call_factory, feed_factory, column_visible_reg, peer_registry):
+                   system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg, peer_registry):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         remote_peer, model = cls._resolve_model(peer_registry, model)
         key_field_t = pyobj_creg.invite(piece.key_field_t)
-        return cls(system_fn_creg, rpc_system_call_factory, feed_factory, column_visible_reg,
+        return cls(system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
                    model, item_t, remote_peer, ctx, fn, piece.key_field, key_field_t)
 
-    def __init__(self, system_fn_creg, rpc_system_call_factory, feed_factory, column_visible_reg,
+    def __init__(self, system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
                  model, item_t, remote_peer, ctx, fn, key_field, key_field_t):
-        super().__init__(system_fn_creg, rpc_system_call_factory, feed_factory, column_visible_reg, model, item_t, remote_peer, ctx, fn)
+        super().__init__(system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
+                         model, item_t, remote_peer, ctx, fn)
         KeyListAdapterMixin.__init__(self, key_field, key_field_t)
 
 
