@@ -39,6 +39,11 @@ class CachedCodeRegistry(CodeRegistry):
         except KeyError as x:
             raise KeyError(f"{self._service_name}: Missing actor id={x} for: {actor!r}") from x
 
+    def actor_to_piece_opt(self, actor, reconstruct=True):
+        if actor is None:
+            return None
+        return self.actor_to_piece(actor, reconstruct)
+
     def actor_to_ref(self, actor, reconstruct=True):
         piece = self.actor_to_piece(actor, reconstruct)
         return self._mosaic.put(piece)
