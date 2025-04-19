@@ -2,6 +2,7 @@
 
 import:
 - base.context:context.module
+- builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
 definitions:
   list_servant_wrapper.module:
@@ -11,3 +12,4 @@ definitions:
       file_name: list_servant_wrapper.dyn.py
       import_list:
         code.context: base.context:context.module
+        services.pyobj_creg: builtins:pyobj_creg.service

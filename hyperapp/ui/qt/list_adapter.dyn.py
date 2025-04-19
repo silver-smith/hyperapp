@@ -32,6 +32,10 @@ def key_list_model_state_t(item_t, key_field, key_field_t):
 
 class IndexListAdapterMixin:
 
+    @property
+    def key_field_t(self):
+        return None
+
     def make_list_state(self, key=None):
         if key is None:
             return None
@@ -70,6 +74,10 @@ class KeyListAdapterMixin:
         self._key_field = key_field
         self._key_field_t = key_field_t
         self._key_to_idx = {}
+
+    @property
+    def key_field_t(self):
+        return self._key_field_t
 
     def make_list_state(self, key=None):
         if key is None:
