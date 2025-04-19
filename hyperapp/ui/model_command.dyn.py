@@ -59,10 +59,10 @@ class ModelCommandFn(ModelCommandFnBase):
         result = super().call(ctx, **kw)
         if inspect.iscoroutine(result):
             result = await result
-        return self._prepare_result(result)
+        return self._prepare_result(ctx, result)
 
     @staticmethod
-    def _prepare_result(result):
+    def _prepare_result(ctx, result):
         if isinstance(result, htypes.command.command_result):
             return result
         if result is None:
@@ -86,11 +86,11 @@ class ModelCommandAddFn(ModelCommandFn):
     _fn_t = htypes.command.model_command_add_fn
 
     @staticmethod
-    def _prepare_result(result):
+    def _prepare_result(ctx, result):
         assert not isinstance(result, htypes.command.command_result)
         if result is None:
             return result
-        assert 0, f'todo: {result!r}'
+        assert 0, f'todo: {ctx.piece}/{result!r}'
         return htypes.command.command_result(
             model=mosaic.put_opt(model),
             key=mosaic.put_opt(key),
