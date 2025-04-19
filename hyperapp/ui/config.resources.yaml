@@ -62,6 +62,7 @@ import:
 - ui.model_command:global_model_command_reg.service
 - ui.model_command:model_command_enumerator_reg.service
 - ui.model_command:model_command_reg.service
+- ui.model_command:system_fn_creg-command-model_command_add_fn.actor-template
 - ui.model_command:system_fn_creg-command-model_command_enum_fn.actor-template
 - ui.model_command:system_fn_creg-command-model_command_fn.actor-template
 - ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
@@ -356,6 +357,7 @@ definitions:
       - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
       - ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-template
       - ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-template
+      - ui.model_command:system_fn_creg-command-model_command_add_fn.actor-template
       - ui.model_command:system_fn_creg-command-model_command_enum_fn.actor-template
       - ui.model_command:system_fn_creg-command-model_command_fn.actor-template
       - ui.ui_command:system_fn_creg-command-ui_command_enum_fn.actor-template

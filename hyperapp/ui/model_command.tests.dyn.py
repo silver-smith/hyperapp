@@ -52,6 +52,18 @@ async def test_command_fn(ctx, sample_command_fn):
     assert isinstance(result, htypes.command.command_result)
 
 
+async def test_command_add_fn(ctx):
+    piece = htypes.command.model_command_add_fn(
+        function=pyobj_creg.actor_to_ref(_sample_command),
+        ctx_params=('model', 'state'),
+        service_params=('sample_service',),
+        )
+    fn = model_command.ModelCommandAddFn.from_piece(piece)
+    assert fn.piece == piece
+    # result = await fn.call(ctx, model="Sample model", state="Sample state")
+    # assert isinstance(result, htypes.command.command_result)
+
+
 def test_command_enum_fn(ctx, sample_command_enum_fn):
     enum = model_command.ModelCommandEnumFn.from_piece(sample_command_enum_fn)
     assert enum.piece == sample_command_enum_fn

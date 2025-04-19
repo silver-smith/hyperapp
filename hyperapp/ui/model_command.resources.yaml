@@ -11,6 +11,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:command_result
 - legacy_type.command:model_command
+- legacy_type.command:model_command_add_fn
 - legacy_type.command:model_command_enum_fn
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:model_command_fn
@@ -23,6 +24,16 @@ import:
 - ui.command_enumerator:command_enumerator.module
 - ui.list_config_ctl:list_config_ctl.module
 definitions:
+  ModelCommandAddFn:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_command.module
+      attr_name: ModelCommandAddFn
+  ModelCommandAddFn.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ModelCommandAddFn
+      attr_name: from_piece
   ModelCommandEnumFn:
     type: legacy_type.builtin:attribute
     value:
@@ -108,6 +119,7 @@ definitions:
         code.system_fn: base.system_fn:system_fn.module
         htypes.command.command_result: legacy_type.command:command_result
         htypes.command.model_command: legacy_type.command:model_command
+        htypes.command.model_command_add_fn: legacy_type.command:model_command_add_fn
         htypes.command.model_command_enum_fn: legacy_type.command:model_command_enum_fn
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
         services.deduce_t: builtins:deduce_t.service
@@ -157,6 +169,14 @@ definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
+  system_fn_creg-command-model_command_add_fn.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:model_command_add_fn
+      function: ModelCommandAddFn.from_piece
+      service_params:
+      - system
+      - rpc_system_call_factory
   system_fn_creg-command-model_command_enum_fn.actor-template:
     type: legacy_type.system:actor_template
     value:
