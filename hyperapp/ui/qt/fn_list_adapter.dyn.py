@@ -51,6 +51,7 @@ class FnListAdapter(FnListAdapterBase):
         wrapper_kw = {
             **kw,
             'servant_fn_piece': self._fn.piece,
+            'key_field': self.key_field,
             'key_field_t': pyobj_creg.actor_to_piece_opt(self.key_field_t),
             }
         if remote_peer:
@@ -67,7 +68,7 @@ class FnListAdapter(FnListAdapterBase):
     def _wrapper_fn(self):
         return ContextFn(
             rpc_system_call_factory=self._rpc_system_call_factory,
-            ctx_params=('servant_fn_piece', 'model', 'key_field_t', *self._fn.ctx_params),
+            ctx_params=('servant_fn_piece', 'model', 'key_field', 'key_field_t', *self._fn.ctx_params),
             service_params=('system_fn_creg', 'model_servant'),
             raw_fn=list_wrapper,
             bound_fn=partial(

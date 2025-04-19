@@ -10,10 +10,11 @@ from .code.context import Context
 log = logging.getLogger(__name__)
 
 
-def list_wrapper(servant_fn_piece, model, key_field_t, system_fn_creg, model_servant, **kw):
+def list_wrapper(servant_fn_piece, model, key_field, key_field_t, system_fn_creg, model_servant, **kw):
     servant_fn = system_fn_creg.animate(servant_fn_piece)
     servant = model_servant(model)
     servant.set_servant_fn(
+        key_field=key_field,
         key_field_t=pyobj_creg.animate_opt(key_field_t),
         fn=servant_fn,
         )
