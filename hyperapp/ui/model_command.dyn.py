@@ -85,12 +85,41 @@ class ModelCommandAddFn(ModelCommandFn):
 
     _fn_t = htypes.command.model_command_add_fn
 
-    @staticmethod
-    def _prepare_result(ctx, result):
+    @classmethod
+    @mark.actor.system_fn_creg
+    def from_piece(cls, piece, system, rpc_system_call_factory, model_servant):
+        fn = pyobj_creg.invite(piece.function)
+        bound_fn = system.bind_services(fn, piece.service_params)
+        return cls(rpc_system_call_factory, piece.ctx_params, piece.service_params, fn, bound_fn, model_servant)
+
+    def __init__(self, rpc_system_call_factory, ctx_params, service_params, raw_fn, bound_fn, model_servant):
+        super().__init__(rpc_system_call_factory, ctx_params, service_params, raw_fn, bound_fn)
+        self._model_servant = model_servant
+
+    def _prepare_result(self, ctx, result):
         assert not isinstance(result, htypes.command.command_result)
         if result is None:
             return result
-        assert 0, f'todo: {ctx.piece}/{result!r}'
+        servant = self._model_servant(ctx.piece)
+        if servant.key_field_t is None:
+            if type(result) is not int:
+                raise RuntimeError(f"Result from add command for {ctx.piece} is expected to be an int: {result!r}")
+        else:
+            if not isinstance(result, servant.key_field_t):
+                raise RuntimeError(f"Result from add command for {ctx.piece} is expected to be a {servant.key_field_t}: {result!r}")
+        key_field = servant.key_field
+        item_list = servant.fn.call(ctx)
+        for idx, item in enumerate(item_list):
+            if key_field:
+                key = getattr(item, key_field)
+            else:
+                key = idx
+            if key == result:
+                break
+        else:
+            log.warning("No new items with key %r exists for add command %s", result, self)
+            return
+        assert 0, f'todo: {ctx.piece}/{result!r}/{item!r}'
         return htypes.command.command_result(
             model=mosaic.put_opt(model),
             key=mosaic.put_opt(key),
