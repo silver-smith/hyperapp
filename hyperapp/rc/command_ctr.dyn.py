@@ -246,6 +246,7 @@ class UiCommandTemplateCtr(TypedCommandTemplateCtr):
 
     _command_t = htypes.command.ui_command
     _enum_command_t = htypes.command.ui_args_picker_command_enumerator
+    _command_fn_t = htypes.system_fn.ctx_fn
     _template_ctr_t = htypes.command_resource.ui_command_template_ctr
     _is_global = False
     _direct_command_resource_suffix = 'ui-command'
@@ -256,6 +257,7 @@ class UniversalUiCommandTemplateCtr(UntypedCommandTemplateCtr):
 
     _command_t = htypes.command.ui_command
     _enum_command_t = htypes.command.ui_args_picker_command_enumerator
+    _command_fn_t = htypes.system_fn.ctx_fn
     _template_ctr_t = htypes.command_resource.universal_ui_command_template_ctr
     _is_global = False
     _direct_command_resource_suffix = 'universal-ui-command'

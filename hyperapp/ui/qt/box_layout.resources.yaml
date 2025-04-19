@@ -12,7 +12,6 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
-- legacy_type.command:model_command_fn
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.command:ui_command
@@ -49,7 +48,7 @@ definitions:
     type: add_element_d
     value: {}
   add_element.commit-fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: add_element
       ctx_params:
@@ -90,7 +89,7 @@ definitions:
     type: add_stretch_d
     value: {}
   add_stretch.fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: add_stretch
       ctx_params:
@@ -166,7 +165,7 @@ definitions:
     type: insert_element_d
     value: {}
   insert_element.commit-fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: insert_element
       ctx_params:
@@ -208,7 +207,7 @@ definitions:
     type: remove_element_d
     value: {}
   remove_element.fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: remove_element
       ctx_params:
@@ -241,7 +240,7 @@ definitions:
     type: unwrap_d
     value: {}
   unwrap.fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: unwrap
       ctx_params:

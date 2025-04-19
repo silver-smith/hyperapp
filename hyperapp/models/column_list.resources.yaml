@@ -93,7 +93,7 @@ definitions:
     type: legacy_type.column_list:open_column_list_d
     value: {}
   open_column_list.fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: open_column_list
       ctx_params:

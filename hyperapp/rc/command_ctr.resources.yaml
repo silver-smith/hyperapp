@@ -25,6 +25,7 @@ import:
 - legacy_type.command_resource:ui_command_template_ctr
 - legacy_type.command_resource:universal_ui_command_template_ctr
 - legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
 - rc.d_type:d_type.module
 - rc.rc_constructor:rc_constructor.module
 
@@ -58,6 +59,7 @@ definitions:
         htypes.command_resource.ui_command_template_ctr: legacy_type.command_resource:ui_command_template_ctr
         htypes.command_resource.universal_ui_command_template_ctr: legacy_type.command_resource:universal_ui_command_template_ctr
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
+        htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module

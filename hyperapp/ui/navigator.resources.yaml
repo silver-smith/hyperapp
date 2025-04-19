@@ -10,7 +10,6 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
-- legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
 - legacy_type.navigator:go_back_d
 - legacy_type.navigator:go_forward_d
@@ -50,7 +49,7 @@ definitions:
     type: legacy_type.navigator:go_back_d
     value: {}
   go_back.fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: go_back
       ctx_params:
@@ -77,7 +76,7 @@ definitions:
     type: legacy_type.navigator:go_forward_d
     value: {}
   go_forward.fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: go_forward
       ctx_params:
