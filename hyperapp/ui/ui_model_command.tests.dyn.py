@@ -135,6 +135,7 @@ def test_split_command_result():
     result = htypes.command.command_result(
         model=mosaic.put('sample-model'),
         key=None,
+        diff=None,
         )
     model, key = ui_model_command.split_command_result(result)
     assert model == 'sample-model'

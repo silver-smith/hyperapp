@@ -77,6 +77,7 @@ class ModelCommandFn(ModelCommandFnBase):
         return htypes.command.command_result(
             model=mosaic.put_opt(model),
             key=mosaic.put_opt(key),
+            diff=None,
             )
 
 
