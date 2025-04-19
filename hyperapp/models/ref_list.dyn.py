@@ -138,16 +138,16 @@ def open_parent(piece, ref_list):
     return (piece, folder.id)
 
 
-@mark.command(args=['name'])
+@mark.command.add(args=['name'])
 def add_folder(piece, name, ref_list):
     folder_id = ref_list.append_folder(piece.parent_id, name)
-    return (piece, folder_id)
+    return folder_id
 
 
-@mark.command(args=['ref'])
+@mark.command.add(args=['ref'])
 def add_ref(piece, ref, ref_list):
     ref_id = ref_list.append_ref(piece.parent_id, ref)
-    return (None, ref_id)
+    return ref_id
 
 
 @mark.command

@@ -86,8 +86,7 @@ def test_open_parent(root_model, folder_2_model):
 
 
 def test_add_root_folder(root_model, file_bundle_factory):
-    piece, folder_id = ref_list.add_folder(root_model, 'New folder')
-    assert piece == root_model
+    folder_id = ref_list.add_folder(root_model, 'New folder')
     assert type(folder_id) is str
     file_bundle_factory.save_piece.assert_called_once()
 
@@ -95,8 +94,7 @@ def test_add_root_folder(root_model, file_bundle_factory):
 def test_add_ref(folder_2_model, file_bundle_factory):
     ref_2_piece = htypes.ref_list_tests.sample_model(id=456)
     ref_2 = mosaic.put(ref_2_piece)
-    piece, ref_id = ref_list.add_ref(folder_2_model, ref_2)
-    assert piece is None
+    ref_id = ref_list.add_ref(folder_2_model, ref_2)
     assert type(ref_id) is str
     file_bundle_factory.save_piece.assert_called_once()
 
