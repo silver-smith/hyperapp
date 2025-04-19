@@ -9,7 +9,7 @@ from .code.command_enumerator import UnboundCommandEnumerator
 from .tested.code import model_command
 
 
-def _sample_command(model, state, sample_service):
+def _sample_command(piece, state, sample_service):
     return f'sample-fn: {state}, {sample_service}'
 
 
@@ -17,12 +17,12 @@ def _sample_command(model, state, sample_service):
 def sample_command_fn():
     return htypes.command.model_command_fn(
         function=pyobj_creg.actor_to_ref(_sample_command),
-        ctx_params=('model', 'state'),
+        ctx_params=('piece', 'state'),
         service_params=('sample_service',),
         )
 
 
-def _sample_command_enum(model, state, sample_service):
+def _sample_command_enum(piece, state, sample_service):
     return []
 
 
@@ -30,7 +30,7 @@ def _sample_command_enum(model, state, sample_service):
 def sample_command_enum_fn():
     return htypes.command.model_command_enum_fn(
         function=pyobj_creg.actor_to_ref(_sample_command_enum),
-        ctx_params=('model', 'state'),
+        ctx_params=('piece', 'state'),
         service_params=('sample_service',),
         )
 
@@ -41,33 +41,41 @@ def sample_service():
 
 
 @mark.fixture
-def ctx():
-    return Context()
+def model():
+    return "Sample model"
 
 
-async def test_command_fn(ctx, sample_command_fn):
+@mark.fixture
+def ctx(model):
+    return Context(
+        model=model,
+        piece=model,
+        )
+
+
+async def test_command_fn(model, ctx, sample_command_fn):
     fn = model_command.ModelCommandFn.from_piece(sample_command_fn)
     assert fn.piece == sample_command_fn
-    result = await fn.call(ctx, model="Sample model", state="Sample state")
+    result = await fn.call(ctx, piece=model, state="Sample state")
     assert isinstance(result, htypes.command.command_result)
 
 
-async def test_command_add_fn(ctx):
+async def test_command_add_fn(model, ctx):
     piece = htypes.command.model_command_add_fn(
         function=pyobj_creg.actor_to_ref(_sample_command),
-        ctx_params=('model', 'state'),
+        ctx_params=('piece', 'state'),
         service_params=('sample_service',),
         )
     fn = model_command.ModelCommandAddFn.from_piece(piece)
     assert fn.piece == piece
-    # result = await fn.call(ctx, model="Sample model", state="Sample state")
+    # result = await fn.call(ctx, piece=model, state="Sample state")
     # assert isinstance(result, htypes.command.command_result)
 
 
-def test_command_enum_fn(ctx, sample_command_enum_fn):
+def test_command_enum_fn(model, ctx, sample_command_enum_fn):
     enum = model_command.ModelCommandEnumFn.from_piece(sample_command_enum_fn)
     assert enum.piece == sample_command_enum_fn
-    result = enum.call(ctx, model="Sample model", state="Sample state")
+    result = enum.call(ctx, piece=model, state="Sample state")
     assert type(result) is tuple
 
 
