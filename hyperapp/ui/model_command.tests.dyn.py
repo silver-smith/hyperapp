@@ -13,11 +13,34 @@ def _sample_command(piece, state, sample_service):
     return f'sample-fn: {state}, {sample_service}'
 
 
+def _sample_model(piece, sample_service):
+    return [
+        htypes.model_command_tests.sample_item(
+            id=str(idx),
+            value=idx*100,
+            )
+        for idx in range(10)
+        ]
+
+
+def _sample_add_command(piece, state, sample_service):
+    return '5'
+
+
 @mark.fixture
 def sample_command_fn():
     return htypes.command.model_command_fn(
         function=pyobj_creg.actor_to_ref(_sample_command),
         ctx_params=('piece', 'state'),
+        service_params=('sample_service',),
+        )
+
+
+@mark.fixture
+def sample_model_fn():
+    return htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(_sample_model),
+        ctx_params=('piece',),
         service_params=('sample_service',),
         )
 
@@ -60,9 +83,14 @@ async def test_command_fn(model, ctx, sample_command_fn):
     assert isinstance(result, htypes.command.command_result)
 
 
-async def test_command_add_fn(model, ctx):
+async def test_command_add_fn(system_fn_creg, model_servant, sample_model_fn, model, ctx):
+    model_servant(model).set_servant_fn(
+        key_field='id',
+        key_field_t=htypes.builtin.string,
+        fn=system_fn_creg.animate(sample_model_fn),
+        )
     piece = htypes.command.model_command_add_fn(
-        function=pyobj_creg.actor_to_ref(_sample_command),
+        function=pyobj_creg.actor_to_ref(_sample_add_command),
         ctx_params=('piece', 'state'),
         service_params=('sample_service',),
         )
