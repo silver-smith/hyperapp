@@ -147,8 +147,8 @@ def run_system_fn_target(target, rpc_request, system_fn_creg):
     if 'request' in fn.ctx_params:
         kw = {**kw, 'request': rpc_request}
     log.info("Call system fn servant: %s (%s)", fn, kw)
-    ctx = Context()
-    result = fn.call(ctx, **kw)
+    ctx = Context(**kw)
+    result = fn.call(ctx)
     if inspect.iscoroutine(result):
         log.info("Rpc system fn %s returned coroutine, running:", fn)
         result = asyncio.run(result)
