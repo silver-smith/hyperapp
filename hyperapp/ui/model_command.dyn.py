@@ -101,7 +101,7 @@ class ModelCommandAddFn(ModelCommandFn):
         assert not isinstance(result, htypes.command.command_result)
         if result is None:
             return result
-        servant = self._model_servant(ctx.piece)
+        servant = self._model_servant(ctx.model)
         if servant.key_field_t is None:
             if type(result) is not int:
                 raise RuntimeError(f"Result from add command for {ctx.piece} is expected to be an int: {result!r}")
