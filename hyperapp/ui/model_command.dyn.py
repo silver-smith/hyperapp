@@ -101,7 +101,8 @@ class ModelCommandAddFn(ModelCommandFn):
         assert not isinstance(result, htypes.command.command_result)
         if result is None:
             return result
-        servant = self._model_servant(ctx.model)
+        model = self._ctx_model(ctx)
+        servant = self._model_servant(model)
         if servant.key_field_t is None:
             if type(result) is not int:
                 raise RuntimeError(f"Result from add command for {ctx.piece} is expected to be an int: {result!r}")
@@ -124,7 +125,7 @@ class ModelCommandAddFn(ModelCommandFn):
             return
         diff = Diff(item)
         model_diff = htypes.diff.model_diff(
-            model=mosaic.put(ctx.model),
+            model=mosaic.put(model),
             diff=mosaic.put(diff.piece),
             )
         return htypes.command.command_result(
@@ -132,6 +133,13 @@ class ModelCommandAddFn(ModelCommandFn):
             key=mosaic.put(key),
             diff=mosaic.put(model_diff),
             )
+
+    @staticmethod
+    def _ctx_model(ctx):
+        try:
+            return ctx.model
+        except KeyError:
+            return ctx.piece
 
 
 class ModelCommandEnumFn(ModelCommandFnBase):
