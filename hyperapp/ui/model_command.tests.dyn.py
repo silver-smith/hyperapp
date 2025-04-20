@@ -2,6 +2,7 @@ from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.mark import mark
 from .code.context import Context
@@ -83,7 +84,7 @@ async def test_command_fn(model, ctx, sample_command_fn):
     assert isinstance(result, htypes.command.command_result)
 
 
-async def test_command_add_fn(system_fn_creg, model_servant, sample_model_fn, model, ctx):
+async def test_command_add_fn(system_fn_creg, diff_creg, model_servant, sample_model_fn, model, ctx):
     model_servant(model).set_servant_fn(
         key_field='id',
         key_field_t=htypes.builtin.string,
@@ -96,8 +97,11 @@ async def test_command_add_fn(system_fn_creg, model_servant, sample_model_fn, mo
         )
     fn = model_command.ModelCommandAddFn.from_piece(piece)
     assert fn.piece == piece
-    # result = await fn.call(ctx, piece=model, state="Sample state")
-    # assert isinstance(result, htypes.command.command_result)
+    result = await fn.call(ctx, piece=model, state="Sample state")
+    assert isinstance(result, htypes.command.command_result)
+    diff = diff_creg.invite(result.diff)
+    assert diff.item.id == '5'
+    assert web.summon(result.key) == '5'
 
 
 def test_command_enum_fn(model, ctx, sample_command_enum_fn):

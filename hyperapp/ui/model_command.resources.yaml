@@ -7,6 +7,7 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:command_result
@@ -115,6 +116,7 @@ definitions:
         code.command: ui.command:command.module
         code.command_enumerator: ui.command_enumerator:command_enumerator.module
         code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
+        code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         code.system_fn: base.system_fn:system_fn.module
         htypes.command.command_result: legacy_type.command:command_result

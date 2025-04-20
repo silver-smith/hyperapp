@@ -11,6 +11,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.system_fn import ContextFn
+from .code.list_diff import IndexListDiff, KeyListDiff
 from .code.command import UnboundCommand, BoundCommand
 from .code.command_enumerator import UnboundCommandEnumerator
 from .code.list_config_ctl import DictListConfigCtl, FlatListConfigCtl
@@ -104,9 +105,11 @@ class ModelCommandAddFn(ModelCommandFn):
         if servant.key_field_t is None:
             if type(result) is not int:
                 raise RuntimeError(f"Result from add command for {ctx.piece} is expected to be an int: {result!r}")
+            Diff = IndexListDiff.Append
         else:
             if not isinstance(result, servant.key_field_t):
                 raise RuntimeError(f"Result from add command for {ctx.piece} is expected to be a {servant.key_field_t}: {result!r}")
+            Diff = KeyListDiff.Append
         key_field = servant.key_field
         item_list = servant.fn.call(ctx)
         for idx, item in enumerate(item_list):
@@ -117,13 +120,13 @@ class ModelCommandAddFn(ModelCommandFn):
             if key == result:
                 break
         else:
-            log.warning("No new items with key %r exists for add command %s", result, self)
+            log.warning("No new items with key %r exists for 'Add' command %s", result, self)
             return
-        assert 0, f'todo: {ctx.piece}/{result!r}/{item!r}'
+        diff = Diff(item)
         return htypes.command.command_result(
-            model=mosaic.put_opt(model),
-            key=mosaic.put_opt(key),
-            diff=None,
+            model=None,
+            key=mosaic.put(key),
+            diff=mosaic.put(diff.piece),
             )
 
 
