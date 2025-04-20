@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 from . import htypes
 from .services import (
@@ -8,7 +8,7 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
-from .code.model_command import UnboundModelCommand
+from .code.model_command import ModelCommandFn, ModelCommandAddFn, UnboundModelCommand
 from .tested.code import ui_model_command
 
 
@@ -17,7 +17,7 @@ def _sample_fn_1(model, state):
 
 
 def _sample_fn_2(model, state):
-    return f'sample-fn-2: {state}'
+    return '5'
 
 
 def _sample_fn_3(model, state):
@@ -26,9 +26,9 @@ def _sample_fn_3(model, state):
 
 @mark.config_fixture('global_model_command_reg')
 def global_model_command_reg_config(rpc_system_call_factory):
-    system_fn = ContextFn(
+    system_fn = ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory,
-        ctx_params=('view', 'state'),
+        ctx_params=('model', 'state'),
         service_params=(),
         raw_fn=_sample_fn_1,
         bound_fn=_sample_fn_1,
@@ -42,10 +42,11 @@ def global_model_command_reg_config(rpc_system_call_factory):
 
 
 @mark.config_fixture('model_command_reg')
-def model_command_reg_config(rpc_system_call_factory):
-    system_fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory, 
-        ctx_params=('view', 'state'),
+def model_command_reg_config(rpc_system_call_factory, model_servant):
+    system_fn = ModelCommandAddFn(
+        rpc_system_call_factory=rpc_system_call_factory,
+        model_servant=model_servant,
+        ctx_params=('model', 'state'),
         service_params=(),
         raw_fn=_sample_fn_2,
         bound_fn=_sample_fn_2,
@@ -67,7 +68,7 @@ def lcs():
         )
     fn_3 = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn_3),
-        ctx_params=('view', 'state'),
+        ctx_params=('model', 'state'),
         service_params=(),
         )
     model_command_3 = htypes.command.model_command(
@@ -139,3 +140,102 @@ def test_split_command_result():
         )
     model, key = ui_model_command.split_command_result(result)
     assert model == 'sample-model'
+
+
+@mark.config_fixture('model_layout_reg')
+def model_layout_reg_config():
+    def k(t):
+        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
+    return {
+        k(htypes.builtin.string): htypes.text.edit_view(
+            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
+            ),
+        }
+
+
+@mark.fixture
+def error_view(x, ctx):
+    raise RuntimeError(f"Error view is called: {x}") from x
+
+
+async def test_command_run_open_view(get_ui_model_commands, lcs):
+    model_t = htypes.ui_model_command_tests.sample_model
+    model = model_t()
+    navigator_rec = Mock()
+    ctx = Context(
+        navigator=navigator_rec,
+        ).push(
+        model=model,
+        piece=model,
+        state="Sample state",
+        )
+    command_list = get_ui_model_commands(lcs, model_t, ctx)
+    d_to_command = {
+        command.d: command for command in command_list
+        }
+    command_d = htypes.ui_model_command_tests.sample_model_command_1_d()
+    unbound_command = d_to_command[command_d]
+    bound_command = unbound_command.bind(ctx)
+    await bound_command.run()
+    navigator_rec.view.open.assert_called_once()
+
+
+def _sample_model_servant(piece):
+    return [
+        htypes.ui_model_command_tests.sample_item(
+            id=str(idx),
+            value=idx * 100,
+            )
+        for idx in range(10)
+        ]
+
+
+@mark.fixture
+def sample_servant_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
+        ctx_params=('piece',),
+        service_params=(),
+        raw_fn=_sample_model_servant,
+        bound_fn=_sample_model_servant,
+        )
+
+
+@mark.fixture
+def sample_feed():
+    return AsyncMock()
+
+
+@mark.fixture
+def feed_factory(sample_feed, model):
+    assert isinstance(model, htypes.ui_model_command_tests.sample_model)
+    return sample_feed
+
+
+async def test_command_run_process_diff(model_servant, get_ui_model_commands, lcs, sample_servant_fn, sample_feed):
+    model_t = htypes.ui_model_command_tests.sample_model
+    model = model_t()
+    model_servant(model).set_servant_fn(
+        key_field='id',
+        key_field_t=htypes.builtin.string,
+        fn=sample_servant_fn,
+        )
+    navigator_rec = Mock()
+    ctx = Context(
+        navigator=navigator_rec,
+        ).push(
+        model=model,
+        piece=model,
+        state="Sample state",
+        )
+    command_list = get_ui_model_commands(lcs, model_t, ctx)
+    d_to_command = {
+        command.d: command for command in command_list
+        }
+    command_d = htypes.ui_model_command_tests.sample_model_command_2_d()
+    unbound_command = d_to_command[command_d]
+    bound_command = unbound_command.bind(ctx)
+    await bound_command.run()
+    sample_feed.send.assert_awaited()
+    navigator_rec.view.set_current_key.assert_called_once()
+    navigator_rec.view.open.assert_not_called()

@@ -144,6 +144,8 @@ definitions:
       - view
       service_params:
       - system_fn_creg
+      - diff_creg
+      - feed_factory
       - error_view
       - view_reg
       - visualizer

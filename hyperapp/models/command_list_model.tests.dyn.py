@@ -30,7 +30,7 @@ def lcs():
     return lcs
 
 
-def test_command_item_to_item(rpc_system_call_factory, format, error_view, view_reg, visualizer, shortcut_reg, lcs):
+def test_command_item_to_item(rpc_system_call_factory, format, diff_creg, feed_factory, error_view, view_reg, visualizer, shortcut_reg, lcs):
     system_fn = ContextFn(
         rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('view', 'state'),
@@ -44,6 +44,8 @@ def test_command_item_to_item(rpc_system_call_factory, format, error_view, view_
         properties=htypes.command.properties(False, False, False),
         )
     command = UnboundUiModelCommand(
+        diff_creg=diff_creg,
+        feed_factory=feed_factory,
         error_view=error_view,
         view_reg=view_reg,
         visualizer=visualizer,

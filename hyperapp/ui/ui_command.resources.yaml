@@ -59,6 +59,8 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: get_view_commands
       service_params:
+      - diff_creg
+      - feed_factory
       - error_view
       - view_reg
       - visualizer

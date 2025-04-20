@@ -36,8 +36,10 @@ def split_command_result(result):
 
 class UnboundUiModelCommand(UnboundCommandBase):
 
-    def __init__(self, error_view, view_reg, visualizer, d, model_command):
+    def __init__(self, diff_creg, feed_factory, error_view, view_reg, visualizer, d, model_command):
         super().__init__(d)
+        self._diff_creg = diff_creg
+        self._feed_factory = feed_factory
         self._error_view = error_view
         self._view_reg = view_reg
         self._visualizer = visualizer
@@ -60,14 +62,16 @@ class UnboundUiModelCommand(UnboundCommandBase):
 
     def bind(self, ctx):
         return BoundUiModelCommand(
-            self._error_view, self._view_reg, self._visualizer,
+            self._diff_creg, self._feed_factory, self._error_view, self._view_reg, self._visualizer,
             self._d, self._model_command.bind(ctx), self.groups, ctx)
 
 
 class BoundUiModelCommand(BoundCommandBase):
 
-    def __init__(self, error_view, view_reg, visualizer, d, model_command, groups, ctx):
+    def __init__(self, diff_creg, feed_factory, error_view, view_reg, visualizer, d, model_command, groups, ctx):
         super().__init__(d, ctx)
+        self._diff_creg = diff_creg
+        self._feed_factory = feed_factory
         self._error_view = error_view
         self._view_reg = view_reg
         self._visualizer = visualizer
@@ -104,8 +108,17 @@ class BoundUiModelCommand(BoundCommandBase):
             return
         if result is None:
             return None
-        model, key = split_command_result(result)
+        assert isinstance(result, htypes.command.command_result), result
+        model = web.summon_opt(result.model)
+        key = web.summon_opt(result.key)
+        diff = self._diff_creg.invite_opt(result.diff)
+        if diff:
+            await self._process_diff(diff)
         self._open(navigator_w, model, key)
+
+    async def _process_diff(self, diff):
+        feed = self._feed_factory(self._ctx.model)
+        await feed.send(diff)
 
     def _open(self, navigator_w, model, key):
         if model is None:
@@ -222,6 +235,8 @@ class CommandItemList:
     def __init__(
             self,
             format,
+            diff_creg,
+            feed_factory,
             error_view,
             view_reg,
             visualizer,
@@ -231,6 +246,8 @@ class CommandItemList:
             lcs,
             ):
         self._format = format
+        self._diff_creg = diff_creg
+        self._feed_factory = feed_factory
         self._error_view = error_view
         self._view_reg = view_reg
         self._visualizer = visualizer
@@ -253,7 +270,8 @@ class CommandItemList:
             return self._d_to_item_cache
         ui_d_to_command = {}
         for model_command in self._all_model_commands:
-            ui_command = wrap_model_command_to_ui_command(self._error_view, self._view_reg, self._visualizer, model_command)
+            ui_command = wrap_model_command_to_ui_command(
+                self._diff_creg, self._feed_factory, self._error_view, self._view_reg, self._visualizer, model_command)
             ui_d_to_command[ui_command.d] = ui_command
         for ui_command_d, rec in self._custom_commands.command_map.items():
             if isinstance(rec, htypes.command.custom_ui_model_command):
@@ -267,7 +285,7 @@ class CommandItemList:
                 model_command = self._command_creg.invite(rec.model_command)
             else:
                 raise RuntimeError(f"Unexpected custom command type: {rec!r}")
-            ui_command = UnboundUiModelCommand(self._error_view, self._view_reg, self._visualizer, ui_command_d, model_command)
+            ui_command = UnboundUiModelCommand(self._diff_creg, self._feed_factory, self._error_view, self._view_reg, self._visualizer, ui_command_d, model_command)
             # Override default wrapped model_command if custom layout is configured.
             ui_d_to_command[ui_command_d] = ui_command
         self._d_to_item_cache = {
@@ -321,6 +339,8 @@ class ModelCommandItemList(CommandItemList):
     def __init__(
             self,
             format,
+            diff_creg,
+            feed_factory,
             error_view,
             view_reg,
             visualizer,
@@ -332,6 +352,8 @@ class ModelCommandItemList(CommandItemList):
             ):
         super().__init__(
             format,
+            diff_creg,
+            feed_factory,
             error_view,
             view_reg,
             visualizer,
@@ -357,6 +379,8 @@ class GlobalCommandItemList(CommandItemList):
 @mark.service
 def ui_model_command_items(
         format,
+        diff_creg,
+        feed_factory,
         error_view,
         view_reg,
         visualizer,
@@ -372,6 +396,8 @@ def ui_model_command_items(
     custom_commands = custom_ui_model_commands(lcs, model_t)
     return ModelCommandItemList(
         format,
+        diff_creg,
+        feed_factory,
         error_view,
         view_reg,
         visualizer,
@@ -386,6 +412,8 @@ def ui_model_command_items(
 @mark.service
 def ui_global_command_items(
         format,
+        diff_creg,
+        feed_factory,
         error_view,
         view_reg,
         visualizer,
@@ -397,6 +425,8 @@ def ui_global_command_items(
     custom_commands = custom_ui_global_model_commands(lcs)
     return GlobalCommandItemList(
         format,
+        diff_creg,
+        feed_factory,
         error_view,
         view_reg,
         visualizer,
@@ -407,9 +437,9 @@ def ui_global_command_items(
         )
 
 
-def wrap_model_command_to_ui_command(error_view, view_reg, visualizer, command):
+def wrap_model_command_to_ui_command(diff_creg, feed_factory, error_view, view_reg, visualizer, command):
     # Layout command enumerator returns UI commands. Wrapping it (hopefully) won't cause any problems
-    return UnboundUiModelCommand(error_view, view_reg, visualizer, command.d, command)
+    return UnboundUiModelCommand(diff_creg, feed_factory, error_view, view_reg, visualizer, command.d, command)
 
 
 @mark.service

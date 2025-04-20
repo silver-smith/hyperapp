@@ -84,6 +84,8 @@ definitions:
       function: ui_global_command_items
       service_params:
       - format
+      - diff_creg
+      - feed_factory
       - error_view
       - view_reg
       - visualizer
@@ -125,6 +127,8 @@ definitions:
       function: ui_model_command_items
       service_params:
       - format
+      - diff_creg
+      - feed_factory
       - error_view
       - view_reg
       - visualizer
