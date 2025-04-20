@@ -22,7 +22,6 @@ import:
 - ui.command:command.module
 - ui.directory:directory.module
 - ui.model_command:model_command.module
-- ui.ui_model_command:ui_model_command.module
 definitions:
   UnboundIdentityModelCommand:
     type: legacy_type.builtin:attribute
@@ -81,7 +80,6 @@ definitions:
         code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
-        code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.command.properties: legacy_type.command:properties
         htypes.identity_command.identity_command: legacy_type.identity_command:identity_command
         services.mosaic: builtins:mosaic.service

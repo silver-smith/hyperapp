@@ -9,7 +9,6 @@ from .code.mark import mark
 from .code.list_diff import IndexListDiff
 from .code.directory import name_to_d
 from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase
-from .code.ui_model_command import UnboundUiModelCommand
 from .code.model_command import model_command_ctx
 from .code.command_list_model import command_item_to_model_item
 
