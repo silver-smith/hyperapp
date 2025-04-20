@@ -1,0 +1,7 @@
+model_diff = record:
+  model: ref
+  diff: ref
+
+
+append = record:
+  item: ref

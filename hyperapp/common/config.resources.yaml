@@ -5,6 +5,7 @@ import:
 - common.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
 - common.data_service:resource_name_creg-data_service-config_item.actor-template
 - common.diff_creg:diff_creg.service
+- common.list_diff:diff_creg-diff-append.actor-template
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -13,6 +14,7 @@ definitions:
     value:
       services:
         config_ctl_creg: config_ctl_creg
+        diff_creg: diff_creg
         resource_name_creg: resource_name_creg
         system: system
   config_ctl_creg:
@@ -21,6 +23,11 @@ definitions:
       items:
       - common.data_service:config_ctl_creg-data_service-config_ctl.actor-template
       - common.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
+  diff_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - common.list_diff:diff_creg-diff-append.actor-template
   resource_name_creg:
     type: legacy_type.system:item_list_config
     value:

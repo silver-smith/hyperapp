@@ -1,3 +1,10 @@
+from . import htypes
+from .services import (
+    mosaic,
+    web,
+    )
+from .code.mark import mark
+
 
 def replace(container, idx, item):
     assert type(container) in {list, tuple}, repr(container)
@@ -71,11 +78,23 @@ class ListDiffRemoveKey:
 
 class ListDiffAppend:
 
+    @classmethod
+    @mark.actor.diff_creg
+    def from_piece(cls, piece):
+        item = web.summon(piece.item)
+        return cls(item)
+
     def __init__(self, item):
         self.item = item
 
     def __repr__(self):
         return f"<ListDiffAppend: {self.item}>"
+
+    @property
+    def piece(self):
+        return htypes.diff.append(
+            item=mosaic.put(self.item),
+            )
 
 
 class ListDiffReplaceIdx:
