@@ -91,9 +91,9 @@ class ModelCommandAddFn(ModelCommandFn):
     def from_piece(cls, piece, system, rpc_system_call_factory, model_servant):
         fn = pyobj_creg.invite(piece.function)
         bound_fn = system.bind_services(fn, piece.service_params)
-        return cls(rpc_system_call_factory, piece.ctx_params, piece.service_params, fn, bound_fn, model_servant)
+        return cls(rpc_system_call_factory, model_servant, piece.ctx_params, piece.service_params, fn, bound_fn)
 
-    def __init__(self, rpc_system_call_factory, ctx_params, service_params, raw_fn, bound_fn, model_servant):
+    def __init__(self, rpc_system_call_factory, model_servant, ctx_params, service_params, raw_fn, bound_fn):
         super().__init__(rpc_system_call_factory, ctx_params, service_params, raw_fn, bound_fn)
         self._model_servant = model_servant
 
