@@ -8,8 +8,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.system_fn import ContextFn
-from .code.model_command import UnboundModelCommand
+from .code.model_command import ModelCommandFn, UnboundModelCommand
 from .tested.code import command_list_model, model_commands
 
 
@@ -30,7 +29,7 @@ def _sample_fn_2(model, sample_service):
 
 @mark.config_fixture('model_command_reg')
 def model_command_reg_config(rpc_system_call_factory):
-    system_fn_1 = ContextFn(
+    system_fn_1 = ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('model',),
         service_params=('sample_service',),
@@ -42,7 +41,7 @@ def model_command_reg_config(rpc_system_call_factory):
         ctx_fn=system_fn_1,
         properties=htypes.command.properties(False, False, False),
         )
-    system_fn_2 = ContextFn(
+    system_fn_2 = ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=('model',),
         service_params=('sample_service',),

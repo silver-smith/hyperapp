@@ -8,8 +8,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.system_fn import ContextFn
-from .code.model_command import UnboundModelCommand
+from .code.model_command import ModelCommandFn, UnboundModelCommand
 from .tested.code import command_list_model, global_commands
 
 
@@ -24,7 +23,7 @@ def _sample_fn(sample_service):
 
 @mark.config_fixture('global_model_command_reg')
 def global_model_command_reg_config(rpc_system_call_factory):
-    system_fn = ContextFn(
+    system_fn = ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=('sample_service',),
