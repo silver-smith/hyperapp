@@ -16,6 +16,7 @@ import:
 - legacy_type.command:model_command_enum_fn
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:model_command_fn
+- legacy_type.diff:model_diff
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.list_config_ctl:flat_list_config_ctl
 - legacy_type.system:actor_template
@@ -124,6 +125,7 @@ definitions:
         htypes.command.model_command_add_fn: legacy_type.command:model_command_add_fn
         htypes.command.model_command_enum_fn: legacy_type.command:model_command_enum_fn
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
+        htypes.diff.model_diff: legacy_type.diff:model_diff
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

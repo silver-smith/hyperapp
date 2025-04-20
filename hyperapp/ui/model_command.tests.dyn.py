@@ -66,7 +66,7 @@ def sample_service():
 
 @mark.fixture
 def model():
-    return "Sample model"
+    return htypes.model_command_tests.sample_model()
 
 
 @mark.fixture
@@ -97,9 +97,11 @@ async def test_command_add_fn(system_fn_creg, diff_creg, model_servant, sample_m
         )
     fn = model_command.ModelCommandAddFn.from_piece(piece)
     assert fn.piece == piece
-    result = await fn.call(ctx, piece=model, state="Sample state")
+    result = await fn.call(ctx, state="Sample state")
     assert isinstance(result, htypes.command.command_result)
-    diff = diff_creg.invite(result.diff)
+    model_diff = web.summon(result.diff)
+    diff = diff_creg.invite(model_diff.diff)
+    assert web.summon(model_diff.model) == model
     assert diff.item.id == '5'
     assert web.summon(result.key) == '5'
 

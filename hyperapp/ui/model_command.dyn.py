@@ -123,10 +123,14 @@ class ModelCommandAddFn(ModelCommandFn):
             log.warning("No new items with key %r exists for 'Add' command %s", result, self)
             return
         diff = Diff(item)
+        model_diff = htypes.diff.model_diff(
+            model=mosaic.put(ctx.model),
+            diff=mosaic.put(diff.piece),
+            )
         return htypes.command.command_result(
             model=None,
             key=mosaic.put(key),
-            diff=mosaic.put(diff.piece),
+            diff=mosaic.put(model_diff),
             )
 
 
