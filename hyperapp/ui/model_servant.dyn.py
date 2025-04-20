@@ -15,18 +15,22 @@ class ModelServant:
 
     @property
     def fn(self):
-        assert self._servant_fn  # set_servant_fn was not yet called: Model is not yet populated.
+        self._check_ready()
         return self._servant_fn
 
     @property
     def key_field(self):
-        assert self._servant_fn  # set_servant_fn was not yet called: Model is not yet populated.
+        self._check_ready()
         return self._key_field
 
     @property
     def key_field_t(self):
-        assert self._servant_fn  # set_servant_fn was not yet called: Model is not yet populated.
+        self._check_ready()
         return self._key_field_t
+
+    def _check_ready(self):
+        if not self._servant_fn:
+            raise RuntimeError(f"Model {self._model!r} is not yet populated")  # set_servant_fn was not yet called
 
     def set_servant_fn(self, key_field, key_field_t, fn):
         log.info("Got model servant: %s -> [%s: %s] %s", self._model, key_field, key_field_t, fn)
