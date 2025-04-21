@@ -134,8 +134,7 @@ class KeyListAdapterMixin:
             self._item_list[idx] = diff.item
             return IndexListDiff.Replace(idx, diff.item)
         if isinstance(diff, KeyListDiff.Remove):
-            key = getattr(self._item_list[diff_idx], self._key_field)
-            idx = self._key_to_idx[key]
+            idx = self._key_to_idx[diff.key]
             del self._item_list[idx]
             return IndexListDiff.Remove(idx)
         raise NotImplementedError(diff)
