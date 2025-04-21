@@ -11,6 +11,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:command_result
 - legacy_type.command:properties
 - legacy_type.command:ui_command_enum_fn
 - legacy_type.command:ui_command_enumerator
@@ -104,6 +105,7 @@ definitions:
         code.record_adapter: ui.record_adapter:record_adapter.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.builtin.string: legacy_type.builtin:string
+        htypes.command.command_result: legacy_type.command:command_result
         htypes.command.properties: legacy_type.command:properties
         htypes.crud.arg: legacy_type.crud:arg
         htypes.crud.form_model: legacy_type.crud:form_model

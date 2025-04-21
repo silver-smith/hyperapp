@@ -416,6 +416,16 @@ class BoundCrudCommitCommand(BoundCommandBase):
         result = self._commit_fn.call(fn_ctx, remote_peer=self._remote_peer)
         if inspect.iscoroutine(result):
             result = await result
+        if result is None:
+            return None
+        assert isinstance(result, htypes.command.command_result), result
+        if result.key and not result.model:
+            # Navigate back to original model view.
+            return htypes.command.command_result(
+                model=mosaic.put(self._model),
+                key=result.key,
+                diff=result.diff,
+                )
         return result
 
     @staticmethod

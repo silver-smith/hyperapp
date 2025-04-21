@@ -13,7 +13,7 @@ from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import ModelCommandFn
 from .code.selector import Selector
-from .fixtures import qapp_fixtures
+from .fixtures import error_view_fixtures, qapp_fixtures
 from .tested.code import crud
 
 log = logging.getLogger(__name__)
@@ -33,6 +33,7 @@ def _sample_crud_update(piece, id, value):
     assert isinstance(piece, htypes.crud_tests.sample_model), piece
     if id == 11:
         assert isinstance(value, htypes.crud_tests.sample_record), value
+        return (None, 11)
     elif id == 22:
         assert isinstance(value, htypes.crud_tests.sample_selector), value
     elif id == 33:
@@ -53,7 +54,7 @@ def _sample_crud_get_fn():
 
 @mark.fixture
 def _sample_crud_update_fn():
-    return htypes.system_fn.ctx_fn(
+    return htypes.command.model_command_fn(
         function=pyobj_creg.actor_to_ref(_sample_crud_update),
         ctx_params=('piece', 'id', 'value'),
         service_params=(),
@@ -156,6 +157,8 @@ def model_layout_reg(commit_command_layout_k):
     def getitem(self, layout_k):
         def k(t):
             return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
+        if layout_k == k(htypes.crud_tests.sample_model):
+            return htypes.label.view("Sample label")
         if layout_k == k(htypes.crud_tests.sample_selector_model):
             return htypes.crud_tests.selector_view()
         if layout_k == commit_command_layout_k:
@@ -269,7 +272,7 @@ async def test_commit_command_enum_for_form(view_reg, ctx, view_piece_ctr, model
     value = htypes.crud_tests.sample_record(12345, "Some text")
     input = Mock()
     input.get_value.return_value = value
-    command_ctx = ctx.clone_with(
+    command_ctx = ctx.push(
         model=model,
         piece=model,
         input=input,
