@@ -56,8 +56,13 @@ class ModelCommandFn(ModelCommandFnBase):
                 fn=self,
                 )
             kw = self.call_kw(ctx)
-            return rpc_call(**kw)
-        result = super().call(ctx, **kw)
+            result = rpc_call(**kw)
+            if inspect.iscoroutine(result):
+                # Special case for test fixtures.
+                result = await result
+            return result
+        else:
+            result = super().call(ctx, **kw)
         if inspect.iscoroutine(result):
             result = await result
         if kw:
