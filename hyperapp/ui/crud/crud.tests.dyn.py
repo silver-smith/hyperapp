@@ -259,7 +259,7 @@ async def test_open_command_fn_to_selector(run_open_command_fn_test):
     await run_open_command_fn_test(value_t, item_id=22)
 
 
-async def test_command_enum_for_form(view_reg, ctx, view_piece_ctr, model):
+async def test_commit_command_enum_for_form(view_reg, ctx, view_piece_ctr, model):
     view_piece = view_piece_ctr(11, pick_fn=None)
     view = view_reg.animate(view_piece, ctx)
     commands = crud.crud_commit_command_enum(view)
@@ -279,7 +279,7 @@ async def test_command_enum_for_form(view_reg, ctx, view_piece_ctr, model):
     await bound_cmd.run()
 
 
-async def test_command_enum_for_selector(view_reg, ctx, _sample_selector_pick_fn, view_piece_ctr):
+async def test_commit_command_enum_for_selector(view_reg, ctx, _sample_selector_pick_fn, view_piece_ctr):
     view_piece = view_piece_ctr(22, pick_fn=_sample_selector_pick_fn.piece)
     view = view_reg.animate(view_piece, ctx)
     commands = crud.crud_commit_command_enum(view)
