@@ -7,6 +7,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.diff:append
+- legacy_type.diff:remove_idx
+- legacy_type.diff:remove_key
 - legacy_type.system:actor_template
 definitions:
   ListDiffAppend:
@@ -19,11 +21,43 @@ definitions:
     value:
       object: ListDiffAppend
       attr_name: from_piece
+  ListDiffRemoveIdx:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_diff.module
+      attr_name: ListDiffRemoveIdx
+  ListDiffRemoveIdx.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ListDiffRemoveIdx
+      attr_name: from_piece
+  ListDiffRemoveKey:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_diff.module
+      attr_name: ListDiffRemoveKey
+  ListDiffRemoveKey.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ListDiffRemoveKey
+      attr_name: from_piece
   diff_creg-diff-append.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.diff:append
       function: ListDiffAppend.from_piece
+      service_params: []
+  diff_creg-diff-remove_idx.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.diff:remove_idx
+      function: ListDiffRemoveIdx.from_piece
+      service_params: []
+  diff_creg-diff-remove_key.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.diff:remove_key
+      function: ListDiffRemoveKey.from_piece
       service_params: []
   list_diff.module:
     type: legacy_type.builtin:python_module
@@ -33,5 +67,7 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         htypes.diff.append: legacy_type.diff:append
+        htypes.diff.remove_idx: legacy_type.diff:remove_idx
+        htypes.diff.remove_key: legacy_type.diff:remove_key
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service

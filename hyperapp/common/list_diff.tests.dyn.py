@@ -15,3 +15,19 @@ def test_append():
         )
     diff = list_diff.ListDiffAppend.from_piece(piece)
     assert diff.piece == piece
+
+
+def test_remove_idx():
+    piece = htypes.diff.remove_idx(
+        idx=123,
+        )
+    diff = list_diff.ListDiffRemoveIdx.from_piece(piece)
+    assert diff.piece == piece
+
+
+def test_remove_key():
+    piece = htypes.diff.remove_key(
+        key=mosaic.put('123'),
+        )
+    diff = list_diff.ListDiffRemoveKey.from_piece(piece)
+    assert diff.piece == piece

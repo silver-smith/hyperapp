@@ -6,6 +6,8 @@ import:
 - common.data_service:resource_name_creg-data_service-config_item.actor-template
 - common.diff_creg:diff_creg.service
 - common.list_diff:diff_creg-diff-append.actor-template
+- common.list_diff:diff_creg-diff-remove_idx.actor-template
+- common.list_diff:diff_creg-diff-remove_key.actor-template
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -28,6 +30,8 @@ definitions:
     value:
       items:
       - common.list_diff:diff_creg-diff-append.actor-template
+      - common.list_diff:diff_creg-diff-remove_idx.actor-template
+      - common.list_diff:diff_creg-diff-remove_key.actor-template
   resource_name_creg:
     type: legacy_type.system:item_list_config
     value:

@@ -49,11 +49,22 @@ class ListDiffInsertKey:
 
 class ListDiffRemoveIdx:
 
+    @classmethod
+    @mark.actor.diff_creg
+    def from_piece(cls, piece):
+        return cls(piece.idx)
+
     def __init__(self, idx):
         self.idx = idx
 
     def __repr__(self):
         return f"<ListDiffRemoveIdx: @#{self.idx}>"
+
+    @property
+    def piece(self):
+        return htypes.diff.remove_idx(
+            idx=self.idx,
+            )
 
     def apply(self, value):
         assert type(value) in {list, tuple}, repr(value)
@@ -69,11 +80,23 @@ class ListDiffRemoveIdx:
 
 class ListDiffRemoveKey:
 
+    @classmethod
+    @mark.actor.diff_creg
+    def from_piece(cls, piece):
+        key = web.summon(piece.key)
+        return cls(key)
+
     def __init__(self, key):
         self.key = key
 
     def __repr__(self):
         return f"<ListDiffRemoveKey: @#{self.key}>"
+
+    @property
+    def piece(self):
+        return htypes.diff.remove_key(
+            key=mosaic.put(self.key),
+            )
 
 
 class ListDiffAppend:
