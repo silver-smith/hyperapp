@@ -14,6 +14,7 @@ from .code.marker_utils import (
     split_params,
     )
 from .code.model_ctr import ModelCtr
+from .code.feed_ctr import ListFeedCtr, IndexTreeFeedCtr
 
 
 class ModelProbe:
@@ -48,23 +49,26 @@ class ModelProbe:
         if inspect.iscoroutine(result):
             async def await_result():
                 real_result = await result
-                self._add_constructor(params, model_t, real_result)
+                self._add_constructors(params, model_t, real_result)
                 return real_result
             return await_result()
-        self._add_constructor(params, model_t, result)
+        self._add_constructors(params, model_t, result)
         return result
 
-    def _add_constructor(self, params, model_t, result):
+    def _add_constructors(self, params, model_t, result):
         result_t = self._deduce_t(result, f"{self._fn}: Returned not a deducible data type: {result!r}")
         tree_params = {'parent'}
         if self._key_field:
             tree_params |= {'current_path'}
         if isinstance(result_t, TList) and tree_params & set(params.ctx_names):
             ui_t = self._make_tree_ui_t(params, result_t)
+            FeedCtr = IndexTreeFeedCtr
         elif isinstance(result_t, TList):
             ui_t = self._make_list_ui_t(result_t)
+            FeedCtr = ListFeedCtr
         elif isinstance(result_t, TRecord):
             ui_t = self._make_record_ui_t(result_t)
+            FeedCtr = None
         else:
             raise RuntimeError(f"Unknown model {model_t} type: {result_t!r}")
         ctr = ModelCtr(
@@ -76,6 +80,14 @@ class ModelProbe:
             service_params=params.service_names,
             )
         self._ctr_collector.add_constructor(ctr)
+        if not FeedCtr:
+            return
+        feed_ctr = FeedCtr(
+            module_name=self._module_name,
+            model_t=model_t,
+            item_t=result_t.element_t,
+            )
+        self._ctr_collector.add_constructor(feed_ctr)
 
     def _make_tree_ui_t(self, params, result_t):
         self._check_parent_param(params, result_t)
