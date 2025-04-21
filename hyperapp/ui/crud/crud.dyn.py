@@ -421,8 +421,15 @@ class BoundCrudCommitCommand(BoundCommandBase):
         assert isinstance(result, htypes.command.command_result), result
         if result.key and not result.model:
             # Navigate back to original model view.
+            if self._remote_peer:
+                model = htypes.model.remote_model(
+                    model=mosaic.put(self._model),
+                    remote_peer=mosaic.put(self._remote_peer.piece),
+                    )
+            else:
+                model = self._model
             return htypes.command.command_result(
-                model=mosaic.put(self._model),
+                model=mosaic.put(model),
                 key=result.key,
                 diff=result.diff,
                 )

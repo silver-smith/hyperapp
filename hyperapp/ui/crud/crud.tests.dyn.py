@@ -112,8 +112,9 @@ def navigator_rec(navigator_widget):
 
 
 @mark.fixture
-def ctx(lcs, navigator_rec):
+def ctx(generate_rsa_identity, lcs, navigator_rec):
     return Context(
+        identity=generate_rsa_identity(fast=True),
         lcs=lcs,
         navigator=navigator_rec,
         )
@@ -130,13 +131,14 @@ def commit_command_d():
 
 
 @mark.fixture
-def view_piece_ctr(_sample_crud_get_fn, _sample_crud_update_fn, model, commit_command_d, item_id, pick_fn):
+def view_piece_ctr(generate_rsa_identity, _sample_crud_get_fn, _sample_crud_update_fn, model, commit_command_d, item_id, pick_fn):
+    identity = generate_rsa_identity(fast=True)
     base_view_piece = htypes.label.view("Sample label")
     return htypes.crud.view(
         base_view=mosaic.put(base_view_piece),
         label="Sample CRUD context",
         model=mosaic.put(model),
-        remote_peer=None,
+        remote_peer=mosaic.put(identity.peer.piece),
         commit_command_d=mosaic.put(commit_command_d),
         args=(htypes.crud.arg('id', mosaic.put(item_id)),),
         pick_fn=mosaic.put_opt(pick_fn),
@@ -260,6 +262,14 @@ def view_reg_config():
 async def test_open_command_fn_to_selector(run_open_command_fn_test):
     value_t = htypes.crud_tests.sample_selector
     await run_open_command_fn_test(value_t, item_id=22)
+
+
+@mark.fixture
+def rpc_system_call_factory(receiver_peer, sender_identity, fn):
+    def call(**kw):
+        ctx = Context(**kw)
+        return fn.call(ctx)
+    return call
 
 
 async def test_commit_command_enum_for_form(view_reg, ctx, view_piece_ctr, model):
