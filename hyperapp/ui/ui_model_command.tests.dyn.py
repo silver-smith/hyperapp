@@ -9,6 +9,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import ModelCommandFn, ModelCommandAddFn, UnboundModelCommand
+from .fixtures import error_view_fixtures
 from .tested.code import ui_model_command
 
 
@@ -151,11 +152,6 @@ def model_layout_reg_config():
             adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
             ),
         }
-
-
-@mark.fixture
-def error_view(x, ctx):
-    raise RuntimeError(f"Error view is called: {x}") from x
 
 
 async def test_command_run_open_view(get_ui_model_commands, lcs):
