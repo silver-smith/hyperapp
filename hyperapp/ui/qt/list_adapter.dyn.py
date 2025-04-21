@@ -216,7 +216,7 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
             'model': self._model,
             'piece': self._model,
             }
-        self._item_list = self._call_fn(**additional_kw)
+        self._item_list = list(self._call_fn(**additional_kw))
 
     @abc.abstractmethod
     def _call_fn(self, **kw):
