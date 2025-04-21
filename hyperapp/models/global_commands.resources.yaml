@@ -12,6 +12,8 @@ import:
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.command_list_model:item
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.global_commands:command_arg
 - legacy_type.global_commands:model
 - legacy_type.model:index_list_ui_t
@@ -81,6 +83,15 @@ definitions:
     value:
       t: legacy_type.global_commands:model
       command: run_command.model-command
+  global_commands-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.global_commands:model
+      feed_type: global_commands-model.feed-type
+  global_commands-model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.command_list_model:item
   global_commands-model.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:

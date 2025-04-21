@@ -23,6 +23,8 @@ import:
 - legacy_type.data_browser:ref_list_item
 - legacy_type.data_browser:ref_list_open_d
 - legacy_type.data_browser:ref_list_view
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model:record_ui_t
@@ -78,6 +80,15 @@ definitions:
     value:
       t: legacy_type.data_browser:list_view
       command: list_open.model-command
+  data_browser-list_view.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.data_browser:list_view
+      feed_type: data_browser-list_view.feed-type
+  data_browser-list_view.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.data_browser:list_item
   data_browser-list_view.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:
@@ -125,6 +136,15 @@ definitions:
     value:
       t: legacy_type.data_browser:record_view
       command: record_open.model-command
+  data_browser-record_view.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.data_browser:record_view
+      feed_type: data_browser-record_view.feed-type
+  data_browser-record_view.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.data_browser:record_item
   data_browser-record_view.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:
@@ -151,6 +171,15 @@ definitions:
     value:
       t: legacy_type.data_browser:ref_list_view
       command: ref_list_open.model-command
+  data_browser-ref_list_view.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.data_browser:ref_list_view
+      feed_type: data_browser-ref_list_view.feed-type
+  data_browser-ref_list_view.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.data_browser:ref_list_item
   data_browser-ref_list_view.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:

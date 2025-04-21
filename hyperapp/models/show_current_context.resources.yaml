@@ -8,6 +8,8 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.show_current_context:item
@@ -36,6 +38,15 @@ definitions:
     value:
       object: show_current_context.module
       attr_name: show_current_context
+  show_current_context-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.show_current_context:model
+      feed_type: show_current_context-model.feed-type
+  show_current_context-model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.show_current_context:item
   show_current_context-model.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:

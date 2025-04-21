@@ -15,6 +15,7 @@ import:
 - legacy_type.command:model_command_fn
 - legacy_type.command_groups:pane_2_d
 - legacy_type.feed:feed_template
+- legacy_type.feed:index_tree_feed_type
 - legacy_type.feed:list_feed_type
 - legacy_type.layout:add_view_command_d
 - legacy_type.layout:command_item
@@ -134,6 +135,15 @@ definitions:
     value:
       t: legacy_type.layout:view
       command: open_view_item_commands.model-command
+  layout-view.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.layout:view
+      feed_type: layout-view.feed-type
+  layout-view.feed-type:
+    type: legacy_type.feed:index_tree_feed_type
+    value:
+      item_t: legacy_type.layout:item
   layout-view.index-tree-ui-t:
     type: legacy_type.model:index_tree_ui_t
     value:

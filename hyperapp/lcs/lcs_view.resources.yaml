@@ -132,7 +132,7 @@ definitions:
   lcs_view-view.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
-      item_t: null
+      item_t: legacy_type.lcs_view:item
   lcs_view-view.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:

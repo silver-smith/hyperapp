@@ -9,6 +9,8 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
+- legacy_type.feed:feed_template
+- legacy_type.feed:index_tree_feed_type
 - legacy_type.fs:item
 - legacy_type.fs:model
 - legacy_type.model:key_tree_ui_t
@@ -27,6 +29,15 @@ definitions:
       t: legacy_type.fs:model
       function: format_model
       service_params: []
+  fs-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.fs:model
+      feed_type: fs-model.feed-type
+  fs-model.feed-type:
+    type: legacy_type.feed:index_tree_feed_type
+    value:
+      item_t: legacy_type.fs:item
   fs-model.key-tree-ui-t:
     type: legacy_type.model:key_tree_ui_t
     value:

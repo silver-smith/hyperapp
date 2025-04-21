@@ -15,6 +15,8 @@ import:
 - legacy_type.command:model_command_add_fn
 - legacy_type.command:model_command_fn
 - legacy_type.command:open_args_picker_command_d
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:model
 - legacy_type.ref_list:folder
@@ -239,6 +241,15 @@ definitions:
     value:
       t: legacy_type.ref_list:model
       command: remove.model-command
+  ref_list-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.ref_list:model
+      feed_type: ref_list-model.feed-type
+  ref_list-model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.ref_list:item
   ref_list-model.key-list-ui-t:
     type: legacy_type.model:key_list_ui_t
     value:

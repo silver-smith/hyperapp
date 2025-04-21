@@ -10,6 +10,8 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.lcs_dirs_view:item
 - legacy_type.lcs_dirs_view:lcs_dirs_items_d
 - legacy_type.lcs_dirs_view:lcs_open_dirs_d
@@ -54,6 +56,15 @@ definitions:
     value:
       t: legacy_type.lcs_dirs_view:view
       command: lcs_dirs_items.model-command
+  lcs_dirs_view-view.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.lcs_dirs_view:view
+      feed_type: lcs_dirs_view-view.feed-type
+  lcs_dirs_view-view.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.lcs_dirs_view:item
   lcs_dirs_view-view.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:

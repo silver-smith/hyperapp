@@ -18,6 +18,8 @@ import:
 - legacy_type.config_layer_list:layer
 - legacy_type.config_service_list:model
 - legacy_type.crud:open_command_fn
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:model
 - legacy_type.system:actor_template
@@ -58,6 +60,15 @@ definitions:
       - value
       service_params:
       - system
+  config_item_list-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.config_item_list:model
+      feed_type: config_item_list-model.feed-type
+  config_item_list-model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.config_item_list:item
   config_item_list-model.key-list-ui-t:
     type: legacy_type.model:key_list_ui_t
     value:

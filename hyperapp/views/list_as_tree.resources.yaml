@@ -42,6 +42,15 @@ definitions:
     value:
       t: legacy_type.list:view
       command: switch_list_to_tree.ui-command
+  list_as_tree-layer_list.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.list_as_tree:layer_list
+      feed_type: list_as_tree-layer_list.feed-type
+  list_as_tree-layer_list.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.list_as_tree:layer_list_item
   list_as_tree-layer_list.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:

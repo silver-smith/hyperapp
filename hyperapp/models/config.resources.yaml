@@ -9,37 +9,44 @@ import:
 - models.column_list:list-view-open_column_list.command-cfg-item
 - models.command_list_model:global_commands-model-set_shortcut.command-cfg-item
 - models.command_list_model:global_commands-model.edit.command-cfg-item
-- models.command_list_model:global_commands-model.feed-template
 - models.command_list_model:model_commands-model-set_shortcut.command-cfg-item
 - models.command_list_model:model_commands-model.edit.command-cfg-item
 - models.config.config_item_list:config_item_list-model-open_config_key.command-cfg-item
+- models.config.config_item_list:config_item_list-model.feed-template
 - models.config.config_item_list:config_item_list-model.model-cfg-item
 - models.config.config_item_list:config_item_list-model.open_move.command-cfg-item
 - models.config.config_item_list:config_service_list-model-open_config_item_list.command-cfg-item
 - models.config.config_item_list:formatter_creg-config_item_list-model.actor-template
 - models.config.config_layer_list:config_layer_list-layer.selector-template
+- models.config.config_layer_list:config_layer_list-model.feed-template
 - models.config.config_layer_list:config_layer_list-model.model-cfg-item
 - models.config.config_layer_list:open_config_layer_list.global-model-command
+- models.config.config_service_list:config_service_list-model.feed-template
 - models.config.config_service_list:config_service_list-model.model-cfg-item
 - models.config.config_service_list:open_config_service_list.global-model-command
 - models.data_browser:browse_current_model.global-model-command
 - models.data_browser:data_browser-list_view-list_open.command-cfg-item
+- models.data_browser:data_browser-list_view.feed-template
 - models.data_browser:data_browser-list_view.model-cfg-item
 - models.data_browser:data_browser-primitive_view.model-cfg-item
 - models.data_browser:data_browser-record_view-record_open.command-cfg-item
+- models.data_browser:data_browser-record_view.feed-template
 - models.data_browser:data_browser-record_view.model-cfg-item
 - models.data_browser:data_browser-ref_list_view-ref_list_open.command-cfg-item
+- models.data_browser:data_browser-ref_list_view.feed-template
 - models.data_browser:data_browser-ref_list_view.model-cfg-item
 - models.data_browser:formatter_creg-data_browser-record_view.actor-template
 - models.data_browser_adapter:data_browser_data_view.view-factory-template
 - models.data_browser_adapter:ui_adapter_creg-data_browser-record_data_adapter.actor-template
 - models.file_bundles:file_bundles-view-open.command-cfg-item
+- models.file_bundles:file_bundles-view.feed-template
 - models.file_bundles:file_bundles-view.model-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
 - models.global_commands:formatter_creg-global_commands-command_arg.actor-template
 - models.global_commands:formatter_creg-global_commands-model.actor-template
 - models.global_commands:global_commands-command_arg.selector-template
 - models.global_commands:global_commands-model-run_command.command-cfg-item
+- models.global_commands:global_commands-model.feed-template
 - models.global_commands:global_commands-model.model-cfg-item
 - models.global_commands:open_global_commands.global-model-command
 - models.identity_command:command_creg-identity_command-identity_command.actor-template
@@ -51,6 +58,7 @@ import:
 - models.model_commands:open_model_commands.global-model-command
 - models.model_list:formatter_creg-model_list-model.actor-template
 - models.model_list:formatter_creg-model_list-model_arg.actor-template
+- models.model_list:model_list-model.feed-template
 - models.model_list:model_list-model.model-cfg-item
 - models.model_list:model_list-model_arg.selector-template
 - models.model_list:open_model_list.global-model-command
@@ -70,10 +78,12 @@ import:
 - models.ref_list:ref_list-model-open.command-cfg-item
 - models.ref_list:ref_list-model-open_parent.command-cfg-item
 - models.ref_list:ref_list-model-remove.command-cfg-item
+- models.ref_list:ref_list-model.feed-template
 - models.ref_list:ref_list-model.model-cfg-item
 - models.ref_list:ref_list.service
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
 - models.show_current_context:formatter_creg-show_current_context-model.actor-template
+- models.show_current_context:show_current_context-model.feed-template
 - models.show_current_context:show_current_context-model.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 definitions:
@@ -103,9 +113,19 @@ definitions:
     value:
       items:
       - models.column_list:column_list-view.feed-template
-      - models.command_list_model:global_commands-model.feed-template
+      - models.config.config_item_list:config_item_list-model.feed-template
+      - models.config.config_layer_list:config_layer_list-model.feed-template
+      - models.config.config_service_list:config_service_list-model.feed-template
+      - models.data_browser:data_browser-list_view.feed-template
+      - models.data_browser:data_browser-record_view.feed-template
+      - models.data_browser:data_browser-ref_list_view.feed-template
+      - models.file_bundles:file_bundles-view.feed-template
+      - models.global_commands:global_commands-model.feed-template
       - models.identity_command:model_commands-model.feed-template
+      - models.model_list:model_list-model.feed-template
       - models.peer_list:peer_list-model.feed-template
+      - models.ref_list:ref_list-model.feed-template
+      - models.show_current_context:show_current_context-model.feed-template
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:

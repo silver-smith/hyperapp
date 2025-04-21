@@ -129,6 +129,15 @@ definitions:
       - piece
       service_params:
       - feed_factory
+  sample_list-sample_list.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.sample_list:sample_list
+      feed_type: sample_list-sample_list.feed-type
+  sample_list-sample_list.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.sample_list:item
   sample_list-sample_list.index-list-ui-t:
     type: legacy_type.model:index_list_ui_t
     value:
