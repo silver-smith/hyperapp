@@ -25,6 +25,7 @@ model_command_enumerator = record(command_enumerator)
 
 model_command_fn = record(ctx_fn)
 model_command_add_fn = record(model_command_fn)
+model_command_remove_fn = record(model_command_fn)
 model_command_enum_fn = record(ctx_fn)
 ui_command_enum_fn = record(ctx_fn)
 

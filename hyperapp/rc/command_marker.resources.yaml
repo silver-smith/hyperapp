@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:model_command_add_fn
 - legacy_type.command:model_command_fn
+- legacy_type.command:model_command_remove_fn
 - legacy_type.marker:marker_template
 - rc.command_ctr:command_ctr.module
 - rc.marker_utils:marker_utils.module
@@ -19,6 +20,7 @@ definitions:
       import_list:
         htypes.command.model_command_add_fn: legacy_type.command:model_command_add_fn
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
+        htypes.command.model_command_remove_fn: legacy_type.command:model_command_remove_fn
         services.deduce_t: builtins:deduce_t.service
         code.command_ctr: rc.command_ctr:command_ctr.module
         code.marker_utils: rc.marker_utils:marker_utils.module
