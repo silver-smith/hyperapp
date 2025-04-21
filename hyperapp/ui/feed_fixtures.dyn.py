@@ -60,7 +60,7 @@ class FeedDiscoverer:
             item_t = deduce_t(diff.item)
             ctr = ListFeedCtr(
                 module_name=module_name,
-                t=self._piece_t,
+                model_t=self._piece_t,
                 item_t=item_t,
                 )
             if self.ctr:
@@ -72,7 +72,7 @@ class FeedDiscoverer:
         elif isinstance(diff, (IndexListDiff.Remove, KeyListDiff.Remove)):
             ctr = ListFeedCtr(
                 module_name=module_name,
-                t=self._piece_t,
+                model_t=self._piece_t,
                 item_t=None,
                 )
             if self.ctr and not self.ctr.item_t:
@@ -97,7 +97,7 @@ class FeedDiscoverer:
             item_t = deduce_t(diff.item)
             ctr = IndexTreeFeedCtr(
                 module_name=module_name,
-                t=self._piece_t,
+                model_t=self._piece_t,
                 item_t=item_t,
                 )
             if self.ctr:
@@ -109,7 +109,7 @@ class FeedDiscoverer:
         elif isinstance(diff, TreeDiff.Remove):
             ctr = IndexTreeFeedCtr(
                 module_name=module_name,
-                t=self._piece_t,
+                model_t=self._piece_t,
                 item_t=None,
                 )
             if self.ctr:

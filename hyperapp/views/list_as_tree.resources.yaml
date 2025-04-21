@@ -72,7 +72,7 @@ definitions:
   list_as_tree-opener_commands.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.list_as_tree:opener_commands
+      model_t: legacy_type.list_as_tree:opener_commands
       feed_type: list_as_tree-opener_commands.feed-type
   list_as_tree-opener_commands.feed-type:
     type: legacy_type.feed:list_feed_type

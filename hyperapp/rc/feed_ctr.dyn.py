@@ -13,13 +13,13 @@ class FeedCtr(ModuleCtr):
     def from_piece(cls, piece):
         return cls(
             module_name=piece.module_name,
-            t=pyobj_creg.invite(piece.t),
+            model_t=pyobj_creg.invite(piece.model_t),
             item_t=pyobj_creg.invite(piece.item_t) if piece.item_t is not None else None,
             )
 
-    def __init__(self, module_name, t, item_t):
+    def __init__(self, module_name, model_t, item_t):
         super().__init__(module_name)
-        self._t = t
+        self._model_t = model_t
         self._item_t = item_t
 
     def __eq__(self, rhs):
@@ -27,7 +27,7 @@ class FeedCtr(ModuleCtr):
             return False
         if self._module_name != rhs._module_name:
             return False
-        if self._t is not rhs._t:
+        if self._model_t is not rhs._model_t:
             return False
         if self._item_t is not rhs._item_t:
             return False
@@ -37,12 +37,12 @@ class FeedCtr(ModuleCtr):
     def piece(self):
         return self._constructor_t(
             module_name=self._module_name,
-            t=pyobj_creg.actor_to_ref(self._t),
+            model_t=pyobj_creg.actor_to_ref(self._model_t),
             item_t=pyobj_creg.actor_to_ref(self._item_t) if self._item_t is not None else None,
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        req = CfgItemReq('feed_factory', self._t)
+        req = CfgItemReq('feed_factory', self._model_t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             'feed_factory', self._type_name, req, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)
@@ -50,7 +50,7 @@ class FeedCtr(ModuleCtr):
     def make_component(self, types, python_module, name_to_res=None):
         feed_type = self._make_feed_type()
         template = htypes.feed.feed_template(
-            t=pyobj_creg.actor_to_ref(self._t),
+            model_t=pyobj_creg.actor_to_ref(self._model_t),
             feed_type=mosaic.put(feed_type),
             )
         if name_to_res is not None:
@@ -67,7 +67,7 @@ class FeedCtr(ModuleCtr):
 
     @property
     def _type_name(self):
-        return f'{self._t.module_name}-{self._t.name}'
+        return f'{self._model_t.module_name}-{self._model_t.name}'
 
 
 class ListFeedCtr(FeedCtr):

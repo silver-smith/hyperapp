@@ -94,7 +94,7 @@ definitions:
   layout-command_list.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.layout:command_list
+      model_t: legacy_type.layout:command_list
       feed_type: layout-command_list.feed-type
   layout-command_list.feed-type:
     type: legacy_type.feed:list_feed_type

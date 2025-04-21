@@ -127,7 +127,7 @@ definitions:
   lcs_view-view.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.lcs_view:view
+      model_t: legacy_type.lcs_view:view
       feed_type: lcs_view-view.feed-type
   lcs_view-view.feed-type:
     type: legacy_type.feed:list_feed_type

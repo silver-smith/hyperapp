@@ -92,7 +92,7 @@ definitions:
   model_commands-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.model_commands:model
+      model_t: legacy_type.model_commands:model
       feed_type: model_commands-model.feed-type
   model_commands-model.feed-type:
     type: legacy_type.feed:list_feed_type

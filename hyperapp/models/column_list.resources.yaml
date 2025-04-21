@@ -37,7 +37,7 @@ definitions:
   column_list-view.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.column_list:view
+      model_t: legacy_type.column_list:view
       feed_type: column_list-view.feed-type
   column_list-view.feed-type:
     type: legacy_type.feed:list_feed_type

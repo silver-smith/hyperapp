@@ -9,24 +9,24 @@ class FeedTypeTemplate:
     @mark.actor.cfg_item_creg
     def from_piece(cls, piece):
         return cls(
-            t=pyobj_creg.invite(piece.t),
+            model_t=pyobj_creg.invite(piece.model_t),
             feed_type_ref=piece.feed_type,
             )
 
-    def __init__(self, t, feed_type_ref):
-        self._t = t
+    def __init__(self, model_t, feed_type_ref):
+        self._model_t = model_t
         self._feed_type_ref = feed_type_ref
 
     @property
     def piece(self):
         return htypes.feed.feed_template(
-            t=pyobj_creg.actor_to_ref(self._t),
+            model_t=pyobj_creg.actor_to_ref(self._model_t),
             feed_type=self._feed_type_ref,
             )
 
     @property
     def key(self):
-        return self._t
+        return self._model_t
 
     def resolve(self, system, service_name):
         # Should resolve it here manually.

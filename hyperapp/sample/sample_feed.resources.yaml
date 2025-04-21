@@ -15,7 +15,7 @@ definitions:
   sample_feed-sample_list_feed.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.sample_feed:sample_list_feed
+      model_t: legacy_type.sample_feed:sample_list_feed
       feed_type: sample_feed-sample_list_feed.feed-type
   sample_feed-sample_list_feed.feed-type:
     type: legacy_type.feed:list_feed_type
@@ -24,7 +24,7 @@ definitions:
   sample_feed-sample_tree_feed.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.sample_feed:sample_tree_feed
+      model_t: legacy_type.sample_feed:sample_tree_feed
       feed_type: sample_feed-sample_tree_feed.feed-type
   sample_feed-sample_tree_feed.feed-type:
     type: legacy_type.feed:index_tree_feed_type

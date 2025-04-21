@@ -12,7 +12,7 @@ def test_feed_type_template():
         item_t=pyobj_creg.actor_to_ref(htypes.feed_type_template_tests.sample_item),
         )
     template_piece = htypes.feed.feed_template(
-        t=pyobj_creg.actor_to_ref(piece_t),
+        model_t=pyobj_creg.actor_to_ref(piece_t),
         feed_type=mosaic.put(feed_type),
         )
     template = feed_type_template.FeedTypeTemplate.from_piece(template_piece)

@@ -101,7 +101,7 @@ definitions:
   sample_list-feed_sample_list.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.sample_list:feed_sample_list
+      model_t: legacy_type.sample_list:feed_sample_list
       feed_type: sample_list-feed_sample_list.feed-type
   sample_list-feed_sample_list.feed-type:
     type: legacy_type.feed:list_feed_type

@@ -203,7 +203,7 @@ definitions:
   sample_tree-sample_tree.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.sample_tree:sample_tree
+      model_t: legacy_type.sample_tree:sample_tree
       feed_type: sample_tree-sample_tree.feed-type
   sample_tree-sample_tree.feed-type:
     type: legacy_type.feed:index_tree_feed_type

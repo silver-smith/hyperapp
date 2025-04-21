@@ -83,7 +83,7 @@ definitions:
   layout-view.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      t: legacy_type.layout:view
+      model_t: legacy_type.layout:view
       feed_type: layout-view.feed-type
   layout-view.feed-type:
     type: legacy_type.feed:index_tree_feed_type
