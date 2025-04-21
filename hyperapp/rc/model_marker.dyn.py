@@ -59,7 +59,7 @@ class ModelProbe:
         tree_params = {'parent'}
         if self._key_field:
             tree_params |= {'current_path'}
-        if tree_params & set(params.ctx_names):
+        if isinstance(result_t, TList) and tree_params & set(params.ctx_names):
             ui_t = self._make_tree_ui_t(params, result_t)
         elif isinstance(result_t, TList):
             ui_t = self._make_list_ui_t(result_t)
@@ -78,8 +78,6 @@ class ModelProbe:
         self._ctr_collector.add_constructor(ctr)
 
     def _make_tree_ui_t(self, params, result_t):
-        if not isinstance(result_t, TList):
-            self._raise_error(f"Tree model should return an item list: {result!r}")
         self._check_parent_param(params, result_t)
         self._check_path_param(params, result_t)
         item_t = result_t.element_t
