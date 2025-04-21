@@ -14,6 +14,7 @@ import:
 - legacy_type.command:model_command
 - legacy_type.command:model_command_add_fn
 - legacy_type.command:model_command_fn
+- legacy_type.command:model_command_remove_fn
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
@@ -312,7 +313,7 @@ definitions:
     type: remove_d
     value: {}
   remove.fn:
-    type: legacy_type.command:model_command_fn
+    type: legacy_type.command:model_command_remove_fn
     value:
       function: remove
       ctx_params:

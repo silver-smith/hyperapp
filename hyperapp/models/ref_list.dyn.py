@@ -150,9 +150,10 @@ def add_ref(piece, ref, ref_list):
     return ref_id
 
 
-@mark.command
+@mark.command.remove
 def remove(piece, current_id, ref_list):
     ref_list.remove(current_id)
+    return True
 
 
 @mark.global_command
