@@ -28,6 +28,10 @@ def _sample_add_command(piece, state, sample_service):
     return '5'
 
 
+def _sample_remove_command(piece, current_key, sample_service):
+    return True
+
+
 @mark.fixture
 def sample_command_fn():
     return htypes.command.model_command_fn(
@@ -82,14 +86,19 @@ async def test_command_fn(model, ctx, sample_command_fn):
     assert fn.piece == sample_command_fn
     result = await fn.call(ctx, piece=model, state="Sample state")
     assert isinstance(result, htypes.command.command_result)
+    assert result.diff is None
 
 
-async def test_command_add_fn(system_fn_creg, diff_creg, model_servant, sample_model_fn, model, ctx):
+@mark.fixture.obj
+def model_servant_set(system_fn_creg, model_servant, sample_model_fn, model):
     model_servant(model).set_servant_fn(
         key_field='id',
         key_field_t=htypes.builtin.string,
         fn=system_fn_creg.animate(sample_model_fn),
         )
+
+
+async def test_command_add_fn(diff_creg, model_servant_set, model, ctx):
     piece = htypes.command.model_command_add_fn(
         function=pyobj_creg.actor_to_ref(_sample_add_command),
         ctx_params=('piece', 'state'),
@@ -103,7 +112,27 @@ async def test_command_add_fn(system_fn_creg, diff_creg, model_servant, sample_m
     diff = diff_creg.invite(model_diff.diff)
     assert web.summon(model_diff.model) == model
     assert diff.item.id == '5'
-    assert web.summon(result.key) == '5'
+    assert web.summon_opt(result.key) == '5'
+    assert result.model is None
+
+
+async def test_command_remove_fn(diff_creg, model_servant_set, model, ctx):
+    piece = htypes.command.model_command_remove_fn(
+        function=pyobj_creg.actor_to_ref(_sample_remove_command),
+        ctx_params=('piece', 'current_key'),
+        service_params=('sample_service',),
+        )
+    fn = model_command.ModelCommandRemoveFn.from_piece(piece)
+    assert fn.piece == piece
+    result = await fn.call(ctx, current_key='5')
+    assert isinstance(result, htypes.command.command_result)
+    model_diff = web.summon(result.diff)
+    diff = diff_creg.invite(model_diff.diff)
+    assert web.summon(model_diff.model) == model
+    assert diff.key == '5'
+    assert result.model is None
+    assert result.key is None
+
 
 
 def test_command_enum_fn(model, ctx, sample_command_enum_fn):

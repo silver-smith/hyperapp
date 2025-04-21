@@ -65,6 +65,7 @@ import:
 - ui.model_command:system_fn_creg-command-model_command_add_fn.actor-template
 - ui.model_command:system_fn_creg-command-model_command_enum_fn.actor-template
 - ui.model_command:system_fn_creg-command-model_command_fn.actor-template
+- ui.model_command:system_fn_creg-command-model_command_remove_fn.actor-template
 - ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
 - ui.model_layout_reg:model_layout_reg.service
 - ui.model_servant:model_servant.service
@@ -366,6 +367,7 @@ definitions:
       - ui.model_command:system_fn_creg-command-model_command_add_fn.actor-template
       - ui.model_command:system_fn_creg-command-model_command_enum_fn.actor-template
       - ui.model_command:system_fn_creg-command-model_command_fn.actor-template
+      - ui.model_command:system_fn_creg-command-model_command_remove_fn.actor-template
       - ui.ui_command:system_fn_creg-command-ui_command_enum_fn.actor-template
   ui_adapter_creg:
     type: legacy_type.system:item_list_config

@@ -16,6 +16,7 @@ import:
 - legacy_type.command:model_command_enum_fn
 - legacy_type.command:model_command_enumerator
 - legacy_type.command:model_command_fn
+- legacy_type.command:model_command_remove_fn
 - legacy_type.diff:model_diff
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.list_config_ctl:flat_list_config_ctl
@@ -55,6 +56,16 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: ModelCommandFn
+      attr_name: from_piece
+  ModelCommandRemoveFn:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_command.module
+      attr_name: ModelCommandRemoveFn
+  ModelCommandRemoveFn.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ModelCommandRemoveFn
       attr_name: from_piece
   command_creg-command-model_command.actor-template:
     type: legacy_type.system:actor_template
@@ -125,6 +136,7 @@ definitions:
         htypes.command.model_command_add_fn: legacy_type.command:model_command_add_fn
         htypes.command.model_command_enum_fn: legacy_type.command:model_command_enum_fn
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
+        htypes.command.model_command_remove_fn: legacy_type.command:model_command_remove_fn
         htypes.diff.model_diff: legacy_type.diff:model_diff
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
@@ -198,3 +210,12 @@ definitions:
       service_params:
       - system
       - rpc_system_call_factory
+  system_fn_creg-command-model_command_remove_fn.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:model_command_remove_fn
+      function: ModelCommandRemoveFn.from_piece
+      service_params:
+      - system
+      - rpc_system_call_factory
+      - model_servant

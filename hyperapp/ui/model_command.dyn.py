@@ -60,7 +60,11 @@ class ModelCommandFn(ModelCommandFnBase):
         result = super().call(ctx, **kw)
         if inspect.iscoroutine(result):
             result = await result
-        return self._prepare_result(ctx, result)
+        if kw:
+            kw_ctx = ctx.clone_with(**kw)
+        else:
+            kw_ctx = ctx
+        return self._prepare_result(kw_ctx, result)
 
     @staticmethod
     def _prepare_result(ctx, result):
@@ -82,9 +86,7 @@ class ModelCommandFn(ModelCommandFnBase):
             )
 
 
-class ModelCommandAddFn(ModelCommandFn):
-
-    _fn_t = htypes.command.model_command_add_fn
+class ModelCommandOpFn(ModelCommandFn):
 
     @classmethod
     @mark.actor.system_fn_creg
@@ -97,6 +99,18 @@ class ModelCommandAddFn(ModelCommandFn):
         super().__init__(rpc_system_call_factory, ctx_params, service_params, raw_fn, bound_fn)
         self._model_servant = model_servant
 
+    @staticmethod
+    def _ctx_model(ctx):
+        try:
+            return ctx.model
+        except KeyError:
+            return ctx.piece
+
+
+class ModelCommandAddFn(ModelCommandOpFn):
+
+    _fn_t = htypes.command.model_command_add_fn
+
     def _prepare_result(self, ctx, result):
         assert not isinstance(result, htypes.command.command_result)
         if result is None:
@@ -105,11 +119,11 @@ class ModelCommandAddFn(ModelCommandFn):
         servant = self._model_servant(model)
         if servant.key_field_t is None:
             if type(result) is not int:
-                raise RuntimeError(f"Result from add command for {ctx.piece} is expected to be an int: {result!r}")
+                raise RuntimeError(f"Result from 'add' command for {model} is expected to be an int: {result!r}")
             Diff = IndexListDiff.Append
         else:
             if not isinstance(result, servant.key_field_t):
-                raise RuntimeError(f"Result from add command for {ctx.piece} is expected to be a {servant.key_field_t}: {result!r}")
+                raise RuntimeError(f"Result from 'add' command for {model} is expected to be a {servant.key_field_t}: {result!r}")
             Diff = KeyListDiff.Append
         key_field = servant.key_field
         item_list = servant.fn.call(ctx)
@@ -134,12 +148,70 @@ class ModelCommandAddFn(ModelCommandFn):
             diff=mosaic.put(model_diff),
             )
 
+
+class ModelCommandRemoveFn(ModelCommandOpFn):
+
+    _fn_t = htypes.command.model_command_remove_fn
+
+    def _prepare_result(self, ctx, result):
+        assert not isinstance(result, htypes.command.command_result)
+        if result is None:
+            return result
+        if type(result) is not bool:
+            raise RuntimeError(f"Result from 'remove' command for {model} should be None or bool: {result!r}")
+        if not result:
+            return
+        model = self._ctx_model(ctx)
+        servant = self._model_servant(model)
+        if servant.key_field_t is None:
+            idx = self._ctx_idx(ctx, model)
+            diff = IndexListDiff.Remove(idx=idx)
+        else:
+            param_name, key = self._ctx_key(ctx, servant.key_field)
+            if not isinstance(key, servant.key_field_t):
+                raise RuntimeError(f"'Remove' command parameter {param_name!r} for {model} is expected to be a {servant.key_field_t}: {key!r}")
+            diff = KeyListDiff.Remove(key=key)
+        model_diff = htypes.diff.model_diff(
+            model=mosaic.put(model),
+            diff=mosaic.put(diff.piece),
+            )
+        return htypes.command.command_result(
+            model=None,
+            key=None,
+            diff=mosaic.put(model_diff),
+            )
+
     @staticmethod
-    def _ctx_model(ctx):
+    def _ctx_idx(ctx, model):
         try:
-            return ctx.model
+            idx = ctx.current_idx
+            if type(idx) is not int:
+                raise RuntimeError(f"'Remove' command parameter {param_name!r} for {model} is expected to be an int: {idx!r}")
+            return idx
         except KeyError:
-            return ctx.piece
+            pass
+        if 'current_item' in ctx:
+            raise RuntimeError(f"TODO: Remove command: Produce 'current_idx' for {model} from 'current_item' parameter")
+        raise RuntimeError(
+            f"'Remove' command from indexed model {model} should have at least one of parameters: 'current_idx', 'current_item'")
+
+    @staticmethod
+    def _ctx_key(ctx, key_field):
+        key_param = f'current_{key_field}'
+        for name in ['current_key', key_param]:
+            try:
+                return (name, ctx[name])
+            except KeyError:
+                pass
+        try:
+            current_item = ctx.current_item
+        except KeyError:
+            raise RuntimeError(
+                f"'Remove' command from keyed model should have at least one of parameters:"
+                f" 'current_key', {key_param!r}, 'current_item'"
+                )
+        key = getattr(current_item, key_field)
+        return (f'current_item.{key_field}', key)
 
 
 class ModelCommandEnumFn(ModelCommandFnBase):
