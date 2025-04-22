@@ -1,5 +1,6 @@
+import logging
 import uuid
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 from pathlib import Path
 
 from . import htypes
@@ -8,6 +9,7 @@ from .services import (
     )
 from .code.mark import mark
 
+log = logging.getLogger(__name__)
 
 _STORAGE_PATH = Path.home() / '.local/share/hyperapp/server/ref_list.cdr'
 
@@ -18,6 +20,8 @@ class RefList:
         self._file_bundle = file_bundle
         self._folders = {}
         self._refs = {}
+        self._folder_has_names = defaultdict(set)
+        self._folder_has_refs = defaultdict(set)
         self._loaded = False
 
     def enum_items(self, format, parent_id=None):
@@ -50,30 +54,42 @@ class RefList:
     def remove(self, item_id):
         self._ensure_loaded()
         try:
+            folder = self._folders[item_id]
             del self._folders[item_id]
+            self._folder_has_names[folder.parent_id].remove(folder.name)
         except KeyError:
+            ref = self._refs[item_id]
             del self._refs[item_id]
+            self._folder_has_refs[ref.parent_id].remove(ref.ref)
         self._save()
 
     def append_folder(self, parent_id, name):
         self._ensure_loaded()
+        if name in self._folder_has_names[parent_id]:
+            log.warning("Folder with name %r already exists", name)
+            return None
         folder = htypes.ref_list.folder(
             id=str(uuid.uuid4()),
             parent_id=parent_id,
             name=name,
             )
         self._folders[folder.id] = folder
+        self._folder_has_names[parent_id].add(name)
         self._save()
         return folder.id
 
     def append_ref(self, parent_id, ref):
         self._ensure_loaded()
+        if ref in self._folder_has_refs[parent_id]:
+            log.warning("Ref %s already exists", ref)
+            return None
         ref_item = htypes.ref_list.ref(
             id=str(uuid.uuid4()),
             parent_id=parent_id,
             ref=ref,
             )
         self._refs[ref_item.id] = ref_item
+        self._folder_has_refs[parent_id].add(ref)
         self._save()
         return ref_item.id
 
@@ -89,6 +105,10 @@ class RefList:
             return
         self._folders = {folder.id: folder for folder in storage.folders}
         self._refs = {ref.id: ref for ref in storage.refs}
+        for folder in self._folders.values():
+            self._folder_has_names[folder.parent_id].add(folder.name)
+        for ref in self._refs.values():
+            self._folder_has_refs[ref.parent_id].add(ref.ref)
 
     def _save(self):
         storage = htypes.ref_list.storage(
