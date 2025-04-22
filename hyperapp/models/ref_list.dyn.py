@@ -138,23 +138,23 @@ def open(piece, current_key, request, ref_list):
         while folder.parent_id:
             folder = ref_list.get_folder(folder.parent_id)
             path = [folder.name, *path]
-        result = htypes.ref_list.model(
+        piece = htypes.ref_list.model(
             parent_id=current_key,
             folder_path=tuple(path),
             )
         if request:
-            result = htypes.model.remote_model(
-                model=mosaic.put(result),
+            piece = htypes.model.remote_model(
+                model=mosaic.put(piece),
                 remote_peer=mosaic.put(request.receiver_identity.peer.piece),
                 )
-        return result
+        return piece
     except KeyError:
         ref = ref_list.get_ref(current_key)
         return web.summon(ref.ref)
 
 
 @mark.command
-def open_parent(piece, ref_list):
+def open_parent(piece, request, ref_list):
     if not piece.parent_id:
         return
     folder = ref_list.get_folder(piece.parent_id)
@@ -162,6 +162,11 @@ def open_parent(piece, ref_list):
         parent_id=folder.parent_id,
         folder_path=piece.folder_path[:-1],
         )
+    if request:
+        piece = htypes.model.remote_model(
+            model=mosaic.put(piece),
+            remote_peer=mosaic.put(request.receiver_identity.peer.piece),
+            )
     return (piece, folder.id)
 
 

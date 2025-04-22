@@ -89,9 +89,18 @@ def test_open_folder_remotely(generate_rsa_identity, root_model, folder_2_model)
     assert web.summon(piece.model) == folder_2_model
 
 
-def test_open_parent(root_model, folder_2_model):
-    piece, key = ref_list.open_parent(folder_2_model)
+def test_open_parent_locally(root_model, folder_2_model):
+    piece, key = ref_list.open_parent(folder_2_model, request=None)
     assert piece == root_model
+    assert key == folder_2_model.parent_id
+
+
+def test_open_parent_remotelly(generate_rsa_identity, root_model, folder_2_model):
+    identity = generate_rsa_identity(fast=True)
+    request = Mock(receiver_identity=identity)
+    piece, key = ref_list.open_parent(folder_2_model, request)
+    assert isinstance(piece, htypes.model.remote_model)
+    assert web.summon(piece.model) == root_model
     assert key == folder_2_model.parent_id
 
 

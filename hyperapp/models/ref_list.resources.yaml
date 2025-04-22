@@ -167,6 +167,7 @@ definitions:
       function: open_parent
       ctx_params:
       - piece
+      - request
       service_params:
       - ref_list
   open_parent.model-command:
