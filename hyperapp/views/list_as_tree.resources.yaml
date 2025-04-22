@@ -223,14 +223,14 @@ definitions:
     type: open_opener_commands_d
     value: {}
   open_opener_commands.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_opener_commands
       ctx_params:
       - view
       - current_path
       service_params: []
-  open_opener_commands.ui-command:
+  open_opener_commands.ui-model-command:
     type: legacy_type.command:ui_command
     value:
       d: open_opener_commands.d
@@ -332,4 +332,4 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.tree:view
-      command: open_opener_commands.ui-command
+      command: open_opener_commands.ui-model-command

@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tabs:list_item
@@ -45,13 +46,13 @@ definitions:
     type: legacy_type.tabs:open_tab_list_d
     value: {}
   open_tab_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_tab_list
       ctx_params:
       - view
       service_params: []
-  open_tab_list.ui-command:
+  open_tab_list.ui-model-command:
     type: legacy_type.command:ui_command
     value:
       d: open_tab_list.d
@@ -64,7 +65,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.tabs:view
-      command: open_tab_list.ui-command
+      command: open_tab_list.ui-model-command
   tabs-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:

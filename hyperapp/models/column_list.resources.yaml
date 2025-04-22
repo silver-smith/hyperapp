@@ -83,7 +83,7 @@ definitions:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.list:view
-      command: open_column_list.ui-command
+      command: open_column_list.ui-model-command
   open_column_list:
     type: legacy_type.builtin:attribute
     value:
@@ -93,13 +93,13 @@ definitions:
     type: legacy_type.column_list:open_column_list_d
     value: {}
   open_column_list.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open_column_list
       ctx_params:
       - view
       service_params: []
-  open_column_list.ui-command:
+  open_column_list.ui-model-command:
     type: legacy_type.command:ui_command
     value:
       d: open_column_list.d
