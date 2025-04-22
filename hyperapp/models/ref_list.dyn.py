@@ -5,6 +5,7 @@ from pathlib import Path
 
 from . import htypes
 from .services import (
+    mosaic,
     web,
     )
 from .code.mark import mark
@@ -130,17 +131,23 @@ def ref_list_model(piece, format, ref_list):
 
 
 @mark.command
-def open(piece, current_key, ref_list):
+def open(piece, current_key, request, ref_list):
     try:
         folder = ref_list.get_folder(current_key)
         path = [folder.name]
         while folder.parent_id:
             folder = ref_list.get_folder(folder.parent_id)
             path = [folder.name, *path]
-        return htypes.ref_list.model(
+        result = htypes.ref_list.model(
             parent_id=current_key,
             folder_path=tuple(path),
             )
+        if request:
+            result = htypes.model.remote_model(
+                model=mosaic.put(result),
+                remote_peer=mosaic.put(request.receiver_identity.peer.piece),
+                )
+        return result
     except KeyError:
         ref = ref_list.get_ref(current_key)
         return web.summon(ref.ref)

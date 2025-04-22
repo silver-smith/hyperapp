@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code.mark import mark
 from .tested.code import ref_list
@@ -73,10 +74,19 @@ def test_root_model(root_model):
         ]
 
 
-def test_open_folder(root_model, folder_2_model):
+def test_open_folder_locally(root_model, folder_2_model):
     current_key = folder_2_model.parent_id
-    piece = ref_list.open(root_model, current_key)
+    piece = ref_list.open(root_model, current_key, request=None)
     assert piece == folder_2_model
+
+
+def test_open_folder_remotely(generate_rsa_identity, root_model, folder_2_model):
+    identity = generate_rsa_identity(fast=True)
+    request = Mock(receiver_identity=identity)
+    current_key = folder_2_model.parent_id
+    piece = ref_list.open(root_model, current_key, request)
+    assert isinstance(piece, htypes.model.remote_model)
+    assert web.summon(piece.model) == folder_2_model
 
 
 def test_open_parent(root_model, folder_2_model):
