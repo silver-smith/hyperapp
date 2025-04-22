@@ -21,6 +21,7 @@ import:
 - rc.command_ctr:command_resource-model_command_enumerator_template_ctr.actor-template
 - rc.command_ctr:command_resource-ui_command_enumerator_template_ctr.actor-template
 - rc.command_ctr:command_resource-ui_command_template_ctr.actor-template
+- rc.command_ctr:command_resource-ui_model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-template
 - rc.command_marker:command.marker-template
 - rc.command_marker:command_enum.marker-template
@@ -183,6 +184,7 @@ definitions:
       - rc.command_ctr:command_resource-model_command_enumerator_template_ctr.actor-template
       - rc.command_ctr:command_resource-ui_command_enumerator_template_ctr.actor-template
       - rc.command_ctr:command_resource-ui_command_template_ctr.actor-template
+      - rc.command_ctr:command_resource-ui_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-template
       - rc.crud_ctr:crud_ctr-commit_ctr.actor-template
       - rc.crud_ctr:crud_ctr-init_ctr.actor-template

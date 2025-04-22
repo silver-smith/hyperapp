@@ -18,6 +18,7 @@ typed_command_ctr = record(command_ctr):
 untyped_command_ctr = record(command_ctr)
 
 ui_command_template_ctr = record(typed_command_ctr)
+ui_model_command_template_ctr = record(typed_command_ctr)
 universal_ui_command_template_ctr = record(untyped_command_ctr)
 ui_command_enumerator_template_ctr = record(typed_command_ctr)
 

@@ -6,6 +6,7 @@ from .code.command_ctr import (
     UiCommandTemplateCtr,
     UniversalUiCommandTemplateCtr,
     UiCommandEnumeratorTemplateCtr,
+    UiModelCommandTemplateCtr,
     ModelCommandTemplateCtr,
     ModelCommandEnumeratorTemplateCtr,
     GlobalModelCommandTemplateCtr,
@@ -113,7 +114,7 @@ class UiModelCommandProbe(CommandProbe):
             t = self._t
         else:
             t = self._deduce_view_t(params, 'ui_command')
-        ctr = UiCommandTemplateCtr(
+        ctr = UiModelCommandTemplateCtr(
             **self._common_ctr_kw(params),
             service_name='view_ui_model_command_reg',
             enum_service_name=None,
