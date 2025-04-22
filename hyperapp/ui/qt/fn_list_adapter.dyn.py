@@ -27,13 +27,19 @@ class FnListAdapter(FnListAdapterBase):
         return (remote_peer, model)
 
     def __init__(self, system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg, model, item_t, remote_peer, ctx, fn):
-        super().__init__(feed_factory, column_visible_reg, model, item_t)
+        super().__init__(column_visible_reg, model, item_t)
         self._system_fn_creg = system_fn_creg
         self._rpc_system_call_factory = rpc_system_call_factory
         self._model_servant = model_servant
         self._remote_peer = remote_peer
         self._ctx = ctx
         self._fn = fn
+        try:
+            self._feed = feed_factory(model)
+        except KeyError:
+            self._feed = None
+        else:
+            self._feed.subscribe(self)
 
     @property
     def function(self):

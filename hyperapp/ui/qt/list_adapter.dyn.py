@@ -142,7 +142,7 @@ class KeyListAdapterMixin:
 
 class FnListAdapterBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, feed_factory, column_visible_reg, model, item_t):
+    def __init__(self, column_visible_reg, model, item_t):
         self._column_visible_reg = column_visible_reg
         self._model = model
         self._model_t = deduce_t(model)
@@ -150,12 +150,6 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._column_names = sorted(filter(self._column_visible, self._item_t.fields))
         self._item_list = None
         self._subscribers = weakref.WeakSet()
-        try:
-            self._feed = feed_factory(model)
-        except KeyError:
-            self._feed = None
-        else:
-            self._feed.subscribe(self)
 
     def _column_k(self, name):
         return htypes.column.column_k(

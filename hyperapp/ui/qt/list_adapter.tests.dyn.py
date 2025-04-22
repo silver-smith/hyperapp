@@ -16,7 +16,6 @@ class ListAdapterStub(FnListAdapterBase):
 
 def test_colunn_types():
     adapter = ListAdapterStub(
-        feed_factory=Mock(),
         column_visible_reg=Mock(),
         model=htypes.list_adapter_tests.sample_list(),
         item_t=htypes.list_adapter_tests.item,
