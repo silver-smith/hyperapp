@@ -187,8 +187,8 @@ class KeyTreeAdapterMixin:
 
 class TreeAdapter(metaclass=abc.ABCMeta):
 
-    def __init__(self, model, item_t):
-        self._model = model
+    def __init__(self, real_model, item_t):
+        self._real_model = real_model
         self._item_t = item_t
         self._id_to_item = {0: None}
         self._id_to_children_id_list = {}
@@ -200,8 +200,8 @@ class TreeAdapter(metaclass=abc.ABCMeta):
         self._subscribers.add(subscriber)
 
     @property
-    def model(self):
-        return self._model
+    def real_model(self):
+        return self._real_model
 
     def row_id(self, parent_id, row):
         id_list = self._get_id_list(parent_id)
@@ -277,7 +277,7 @@ class TreeAdapter(metaclass=abc.ABCMeta):
 
     def _populate(self, parent_id):
         item_list = self._retrieve_item_list(parent_id)
-        log.info("Tree adapter: retrieved item list for %s/%s: %s", self._model, parent_id, item_list)
+        log.info("Tree adapter: retrieved item list for %s/%s: %s", self._real_model, parent_id, item_list)
         self._store_item_list(parent_id, item_list)
 
     def _store_item_list(self, parent_id, item_list):

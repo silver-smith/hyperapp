@@ -17,7 +17,7 @@ class ListAdapterStub(FnListAdapterBase):
 def test_colunn_types():
     adapter = ListAdapterStub(
         column_visible_reg=Mock(),
-        model=htypes.list_adapter_tests.sample_list(),
+        real_model=htypes.list_adapter_tests.sample_list(),
         item_t=htypes.list_adapter_tests.item,
         )
     key = adapter._column_k('id')

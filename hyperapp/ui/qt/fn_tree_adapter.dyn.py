@@ -66,12 +66,12 @@ class FnTreeAdapter(TreeAdapter):
 
     def _local_populate(self, parent_id):
         kw = {
-            'model': self._model,
-            'piece': self._model,
+            'model': self._real_model,
+            'piece': self._real_model,
             **self._parent_model_kw(parent_id),
             }
         item_list = self._fn.call(self._ctx, **kw)
-        log.info("Fn tree adapter: retrieved local items for %s/%s: %s", self._model, parent_id, item_list)
+        log.info("Fn tree adapter: retrieved local items for %s/%s: %s", self._real_model, parent_id, item_list)
         self._store_item_list(parent_id, item_list)
 
     def _remote_populate(self, parent_id, remote_peer):
@@ -89,7 +89,7 @@ class FnTreeAdapter(TreeAdapter):
         call_kw = wrapper_fn.call_kw(
             ctx=self._ctx,
             servant_fn_piece=self._fn.piece,
-            model=self._model,
+            model=self._real_model,
             grand_parent=grand_parent,
             is_lateral=is_lateral,
             lateral_parent=lateral_parent,
@@ -103,7 +103,7 @@ class FnTreeAdapter(TreeAdapter):
             fn=wrapper_fn,
             )
         item_list, lateral_item_list_list = rpc_call(**call_kw)
-        log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._model, parent_id, item_list)
+        log.info("Fn tree adapter: retrieved remote items for %s/%s: %s", self._real_model, parent_id, item_list)
         if item_list:
             self._store_item_list(parent_id, item_list)
         lateral_id_list = self._id_to_children_id_list[lateral_parent_id]

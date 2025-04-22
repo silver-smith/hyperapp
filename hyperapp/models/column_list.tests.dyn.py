@@ -44,7 +44,7 @@ async def test_toggle_visibility(feed_factory, column_visible_reg, piece):
 
 def test_open():
     adapter = Mock(
-        model=htypes.column_list_tests.sample_model(),
+        real_model=htypes.column_list_tests.sample_model(),
         item_t=htypes.column_list_tests.sample_item,
         )
     view = Mock(adapter=adapter)

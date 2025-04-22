@@ -142,10 +142,10 @@ class KeyListAdapterMixin:
 
 class FnListAdapterBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, column_visible_reg, model, item_t):
+    def __init__(self, column_visible_reg, real_model, item_t):
         self._column_visible_reg = column_visible_reg
-        self._model = model
-        self._model_t = deduce_t(model)
+        self._real_model = real_model
+        self._model_t = deduce_t(real_model)
         self._item_t = item_t
         self._column_names = sorted(filter(self._column_visible, self._item_t.fields))
         self._item_list = None
@@ -165,8 +165,8 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._subscribers.add(subscriber)
 
     @property
-    def model(self):
-        return self._model
+    def real_model(self):
+        return self._real_model
 
     def column_count(self):
         return len(self._column_names)
@@ -206,8 +206,8 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
 
     def _populate_item_list(self):
         additional_kw = {
-            'model': self._model,
-            'piece': self._model,
+            'model': self._real_model,
+            'piece': self._real_model,
             }
         self._item_list = list(self._call_fn(**additional_kw))
 
