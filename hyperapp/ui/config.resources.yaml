@@ -35,6 +35,7 @@ import:
 - ui.crud.editor_defaults:builtin-string.editor_default.cfg-item
 - ui.error_view:error_view.service
 - ui.feed:feed_factory.service
+- ui.feed:feed_map.service
 - ui.feed:feed_type_creg-feed-index_tree_feed_type.actor-template
 - ui.feed:feed_type_creg-feed-list_feed_type.actor-template
 - ui.feed_creg:feed_type_creg.service
@@ -320,6 +321,7 @@ definitions:
       - ui.crud.editor_default_reg:editor_default_reg.service
       - ui.error_view:error_view.service
       - ui.feed:feed_factory.service
+      - ui.feed:feed_map.service
       - ui.feed_creg:feed_type_creg.service
       - ui.format:format.service
       - ui.formatter_creg:formatter_creg.service

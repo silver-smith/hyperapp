@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -25,6 +27,20 @@ def test_index_tree_feed_factory(feed_factory):
     piece = htypes.feed_tests.sample_index_tree_feed()
     feed = feed_factory(piece)
     assert isinstance(feed, feed_module.IndexTreeFeed), repr(feed)
+
+
+class SampleSubscriber:
+    pass
+
+
+def test_feed_finalizer(feed_map, feed_factory):
+    piece = htypes.feed_tests.sample_list_feed()
+    feed = feed_factory(piece)
+    subscriber = Mock()
+    feed.subscribe(subscriber)
+    assert piece in feed_map
+    del subscriber
+    assert piece not in feed_map
 
 
 @mark.fixture

@@ -34,10 +34,25 @@ definitions:
       name: feed_factory
       ctl: system-dict_config_ctl.ctl
       function: feed_factory
-      service_params: []
+      service_params:
+      - feed_map
       want_config: true
       free_params:
       - piece
+  feed_map:
+    type: legacy_type.builtin:attribute
+    value:
+      object: feed.module
+      attr_name: feed_map
+  feed_map.service:
+    type: legacy_type.system:service_template
+    value:
+      name: feed_map
+      ctl: system-dict_config_ctl.ctl
+      function: feed_map
+      service_params: []
+      want_config: false
+      free_params: []
   feed_type_creg-feed-index_tree_feed_type.actor-template:
     type: legacy_type.system:actor_template
     value:

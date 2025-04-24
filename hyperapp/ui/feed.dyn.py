@@ -14,23 +14,24 @@ log = logging.getLogger(__name__)
 
 class Feed:
 
-    # TODO: Remove empty entries when all weak refs in value are gone.
-    _subscribers = defaultdict(weakref.WeakSet)
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece)
-
-    def __init__(self, piece):
+    def __init__(self, piece, on_empty):
         self._piece = piece
+        self._on_empty = on_empty
+        self._subscribers = weakref.WeakSet()
 
     def subscribe(self, subscriber):
-        self._subscribers[self._piece].add(subscriber)
+        # Note: finalize should be called first.
+        weakref.finalize(subscriber, self._subscriber_gone)
+        self._subscribers.add(subscriber)
 
     async def send(self, diff):
         log.info("Feed: send: %s", diff)
-        for subscriber in self._subscribers.get(self._piece, []):
+        for subscriber in self._subscribers:
             subscriber.process_diff(diff)
+
+    def _subscriber_gone(self):
+        if not self._subscribers:
+            self._on_empty(self._piece)
 
 
 class ListFeed(Feed):
@@ -52,7 +53,18 @@ def index_tree_feed_from_piece(piece):
 
 
 @mark.service
-def feed_factory(config, piece):
+def feed_map():
+    return {}
+
+
+@mark.service
+def feed_factory(config, feed_map, piece):
+
+    def on_empty(piece):
+        del feed_map[piece]
+
     piece_t = deduce_t(piece)
-    feed_type = config[piece_t]
-    return feed_type.from_piece(piece)
+    Feed = config[piece_t]
+    feed = Feed(piece, on_empty)
+    feed_map[piece] = feed
+    return feed
