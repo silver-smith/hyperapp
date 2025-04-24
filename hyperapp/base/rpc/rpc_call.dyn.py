@@ -103,6 +103,7 @@ def _kw_to_params(kw):
             value=_param_value_to_ref(value),
             )
         for name, value in kw.items()
+        if name != 'request'  # Do not pass local request to remote host.
         )
 
 
