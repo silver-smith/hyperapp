@@ -103,9 +103,14 @@ def model_servant_set(system_fn_creg, model_servant, sample_model_fn, model):
 
 
 @mark.fixture
-def rpc_system_call_factory(generate_rsa_identity, receiver_peer, sender_identity, fn):
-    remote_identity = generate_rsa_identity(fast=True)
-    request = Mock(remote_peer=remote_identity.peer)
+def remote_peer(generate_rsa_identity):
+    identity = generate_rsa_identity(fast=True)
+    return identity.peer
+
+
+@mark.fixture
+def rpc_system_call_factory(remote_peer, receiver_peer, sender_identity, fn):
+    request = Mock(remote_peer=remote_peer)
     def call(**kw):
         ctx = Context(**kw, request=request)
         return fn.call(ctx)
@@ -125,7 +130,12 @@ async def run_comand_add_fn_test(diff_creg, model_servant_set, model, ctx, remot
     assert isinstance(result, htypes.command.command_result)
     model_diff = web.summon(result.diff)
     diff = diff_creg.invite(model_diff.diff)
-    assert web.summon(model_diff.model) == model
+    diff_model = web.summon(model_diff.model)
+    if remote_peer:
+        assert web.summon(diff_model.remote_peer) == remote_peer.piece
+        assert web.summon(diff_model.model) == model
+    else:
+        assert diff_model == model
     assert diff.item.id == '5'
     assert web.summon_opt(result.key) == '5'
     assert result.model is None
@@ -135,9 +145,8 @@ async def test_command_add_fn_locally(run_comand_add_fn_test):
     await run_comand_add_fn_test(remote_peer=None)
 
 
-async def test_command_add_fn_remotelly(generate_rsa_identity, run_comand_add_fn_test):
-    identity = generate_rsa_identity(fast=True)
-    await run_comand_add_fn_test(remote_peer=identity.peer)
+async def test_command_add_fn_remotelly(remote_peer, run_comand_add_fn_test):
+    await run_comand_add_fn_test(remote_peer=remote_peer)
 
 
 async def test_command_remove_fn(diff_creg, model_servant_set, model, ctx):

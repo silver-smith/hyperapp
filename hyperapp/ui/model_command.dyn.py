@@ -117,6 +117,15 @@ class ModelCommandOpFn(ModelCommandFn):
         except KeyError:
             return ctx.piece
 
+    @staticmethod
+    def _diff_model(ctx, model):
+        if not ctx.get('request'):
+            return model
+        return htypes.model.remote_model(
+            model=mosaic.put(model),
+            remote_peer=mosaic.put(ctx.request.remote_peer.piece),
+            )
+
 
 class ModelCommandAddFn(ModelCommandOpFn):
 
@@ -150,7 +159,7 @@ class ModelCommandAddFn(ModelCommandOpFn):
             return
         diff = Diff(item)
         model_diff = htypes.diff.model_diff(
-            model=mosaic.put(model),
+            model=mosaic.put(self._diff_model(ctx, model)),
             diff=mosaic.put(diff.piece),
             )
         return htypes.command.command_result(
@@ -183,7 +192,7 @@ class ModelCommandRemoveFn(ModelCommandOpFn):
                 raise RuntimeError(f"'Remove' command parameter {param_name!r} for {model} is expected to be a {servant.key_field_t}: {key!r}")
             diff = KeyListDiff.Remove(key=key)
         model_diff = htypes.diff.model_diff(
-            model=mosaic.put(model),
+            model=mosaic.put(self._diff_model(ctx, model)),
             diff=mosaic.put(diff.piece),
             )
         return htypes.command.command_result(

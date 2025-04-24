@@ -144,10 +144,11 @@ def run_system_fn_target(target, rpc_request, system_fn_creg):
     log.debug("Resolve rpc system fn: %s", target.fn)
     fn = system_fn_creg.invite(target.fn)
     kw = _params_to_kw(target.params)
-    if 'request' in fn.ctx_params:
-        kw = {**kw, 'request': rpc_request}
     log.info("Call system fn servant: %s (%s)", fn, kw)
-    ctx = Context(**kw)
+    ctx = Context(
+        **kw,
+        request=rpc_request,
+        )
     result = fn.call(ctx)
     if inspect.iscoroutine(result):
         log.info("Rpc system fn %s returned coroutine, running:", fn)

@@ -20,6 +20,7 @@ import:
 - legacy_type.diff:model_diff
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.list_config_ctl:flat_list_config_ctl
+- legacy_type.model:remote_model
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
@@ -138,6 +139,7 @@ definitions:
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
         htypes.command.model_command_remove_fn: legacy_type.command:model_command_remove_fn
         htypes.diff.model_diff: legacy_type.diff:model_diff
+        htypes.model.remote_model: legacy_type.model:remote_model
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

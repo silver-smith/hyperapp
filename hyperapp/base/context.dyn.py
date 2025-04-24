@@ -35,7 +35,7 @@ class Context:
                 return True
         return name in self._items
 
-    def get(self, name, default_value):
+    def get(self, name, default_value=None):
         try:
             return self._get(name)
         except KeyError:
