@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -74,8 +76,10 @@ def model():
 
 
 @mark.fixture
-def ctx(model):
+def ctx(generate_rsa_identity, model):
+    identity = generate_rsa_identity(fast=True)
     return Context(
+        identity=identity,
         model=model,
         piece=model,
         )
@@ -98,7 +102,18 @@ def model_servant_set(system_fn_creg, model_servant, sample_model_fn, model):
         )
 
 
-async def test_command_add_fn(diff_creg, model_servant_set, model, ctx):
+@mark.fixture
+def rpc_system_call_factory(generate_rsa_identity, receiver_peer, sender_identity, fn):
+    remote_identity = generate_rsa_identity(fast=True)
+    request = Mock(remote_peer=remote_identity.peer)
+    def call(**kw):
+        ctx = Context(**kw, request=request)
+        return fn.call(ctx)
+    return call
+
+
+@mark.fixture
+async def run_comand_add_fn_test(diff_creg, model_servant_set, model, ctx, remote_peer):
     piece = htypes.command.model_command_add_fn(
         function=pyobj_creg.actor_to_ref(_sample_add_command),
         ctx_params=('piece', 'state'),
@@ -106,7 +121,7 @@ async def test_command_add_fn(diff_creg, model_servant_set, model, ctx):
         )
     fn = model_command.ModelCommandAddFn.from_piece(piece)
     assert fn.piece == piece
-    result = await fn.call(ctx, state="Sample state")
+    result = await fn.call(ctx, remote_peer, state="Sample state")
     assert isinstance(result, htypes.command.command_result)
     model_diff = web.summon(result.diff)
     diff = diff_creg.invite(model_diff.diff)
@@ -114,6 +129,15 @@ async def test_command_add_fn(diff_creg, model_servant_set, model, ctx):
     assert diff.item.id == '5'
     assert web.summon_opt(result.key) == '5'
     assert result.model is None
+
+
+async def test_command_add_fn_locally(run_comand_add_fn_test):
+    await run_comand_add_fn_test(remote_peer=None)
+
+
+async def test_command_add_fn_remotelly(generate_rsa_identity, run_comand_add_fn_test):
+    identity = generate_rsa_identity(fast=True)
+    await run_comand_add_fn_test(remote_peer=identity.peer)
 
 
 async def test_command_remove_fn(diff_creg, model_servant_set, model, ctx):

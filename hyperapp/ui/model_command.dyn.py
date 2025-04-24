@@ -50,19 +50,25 @@ class ModelCommandFn(ModelCommandFnBase):
 
     async def call(self, ctx, remote_peer=None, **kw):
         if remote_peer:
-            rpc_call = self._rpc_system_call_factory(
-                receiver_peer=remote_peer,
-                sender_identity=ctx.identity,
-                fn=self,
-                )
-            kw = self.call_kw(ctx)
-            result = rpc_call(**kw)
-            if inspect.iscoroutine(result):
-                # Special case for test fixtures.
-                result = await result
-            return result
+            return await self._remote_call(ctx, remote_peer, **kw)
         else:
-            result = super().call(ctx, **kw)
+            return await self._local_call(ctx, **kw)
+
+    async def _remote_call(self, ctx, remote_peer, **kw):
+        rpc_call = self._rpc_system_call_factory(
+            receiver_peer=remote_peer,
+            sender_identity=ctx.identity,
+            fn=self,
+            )
+        call_kw = self.call_kw(ctx, **kw)
+        result = rpc_call(**call_kw)
+        if inspect.iscoroutine(result):
+            # Special case for test fixtures.
+            result = await result
+        return result
+
+    async def _local_call(self, ctx, **kw):
+        result = super().call(ctx, **kw)
         if inspect.iscoroutine(result):
             result = await result
         if kw:
