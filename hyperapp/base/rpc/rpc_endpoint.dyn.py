@@ -20,7 +20,7 @@ from .code.context import Context
 log = logging.getLogger(__name__)
 
 
-RpcRequest = namedtuple('RpcRequest', 'system receiver_identity sender')
+RpcRequest = namedtuple('RpcRequest', 'system receiver_identity remote_peer')
 
 
 class RpcEndpoint:
@@ -82,8 +82,8 @@ def rpc_target_creg(config):
 def on_rpc_request(request, transport_request, system, transport, peer_registry, rpc_target_creg):
     log.info("Process rpc request: %s", request)
     receiver_identity = transport_request.receiver_identity
-    sender = transport_request.sender
-    rpc_request = RpcRequest(system, receiver_identity, sender)
+    remote_peer = transport_request.remote_peer
+    rpc_request = RpcRequest(system, receiver_identity, remote_peer)
     try:
         result = rpc_target_creg.invite(request.target, rpc_request)
         if type(result) is list:
@@ -115,7 +115,7 @@ def on_rpc_request(request, transport_request, system, transport, peer_registry,
             exception_ref=mosaic.put(exception),
             )
     response_ref = mosaic.put(response)
-    transport.send(sender, receiver_identity, [response_ref])
+    transport.send(remote_peer, receiver_identity, [response_ref])
 
 
 def _params_to_kw(params):

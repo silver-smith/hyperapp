@@ -12,7 +12,7 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-Request = namedtuple('Request', 'receiver_identity sender ref_list')
+Request = namedtuple('Request', 'receiver_identity remote_peer ref_list')
 
 
 class LocalRoute:

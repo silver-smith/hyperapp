@@ -65,7 +65,7 @@ _subprocess_peer = {}  # subprocess_id -> Peer.
 
 
 def _rpc_subprocess_callback(request, subprocess_name, subprocess_id, subprocess_peer):
-    log.info("Rpc subprocess callback from %r #%d %s is called", subprocess_name, subprocess_id, request.sender)
+    log.info("Rpc subprocess callback from %r #%d %s is called", subprocess_name, subprocess_id, request.remote_peer)
     _subprocess_peer[subprocess_id] = subprocess_peer
     _callback_signals[subprocess_id].set()
 

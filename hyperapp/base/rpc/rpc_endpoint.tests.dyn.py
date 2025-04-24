@@ -31,7 +31,7 @@ def _test_with(transport, rpc_endpoint, generate_rsa_identity, servant_fn):
         )
     request = Request(
         receiver_identity=None,
-        sender=None,
+        remote_peer=None,
         ref_list=[mosaic.put(rpc_request)],
         )
     rpc_endpoint.process(request)
