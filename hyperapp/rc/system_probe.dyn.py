@@ -216,6 +216,10 @@ class Probe:
         service = self.apply_obj()
         service[key] = value
 
+    def __delitem__(self, key):
+        service = self.apply_obj()
+        del service[key]
+
     def __iter__(self):
         service = self.apply_obj()
         return iter(service)
