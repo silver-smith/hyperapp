@@ -8,6 +8,7 @@ import:
 - common.list_diff:diff_creg-diff-append.actor-template
 - common.list_diff:diff_creg-diff-remove_idx.actor-template
 - common.list_diff:diff_creg-diff-remove_key.actor-template
+- common.record_config:config_ctl_creg-record_config-config_ctl.actor-template
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -25,6 +26,7 @@ definitions:
       items:
       - common.data_service:config_ctl_creg-data_service-config_ctl.actor-template
       - common.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
+      - common.record_config:config_ctl_creg-record_config-config_ctl.actor-template
   diff_creg:
     type: legacy_type.system:item_list_config
     value:
