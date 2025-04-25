@@ -60,6 +60,10 @@ def feed_map():
 
 @mark.service
 def feed_factory(config, feed_map, piece):
+    try:
+        return feed_map[piece]
+    except KeyError:
+        pass
 
     def on_empty(piece):
         del feed_map[piece]
