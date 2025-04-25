@@ -1,0 +1,16 @@
+import:
+- legacy_type.data_dir:config
+- legacy_type.system:system_config
+
+definitions:
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        data_dir: data_dir.config
+
+  data_dir.config:
+    type: legacy_type.data_dir:config
+    value:
+      data_dir: ~/.local/share/hyperapp/client/

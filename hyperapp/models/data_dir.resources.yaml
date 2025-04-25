@@ -1,0 +1,35 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- common.record_config:record_config.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.record_config:config_ctl
+- legacy_type.system:service_template
+definitions:
+  data_dir:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_dir.module
+      attr_name: data_dir
+  data_dir.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: data_dir
+      file_name: data_dir.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        code.record_config: common.record_config:record_config.module
+  data_dir.service:
+    type: legacy_type.system:service_template
+    value:
+      name: data_dir
+      ctl: record_config-config_ctl.ctl
+      function: data_dir
+      service_params: []
+      want_config: true
+      free_params: []
+  record_config-config_ctl.ctl:
+    type: legacy_type.record_config:config_ctl
+    value: {}

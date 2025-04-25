@@ -38,6 +38,7 @@ import:
 - models.data_browser:formatter_creg-data_browser-record_view.actor-template
 - models.data_browser_adapter:data_browser_data_view.view-factory-template
 - models.data_browser_adapter:ui_adapter_creg-data_browser-record_data_adapter.actor-template
+- models.data_dir:data_dir.service
 - models.file_bundles:file_bundles-view-open.command-cfg-item
 - models.file_bundles:file_bundles-view.feed-template
 - models.file_bundles:file_bundles-view.model-cfg-item
@@ -217,6 +218,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - models.data_dir:data_dir.service
       - models.peer_list:peer_list_reg.service
       - models.ref_list:ref_list.service
   ui_adapter_creg:
