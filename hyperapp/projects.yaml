@@ -15,6 +15,6 @@ views:
 sample:
   imports: [base, common, ui]
 server:
-  imports: [base, common, ui]
+  imports: [base, common, ui, models]
 client:
-  imports: [base, common, ui, sample, lcs, views]
+  imports: [base, common, ui, models, sample, lcs, views]
