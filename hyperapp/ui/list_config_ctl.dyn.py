@@ -23,6 +23,7 @@ class DictListConfigCtl(DictConfigCtl):
     def merge(self, dest, src):
         for key, value_list in src.items():
             dest.setdefault(key, []).extend(value_list)
+        return dest
 
     def _update_config(self, config_template, item):
         config_template.setdefault(item.key, []).append(item)
@@ -56,6 +57,7 @@ class FlatListConfigCtl(MultiItemConfigCtl):
 
     def merge(self, dest, src):
         dest.extend(src)
+        return dest
 
     def _lazy_config(self, system, service_name, config_template):
         assert False, "TODO"

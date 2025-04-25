@@ -39,6 +39,7 @@ class DataServiceConfigCtl(ConfigCtl):
 
     def merge(self, dest, src):
         dest.update(src)
+        return dest
 
     def resolve(self, system, service_name, config_template):
         return DataServiceConfig(system, system.default_layer, service_name)

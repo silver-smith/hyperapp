@@ -137,6 +137,7 @@ class DictConfigCtl(MultiItemConfigCtl):
 
     def merge(self, dest, src):
         dest.update(src)
+        return dest
 
     def _lazy_config(self, system, service_name, config_template):
         return LazyDictConfig(self, system, service_name, config_template)

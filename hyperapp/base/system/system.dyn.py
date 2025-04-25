@@ -319,8 +319,8 @@ class System:
                     dest = service_to_config[service_name]
                 except KeyError:
                     dest = ctl.empty_config_template()
-                    service_to_config[service_name] = dest
-                ctl.merge(dest, config)
+                dest = ctl.merge(dest, config)
+                service_to_config[service_name] = dest
         return service_to_config
 
     @property

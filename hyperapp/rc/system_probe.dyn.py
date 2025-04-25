@@ -307,7 +307,7 @@ class SystemProbe(System):
         config = super().resolve_config(service_name)
         for fixture in self._config_fixtures.get(service_name, []):
             fixture_cfg = fixture.resolve(self)
-            ctl.merge(config, fixture_cfg)
+            config = ctl.merge(config, fixture_cfg)
         return self._make_config_probe(service_name, config)
 
     def bind_services(self, fn, params, requester=None):
