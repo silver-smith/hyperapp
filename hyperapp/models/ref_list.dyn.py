@@ -22,83 +22,8 @@ class RefList:
         self._refs = {}
         self._folder_has_names = defaultdict(set)
         self._folder_has_refs = defaultdict(set)
-        self._loaded = False
 
-    def enum_items(self, format, parent_id=None):
-        self._ensure_loaded()
-        for folder in self._folders.values():
-            if folder.parent_id != parent_id:
-                continue
-            yield htypes.ref_list.item(
-                id=folder.id,
-                name=folder.name,
-                )
-        for ref in self._refs.values():
-            if ref.parent_id != parent_id:
-                continue
-            piece = web.summon(ref.ref)
-            name = format(piece)
-            yield htypes.ref_list.item(
-                id=ref.id,
-                name=name,
-                )
-
-    def get_folder(self, item_id):
-        self._ensure_loaded()
-        return self._folders[item_id]
-
-    def get_ref(self, item_id):
-        self._ensure_loaded()
-        return self._refs[item_id]
-
-    def remove(self, item_id):
-        self._ensure_loaded()
-        try:
-            folder = self._folders[item_id]
-            del self._folders[item_id]
-            self._folder_has_names[folder.parent_id].remove(folder.name)
-        except KeyError:
-            ref = self._refs[item_id]
-            del self._refs[item_id]
-            self._folder_has_refs[ref.parent_id].remove(ref.ref)
-        self._save()
-
-    def append_folder(self, parent_id, name):
-        self._ensure_loaded()
-        if name in self._folder_has_names[parent_id]:
-            log.warning("Folder with name %r already exists", name)
-            return None
-        folder = htypes.ref_list.folder(
-            id=str(uuid.uuid4()),
-            parent_id=parent_id,
-            name=name,
-            )
-        self._folders[folder.id] = folder
-        self._folder_has_names[parent_id].add(name)
-        self._save()
-        return folder.id
-
-    def append_ref(self, parent_id, ref):
-        self._ensure_loaded()
-        if ref in self._folder_has_refs[parent_id]:
-            log.warning("Ref %s already exists", ref)
-            return None
-        ref_item = htypes.ref_list.ref(
-            id=str(uuid.uuid4()),
-            parent_id=parent_id,
-            ref=ref,
-            )
-        self._refs[ref_item.id] = ref_item
-        self._folder_has_refs[parent_id].add(ref)
-        self._save()
-        return ref_item.id
-
-    def _ensure_loaded(self):
-        if not self._loaded:
-            self._read()
-            self._loaded = True
-
-    def _read(self):
+    def load(self):
         try:
             storage = self._file_bundle.load_piece()
         except FileNotFoundError:
@@ -117,11 +42,76 @@ class RefList:
             )
         self._file_bundle.save_piece(storage)
 
+    def enum_items(self, format, parent_id=None):
+        for folder in self._folders.values():
+            if folder.parent_id != parent_id:
+                continue
+            yield htypes.ref_list.item(
+                id=folder.id,
+                name=folder.name,
+                )
+        for ref in self._refs.values():
+            if ref.parent_id != parent_id:
+                continue
+            piece = web.summon(ref.ref)
+            name = format(piece)
+            yield htypes.ref_list.item(
+                id=ref.id,
+                name=name,
+                )
+
+    def get_folder(self, item_id):
+        return self._folders[item_id]
+
+    def get_ref(self, item_id):
+        return self._refs[item_id]
+
+    def remove(self, item_id):
+        try:
+            folder = self._folders[item_id]
+            del self._folders[item_id]
+            self._folder_has_names[folder.parent_id].remove(folder.name)
+        except KeyError:
+            ref = self._refs[item_id]
+            del self._refs[item_id]
+            self._folder_has_refs[ref.parent_id].remove(ref.ref)
+        self._save()
+
+    def append_folder(self, parent_id, name):
+        if name in self._folder_has_names[parent_id]:
+            log.warning("Folder with name %r already exists", name)
+            return None
+        folder = htypes.ref_list.folder(
+            id=str(uuid.uuid4()),
+            parent_id=parent_id,
+            name=name,
+            )
+        self._folders[folder.id] = folder
+        self._folder_has_names[parent_id].add(name)
+        self._save()
+        return folder.id
+
+    def append_ref(self, parent_id, ref):
+        if ref in self._folder_has_refs[parent_id]:
+            log.warning("Ref %s already exists", ref)
+            return None
+        ref_item = htypes.ref_list.ref(
+            id=str(uuid.uuid4()),
+            parent_id=parent_id,
+            ref=ref,
+            )
+        self._refs[ref_item.id] = ref_item
+        self._folder_has_refs[parent_id].add(ref)
+        self._save()
+        return ref_item.id
+
 
 @mark.service
 def ref_list(file_bundle_factory, data_dir):
     file_bundle = file_bundle_factory(data_dir / _STORAGE_PATH, encoding='cdr')
-    return RefList(file_bundle)
+    ref_list = RefList(file_bundle)
+    ref_list.load()
+    return ref_list
 
 
 @mark.model(key='id')
