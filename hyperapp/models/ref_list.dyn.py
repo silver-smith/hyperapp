@@ -161,6 +161,8 @@ def open_parent(piece, request, ref_list):
 
 @mark.command.add(args=['name'])
 def add_folder(piece, name, ref_list):
+    if not name:
+        return
     folder_id = ref_list.append_folder(piece.parent_id, name)
     return folder_id
 
