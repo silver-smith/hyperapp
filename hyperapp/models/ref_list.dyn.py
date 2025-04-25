@@ -1,7 +1,6 @@
 import logging
 import uuid
 from collections import defaultdict, namedtuple
-from pathlib import Path
 
 from . import htypes
 from .services import (
@@ -12,7 +11,7 @@ from .code.mark import mark
 
 log = logging.getLogger(__name__)
 
-_STORAGE_PATH = Path.home() / '.local/share/hyperapp/server/ref_list.cdr'
+_STORAGE_PATH = 'ref_list.cdr'
 
 
 class RefList:
@@ -120,8 +119,8 @@ class RefList:
 
 
 @mark.service
-def ref_list(file_bundle_factory):
-    file_bundle = file_bundle_factory(_STORAGE_PATH, encoding='cdr')
+def ref_list(file_bundle_factory, data_dir):
+    file_bundle = file_bundle_factory(data_dir / _STORAGE_PATH, encoding='cdr')
     return RefList(file_bundle)
 
 

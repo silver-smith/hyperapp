@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import Mock
 
 from . import htypes
@@ -12,6 +13,11 @@ from .tested.code import ref_list
 def test_open():
     piece = ref_list.open_ref_list()
     assert isinstance(piece, htypes.ref_list.model)
+
+
+@mark.fixture
+def data_dir():
+    return Path('/tmp/ref-list-tests')
 
 
 @mark.fixture

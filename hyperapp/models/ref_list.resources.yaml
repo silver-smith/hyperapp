@@ -303,6 +303,7 @@ definitions:
       function: ref_list
       service_params:
       - file_bundle_factory
+      - data_dir
       want_config: false
       free_params: []
   ref_list_model:
