@@ -6,6 +6,7 @@ from . import htypes
 from .services import (
     deduce_t,
     pyobj_creg,
+    web,
     )
 from .code.mark import mark
 
@@ -63,8 +64,13 @@ def feed_factory(config, feed_map, piece):
     def on_empty(piece):
         del feed_map[piece]
 
-    piece_t = deduce_t(piece)
-    Feed = config[piece_t]
+    if isinstance(piece, htypes.model.remote_model):
+        real_model = web.summon(piece.model)
+    else:
+        real_model = piece
+
+    model_t = deduce_t(real_model)
+    Feed = config[model_t]
     feed = Feed(piece, on_empty)
     feed_map[piece] = feed
     return feed
