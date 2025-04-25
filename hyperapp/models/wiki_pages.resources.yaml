@@ -1,0 +1,303 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.builtin:string
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:cfg_item
+- legacy_type.command:model_args_picker_command_enumerator
+- legacy_type.command:model_command
+- legacy_type.command:model_command_add_fn
+- legacy_type.command:model_command_fn
+- legacy_type.command:model_command_remove_fn
+- legacy_type.command:open_args_picker_command_d
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
+- legacy_type.model:key_list_ui_t
+- legacy_type.model:model
+- legacy_type.model:remote_model
+- legacy_type.system:actor_template
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
+- legacy_type.system_fn:ctx_fn
+- legacy_type.wiki_pages:folder
+- legacy_type.wiki_pages:item
+- legacy_type.wiki_pages:model
+- legacy_type.wiki_pages:storage
+definitions:
+  add_folder:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: add_folder
+  add_folder.commit-d:
+    type: add_folder_d
+    value: {}
+  add_folder.commit-fn:
+    type: legacy_type.command:model_command_add_fn
+    value:
+      function: add_folder
+      ctx_params:
+      - piece
+      - name
+      service_params:
+      - wiki_pages
+  add_folder.model-command-enumerator:
+    type: legacy_type.command:model_args_picker_command_enumerator
+    value:
+      name: add_folder
+      is_global: false
+      required_args:
+        name: legacy_type.builtin:string
+      args_picker_command_d: add_folder.open-d
+      commit_command_d: add_folder.commit-d
+      commit_fn: add_folder.commit-fn
+  add_folder.open-d:
+    type: legacy_type.command:open_args_picker_command_d
+    value:
+      commit_command_d: add_folder.commit-d
+  add_folder_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki_pages
+      name: add_folder_d
+      base: null
+      fields: {}
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: format_model
+  formatter_creg-wiki_pages-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.wiki_pages:model
+      function: format_model
+      service_params: []
+  open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: open
+  open.d:
+    type: open_d
+    value: {}
+  open.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open
+      ctx_params:
+      - piece
+      - current_key
+      - request
+      service_params:
+      - wiki_pages
+  open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open.fn
+  open_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki_pages
+      name: open_d
+      base: null
+      fields: {}
+  open_parent:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: open_parent
+  open_parent.d:
+    type: open_parent_d
+    value: {}
+  open_parent.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_parent
+      ctx_params:
+      - piece
+      - request
+      service_params:
+      - wiki_pages
+  open_parent.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_parent.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: open_parent.fn
+  open_parent_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki_pages
+      name: open_parent_d
+      base: null
+      fields: {}
+  open_wiki_pages:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: open_wiki_pages
+  open_wiki_pages.d:
+    type: open_wiki_pages_d
+    value: {}
+  open_wiki_pages.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_wiki_pages
+      ctx_params: []
+      service_params: []
+  open_wiki_pages.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_wiki_pages.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_wiki_pages.fn
+  open_wiki_pages_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki_pages
+      name: open_wiki_pages_d
+      base: null
+      fields: {}
+  remove:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: remove
+  remove.d:
+    type: remove_d
+    value: {}
+  remove.fn:
+    type: legacy_type.command:model_command_remove_fn
+    value:
+      function: remove
+      ctx_params:
+      - piece
+      - current_id
+      service_params:
+      - wiki_pages
+  remove.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: remove.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: remove.fn
+  remove_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki_pages
+      name: remove_d
+      base: null
+      fields: {}
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}
+  wiki_pages:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: wiki_pages
+  wiki_pages-model-add_folder.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.wiki_pages:model
+      command: add_folder.model-command-enumerator
+  wiki_pages-model-open.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.wiki_pages:model
+      command: open.model-command
+  wiki_pages-model-open_parent.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.wiki_pages:model
+      command: open_parent.model-command
+  wiki_pages-model-remove.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.wiki_pages:model
+      command: remove.model-command
+  wiki_pages-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.wiki_pages:model
+      feed_type: wiki_pages-model.feed-type
+  wiki_pages-model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.wiki_pages:item
+  wiki_pages-model.key-list-ui-t:
+    type: legacy_type.model:key_list_ui_t
+    value:
+      item_t: legacy_type.wiki_pages:item
+      key_field: id
+      key_field_t: legacy_type.builtin:string
+  wiki_pages-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: wiki_pages-model.key-list-ui-t
+      system_fn: wiki_pages-model.system-fn
+  wiki_pages-model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.wiki_pages:model
+      value: wiki_pages-model.model
+  wiki_pages-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: wiki_pages_model
+      ctx_params:
+      - piece
+      service_params:
+      - format
+      - wiki_pages
+  wiki_pages.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: wiki_pages
+      file_name: wiki_pages.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.model.remote_model: legacy_type.model:remote_model
+        htypes.wiki_pages.folder: legacy_type.wiki_pages:folder
+        htypes.wiki_pages.item: legacy_type.wiki_pages:item
+        htypes.wiki_pages.model: legacy_type.wiki_pages:model
+        htypes.wiki_pages.storage: legacy_type.wiki_pages:storage
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+  wiki_pages.service:
+    type: legacy_type.system:service_template
+    value:
+      name: wiki_pages
+      ctl: system-dict_config_ctl.ctl
+      function: wiki_pages
+      service_params:
+      - file_bundle_factory
+      - data_dir
+      want_config: false
+      free_params: []
+  wiki_pages_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: wiki_pages_model

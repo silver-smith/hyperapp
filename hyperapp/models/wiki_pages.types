@@ -1,0 +1,26 @@
+from wiki import wiki
+
+
+model = record:
+  parent_id: string opt
+  folder_path: string list
+
+item = record:
+  id: string
+  name: string
+
+
+folder = record:
+  id: string
+  parent_id: string opt
+  name: string
+
+page = record:
+  id: string
+  parent_id: string opt
+  title: string
+  wiki: wiki
+
+storage = record:
+  folders: folder list
+  pages: page list

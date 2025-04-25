@@ -87,6 +87,15 @@ import:
 - models.show_current_context:show_current_context-model.feed-template
 - models.show_current_context:show_current_context-model.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
+- models.wiki_pages:formatter_creg-wiki_pages-model.actor-template
+- models.wiki_pages:open_wiki_pages.global-model-command
+- models.wiki_pages:wiki_pages-model-add_folder.command-cfg-item
+- models.wiki_pages:wiki_pages-model-open.command-cfg-item
+- models.wiki_pages:wiki_pages-model-open_parent.command-cfg-item
+- models.wiki_pages:wiki_pages-model-remove.command-cfg-item
+- models.wiki_pages:wiki_pages-model.feed-template
+- models.wiki_pages:wiki_pages-model.model-cfg-item
+- models.wiki_pages:wiki_pages.service
 definitions:
   command_creg:
     type: legacy_type.system:item_list_config
@@ -127,6 +136,7 @@ definitions:
       - models.peer_list:peer_list-model.feed-template
       - models.ref_list:ref_list-model.feed-template
       - models.show_current_context:show_current_context-model.feed-template
+      - models.wiki_pages:wiki_pages-model.feed-template
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -141,6 +151,7 @@ definitions:
       - models.peer_list:formatter_creg-peer_list-model.actor-template
       - models.ref_list:formatter_creg-ref_list-model.actor-template
       - models.show_current_context:formatter_creg-show_current_context-model.actor-template
+      - models.wiki_pages:formatter_creg-wiki_pages-model.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -155,6 +166,7 @@ definitions:
       - models.peer_list:open_peer_list.global-model-command
       - models.ref_list:open_ref_list.global-model-command
       - models.show_current_context:show_current_context.global-model-command
+      - models.wiki_pages:open_wiki_pages.global-model-command
   model_command_enumerator_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -164,6 +176,7 @@ definitions:
       - models.peer_list:peer_list-model-run_command.command-cfg-item
       - models.ref_list:ref_list-model-add_folder.command-cfg-item
       - models.ref_list:ref_list-model-add_ref.command-cfg-item
+      - models.wiki_pages:wiki_pages-model-add_folder.command-cfg-item
   model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -188,6 +201,9 @@ definitions:
       - models.ref_list:ref_list-model-open_parent.command-cfg-item
       - models.ref_list:ref_list-model-remove.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
+      - models.wiki_pages:wiki_pages-model-open.command-cfg-item
+      - models.wiki_pages:wiki_pages-model-open_parent.command-cfg-item
+      - models.wiki_pages:wiki_pages-model-remove.command-cfg-item
   model_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -207,6 +223,7 @@ definitions:
       - models.peer_list:peer_list-model.model-cfg-item
       - models.ref_list:ref_list-model.model-cfg-item
       - models.show_current_context:show_current_context-model.model-cfg-item
+      - models.wiki_pages:wiki_pages-model.model-cfg-item
   selector_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -221,6 +238,7 @@ definitions:
       - models.data_dir:data_dir.service
       - models.peer_list:peer_list_reg.service
       - models.ref_list:ref_list.service
+      - models.wiki_pages:wiki_pages.service
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:
