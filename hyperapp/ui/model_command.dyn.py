@@ -121,9 +121,10 @@ class ModelCommandOpFn(ModelCommandFn):
     def _diff_model(ctx, model):
         if not ctx.get('request'):
             return model
+        peer = ctx.request.receiver_identity.peer
         return htypes.model.remote_model(
             model=mosaic.put(model),
-            remote_peer=mosaic.put(ctx.request.remote_peer.piece),
+            remote_peer=mosaic.put(peer.piece),
             )
 
 

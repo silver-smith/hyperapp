@@ -103,14 +103,13 @@ def model_servant_set(system_fn_creg, model_servant, sample_model_fn, model):
 
 
 @mark.fixture
-def remote_peer(generate_rsa_identity):
-    identity = generate_rsa_identity(fast=True)
-    return identity.peer
+def remote_identity(generate_rsa_identity):
+    return generate_rsa_identity(fast=True)
 
 
 @mark.fixture
-def rpc_system_call_factory(remote_peer, receiver_peer, sender_identity, fn):
-    request = Mock(remote_peer=remote_peer)
+def rpc_system_call_factory(remote_identity, receiver_peer, sender_identity, fn):
+    request = Mock(receiver_identity=remote_identity)
     def call(**kw):
         ctx = Context(**kw, request=request)
         return fn.call(ctx)
@@ -145,8 +144,8 @@ async def test_command_add_fn_locally(run_comand_add_fn_test):
     await run_comand_add_fn_test(remote_peer=None)
 
 
-async def test_command_add_fn_remotelly(remote_peer, run_comand_add_fn_test):
-    await run_comand_add_fn_test(remote_peer=remote_peer)
+async def test_command_add_fn_remotelly(remote_identity, run_comand_add_fn_test):
+    await run_comand_add_fn_test(remote_peer=remote_identity.peer)
 
 
 async def test_command_remove_fn(diff_creg, model_servant_set, model, ctx):
