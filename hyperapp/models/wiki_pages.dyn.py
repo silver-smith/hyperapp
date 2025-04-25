@@ -21,7 +21,7 @@ class WikiPages:
         self._folders = {}
         self._pages = {}
         self._folder_has_names = defaultdict(set)
-        # self._folder_has_refs = defaultdict(set)
+        self._folder_has_titles = defaultdict(set)
 
     def load(self):
         try:
@@ -32,8 +32,8 @@ class WikiPages:
         self._pages = {ref.id: ref for ref in storage.pages}
         for folder in self._folders.values():
             self._folder_has_names[folder.parent_id].add(folder.name)
-        # for ref in self._pages.values():
-        #     self._folder_has_refs[ref.parent_id].add(ref.ref)
+        for page in self._pages.values():
+            self._folder_has_titles[page.parent_id].add(page.title)
 
     def _save(self):
         storage = htypes.wiki_pages.storage(
@@ -61,7 +61,7 @@ class WikiPages:
     def get_folder(self, item_id):
         return self._folders[item_id]
 
-    def get_ref(self, item_id):
+    def get_page(self, item_id):
         return self._pages[item_id]
 
     def remove(self, item_id):
@@ -70,9 +70,9 @@ class WikiPages:
             del self._folders[item_id]
             self._folder_has_names[folder.parent_id].remove(folder.name)
         except KeyError:
-            ref = self._pages[item_id]
+            page = self._pages[item_id]
             del self._pages[item_id]
-            # self._folder_has_pages[ref.parent_id].remove(ref.ref)
+            self._folder_has_titles[page.parent_id].remove(page.title)
         self._save()
 
     def append_folder(self, parent_id, name):
@@ -89,19 +89,20 @@ class WikiPages:
         self._save()
         return folder.id
 
-    def append_ref(self, parent_id, ref):
-        if ref in self._folder_has_pages[parent_id]:
-            log.warning("Ref %s already exists", ref)
+    def append_page(self, parent_id, title, wiki):
+        if title in self._folder_has_titles[parent_id]:
+            log.warning("Page with title %r already exists", title)
             return None
-        ref_item = htypes.wiki_pages.ref(
+        page = htypes.wiki_pages.page(
             id=str(uuid.uuid4()),
             parent_id=parent_id,
-            ref=ref,
+            title=title,
+            wiki=wiki,
             )
-        self._pages[ref_item.id] = ref_item
-        self._folder_has_pages[parent_id].add(ref)
+        self._pages[page.id] = page
+        self._folder_has_titles[parent_id].add(page.title)
         self._save()
-        return ref_item.id
+        return page.id
 
 
 @mark.service
@@ -113,8 +114,13 @@ def wiki_pages(file_bundle_factory, data_dir):
 
 
 @mark.model(key='id')
-def wiki_pages_model(piece, format, wiki_pages):
+def page_list_model(piece, format, wiki_pages):
     return list(wiki_pages.enum_items(format, piece.parent_id))
+
+
+@mark.model
+def page_model(piece, wiki_pages):
+    return wiki_pages.get_page(piece.id)
 
 
 @mark.command
@@ -125,7 +131,7 @@ def open(piece, current_key, request, wiki_pages):
         while folder.parent_id:
             folder = wiki_pages.get_folder(folder.parent_id)
             path = [folder.name, *path]
-        piece = htypes.wiki_pages.model(
+        piece = htypes.wiki_pages.list_model(
             parent_id=current_key,
             folder_path=tuple(path),
             )
@@ -145,7 +151,7 @@ def open_parent(piece, request, wiki_pages):
     if not piece.parent_id:
         return
     folder = wiki_pages.get_folder(piece.parent_id)
-    piece = htypes.wiki_pages.model(
+    piece = htypes.wiki_pages.list_model(
         parent_id=folder.parent_id,
         folder_path=piece.folder_path[:-1],
         )
@@ -179,7 +185,7 @@ def remove(piece, current_id, wiki_pages):
 
 @mark.global_command
 def open_wiki_pages():
-    return htypes.wiki_pages.model(parent_id=None, folder_path=())
+    return htypes.wiki_pages.list_model(parent_id=None, folder_path=())
 
 
 @mark.actor.formatter_creg

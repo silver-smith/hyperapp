@@ -12,7 +12,7 @@ from .tested.code import wiki_pages
 
 def test_open():
     piece = wiki_pages.open_wiki_pages()
-    assert isinstance(piece, htypes.wiki_pages.model)
+    assert isinstance(piece, htypes.wiki_pages.list_model)
 
 
 @mark.fixture
@@ -57,22 +57,30 @@ def file_bundle_factory():
 
 @mark.fixture
 def root_model():
-    return htypes.wiki_pages.model(parent_id=None, folder_path=())
+    return htypes.wiki_pages.list_model(parent_id=None, folder_path=())
 
 
 @mark.fixture
 def folder_2_model():
-    return htypes.wiki_pages.model(parent_id='folder_2', folder_path=('Folder 2',))
+    return htypes.wiki_pages.list_model(parent_id='folder_2', folder_path=('Folder 2',))
 
 
-def test_root_model(root_model):
-    item_list = wiki_pages.wiki_pages_model(root_model)
+def test_root_list_model(root_model):
+    item_list = wiki_pages.page_list_model(root_model)
     assert type(item_list) is list
     assert item_list == [
         htypes.wiki_pages.item('folder_1', "Folder 1"),
         htypes.wiki_pages.item('folder_2', "Folder 2"),
         htypes.wiki_pages.item('page_1', "Page 1"),
         ]
+
+
+def test_page_model():
+    model = htypes.wiki_pages.page_model(
+        id='page_1',
+        )
+    page = wiki_pages.page_model(model)
+    assert isinstance(page, htypes.wiki_pages.page)
 
 
 def test_open_folder_locally(root_model, folder_2_model):

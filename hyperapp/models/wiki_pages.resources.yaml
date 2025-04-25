@@ -20,6 +20,7 @@ import:
 - legacy_type.feed:list_feed_type
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:model
+- legacy_type.model:record_ui_t
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
@@ -27,7 +28,9 @@ import:
 - legacy_type.system_fn:ctx_fn
 - legacy_type.wiki_pages:folder
 - legacy_type.wiki_pages:item
-- legacy_type.wiki_pages:model
+- legacy_type.wiki_pages:list_model
+- legacy_type.wiki_pages:page
+- legacy_type.wiki_pages:page_model
 - legacy_type.wiki_pages:storage
 definitions:
   add_folder:
@@ -73,10 +76,10 @@ definitions:
     value:
       object: wiki_pages.module
       attr_name: format_model
-  formatter_creg-wiki_pages-model.actor-template:
+  formatter_creg-wiki_pages-list_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.wiki_pages:model
+      t: legacy_type.wiki_pages:list_model
       function: format_model
       service_params: []
   open:
@@ -176,6 +179,16 @@ definitions:
       name: open_wiki_pages_d
       base: null
       fields: {}
+  page_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: page_list_model
+  page_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: page_model
   remove:
     type: legacy_type.builtin:attribute
     value:
@@ -217,59 +230,81 @@ definitions:
     value:
       object: wiki_pages.module
       attr_name: wiki_pages
-  wiki_pages-model-add_folder.command-cfg-item:
+  wiki_pages-list_model-add_folder.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.wiki_pages:model
+      t: legacy_type.wiki_pages:list_model
       command: add_folder.model-command-enumerator
-  wiki_pages-model-open.command-cfg-item:
+  wiki_pages-list_model-open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.wiki_pages:model
+      t: legacy_type.wiki_pages:list_model
       command: open.model-command
-  wiki_pages-model-open_parent.command-cfg-item:
+  wiki_pages-list_model-open_parent.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.wiki_pages:model
+      t: legacy_type.wiki_pages:list_model
       command: open_parent.model-command
-  wiki_pages-model-remove.command-cfg-item:
+  wiki_pages-list_model-remove.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.wiki_pages:model
+      t: legacy_type.wiki_pages:list_model
       command: remove.model-command
-  wiki_pages-model.feed-template:
+  wiki_pages-list_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.wiki_pages:model
-      feed_type: wiki_pages-model.feed-type
-  wiki_pages-model.feed-type:
+      model_t: legacy_type.wiki_pages:list_model
+      feed_type: wiki_pages-list_model.feed-type
+  wiki_pages-list_model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.wiki_pages:item
-  wiki_pages-model.key-list-ui-t:
+  wiki_pages-list_model.key-list-ui-t:
     type: legacy_type.model:key_list_ui_t
     value:
       item_t: legacy_type.wiki_pages:item
       key_field: id
       key_field_t: legacy_type.builtin:string
-  wiki_pages-model.model:
+  wiki_pages-list_model.model:
     type: legacy_type.model:model
     value:
-      ui_t: wiki_pages-model.key-list-ui-t
-      system_fn: wiki_pages-model.system-fn
-  wiki_pages-model.model-cfg-item:
+      ui_t: wiki_pages-list_model.key-list-ui-t
+      system_fn: wiki_pages-list_model.system-fn
+  wiki_pages-list_model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
-      t: legacy_type.wiki_pages:model
-      value: wiki_pages-model.model
-  wiki_pages-model.system-fn:
+      t: legacy_type.wiki_pages:list_model
+      value: wiki_pages-list_model.model
+  wiki_pages-list_model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: wiki_pages_model
+      function: page_list_model
       ctx_params:
       - piece
       service_params:
       - format
+      - wiki_pages
+  wiki_pages-page_model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: wiki_pages-page_model.record-ui-t
+      system_fn: wiki_pages-page_model.system-fn
+  wiki_pages-page_model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.wiki_pages:page_model
+      value: wiki_pages-page_model.model
+  wiki_pages-page_model.record-ui-t:
+    type: legacy_type.model:record_ui_t
+    value:
+      record_t: legacy_type.wiki_pages:page
+  wiki_pages-page_model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: page_model
+      ctx_params:
+      - piece
+      service_params:
       - wiki_pages
   wiki_pages.module:
     type: legacy_type.builtin:python_module
@@ -281,7 +316,7 @@ definitions:
         htypes.model.remote_model: legacy_type.model:remote_model
         htypes.wiki_pages.folder: legacy_type.wiki_pages:folder
         htypes.wiki_pages.item: legacy_type.wiki_pages:item
-        htypes.wiki_pages.model: legacy_type.wiki_pages:model
+        htypes.wiki_pages.list_model: legacy_type.wiki_pages:list_model
         htypes.wiki_pages.storage: legacy_type.wiki_pages:storage
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
@@ -296,8 +331,3 @@ definitions:
       - data_dir
       want_config: false
       free_params: []
-  wiki_pages_model:
-    type: legacy_type.builtin:attribute
-    value:
-      object: wiki_pages.module
-      attr_name: wiki_pages_model

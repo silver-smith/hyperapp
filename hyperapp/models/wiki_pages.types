@@ -1,13 +1,16 @@
 from wiki import wiki
 
 
-model = record:
+list_model = record:
   parent_id: string opt
   folder_path: string list
 
 item = record:
   id: string
   name: string
+
+page_model = record:
+  id: string opt
 
 
 folder = record:
