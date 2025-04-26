@@ -108,8 +108,7 @@ def test_wiki_view(qapp, ctx, wiki_piece, state, model):
     ctl_hook.navigator.view.open.assert_called_once()
 
 
-def test_text_view_factory():
-    model = "Sample wiki text"
+def test_text_view_factory(model):
     piece = wiki.wiki_text(model, adapter=None)
     assert isinstance(piece, htypes.wiki.text_view)
 
