@@ -47,6 +47,12 @@ import:
 - models.ref_list:open_ref_list.d
 - models.ref_list:remove.d
 - models.show_current_context:show_current_context.d
+- models.wiki_pages:add_folder.commit-d
+- models.wiki_pages:add_folder.open-d
+- models.wiki_pages:open.d
+- models.wiki_pages:open_parent.d
+- models.wiki_pages:open_wiki_pages.d
+- models.wiki_pages:remove.d
 definitions:
   bool-false:
     type: legacy_type.builtin:bool
@@ -282,6 +288,36 @@ definitions:
     value:
       key: models.show_current_context:show_current_context.d
       value: shortcut_Ctrl_Alt_C
+  config_item-models.wiki_pages-add_folder.commit-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.wiki_pages:add_folder.commit-d
+      value: shortcut_Return
+  config_item-models.wiki_pages-add_folder.open-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.wiki_pages:add_folder.open-d
+      value: shortcut_F
+  config_item-models.wiki_pages-open.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.wiki_pages:open.d
+      value: shortcut_Return
+  config_item-models.wiki_pages-open_parent.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.wiki_pages:open_parent.d
+      value: shortcut_Backspace
+  config_item-models.wiki_pages-open_wiki_pages.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.wiki_pages:open_wiki_pages.d
+      value: shortcut_Ctrl_Alt_W
+  config_item-models.wiki_pages-remove.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.wiki_pages:remove.d
+      value: shortcut_Del
   crud-layout_k-models.peer_list-add:
     type: legacy_type.crud:layout_k
     value:
@@ -337,6 +373,9 @@ definitions:
   shortcut_Ctrl_Alt_M:
     type: legacy_type.builtin:string
     value: Ctrl+Alt+M
+  shortcut_Ctrl_Alt_W:
+    type: legacy_type.builtin:string
+    value: Ctrl+Alt+W
   shortcut_Del:
     type: legacy_type.builtin:string
     value: Del
@@ -397,6 +436,12 @@ definitions:
       - config_item-models.ref_list-add_folder.commit-d
       - config_item-canned_arg_command_d_1
       - config_item-models.ref_list-remove.d
+      - config_item-models.wiki_pages-add_folder.open-d
+      - config_item-models.wiki_pages-add_folder.commit-d
+      - config_item-models.wiki_pages-open.d
+      - config_item-models.wiki_pages-open_parent.d
+      - config_item-models.wiki_pages-open_wiki_pages.d
+      - config_item-models.wiki_pages-remove.d
   static_str_adapter:
     type: legacy_type.str_adapter:static_str_adapter
     value: {}
