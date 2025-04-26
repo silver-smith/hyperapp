@@ -5,6 +5,7 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
+from .code.mark import mark
 from .code.context import Context
 from .fixtures import feed_fixtures
 from .tested.code import record_adapter
@@ -12,9 +13,12 @@ from .tested.code import record_adapter
 log = logging.getLogger(__name__)
 
 
+@mark.fixture
+def ctx():
+    return Context()
 
-def test_static_adapter():
-    ctx = Context()
+
+def test_static_adapter(ctx):
     model = htypes.record_adapter_tests.item(123, "Sample static item")
     record_t_res = pyobj_creg.actor_to_piece(htypes.record_adapter_tests.item)
     adapter_piece = htypes.record_adapter.static_record_adapter(
@@ -32,8 +36,7 @@ def _sample_record_fn(piece):
     return htypes.record_adapter_tests.item(123, "Sample fn item")
 
 
-def test_fn_adapter():
-    ctx = Context()
+def test_fn_adapter(ctx):
     model = htypes.record_adapter_tests.sample_record()
     record_t_res = pyobj_creg.actor_to_piece(htypes.record_adapter_tests.item)
     system_fn = htypes.system_fn.ctx_fn(
