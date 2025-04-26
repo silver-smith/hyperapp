@@ -133,6 +133,11 @@ definitions:
     value:
       key: crud-layout_k-models.ref_list-add_folder
       value: box_layout_view_1
+  config_item-crud-layout_k-models.wiki_pages-add_folder:
+    type: legacy_type.data_service:config_item
+    value:
+      key: crud-layout_k-models.wiki_pages-add_folder
+      value: box_layout_view_1
   config_item-models.column_list-open_column_list.d:
     type: legacy_type.data_service:config_item
     value:
@@ -326,6 +331,10 @@ definitions:
     type: legacy_type.crud:layout_k
     value:
       commit_command_d: models.ref_list:add_folder.commit-d
+  crud-layout_k-models.wiki_pages-add_folder:
+    type: legacy_type.crud:layout_k
+    value:
+      commit_command_d: models.wiki_pages:add_folder.commit-d
   line_edit-static_str_adapter:
     type: legacy_type.line_edit:edit_view
     value:
@@ -340,6 +349,7 @@ definitions:
       items:
       - config_item-crud-layout_k-models.peer_list-add
       - config_item-crud-layout_k-models.ref_list-add_folder
+      - config_item-crud-layout_k-models.wiki_pages-add_folder
   ref_1:
     type: legacy_type.builtin:ref
     value: model_1
