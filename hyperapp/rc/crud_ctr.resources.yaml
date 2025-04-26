@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.command:properties
 - legacy_type.crud:open_command_fn
 - legacy_type.crud_ctr:commit_ctr
@@ -25,6 +26,7 @@ definitions:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.command.cfg_item: legacy_type.command:cfg_item
         htypes.command.model_command: legacy_type.command:model_command
+        htypes.command.model_command_fn: legacy_type.command:model_command_fn
         htypes.command.properties: legacy_type.command:properties
         htypes.crud.open_command_fn: legacy_type.crud:open_command_fn
         htypes.crud_ctr.init_ctr: legacy_type.crud_ctr:init_ctr

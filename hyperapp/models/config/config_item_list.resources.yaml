@@ -50,7 +50,7 @@ definitions:
       - layers
       service_params: []
   config_item_list-model.crud.move.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: config_item_move_to_another_layer
       ctx_params:

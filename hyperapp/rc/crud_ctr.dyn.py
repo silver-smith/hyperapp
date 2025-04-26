@@ -40,7 +40,7 @@ class CrudTemplateCtr(ModuleCtr):
                 )
             name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
-        system_fn = htypes.system_fn.ctx_fn(
+        system_fn = self._system_fn_t(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
@@ -61,6 +61,8 @@ class CrudTemplateCtr(ModuleCtr):
 
 
 class CrudInitTemplateCtr(CrudTemplateCtr):
+
+    _system_fn_t = htypes.system_fn.ctx_fn
 
     @classmethod
     def from_piece(cls, piece):
@@ -126,6 +128,8 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
 
 
 class CrudCommitTemplateCtr(CrudTemplateCtr):
+
+    _system_fn_t = htypes.command.model_command_fn
 
     @classmethod
     def from_piece(cls, piece):

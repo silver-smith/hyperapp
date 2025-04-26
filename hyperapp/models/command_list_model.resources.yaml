@@ -69,7 +69,7 @@ definitions:
       - lcs
       service_params: []
   global_commands-model.crud.update.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: command_update
       ctx_params:
@@ -132,7 +132,7 @@ definitions:
       - lcs
       service_params: []
   model_commands-model.crud.update.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: command_update
       ctx_params:

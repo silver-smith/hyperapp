@@ -114,7 +114,7 @@ definitions:
       - layer_d
       service_params: []
   lcs_view-view.crud.move.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: lcs_move_to_another_layer
       ctx_params:

@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.crud:open_command_fn
 - legacy_type.model_commands:model
 - legacy_type.rename_command:form
@@ -26,7 +27,7 @@ definitions:
       object: rename_command.module
       attr_name: model_command_rename_to
   model_commands-model.crud.rename.system-fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: model_command_rename
       ctx_params:
