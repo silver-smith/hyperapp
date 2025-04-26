@@ -326,7 +326,7 @@ class Crud:
 
     def _form_view(self, value_t):
         adapter = htypes.crud.record_adapter()
-        return construct_default_form(adapter, value_t)
+        return construct_default_form(self._visualizer, adapter, value_t)
 
     def _primitive_view(self, value_t):
         if value_t is htypes.builtin.string:

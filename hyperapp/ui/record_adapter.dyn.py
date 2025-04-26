@@ -132,10 +132,10 @@ class FnRecordAdapter(FnRecordAdapterBase):
 
 
 @mark.actor.ui_type_creg
-def record_ui_type_layout(piece, system_fn_ref):
+def record_ui_type_layout(piece, system_fn_ref, visualizer):
     record_t = pyobj_creg.invite(piece.record_t)
     adapter = htypes.record_adapter.fn_record_adapter(
         record_t=piece.record_t,
         system_fn=system_fn_ref,
         )
-    return construct_default_form(adapter, record_t)
+    return construct_default_form(visualizer, adapter, record_t)

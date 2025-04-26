@@ -46,8 +46,8 @@ def adapter_piece():
 
 
 @mark.fixture
-def piece(adapter_piece):
-    return construct_default_form(adapter_piece, htypes.form_tests.value)
+def piece(visualizer, adapter_piece):
+    return construct_default_form(visualizer, adapter_piece, htypes.form_tests.value)
 
 
 @mark.fixture

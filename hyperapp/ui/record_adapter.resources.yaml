@@ -65,4 +65,5 @@ definitions:
     value:
       t: legacy_type.model:record_ui_t
       function: record_ui_type_layout
-      service_params: []
+      service_params:
+      - visualizer
