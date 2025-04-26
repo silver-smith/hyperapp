@@ -33,6 +33,7 @@ import:
 - ui.construct_default_form:construct_default_form.module
 - ui.qt.context_view:context_view.module
 - ui.record_adapter:record_adapter.module
+- ui.remote_model:remote_model.module
 - ui.ui_model_command:ui_model_command.module
 definitions:
   CrudContextView:
@@ -105,6 +106,7 @@ definitions:
         code.context_view: ui.qt.context_view:context_view.module
         code.mark: base.mark:mark.module
         code.record_adapter: ui.record_adapter:record_adapter.module
+        code.remote_model: ui.remote_model:remote_model.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.builtin.string: legacy_type.builtin:string
         htypes.command.command_result: legacy_type.command:command_result

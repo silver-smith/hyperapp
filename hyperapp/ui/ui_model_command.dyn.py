@@ -14,6 +14,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.remote_model import real_model_t
 from .code.command import CommandKind, BoundCommandBase, UnboundCommandBase, command_d_text
 from .code.command_groups import default_command_groups
 from .code.model_command import UnboundModelCommand
@@ -130,7 +131,7 @@ class BoundUiModelCommand(BoundCommandBase):
             log.info("Model command %r: Set current key: %r", self.name, key)
             self._navigator_rec.view.set_current_key(navigator_w, key)
             return
-        view_piece = self._visualizer(deduce_t(model))
+        view_piece = self._visualizer(real_model_t(model))
         model_ctx = self._ctx.pop().clone_with(model=model)
         self._open_view(navigator_w, model, model_ctx, view_piece, key)
 

@@ -5,6 +5,12 @@ from .services import (
 from .tested.code import remote_model as remote_model_module
 
 
+def test_real_model_t():
+    model = "Sample model"
+    t = remote_model_module.real_model_t(model)
+    assert t is htypes.builtin.string
+
+
 def test_format_remote_model(generate_rsa_identity):
     identity = generate_rsa_identity(fast=True)
     model = htypes.remote_model_tests.sample_model()

@@ -14,6 +14,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.remote_model import real_model_t
 from .code.command import BoundCommandBase, UnboundCommandBase
 from .code.ui_model_command import split_command_result, wrap_model_command_to_ui_command
 from .code.context_view import ContextView
@@ -261,7 +262,7 @@ class Crud:
                 value = self._run_init(ctx, init_action_fn, model, init_args)
             selector_result = await get_fn.call(ctx, value=value)
             selector_model, key = split_command_result(selector_result)
-            selector_model_t = deduce_t(selector_model)
+            selector_model_t = real_model_t(selector_model)
             base_view_piece = self._visualizer(selector_model_t)
             new_model = selector_model
         else:

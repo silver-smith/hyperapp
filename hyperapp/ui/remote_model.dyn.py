@@ -1,7 +1,17 @@
+from . import htypes
 from .services import (
+    deduce_t,
     web,
     )
 from .code.mark import mark
+
+
+def real_model_t(model):
+    if isinstance(model, htypes.model.remote_model):
+        real_model = web.summon(model.model)
+        return deduce_t(real_model)
+    else:
+        return deduce_t(model)
 
 
 @mark.actor.formatter_creg

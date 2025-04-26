@@ -8,6 +8,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.view import Item
+from .code.remote_model import real_model_t
 from .code.model_command import model_command_ctx
 from .code.wrapper_view import WrapperView
 
@@ -26,7 +27,7 @@ async def _run_details_command(error_view, visualizer, ctx, unbound_command, mod
     else:
         details_model = web.summon(result.model)
         details_ctx = _details_context(ctx, details_model)
-        view_piece = visualizer(deduce_t(details_model)
+        view_piece = visualizer(real_model_t(details_model))
     return (details_model, details_ctx, view_piece)
 
 

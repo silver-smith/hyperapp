@@ -17,6 +17,7 @@ import:
 - legacy_type.wiki:text_view
 - legacy_type.wiki:wiki
 - legacy_type.wiki:wiki_view
+- ui.remote_model:remote_model.module
 - ui.view.view:view.module
 definitions:
   StaticWikiAdapter:
@@ -113,6 +114,7 @@ definitions:
       file_name: wiki.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        code.remote_model: ui.remote_model:remote_model.module
         code.view: ui.view.view:view.module
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.wiki.state: legacy_type.wiki:state
