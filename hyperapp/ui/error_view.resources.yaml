@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:deduce_t.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:dict_config_ctl
@@ -19,6 +20,7 @@ definitions:
       file_name: error_view.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        services.deduce_t: builtins:deduce_t.service
   error_view.service:
     type: legacy_type.system:service_template
     value:

@@ -3,6 +3,7 @@
 import:
 - base.context:context.module
 - base.mark:mark.module
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -117,6 +118,7 @@ definitions:
         htypes.model.remote_model: legacy_type.model:remote_model
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service

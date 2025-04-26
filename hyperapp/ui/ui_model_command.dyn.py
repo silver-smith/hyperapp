@@ -8,6 +8,7 @@ from operator import attrgetter, itemgetter
 
 from . import htypes
 from .services import (
+    deduce_t,
     pyobj_creg,
     mosaic,
     web,
@@ -129,7 +130,7 @@ class BoundUiModelCommand(BoundCommandBase):
             log.info("Model command %r: Set current key: %r", self.name, key)
             self._navigator_rec.view.set_current_key(navigator_w, key)
             return
-        view_piece = self._visualizer(model)
+        view_piece = self._visualizer(deduce_t(model))
         model_ctx = self._ctx.pop().clone_with(model=model)
         self._open_view(navigator_w, model, model_ctx, view_piece, key)
 
