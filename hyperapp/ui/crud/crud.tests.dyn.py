@@ -155,7 +155,7 @@ def commit_command_layout_k(commit_command_d):
 
 
 @mark.fixture.obj
-def model_layout_reg(commit_command_layout_k):
+def model_layout_reg(format, commit_command_layout_k):
     def getitem(self, layout_k):
         def k(t):
             return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
@@ -165,7 +165,7 @@ def model_layout_reg(commit_command_layout_k):
             return htypes.crud_tests.selector_view()
         if layout_k == commit_command_layout_k:
             raise KeyError(layout_k)
-        raise RuntimeError(f"Mock model_layout_reg: __getitem__ with {layout_k} was not expected")
+        raise RuntimeError(f"Mock model_layout_reg: __getitem__ with {format(layout_k)} was not expected")
     reg = MagicMock()
     reg.__getitem__ = getitem
     return reg
