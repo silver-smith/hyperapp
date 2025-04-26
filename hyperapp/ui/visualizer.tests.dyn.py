@@ -9,14 +9,8 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .code.context import Context
 from .code.fn_list_adapter import index_list_ui_type_layout
 from .tested.code import visualizer as visualizer_module
-
-
-@mark.fixture
-def ctx():
-    return Context()
 
 
 @mark.config_fixture('model_layout_reg')
@@ -33,22 +27,22 @@ def model_layout_reg_config():
         }
 
 
-def test_string(visualizer, ctx):
-    layout = visualizer(ctx, "")
+def test_string(visualizer):
+    layout = visualizer("")
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_int(visualizer, ctx):
-    layout = visualizer(ctx, 1)
+def test_int(visualizer):
+    layout = visualizer(1)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_list(visualizer, ctx):
+def test_list(visualizer):
     value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = visualizer(ctx, value)
+    layout = visualizer(value)
     assert isinstance(layout, htypes.list.view)
 
 
@@ -82,9 +76,9 @@ def ui_type_creg_config():
         }
 
 
-def test_sample_list(visualizer, ctx):
+def test_sample_list(visualizer):
     model = htypes.visualizer_tests.sample_list()
-    layout = visualizer(ctx, model)
+    layout = visualizer(model)
     assert isinstance(layout, htypes.list.view)
 
 

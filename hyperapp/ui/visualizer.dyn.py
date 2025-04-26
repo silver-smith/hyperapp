@@ -44,7 +44,7 @@ def ui_type_creg(config):
 
 
 @mark.service
-def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model):
+def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, model):
     if isinstance(model, htypes.model.remote_model):
         real_model = web.summon(model.model)
         model_t = deduce_t(real_model)

@@ -141,7 +141,7 @@ class WikiView(WikiTextView):
         navigator_w = navigator_rec.widget_wr()
         if navigator_w is None:
             raise RuntimeError("Navigator widget is gone")
-        view_piece = self._visualizer(self._ctx, model)
+        view_piece = self._visualizer(model)
         model_ctx = self._ctx.clone_with(model=model)
         view = self._view_reg.animate(view_piece, model_ctx)
         log.info("Wiki view: visualizing with view: %s", view)
