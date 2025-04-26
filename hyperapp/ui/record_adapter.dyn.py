@@ -124,7 +124,6 @@ class FnRecordAdapter(FnRecordAdapterBase):
         additional_kw = {
             'model': self._model,
             'piece': self._model,
-            'feed': self._feed,
             }
         return self._call_fn(**additional_kw)
 
