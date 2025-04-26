@@ -120,7 +120,17 @@ def page_list_model(piece, format, wiki_pages):
 
 @mark.model
 def page_model(piece, wiki_pages):
-    return wiki_pages.get_page(piece.id)
+    if piece.id:
+        return wiki_pages.get_page(piece.id)
+    return htypes.wiki_pages.page(
+        id=str(uuid.uuid4()),
+        parent_id=piece.parent_id,
+        title="New wiki page",
+        wiki=htypes.wiki.wiki(
+            text="",
+            refs=(),
+            ),
+        )
 
 
 @mark.command
@@ -171,10 +181,12 @@ def add_folder(piece, name, wiki_pages):
     return folder_id
 
 
-@mark.command.add(args=['ref'])
-def add_ref(piece, ref, wiki_pages):
-    ref_id = wiki_pages.append_ref(piece.parent_id, ref)
-    return ref_id
+@mark.command
+def new_page(piece, wiki_pages):
+    return htypes.wiki_pages.page_model(
+        parent_id=piece.parent_id,
+        id=None,
+        )
 
 
 @mark.command.remove

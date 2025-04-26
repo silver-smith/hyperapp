@@ -90,6 +90,7 @@ import:
 - models.wiki_pages:formatter_creg-wiki_pages-list_model.actor-template
 - models.wiki_pages:open_wiki_pages.global-model-command
 - models.wiki_pages:wiki_pages-list_model-add_folder.command-cfg-item
+- models.wiki_pages:wiki_pages-list_model-new_page.command-cfg-item
 - models.wiki_pages:wiki_pages-list_model-open.command-cfg-item
 - models.wiki_pages:wiki_pages-list_model-open_parent.command-cfg-item
 - models.wiki_pages:wiki_pages-list_model-remove.command-cfg-item
@@ -202,6 +203,7 @@ definitions:
       - models.ref_list:ref_list-model-open_parent.command-cfg-item
       - models.ref_list:ref_list-model-remove.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
+      - models.wiki_pages:wiki_pages-list_model-new_page.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-open.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-open_parent.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-remove.command-cfg-item

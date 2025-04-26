@@ -75,12 +75,26 @@ def test_root_list_model(root_model):
         ]
 
 
-def test_page_model():
+def test_existing_page_model():
     model = htypes.wiki_pages.page_model(
+        parent_id=None,
         id='page_1',
         )
     page = wiki_pages.page_model(model)
     assert isinstance(page, htypes.wiki_pages.page)
+    assert page.parent_id == model.parent_id
+    assert page.id == model.id
+
+
+def test_new_page_model():
+    model = htypes.wiki_pages.page_model(
+        parent_id='folder_1',
+        id=None,
+        )
+    page = wiki_pages.page_model(model)
+    assert isinstance(page, htypes.wiki_pages.page)
+    assert page.parent_id == model.parent_id
+    assert page.id
 
 
 def test_open_folder_locally(root_model, folder_2_model):
@@ -119,12 +133,10 @@ def test_add_root_folder(root_model, file_bundle_factory):
     file_bundle_factory.save_piece.assert_called_once()
 
 
-def _test_add_ref(folder_2_model, file_bundle_factory):
-    ref_2_piece = htypes.wiki_pages_tests.sample_model(id=456)
-    ref_2 = mosaic.put(ref_2_piece)
-    ref_id = wiki_pages.add_ref(folder_2_model, ref_2)
-    assert type(ref_id) is str
-    file_bundle_factory.save_piece.assert_called_once()
+def test_new_page(folder_2_model):
+    piece = wiki_pages.new_page(folder_2_model)
+    assert piece.parent_id == folder_2_model.parent_id
+    assert piece.id is None
 
 
 def test_remove_folder(root_model, file_bundle_factory):

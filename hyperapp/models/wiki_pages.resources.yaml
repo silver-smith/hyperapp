@@ -26,6 +26,7 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.wiki:wiki
 - legacy_type.wiki_pages:folder
 - legacy_type.wiki_pages:item
 - legacy_type.wiki_pages:list_model
@@ -82,6 +83,38 @@ definitions:
       t: legacy_type.wiki_pages:list_model
       function: format_model
       service_params: []
+  new_page:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: new_page
+  new_page.d:
+    type: new_page_d
+    value: {}
+  new_page.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: new_page
+      ctx_params:
+      - piece
+      service_params:
+      - wiki_pages
+  new_page.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: new_page.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: new_page.fn
+  new_page_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki_pages
+      name: new_page_d
+      base: null
+      fields: {}
   open:
     type: legacy_type.builtin:attribute
     value:
@@ -235,6 +268,11 @@ definitions:
     value:
       t: legacy_type.wiki_pages:list_model
       command: add_folder.model-command-enumerator
+  wiki_pages-list_model-new_page.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.wiki_pages:list_model
+      command: new_page.model-command
   wiki_pages-list_model-open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -314,9 +352,12 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         htypes.model.remote_model: legacy_type.model:remote_model
+        htypes.wiki.wiki: legacy_type.wiki:wiki
         htypes.wiki_pages.folder: legacy_type.wiki_pages:folder
         htypes.wiki_pages.item: legacy_type.wiki_pages:item
         htypes.wiki_pages.list_model: legacy_type.wiki_pages:list_model
+        htypes.wiki_pages.page: legacy_type.wiki_pages:page
+        htypes.wiki_pages.page_model: legacy_type.wiki_pages:page_model
         htypes.wiki_pages.storage: legacy_type.wiki_pages:storage
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
