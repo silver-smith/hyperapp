@@ -10,7 +10,6 @@ import:
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
-- legacy_type.sample_commands:system_info_item
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_tree:model
@@ -150,7 +149,6 @@ definitions:
       file_name: sample_commands.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        htypes.sample_commands.system_info_item: legacy_type.sample_commands:system_info_item
         htypes.sample_list.item: legacy_type.sample_list:item
         htypes.sample_tree.model: legacy_type.sample_tree:model
         htypes.wiki.wiki: legacy_type.wiki:wiki
@@ -228,36 +226,5 @@ definitions:
     value:
       module_name: sample_commands
       name: show_state_d
-      base: null
-      fields: {}
-  system_info:
-    type: legacy_type.builtin:attribute
-    value:
-      object: sample_commands.module
-      attr_name: system_info
-  system_info.d:
-    type: system_info_d
-    value: {}
-  system_info.fn:
-    type: legacy_type.command:model_command_fn
-    value:
-      function: system_info
-      ctx_params: []
-      service_params: []
-  system_info.global-model-command:
-    type: legacy_type.command:global_model_command
-    value:
-      d: system_info.d
-      properties:
-        is_global: true
-        uses_state: false
-        remotable: true
-      system_fn: system_info.fn
-      preserve_remote: false
-  system_info_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: sample_commands
-      name: system_info_d
       base: null
       fields: {}
