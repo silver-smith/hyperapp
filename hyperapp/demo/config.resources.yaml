@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- demo.fs:formatter_creg-fs-model.actor-template
 - demo.fs:fs-model.feed-template
 - demo.fs:fs-model.model-cfg-item
 - demo.fs:open_fs.global-model-command
@@ -14,6 +15,7 @@ definitions:
     value:
       services:
         feed_factory: feed_factory
+        formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
         model_reg: model_reg
   feed_factory:
@@ -21,6 +23,11 @@ definitions:
     value:
       items:
       - demo.fs:fs-model.feed-template
+  formatter_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - demo.fs:formatter_creg-fs-model.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:

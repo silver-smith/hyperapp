@@ -17,3 +17,8 @@ def test_model(piece):
 def test_open():
     piece = fs.open_fs()
     assert piece
+
+
+def test_formatter(piece):
+    title = fs.format_model(piece)
+    assert type(title) is str
