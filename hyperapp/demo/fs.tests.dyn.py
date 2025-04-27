@@ -14,7 +14,13 @@ def test_model(piece):
     assert type(item_list) is list
 
 
-def test_open():
+def test_open_file(piece):
+    current_path = ['etc', 'mime.types']
+    text = fs.open(piece, current_path)
+    assert type(text) is str
+
+
+def test_open_fs():
     piece = fs.open_fs()
     assert piece
 

@@ -2,6 +2,7 @@
 
 import:
 - demo.fs:formatter_creg-fs-model.actor-cfg-item
+- demo.fs:fs-model-open.command-cfg-item
 - demo.fs:fs-model.feed-template
 - demo.fs:fs-model.model-cfg-item
 - demo.fs:open_fs.global-model-command
@@ -21,6 +22,7 @@ definitions:
         feed_factory: feed_factory
         formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
+        model_command_reg: model_command_reg
         model_reg: model_reg
   feed_factory:
     type: legacy_type.system:item_list_config
@@ -42,6 +44,11 @@ definitions:
       - demo.hello_world:hello_world.global-model-command
       - demo.system_info:system_info.global-model-command
       - demo.system_info_model:open_system_info.global-model-command
+  model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - demo.fs:fs-model-open.command-cfg-item
   model_reg:
     type: legacy_type.system:item_list_config
     value:
