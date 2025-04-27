@@ -2,6 +2,7 @@
 
 import:
 - demo.hello_world:hello_world.global-model-command
+- demo.system_info:system_info.global-model-command
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -15,3 +16,4 @@ definitions:
     value:
       items:
       - demo.hello_world:hello_world.global-model-command
+      - demo.system_info:system_info.global-model-command
