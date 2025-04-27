@@ -1,4 +1,5 @@
 import logging
+import magic
 from pathlib import Path
 
 from . import htypes
@@ -31,6 +32,18 @@ def fs_model(piece, current_path):
         return list(_enum_dir(fs_dir))
     except PermissionError:
         return []
+
+
+@mark.command
+def open(piece, current_path):
+    file_path = Path('/').joinpath(*current_path)
+    if not file_path.is_file():
+        return
+    file_type = magic.from_file(file_path)
+    log.info("FS: opening file typed %r: %s", file_type, file_path)
+    if 'text' not in file_type:
+        return
+    return file_path.read_text()
 
 
 @mark.global_command
