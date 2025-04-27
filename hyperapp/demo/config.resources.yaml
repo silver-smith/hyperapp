@@ -1,6 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- demo.fs:fs-model.feed-template
+- demo.fs:fs-model.model-cfg-item
+- demo.fs:open_fs.global-model-command
 - demo.hello_world:hello_world.global-model-command
 - demo.system_info:system_info.global-model-command
 - demo.system_info_model:formatter_creg-system_info_model-model.actor-cfg-item
@@ -22,6 +25,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - demo.fs:fs-model.feed-template
       - demo.system_info_model:system_info_model-model.feed-template
   formatter_creg:
     type: legacy_type.system:item_list_config
@@ -32,6 +36,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - demo.fs:open_fs.global-model-command
       - demo.hello_world:hello_world.global-model-command
       - demo.system_info:system_info.global-model-command
       - demo.system_info_model:open_system_info.global-model-command
@@ -39,4 +44,5 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - demo.fs:fs-model.model-cfg-item
       - demo.system_info_model:system_info_model-model.model-cfg-item
