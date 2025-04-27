@@ -16,8 +16,11 @@ projects:
     imports: [base, common, ui, models]
   sample:
     imports: [base, common, ui]
+  demo:
+    # views project is required for config layer.
+    imports: [base, common, ui, views]
   client:
-    imports: [base, common, ui, models, sample, lcs, views]
+    imports: [base, common, ui, models, sample, demo, lcs, views]
 
 config_layers:
   client_config: .local/share/hyperapp/client/config.cdr

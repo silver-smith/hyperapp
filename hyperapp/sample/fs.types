@@ -1,5 +1,0 @@
-model = record
-
-item = record:
-  name: string
-  size: int opt

@@ -30,8 +30,3 @@ async def test_sample_list_details():
 async def test_sample_tree_info():
     model = htypes.sample_tree.model()
     value = await sample_commands.sample_tree_info(model)
-
-
-def test_system_info():
-    value = sample_commands.system_info()
-    assert type(value) is list
