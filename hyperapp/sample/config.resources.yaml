@@ -3,17 +3,12 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
-- sample.fs:formatter_creg-fs-model.actor-cfg-item
-- sample.fs:fs-model.feed-template
-- sample.fs:fs-model.model-cfg-item
-- sample.fs:open_fs.global-model-command
 - sample.sample_commands:open_sample_static_list.global-model-command
 - sample.sample_commands:open_sample_static_text.global-model-command
 - sample.sample_commands:open_sample_wiki_text.global-model-command
 - sample.sample_commands:sample_list-sample_list-details.command-cfg-item
 - sample.sample_commands:sample_tree-model-sample_tree_info.command-cfg-item
 - sample.sample_commands:show_state.global-model-command
-- sample.sample_commands:system_info.global-model-command
 - sample.sample_feed:sample_feed-sample_list_feed.feed-template
 - sample.sample_feed:sample_feed-sample_tree_feed.feed-template
 - sample.sample_list:formatter_creg-sample_list-feed_sample_list.actor-cfg-item
@@ -61,7 +56,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - sample.fs:fs-model.feed-template
       - sample.sample_feed:sample_feed-sample_list_feed.feed-template
       - sample.sample_feed:sample_feed-sample_tree_feed.feed-template
       - sample.sample_list:sample_list-feed_sample_list.feed-template
@@ -71,7 +65,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - sample.fs:formatter_creg-fs-model.actor-cfg-item
       - sample.sample_list:formatter_creg-sample_list-feed_sample_list.actor-cfg-item
       - sample.sample_list:formatter_creg-sample_list-sample_list.actor-cfg-item
       - sample.sample_tree:formatter_creg-sample_tree-model.actor-cfg-item
@@ -79,12 +72,10 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - sample.fs:open_fs.global-model-command
       - sample.sample_commands:open_sample_static_list.global-model-command
       - sample.sample_commands:open_sample_static_text.global-model-command
       - sample.sample_commands:open_sample_wiki_text.global-model-command
       - sample.sample_commands:show_state.global-model-command
-      - sample.sample_commands:system_info.global-model-command
       - sample.sample_list:open_feed_sample_fn_list.global-model-command
       - sample.sample_list:open_sample_fn_list.global-model-command
       - sample.sample_record:open_sample_fn_record.global-model-command
@@ -104,7 +95,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - sample.fs:fs-model.model-cfg-item
       - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
       - sample.sample_list:sample_list-sample_list.model-cfg-item
       - sample.sample_record:sample_record-sample_record.model-cfg-item

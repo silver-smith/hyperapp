@@ -18,7 +18,9 @@ projects:
     imports: [base, common, ui, models]
   sample:
     imports: [base, common, ui]
+  demo:
+    imports: [base, common, ui]
   server:
     imports: [base, common, ui, models]
   client:
-    imports: [base, common, ui, models, sample, lcs, views]
+    imports: [base, common, ui, models, sample, demo, lcs, views]
