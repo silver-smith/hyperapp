@@ -1,0 +1,48 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.command:global_model_command
+- legacy_type.command:model_command_fn
+definitions:
+  hello_world:
+    type: legacy_type.builtin:attribute
+    value:
+      object: hello_world.module
+      attr_name: hello_world
+  hello_world.d:
+    type: hello_world_d
+    value: {}
+  hello_world.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: hello_world
+      ctx_params: []
+      service_params: []
+  hello_world.global-model-command:
+    type: legacy_type.command:global_model_command
+    value:
+      d: hello_world.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: hello_world.fn
+      preserve_remote: false
+  hello_world.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: hello_world
+      file_name: hello_world.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+  hello_world_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: hello_world
+      name: hello_world_d
+      base: null
+      fields: {}
