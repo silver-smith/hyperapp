@@ -10,7 +10,8 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
-- legacy_type.command:ui_command
+- legacy_type.command:model_command
+- legacy_type.command:model_command_fn
 - legacy_type.list:view
 - legacy_type.list_adapter:index_fn_list_adapter
 - legacy_type.model:index_tree_ui_t
@@ -86,23 +87,27 @@ definitions:
     type: open_d
     value: {}
   open.fn:
-    type: legacy_type.system_fn:ctx_fn
+    type: legacy_type.command:model_command_fn
     value:
       function: open
       ctx_params:
+      - piece
+      - current_idx
+      - current_item
       - view
       - state
-      - current_idx
+      - ctx
       - hook
-      service_params: []
-  open.ui-command:
-    type: legacy_type.command:ui_command
+      service_params:
+      - view_reg
+  open.model-command:
+    type: legacy_type.command:model_command
     value:
       d: open.d
       properties:
         is_global: false
         uses_state: true
-        remotable: true
+        remotable: false
       system_fn: open.fn
   open_d:
     type: legacy_type.builtin:record_mt
@@ -111,11 +116,11 @@ definitions:
       name: open_d
       base: null
       fields: {}
-  tree_as_list-view-open.command-cfg-item:
+  tree_as_list-list_model-open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.tree_as_list:view
-      command: open.ui-command
+      t: legacy_type.tree_as_list:list_model
+      command: open.model-command
   tree_as_list-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:

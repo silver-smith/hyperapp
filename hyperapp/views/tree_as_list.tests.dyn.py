@@ -10,7 +10,7 @@ from .code.context import Context
 from .tested.code import tree_as_list
 
 
-def tree_model(piece, current_path, parent):
+def _tree_model(piece, current_path, parent):
     log.info("Sample tree model: %s, %s, %s", piece, current_path, parent_item)
     assert isinstance(piece, htypes.tree_as_list_tests.sample_tree_model), repr(piece)
     for idx in current_path:
@@ -30,7 +30,7 @@ def tree_model(piece, current_path, parent):
 @mark.fixture
 def tree_model_fn():
     return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(tree_model),
+        function=pyobj_creg.actor_to_ref(_tree_model),
         ctx_params=('piece', 'current_path', 'parent'),
         service_params=(),
         )
@@ -41,6 +41,11 @@ def tree_ui_t():
     return htypes.model.index_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.tree_as_list_tests.item),
         )
+
+
+@mark.fixture
+def tree_model():
+    return htypes.tree_as_list_tests.sample_tree_model()
 
 
 @mark.fixture
@@ -67,7 +72,21 @@ def test_view(view_piece, wrapper_view):
     assert wrapper_view.piece == view_piece
 
 
-def test_open_command(wrapper_view):
+def test_open_command(tree_model_fn, tree_model, ctx, wrapper_view):
     hook = Mock()
-    elt_view = tree_as_list.open(wrapper_view, state=None, current_idx=1, hook=hook)
+    list_model = htypes.tree_as_list.list_model(
+        tree_model=mosaic.put(tree_model),
+        tree_model_fn=mosaic.put(tree_model_fn),
+        current_path=(),
+        parent_item=None,
+        )
+    current_idx = 1
+    current_item = htypes.tree_as_list_tests.item(1, "two", "Second item")
+    state = None
+    elt_view = tree_as_list.open(list_model, current_idx, current_item, wrapper_view, state, ctx, hook)
     hook.replace_view.assert_called_once()
+
+
+def _test_parent_command(wrapper_view):
+    hook = Mock()
+    elt_view = tree_as_list.parent(wrapper_view, state=None, hook=hook)
