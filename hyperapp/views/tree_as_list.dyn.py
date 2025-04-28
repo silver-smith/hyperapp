@@ -25,18 +25,36 @@ class TreeAsListWrapperView(WrapperView):
             )
         list_view = view_reg.invite(piece.list_view, list_ctx)
         tree_model_fn = system_fn_creg.invite(piece.tree_model_fn)
-        return cls(list_view, tree_model_fn)
+        current_path = [web.summon(elt) for elt in piece.current_path]
+        return cls(list_view, tree_model_fn, current_path)
 
-    def __init__(self, list_view, tree_model_fn):
+    def __init__(self, list_view, tree_model_fn, current_path):
         super().__init__(list_view)
         self._tree_model_fn = tree_model_fn
+        self._current_path = current_path
 
     @property
     def piece(self):
         return htypes.tree_as_list.view(
             list_view=mosaic.put(self._base_view.piece),
             tree_model_fn=mosaic.put(self._tree_model_fn.piece),
-            current_path=(),
+            current_path=tuple(mosaic.put(elt) for elt in self._current_path),
+            )
+
+    def element_view(self, current_elt):
+        return TreeAsListWrapperView(
+            list_view=self._base_view,
+            tree_model_fn=self._tree_model_fn,
+            current_path=[*self._current_path, current_elt],
+            )
+
+    def parent_view(self):
+        if not self._current_path:
+            return None
+        return TreeAsListWrapperView(
+            list_view=self._base_view,
+            tree_model_fn=self._tree_model_fn,
+            current_path=self._current_path[:-1],
             )
 
 
@@ -52,6 +70,12 @@ def list_model_fn(piece, current_idx, ctx, system_fn_creg):
         parent=parent_item,
         )
     return tree_model_fn.call(tree_ctx)
+
+
+@mark.ui_command
+def open(view, state, current_idx, hook):
+    elt_view = view.element_view(current_idx)
+    hook.replace_view(elt_view, state)
 
 
 @mark.view_factory.ui_t

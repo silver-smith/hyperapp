@@ -9,6 +9,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
 - legacy_type.list:view
 - legacy_type.list_adapter:index_fn_list_adapter
 - legacy_type.model:index_tree_ui_t
@@ -75,6 +77,45 @@ definitions:
       name: index_tree_as_list_ui_type_layout_k
       base: null
       fields: {}
+  open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: open
+  open.d:
+    type: open_d
+    value: {}
+  open.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open
+      ctx_params:
+      - view
+      - state
+      - current_idx
+      - hook
+      service_params: []
+  open.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open.fn
+  open_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tree_as_list
+      name: open_d
+      base: null
+      fields: {}
+  tree_as_list-view-open.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tree_as_list:view
+      command: open.ui-command
   tree_as_list-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:

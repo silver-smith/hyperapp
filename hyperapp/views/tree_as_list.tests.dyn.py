@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -46,13 +48,26 @@ def ctx():
     return Context()
 
 
-def test_view(tree_model_fn, tree_ui_t, ctx):
-    model = htypes.tree_as_list_tests.sample_tree_model()
-    piece = tree_as_list.index_tree_as_list_ui_type_layout(tree_ui_t, mosaic.put(tree_model_fn))
-    view = tree_as_list.TreeAsListWrapperView.from_piece(piece, model, ctx)
-    assert view.piece == piece
+@mark.fixture
+def view_piece(tree_model_fn, tree_ui_t):
+    return tree_as_list.index_tree_as_list_ui_type_layout(tree_ui_t, mosaic.put(tree_model_fn))
     
 
-def test_index_ui_type_layout(tree_model_fn, tree_ui_t):
-    layout = tree_as_list.index_tree_as_list_ui_type_layout(tree_ui_t, mosaic.put(tree_model_fn))
-    assert isinstance(layout, htypes.tree_as_list.view)
+def test_index_ui_type_layout(view_piece):
+    assert isinstance(view_piece, htypes.tree_as_list.view)
+
+
+@mark.fixture
+def wrapper_view(tree_model_fn, view_piece, ctx):
+    model = htypes.tree_as_list_tests.sample_tree_model()
+    return tree_as_list.TreeAsListWrapperView.from_piece(view_piece, model, ctx)
+
+
+def test_view(view_piece, wrapper_view):
+    assert wrapper_view.piece == view_piece
+
+
+def test_open_command(wrapper_view):
+    hook = Mock()
+    elt_view = tree_as_list.open(wrapper_view, state=None, current_idx=1, hook=hook)
+    hook.replace_view.assert_called_once()
