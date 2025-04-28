@@ -30,11 +30,12 @@ class TreeAsListWrapperView(WrapperView):
         list_view = view_reg.invite(piece.list_view, list_ctx)
         tree_model_fn = system_fn_creg.invite(piece.tree_model_fn)
         current_path = [web.summon(elt) for elt in piece.current_path]
-        return cls(list_view, tree_model_fn, current_path)
+        return cls(list_view, tree_model_fn, list_model, current_path)
 
-    def __init__(self, list_view, tree_model_fn, current_path):
+    def __init__(self, list_view, tree_model_fn, list_model, current_path):
         super().__init__(list_view)
         self._tree_model_fn = tree_model_fn
+        self._list_model = list_model
         self._current_path = current_path
 
     @property
@@ -44,6 +45,9 @@ class TreeAsListWrapperView(WrapperView):
             tree_model_fn=mosaic.put(self._tree_model_fn.piece),
             current_path=tuple(mosaic.put(elt) for elt in self._current_path),
             )
+
+    def children_context(self, ctx):
+        return ctx.clone_with(model=self._list_model)
 
     def element_view(self, view_reg, ctx, list_model, current_elt, current_item):
         return self._wrapper_view(view_reg, ctx, list_model, [*self._current_path, current_elt], current_item)
