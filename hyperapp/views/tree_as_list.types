@@ -1,0 +1,10 @@
+list_model = record:
+  tree_model: ref
+  tree_model_fn: ref
+  current_path: ref list
+  parent_item: ref opt
+
+view = record:
+  list_view: ref
+  tree_model_fn: ref
+  current_path: ref list

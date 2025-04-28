@@ -1,0 +1,98 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.list:view
+- legacy_type.list_adapter:index_fn_list_adapter
+- legacy_type.model:index_tree_ui_t
+- legacy_type.system_fn:ctx_fn
+- legacy_type.tree_as_list:list_model
+- legacy_type.tree_as_list:view
+- legacy_type.view_factory:template
+- ui.wrapper_view:wrapper_view.module
+definitions:
+  TreeAsListWrapperView:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: TreeAsListWrapperView
+  TreeAsListWrapperView.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TreeAsListWrapperView
+      attr_name: from_piece
+  TreeAsListWrapperView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: TreeAsListWrapperView.from_piece
+      ctx_params:
+      - piece
+      - model
+      - ctx
+      service_params:
+      - view_reg
+      - system_fn_creg
+  index_tree_as_list_ui_type_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: index_tree_as_list_ui_type_layout
+  index_tree_as_list_ui_type_layout.k:
+    type: index_tree_as_list_ui_type_layout_k
+    value: {}
+  index_tree_as_list_ui_type_layout.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: index_tree_as_list_ui_type_layout
+      ctx_params:
+      - piece
+      - system_fn_ref
+      service_params: []
+  index_tree_as_list_ui_type_layout.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: index_tree_as_list_ui_type_layout.k
+      model_t: null
+      ui_t_t: legacy_type.model:index_tree_ui_t
+      view_t: legacy_type.tree_as_list:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: index_tree_as_list_ui_type_layout.system-fn
+  index_tree_as_list_ui_type_layout_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tree_as_list
+      name: index_tree_as_list_ui_type_layout_k
+      base: null
+      fields: {}
+  tree_as_list-view.view-template:
+    type: legacy_type.cfg_item:typed_fn_cfg_item
+    value:
+      t: legacy_type.tree_as_list:view
+      system_fn: TreeAsListWrapperView_from_piece.system-fn
+  tree_as_list.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: tree_as_list
+      file_name: tree_as_list.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        code.wrapper_view: ui.wrapper_view:wrapper_view.module
+        htypes.list.view: legacy_type.list:view
+        htypes.list_adapter.index_fn_list_adapter: legacy_type.list_adapter:index_fn_list_adapter
+        htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
+        htypes.tree_as_list.list_model: legacy_type.tree_as_list:list_model
+        htypes.tree_as_list.view: legacy_type.tree_as_list:view
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
