@@ -46,7 +46,7 @@ class ViewFactory(ViewFactoryBase):
             fn_ctx = ctx.clone_with(
                 piece=ui_t,
                 system_fn_ref=system_fn_ref,
-            )
+                )
         else:
             fn_ctx = ctx
         return self._system_fn.call(fn_ctx, adapter=adapter)
