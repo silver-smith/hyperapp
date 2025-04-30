@@ -15,6 +15,7 @@ import:
 - views.qt.splitter:split_horizontally.d
 - views.qt.splitter:unwrap.d
 - views.tree_as_list:open.d
+- views.tree_as_list:parent.d
 definitions:
   bool-false:
     type: legacy_type.builtin:bool
@@ -86,9 +87,17 @@ definitions:
     value:
       key: views.tree_as_list:open.d
       value: shortcut_Return
+  config_item-views.tree_as_list-parent.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.tree_as_list:parent.d
+      value: shortcut_Backspace
   shortcut_Alt_Shift_S:
     type: legacy_type.builtin:string
     value: Alt+Shift+S
+  shortcut_Backspace:
+    type: legacy_type.builtin:string
+    value: Backspace
   shortcut_Ctrl_H:
     type: legacy_type.builtin:string
     value: Ctrl+H
@@ -118,3 +127,4 @@ definitions:
       - config_item-views.list_as_tree-toggle_open_command.d
       - config_item-views.list_as_tree-open_layers.d
       - config_item-views.tree_as_list-open.d
+      - config_item-views.tree_as_list-parent.d
