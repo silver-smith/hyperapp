@@ -6,6 +6,9 @@ from functools import partial
 from PySide6 import QtCore, QtWidgets
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 from .code.view import View
 from .code.tree_visual_diff import (
@@ -283,3 +286,14 @@ class TreeView(View):
     def _on_row_inserted(self, widget, parent, first, last):
         log.info("Tree: row inserted: %s: %s %s %s", widget, parent, first, last)
         widget.check_is_just_shown()
+
+
+@mark.view_factory.ui_t
+def index_tree_ui_type_layout(piece, system_fn_ref):
+    adapter = htypes.tree_adapter.fn_index_tree_adapter(
+        item_t=piece.item_t,
+        system_fn=system_fn_ref,
+        )
+    return htypes.tree.view(
+        adapter=mosaic.put(adapter),
+        )

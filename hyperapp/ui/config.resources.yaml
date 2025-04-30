@@ -115,6 +115,7 @@ import:
 - ui.qt.text:text-readonly_view.view-template
 - ui.qt.text:text_edit.view-factory-template
 - ui.qt.text:text_view.view-factory-template
+- ui.qt.tree:index_tree_ui_type_layout.view-factory-template
 - ui.qt.tree:tree-view.view-template
 - ui.qt.wiki:resource_name_creg-wiki-adapter.actor-template
 - ui.qt.wiki:ui_adapter_creg-wiki-adapter.actor-template
@@ -431,6 +432,7 @@ definitions:
       - ui.qt.line_edit:line_view.view-factory-template
       - ui.qt.text:text_edit.view-factory-template
       - ui.qt.text:text_view.view-factory-template
+      - ui.qt.tree:index_tree_ui_type_layout.view-factory-template
       - ui.qt.wiki:wiki.view-factory-template
       - ui.qt.wiki:wiki_text.view-factory-template
   view_reg:

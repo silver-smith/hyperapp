@@ -13,7 +13,7 @@ from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import tree
 
 
-def _sample_tree_fn(piece, parent):
+def _sample_tree_model(piece, parent):
     assert isinstance(piece, htypes.tree_tests.sample_tree), repr(piece)
     if parent:
         base = parent.id
@@ -27,22 +27,28 @@ def _sample_tree_fn(piece, parent):
 
 
 @mark.fixture
-def adapter_piece():
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(_sample_tree_fn),
+def model_fn():
+    return htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(_sample_tree_model),
         ctx_params=('piece', 'parent'),
         service_params=(),
         )
+
+
+@mark.fixture
+def adapter_piece(model_fn):
     return htypes.tree_adapter.fn_index_tree_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        system_fn=mosaic.put(system_fn),
+        system_fn=mosaic.put(model_fn),
         )
 
 
 @mark.fixture
 def piece(adapter_piece):
-    return htypes.tree.view(mosaic.put(adapter_piece))
+    return htypes.tree.view(
+        adapter=mosaic.put(adapter_piece),
+        )
 
 
 def test_tree(qapp, piece):
@@ -57,3 +63,11 @@ def test_tree(qapp, piece):
     assert isinstance(state, htypes.tree.state)
     model_state = view._model_state(widget)
     assert model_state
+
+
+def test_index_layout(model_fn):
+    ui_t = htypes.model.index_tree_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.tree_tests.item),
+        )
+    piece = tree.index_tree_ui_type_layout(ui_t, mosaic.put(model_fn))
+    assert isinstance(piece, htypes.tree.view)
