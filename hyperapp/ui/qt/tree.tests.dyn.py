@@ -7,6 +7,7 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
+from .code.mark import mark
 from .code.context import Context
 from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import tree
@@ -25,7 +26,8 @@ def _sample_tree_fn(piece, parent):
         ]
 
 
-def _make_adapter_piece():
+@mark.fixture
+def adapter_piece():
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_tree_fn),
         ctx_params=('piece', 'parent'),
@@ -38,14 +40,13 @@ def _make_adapter_piece():
         )
 
 
-def _make_piece():
-    adapter_piece = _make_adapter_piece()
+@mark.fixture
+def piece(adapter_piece):
     return htypes.tree.view(mosaic.put(adapter_piece))
 
 
-def test_tree(qapp):
+def test_tree(qapp, piece):
     ctx = Context()
-    piece = _make_piece()
     model = htypes.tree_tests.sample_tree()
     state = None
     view = tree.TreeView.from_piece(piece, model, ctx)
