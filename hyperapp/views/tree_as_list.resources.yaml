@@ -115,11 +115,52 @@ definitions:
       name: open_d
       base: null
       fields: {}
+  parent:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: parent
+  parent.d:
+    type: parent_d
+    value: {}
+  parent.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: parent
+      ctx_params:
+      - model
+      - view
+      - state
+      - ctx
+      - hook
+      service_params:
+      - view_reg
+  parent.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: parent.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: parent.fn
+  parent_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tree_as_list
+      name: parent_d
+      base: null
+      fields: {}
   tree_as_list-view-open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.tree_as_list:view
       command: open.ui-command
+  tree_as_list-view-parent.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tree_as_list:view
+      command: parent.ui-command
   tree_as_list-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:

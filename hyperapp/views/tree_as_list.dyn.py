@@ -20,8 +20,8 @@ class TreeAsListWrapperView(WrapperView):
         list_model = htypes.tree_as_list.list_model(
             tree_model=mosaic.put(model),
             tree_model_fn=piece.tree_model_fn,
-            current_path=(),
-            parent_item=None,
+            current_path=piece.current_path,
+            parent_item=piece.parent_items[-1] if piece.parent_items else None,
             )
         list_ctx = ctx.clone_with(
             model=list_model,
@@ -30,13 +30,15 @@ class TreeAsListWrapperView(WrapperView):
         list_view = view_reg.invite(piece.list_view, list_ctx)
         tree_model_fn = system_fn_creg.invite(piece.tree_model_fn)
         current_path = [web.summon(elt) for elt in piece.current_path]
-        return cls(list_view, tree_model_fn, list_model, current_path)
+        parent_items = [web.summon(item) for item in piece.parent_items]
+        return cls(list_view, tree_model_fn, list_model, current_path, parent_items)
 
-    def __init__(self, list_view, tree_model_fn, list_model, current_path):
+    def __init__(self, list_view, tree_model_fn, list_model, current_path, parent_items):
         super().__init__(list_view)
         self._tree_model_fn = tree_model_fn
         self._list_model = list_model
         self._current_path = current_path
+        self._parent_items = parent_items
 
     @property
     def piece(self):
@@ -44,25 +46,34 @@ class TreeAsListWrapperView(WrapperView):
             list_view=mosaic.put(self._base_view.piece),
             tree_model_fn=mosaic.put(self._tree_model_fn.piece),
             current_path=tuple(mosaic.put(elt) for elt in self._current_path),
+            parent_items=tuple(mosaic.put(item) for item in self._parent_items),
             )
 
     def children_context(self, ctx):
         return ctx.clone_with(model=self._list_model)
 
     def element_view(self, view_reg, ctx, tree_model, current_elt, current_item):
-        return self._wrapper_view(view_reg, ctx, tree_model, [*self._current_path, current_elt], current_item)
+        return self._wrapper_view(
+            view_reg, ctx, tree_model,
+            current_path=[*self._current_path, current_elt],
+            parent_items=[*self._parent_items, current_item],
+            )
 
-    def parent_view(self, view_reg):
+    def parent_view(self, view_reg, ctx, tree_model):
         if not self._current_path:
             return None
-        return self._wrapper_view(self._current_path[:-1])
+        return self._wrapper_view(
+            view_reg, ctx, tree_model,
+            current_path=self._current_path[:-1],
+            parent_items=self._parent_items[:-1],
+            )
 
-    def _wrapper_view(self, view_reg, ctx, tree_model, current_path, parent_item):
+    def _wrapper_view(self, view_reg, ctx, tree_model, current_path, parent_items):
         list_model = htypes.tree_as_list.list_model(
             tree_model=mosaic.put(tree_model),
             tree_model_fn=mosaic.put(self._tree_model_fn.piece),
             current_path=tuple(mosaic.put(elt) for elt in current_path),
-            parent_item=mosaic.put(parent_item),
+            parent_item=mosaic.put(parent_items[-1]) if parent_items else None,
             )
         list_ctx = ctx.clone_with(
             model=list_model,
@@ -74,6 +85,7 @@ class TreeAsListWrapperView(WrapperView):
             tree_model_fn=self._tree_model_fn,
             list_model=list_model,
             current_path=current_path,
+            parent_items=parent_items,
             )
 
 
@@ -100,8 +112,8 @@ def open(model, current_idx, current_item, view, state, ctx, hook, view_reg):
 
 
 @mark.ui_command
-def parent(view, state, model, current_idx, hook, view_reg):
-    elt_view = view.parent_view(view_reg, model, current_idx)
+def parent(model, view, state, ctx, hook, view_reg):
+    elt_view = view.parent_view(view_reg, ctx, model)
     if elt_view:
         hook.replace_view(elt_view, state)
 
@@ -124,4 +136,5 @@ def index_tree_as_list_ui_type_layout(piece, system_fn_ref):
         list_view=mosaic.put(list_view),
         tree_model_fn=system_fn_ref,
         current_path=(),
+        parent_items=(),
         )

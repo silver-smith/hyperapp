@@ -49,8 +49,11 @@ def tree_model():
 
 
 @mark.fixture
-def ctx():
-    return Context()
+def ctx(tree_model):
+    return Context(
+        model=tree_model,
+        piece=tree_model,
+        )
 
 
 @mark.fixture
@@ -77,10 +80,20 @@ def test_open_command(tree_model_fn, tree_model, ctx, wrapper_view):
     current_idx = 1
     current_item = htypes.tree_as_list_tests.item(1, "two", "Second item")
     state = None
-    elt_view = tree_as_list.open(tree_model, current_idx, current_item, wrapper_view, state, ctx, hook)
+    tree_as_list.open(tree_model, current_idx, current_item, wrapper_view, state, ctx, hook)
     hook.replace_view.assert_called_once()
 
 
-def _test_parent_command(wrapper_view):
+def test_parent_command(view_reg, tree_model, ctx, wrapper_view):
+    parent_item = htypes.tree_as_list_tests.item(1, "two", "Second item")
+    child_view_piece = htypes.tree_as_list.view(
+        list_view=wrapper_view.piece.list_view,
+        tree_model_fn=wrapper_view.piece.tree_model_fn,
+        current_path=(mosaic.put(2),),
+        parent_items=(mosaic.put(parent_item),),
+        )
+    child_view = view_reg.animate(child_view_piece, ctx)
     hook = Mock()
-    elt_view = tree_as_list.parent(wrapper_view, state=None, hook=hook)
+    state = None
+    tree_as_list.parent(tree_model, child_view, state, ctx, hook)
+    hook.replace_view.assert_called_once()
