@@ -35,6 +35,7 @@ def get_sample_tree_items(sample_tree_data, parent_id):
 
 @mark.model
 def sample_tree(piece, parent, get_sample_tree_items):
+    log.info("Sample tree model: parent=%s", parent)
     if parent:
         parent_id = parent.id
     else:
