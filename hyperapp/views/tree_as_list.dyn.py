@@ -49,29 +49,30 @@ class TreeAsListWrapperView(WrapperView):
     def children_context(self, ctx):
         return ctx.clone_with(model=self._list_model)
 
-    def element_view(self, view_reg, ctx, list_model, current_elt, current_item):
-        return self._wrapper_view(view_reg, ctx, list_model, [*self._current_path, current_elt], current_item)
+    def element_view(self, view_reg, ctx, tree_model, current_elt, current_item):
+        return self._wrapper_view(view_reg, ctx, tree_model, [*self._current_path, current_elt], current_item)
 
     def parent_view(self, view_reg):
         if not self._current_path:
             return None
         return self._wrapper_view(self._current_path[:-1])
 
-    def _wrapper_view(self, view_reg, ctx, list_model, current_path, parent_item):
-        new_list_model = htypes.tree_as_list.list_model(
-            tree_model=list_model.tree_model,
-            tree_model_fn=list_model.tree_model_fn,
+    def _wrapper_view(self, view_reg, ctx, tree_model, current_path, parent_item):
+        list_model = htypes.tree_as_list.list_model(
+            tree_model=mosaic.put(tree_model),
+            tree_model_fn=mosaic.put(self._tree_model_fn.piece),
             current_path=tuple(mosaic.put(elt) for elt in current_path),
             parent_item=mosaic.put(parent_item),
             )
         list_ctx = ctx.clone_with(
-            model=new_list_model,
-            piece=new_list_model,
+            model=list_model,
+            piece=list_model,
             )
         list_view = view_reg.animate(self._base_view.piece, list_ctx)
         return TreeAsListWrapperView(
             list_view=list_view,
             tree_model_fn=self._tree_model_fn,
+            list_model=list_model,
             current_path=current_path,
             )
 
@@ -91,9 +92,9 @@ def list_model_fn(piece, ctx, system_fn_creg):
     return tree_model_fn.call(tree_ctx)
 
 
-@mark.command
-def open(piece, current_idx, current_item, view, state, ctx, hook, view_reg):
-    elt_view = view.element_view(view_reg, ctx, piece, current_idx, current_item)
+@mark.ui_command
+def open(model, current_idx, current_item, view, state, ctx, hook, view_reg):
+    elt_view = view.element_view(view_reg, ctx, model, current_idx, current_item)
     if elt_view:
         hook.replace_view(elt_view, state)
 
