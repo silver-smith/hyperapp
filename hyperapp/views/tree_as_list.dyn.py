@@ -52,6 +52,15 @@ class TreeAsListWrapperView(WrapperView):
     def children_context(self, ctx):
         return ctx.clone_with(model=self._list_model)
 
+    @property
+    def parent_key(self):
+        if not self._current_path:
+            return None
+        return self._current_path[-1]
+
+    def make_list_state(self, key):
+        return self._base_view.make_widget_state(key)
+
     def element_view(self, view_reg, ctx, tree_model, current_elt, current_item):
         return self._wrapper_view(
             view_reg, ctx, tree_model,
@@ -116,21 +125,22 @@ def list_model_fn(piece, ctx, system_fn_creg):
 def index_open(model, current_idx, current_item, view, state, ctx, hook, view_reg):
     elt_view = view.element_view(view_reg, ctx, model, current_idx, current_item)
     if elt_view:
-        hook.replace_view(elt_view, state)
+        hook.replace_view(elt_view, new_state=None)
 
 
 @mark.ui_command
 def key_open(model, current_key, current_item, view, state, ctx, hook, view_reg):
     elt_view = view.element_view(view_reg, ctx, model, current_key, current_item)
     if elt_view:
-        hook.replace_view(elt_view, state)
+        hook.replace_view(elt_view, new_state=None)
 
 
 @mark.ui_command
 def parent(model, view, state, ctx, hook, view_reg):
-    elt_view = view.parent_view(view_reg, ctx, model)
-    if elt_view:
-        hook.replace_view(elt_view, state)
+    parent_view = view.parent_view(view_reg, ctx, model)
+    new_state = parent_view.make_list_state(view.parent_key)
+    if parent_view:
+        hook.replace_view(parent_view, new_state)
 
 
 def _list_fn():

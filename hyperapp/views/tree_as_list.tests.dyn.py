@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import Mock
 
 from . import htypes
@@ -9,15 +10,17 @@ from .code.mark import mark
 from .code.context import Context
 from .tested.code import tree_as_list
 
+log = logging.getLogger(__name__)
+
 
 def _tree_model(piece, current_path, parent):
-    log.info("Sample tree model: %s, %s, %s", piece, current_path, parent_item)
+    log.info("Sample tree model: %s, %s, %s", piece, current_path, parent)
     assert isinstance(piece, htypes.tree_as_list_tests.sample_tree_model), repr(piece)
     for idx in current_path:
         assert type(idx) is int
-    if parent_item is not None:
-        assert isinstance(parent_item, htypes.tree_as_list_tests.item)
-        base = parent_item.id
+    if parent is not None:
+        assert isinstance(parent, htypes.tree_as_list_tests.item)
+        base = parent.id
     else:
         base = 0
     return [
