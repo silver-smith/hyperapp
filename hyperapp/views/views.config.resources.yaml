@@ -14,6 +14,7 @@ import:
 - views.local_server_context:open_local_server_context.d
 - views.qt.splitter:split_horizontally.d
 - views.qt.splitter:unwrap.d
+- views.tree_as_list:open.d
 definitions:
   bool-false:
     type: legacy_type.builtin:bool
@@ -80,6 +81,11 @@ definitions:
     value:
       key: views.qt.splitter:unwrap.d
       value: shortcut_Ctrl_U
+  config_item-views.tree_as_list-open.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.tree_as_list:open.d
+      value: shortcut_Return
   shortcut_Alt_Shift_S:
     type: legacy_type.builtin:string
     value: Alt+Shift+S
@@ -95,6 +101,9 @@ definitions:
   shortcut_Ctrl_U:
     type: legacy_type.builtin:string
     value: Ctrl+U
+  shortcut_Return:
+    type: legacy_type.builtin:string
+    value: Return
   shortcut_Space:
     type: legacy_type.builtin:string
     value: Space
@@ -108,3 +117,4 @@ definitions:
       - config_item-views.list_as_tree-open_opener_commands.d
       - config_item-views.list_as_tree-toggle_open_command.d
       - config_item-views.list_as_tree-open_layers.d
+      - config_item-views.tree_as_list-open.d
