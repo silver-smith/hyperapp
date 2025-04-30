@@ -14,7 +14,8 @@ import:
 - views.local_server_context:open_local_server_context.d
 - views.qt.splitter:split_horizontally.d
 - views.qt.splitter:unwrap.d
-- views.tree_as_list:open.d
+- views.tree_as_list:index_open.d
+- views.tree_as_list:key_open.d
 - views.tree_as_list:parent.d
 definitions:
   bool-false:
@@ -82,10 +83,15 @@ definitions:
     value:
       key: views.qt.splitter:unwrap.d
       value: shortcut_Ctrl_U
-  config_item-views.tree_as_list-open.d:
+  config_item-views.tree_as_list-index_open.d:
     type: legacy_type.data_service:config_item
     value:
-      key: views.tree_as_list:open.d
+      key: views.tree_as_list:index_open.d
+      value: shortcut_Return
+  config_item-views.tree_as_list-key_open.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: views.tree_as_list:key_open.d
       value: shortcut_Return
   config_item-views.tree_as_list-parent.d:
     type: legacy_type.data_service:config_item
@@ -126,5 +132,6 @@ definitions:
       - config_item-views.list_as_tree-open_opener_commands.d
       - config_item-views.list_as_tree-toggle_open_command.d
       - config_item-views.list_as_tree-open_layers.d
-      - config_item-views.tree_as_list-open.d
       - config_item-views.tree_as_list-parent.d
+      - config_item-views.tree_as_list-key_open.d
+      - config_item-views.tree_as_list-index_open.d

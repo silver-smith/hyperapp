@@ -37,9 +37,18 @@ def tree_model_fn():
 
 
 @mark.fixture
-def tree_ui_t():
+def index_tree_ui_t():
     return htypes.model.index_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.tree_as_list_tests.item),
+        )
+
+
+@mark.fixture
+def key_tree_ui_t():
+    return htypes.model.key_tree_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.tree_as_list_tests.item),
+        key_field='id',
+        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
         )
 
 
@@ -57,36 +66,63 @@ def ctx(tree_model):
 
 
 @mark.fixture
-def view_piece(tree_model_fn, tree_ui_t):
-    return tree_as_list.index_tree_as_list_ui_type_layout(tree_ui_t, mosaic.put(tree_model_fn))
-    
-
-def test_index_ui_type_layout(view_piece):
-    assert isinstance(view_piece, htypes.tree_as_list.view)
+def index_view_piece(tree_model_fn, index_tree_ui_t):
+    return tree_as_list.index_tree_as_list_ui_type_layout(index_tree_ui_t, mosaic.put(tree_model_fn))
 
 
 @mark.fixture
-def wrapper_view(tree_model_fn, view_piece, ctx):
-    model = htypes.tree_as_list_tests.sample_tree_model()
-    return tree_as_list.TreeAsListWrapperView.from_piece(view_piece, model, ctx)
+def key_view_piece(tree_model_fn, key_tree_ui_t):
+    return tree_as_list.key_tree_as_list_ui_type_layout(key_tree_ui_t, mosaic.put(tree_model_fn))
+    
+
+def test_index_ui_type_layout(index_view_piece):
+    assert isinstance(index_view_piece, htypes.tree_as_list.view)
+    
+
+def test_key_ui_type_layout(key_view_piece):
+    assert isinstance(key_view_piece, htypes.tree_as_list.view)
 
 
-def test_view(view_piece, wrapper_view):
-    assert wrapper_view.piece == view_piece
+@mark.fixture
+def index_wrapper_view(tree_model, index_view_piece, ctx):
+    return tree_as_list.IndexTreeAsListWrapperView.from_piece(index_view_piece, tree_model, ctx)
 
 
-def test_open_command(tree_model_fn, tree_model, ctx, wrapper_view):
+@mark.fixture
+def key_wrapper_view(tree_model, key_view_piece, ctx):
+    return tree_as_list.KeyTreeAsListWrapperView.from_piece(key_view_piece, tree_model, ctx)
+
+
+def test_index_view(index_view_piece, index_wrapper_view):
+    assert index_wrapper_view.piece == index_view_piece
+
+
+def test_key_view(key_view_piece, key_wrapper_view):
+    assert key_wrapper_view.piece == key_view_piece
+
+
+def test_index_open_command(tree_model, ctx, index_wrapper_view):
     hook = Mock()
     current_idx = 1
     current_item = htypes.tree_as_list_tests.item(1, "two", "Second item")
     state = None
-    tree_as_list.open(tree_model, current_idx, current_item, wrapper_view, state, ctx, hook)
+    tree_as_list.index_open(tree_model, current_idx, current_item, index_wrapper_view, state, ctx, hook)
     hook.replace_view.assert_called_once()
 
 
-def test_parent_command(view_reg, tree_model, ctx, wrapper_view):
+def test_key_open_command(tree_model, ctx, key_wrapper_view):
+    hook = Mock()
+    current_key = 1
+    current_item = htypes.tree_as_list_tests.item(1, "two", "Second item")
+    state = None
+    tree_as_list.key_open(tree_model, current_key, current_item, key_wrapper_view, state, ctx, hook)
+    hook.replace_view.assert_called_once()
+
+
+@mark.fixture
+def run_parent_command_test(view_reg, tree_model, ctx, wrapper_view, view_t):
     parent_item = htypes.tree_as_list_tests.item(1, "two", "Second item")
-    child_view_piece = htypes.tree_as_list.view(
+    child_view_piece = view_t(
         list_view=wrapper_view.piece.list_view,
         tree_model_fn=wrapper_view.piece.tree_model_fn,
         current_path=(mosaic.put(2),),
@@ -97,3 +133,11 @@ def test_parent_command(view_reg, tree_model, ctx, wrapper_view):
     state = None
     tree_as_list.parent(tree_model, child_view, state, ctx, hook)
     hook.replace_view.assert_called_once()
+
+
+def test_index_parent_command(run_parent_command_test, index_wrapper_view):
+    run_parent_command_test(index_wrapper_view, htypes.tree_as_list.index_view)
+
+
+def test_key_parent_command(run_parent_command_test, key_wrapper_view):
+    run_parent_command_test(key_wrapper_view, htypes.tree_as_list.key_view)

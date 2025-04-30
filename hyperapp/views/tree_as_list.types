@@ -9,3 +9,6 @@ view = record:
   tree_model_fn: ref
   current_path: ref list
   parent_items: ref list
+
+index_view = record(view)
+key_view = record(view)

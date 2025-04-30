@@ -42,7 +42,7 @@ class TreeAsListWrapperView(WrapperView):
 
     @property
     def piece(self):
-        return htypes.tree_as_list.view(
+        return self._piece_t(
             list_view=mosaic.put(self._base_view.piece),
             tree_model_fn=mosaic.put(self._tree_model_fn.piece),
             current_path=tuple(mosaic.put(elt) for elt in self._current_path),
@@ -80,13 +80,21 @@ class TreeAsListWrapperView(WrapperView):
             piece=list_model,
             )
         list_view = view_reg.animate(self._base_view.piece, list_ctx)
-        return TreeAsListWrapperView(
+        return self.__class__(
             list_view=list_view,
             tree_model_fn=self._tree_model_fn,
             list_model=list_model,
             current_path=current_path,
             parent_items=parent_items,
             )
+
+
+class IndexTreeAsListWrapperView(TreeAsListWrapperView):
+    _piece_t = htypes.tree_as_list.index_view
+
+
+class KeyTreeAsListWrapperView(TreeAsListWrapperView):
+    _piece_t = htypes.tree_as_list.key_view
 
 
 def list_model_fn(piece, ctx, system_fn_creg):
@@ -105,8 +113,15 @@ def list_model_fn(piece, ctx, system_fn_creg):
 
 
 @mark.ui_command
-def open(model, current_idx, current_item, view, state, ctx, hook, view_reg):
+def index_open(model, current_idx, current_item, view, state, ctx, hook, view_reg):
     elt_view = view.element_view(view_reg, ctx, model, current_idx, current_item)
+    if elt_view:
+        hook.replace_view(elt_view, state)
+
+
+@mark.ui_command
+def key_open(model, current_key, current_item, view, state, ctx, hook, view_reg):
+    elt_view = view.element_view(view_reg, ctx, model, current_key, current_item)
     if elt_view:
         hook.replace_view(elt_view, state)
 
@@ -118,23 +133,41 @@ def parent(model, view, state, ctx, hook, view_reg):
         hook.replace_view(elt_view, state)
 
 
-@mark.view_factory.ui_t
-def index_tree_as_list_ui_type_layout(piece, system_fn_ref):
-    list_fn = htypes.system_fn.ctx_fn(
+def _list_fn():
+    return htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(list_model_fn),
         ctx_params=('piece', 'ctx'),
         service_params=('system_fn_creg',),
         )
-    list_adapter = htypes.list_adapter.index_fn_list_adapter(
-        item_t=piece.item_t,
-        system_fn=mosaic.put(list_fn),
-        )
+
+
+def _ui_type_layout(system_fn_ref, list_adapter, view_t):
     list_view = htypes.list.view(
         adapter=mosaic.put(list_adapter),
         )
-    return htypes.tree_as_list.view(
+    return view_t(
         list_view=mosaic.put(list_view),
         tree_model_fn=system_fn_ref,
         current_path=(),
         parent_items=(),
         )
+
+
+@mark.view_factory.ui_t
+def index_tree_as_list_ui_type_layout(piece, system_fn_ref):
+    list_adapter = htypes.list_adapter.index_fn_list_adapter(
+        item_t=piece.item_t,
+        system_fn=mosaic.put(_list_fn()),
+        )
+    return _ui_type_layout(system_fn_ref, list_adapter, htypes.tree_as_list.index_view)
+
+
+@mark.view_factory.ui_t
+def key_tree_as_list_ui_type_layout(piece, system_fn_ref):
+    list_adapter = htypes.list_adapter.key_fn_list_adapter(
+        item_t=piece.item_t,
+        key_field=piece.key_field,
+        key_field_t=piece.key_field_t,
+        system_fn=mosaic.put(_list_fn()),
+        )
+    return _ui_type_layout(system_fn_ref, list_adapter, htypes.tree_as_list.key_view)

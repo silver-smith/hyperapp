@@ -13,27 +13,30 @@ import:
 - legacy_type.command:ui_command
 - legacy_type.list:view
 - legacy_type.list_adapter:index_fn_list_adapter
+- legacy_type.list_adapter:key_fn_list_adapter
 - legacy_type.model:index_tree_ui_t
+- legacy_type.model:key_tree_ui_t
 - legacy_type.system_fn:ctx_fn
+- legacy_type.tree_as_list:index_view
+- legacy_type.tree_as_list:key_view
 - legacy_type.tree_as_list:list_model
-- legacy_type.tree_as_list:view
 - legacy_type.view_factory:template
 - ui.wrapper_view:wrapper_view.module
 definitions:
-  TreeAsListWrapperView:
+  IndexTreeAsListWrapperView:
     type: legacy_type.builtin:attribute
     value:
       object: tree_as_list.module
-      attr_name: TreeAsListWrapperView
-  TreeAsListWrapperView.from_piece:
+      attr_name: IndexTreeAsListWrapperView
+  IndexTreeAsListWrapperView.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: TreeAsListWrapperView
+      object: IndexTreeAsListWrapperView
       attr_name: from_piece
-  TreeAsListWrapperView_from_piece.system-fn:
+  IndexTreeAsListWrapperView_from_piece.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: TreeAsListWrapperView.from_piece
+      function: IndexTreeAsListWrapperView.from_piece
       ctx_params:
       - piece
       - model
@@ -41,6 +44,65 @@ definitions:
       service_params:
       - view_reg
       - system_fn_creg
+  KeyTreeAsListWrapperView:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: KeyTreeAsListWrapperView
+  KeyTreeAsListWrapperView.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: KeyTreeAsListWrapperView
+      attr_name: from_piece
+  KeyTreeAsListWrapperView_from_piece.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: KeyTreeAsListWrapperView.from_piece
+      ctx_params:
+      - piece
+      - model
+      - ctx
+      service_params:
+      - view_reg
+      - system_fn_creg
+  index_open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: index_open
+  index_open.d:
+    type: index_open_d
+    value: {}
+  index_open.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: index_open
+      ctx_params:
+      - model
+      - current_idx
+      - current_item
+      - view
+      - state
+      - ctx
+      - hook
+      service_params:
+      - view_reg
+  index_open.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: index_open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: index_open.fn
+  index_open_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tree_as_list
+      name: index_open_d
+      base: null
+      fields: {}
   index_tree_as_list_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -63,7 +125,7 @@ definitions:
       k: index_tree_as_list_ui_type_layout.k
       model_t: null
       ui_t_t: legacy_type.model:index_tree_ui_t
-      view_t: legacy_type.tree_as_list:view
+      view_t: legacy_type.tree_as_list:index_view
       is_wrapper: false
       view_ctx_params:
       - piece
@@ -77,21 +139,21 @@ definitions:
       name: index_tree_as_list_ui_type_layout_k
       base: null
       fields: {}
-  open:
+  key_open:
     type: legacy_type.builtin:attribute
     value:
       object: tree_as_list.module
-      attr_name: open
-  open.d:
-    type: open_d
+      attr_name: key_open
+  key_open.d:
+    type: key_open_d
     value: {}
-  open.fn:
+  key_open.fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: open
+      function: key_open
       ctx_params:
       - model
-      - current_idx
+      - current_key
       - current_item
       - view
       - state
@@ -99,20 +161,56 @@ definitions:
       - hook
       service_params:
       - view_reg
-  open.ui-command:
+  key_open.ui-command:
     type: legacy_type.command:ui_command
     value:
-      d: open.d
+      d: key_open.d
       properties:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: open.fn
-  open_d:
+      system_fn: key_open.fn
+  key_open_d:
     type: legacy_type.builtin:record_mt
     value:
       module_name: tree_as_list
-      name: open_d
+      name: key_open_d
+      base: null
+      fields: {}
+  key_tree_as_list_ui_type_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: key_tree_as_list_ui_type_layout
+  key_tree_as_list_ui_type_layout.k:
+    type: key_tree_as_list_ui_type_layout_k
+    value: {}
+  key_tree_as_list_ui_type_layout.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: key_tree_as_list_ui_type_layout
+      ctx_params:
+      - piece
+      - system_fn_ref
+      service_params: []
+  key_tree_as_list_ui_type_layout.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: key_tree_as_list_ui_type_layout.k
+      model_t: null
+      ui_t_t: legacy_type.model:key_tree_ui_t
+      view_t: legacy_type.tree_as_list:key_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: key_tree_as_list_ui_type_layout.system-fn
+  key_tree_as_list_ui_type_layout_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tree_as_list
+      name: key_tree_as_list_ui_type_layout_k
       base: null
       fields: {}
   parent:
@@ -151,21 +249,36 @@ definitions:
       name: parent_d
       base: null
       fields: {}
-  tree_as_list-view-open.command-cfg-item:
+  tree_as_list-index_view-index_open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.tree_as_list:view
-      command: open.ui-command
-  tree_as_list-view-parent.command-cfg-item:
+      t: legacy_type.tree_as_list:index_view
+      command: index_open.ui-command
+  tree_as_list-index_view-parent.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.tree_as_list:view
+      t: legacy_type.tree_as_list:index_view
       command: parent.ui-command
-  tree_as_list-view.view-template:
+  tree_as_list-index_view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
-      t: legacy_type.tree_as_list:view
-      system_fn: TreeAsListWrapperView_from_piece.system-fn
+      t: legacy_type.tree_as_list:index_view
+      system_fn: IndexTreeAsListWrapperView_from_piece.system-fn
+  tree_as_list-key_view-key_open.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tree_as_list:key_view
+      command: key_open.ui-command
+  tree_as_list-key_view-parent.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tree_as_list:key_view
+      command: parent.ui-command
+  tree_as_list-key_view.view-template:
+    type: legacy_type.cfg_item:typed_fn_cfg_item
+    value:
+      t: legacy_type.tree_as_list:key_view
+      system_fn: KeyTreeAsListWrapperView_from_piece.system-fn
   tree_as_list.module:
     type: legacy_type.builtin:python_module
     value:
@@ -176,9 +289,11 @@ definitions:
         code.wrapper_view: ui.wrapper_view:wrapper_view.module
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.index_fn_list_adapter: legacy_type.list_adapter:index_fn_list_adapter
+        htypes.list_adapter.key_fn_list_adapter: legacy_type.list_adapter:key_fn_list_adapter
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
+        htypes.tree_as_list.index_view: legacy_type.tree_as_list:index_view
+        htypes.tree_as_list.key_view: legacy_type.tree_as_list:key_view
         htypes.tree_as_list.list_model: legacy_type.tree_as_list:list_model
-        htypes.tree_as_list.view: legacy_type.tree_as_list:view
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
