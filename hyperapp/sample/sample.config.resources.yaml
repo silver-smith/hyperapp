@@ -45,7 +45,7 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: sample.sample_commands:sample_tree_info.d
-      value: shortcut_Return
+      value: shortcut_Shift_Return
   config_item-sample.sample_commands-show_state.d:
     type: legacy_type.data_service:config_item
     value:
@@ -137,6 +137,9 @@ definitions:
   shortcut_Return:
     type: legacy_type.builtin:string
     value: Return
+  shortcut_Shift_Return:
+    type: legacy_type.builtin:string
+    value: Shift+Return
   shortcut_Space:
     type: legacy_type.builtin:string
     value: Space
