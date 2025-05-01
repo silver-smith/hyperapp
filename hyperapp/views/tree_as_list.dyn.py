@@ -52,6 +52,9 @@ class TreeAsListWrapperView(WrapperView):
     def children_context(self, ctx):
         return ctx.clone_with(model=self._list_model)
 
+    def primary_parent_context(self, rctx, widget):
+        return rctx.clone_with(self._tree_model_state(rctx.model_state))
+
     @property
     def parent_key(self):
         if not self._current_path:
@@ -101,9 +104,27 @@ class TreeAsListWrapperView(WrapperView):
 class IndexTreeAsListWrapperView(TreeAsListWrapperView):
     _piece_t = htypes.tree_as_list.index_view
 
+    def _tree_model_state(self, list_state):
+        return {
+            'current_item': list_state.current_item,
+            'current_path': [*self._current_path, list_state.current_idx],
+            }
+
 
 class KeyTreeAsListWrapperView(TreeAsListWrapperView):
     _piece_t = htypes.tree_as_list.key_view
+
+    def _tree_model_state(self, list_state):
+        if not list_state:
+            return {
+                'current_item': None,
+                'current_path': None,
+                }
+        else:
+            return {
+                'current_item': list_state.current_item,
+                'current_path': [*self._current_path, list_state.current_key],
+                }
 
 
 def list_model_fn(piece, ctx, system_fn_creg):
