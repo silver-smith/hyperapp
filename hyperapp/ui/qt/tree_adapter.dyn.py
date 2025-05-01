@@ -19,15 +19,25 @@ from .code.tree_servant_wrapper import index_tree_wrapper, key_tree_wrapper
 log = logging.getLogger(__name__)
 
 
+def index_tree_model_state_t(item_t):
+    return TRecord('ui_tree', f'tree_model_state_{item_t.module_name}_{item_t.name}', {
+        'current_path': TList(tInt),
+        'current_item': TOptional(item_t),
+        })
+
+
+def key_tree_model_state_t(item_t, key_field_t):
+    return TRecord('ui_tree', f'tree_model_state_{item_t.module_name}_{item_t.name}', {
+        'current_path': TList(key_field_t),
+        'current_item': TOptional(item_t),
+        })
+
+
 class IndexTreeAdapterMixin:
 
     @cached_property
     def model_state_t(self):
-        item_t = self._item_t
-        return TRecord('ui_tree', f'model_state_{item_t.module_name}_{item_t.name}', {
-            'current_path': TList(tInt),
-            'current_item': TOptional(item_t),
-            })
+        return index_tree_model_state_t(self._item_t)
 
     def make_model_state(self, current_path, current_item):
         return self.model_state_t(
@@ -88,11 +98,7 @@ class KeyTreeAdapterMixin:
 
     @cached_property
     def model_state_t(self):
-        item_t = self._item_t
-        return TRecord('ui_tree', f'model_state_{item_t.module_name}_{item_t.name}', {
-            'current_path': TList(self._key_field_t),
-            'current_item': TOptional(item_t),
-            })
+        return key_tree_model_state_t(self._item_t, self._key_field_t)
 
     def make_model_state(self, current_path, current_item):
         key_path = []

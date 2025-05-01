@@ -21,6 +21,7 @@ import:
 - legacy_type.tree_as_list:key_view
 - legacy_type.tree_as_list:list_model
 - legacy_type.view_factory:template
+- ui.qt.tree_adapter:tree_adapter.module
 - ui.wrapper_view:wrapper_view.module
 definitions:
   IndexTreeAsListWrapperView:
@@ -286,6 +287,7 @@ definitions:
       file_name: tree_as_list.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
         code.wrapper_view: ui.wrapper_view:wrapper_view.module
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.index_fn_list_adapter: legacy_type.list_adapter:index_fn_list_adapter

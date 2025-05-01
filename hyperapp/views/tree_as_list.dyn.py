@@ -1,4 +1,5 @@
 import logging
+from functools import cached_property
 
 from . import htypes
 from .services import (
@@ -8,6 +9,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.wrapper_view import WrapperView
+from .code.tree_adapter import index_tree_model_state_t, key_tree_model_state_t
 
 log = logging.getLogger(__name__)
 
@@ -53,7 +55,9 @@ class TreeAsListWrapperView(WrapperView):
         return ctx.clone_with(model=self._list_model)
 
     def primary_parent_context(self, rctx, widget):
-        return rctx.clone_with(self._tree_model_state(rctx.model_state))
+        return rctx.clone_with(
+            model_state=self._tree_model_state(rctx.model_state),
+            )
 
     @property
     def parent_key(self):
@@ -104,27 +108,35 @@ class TreeAsListWrapperView(WrapperView):
 class IndexTreeAsListWrapperView(TreeAsListWrapperView):
     _piece_t = htypes.tree_as_list.index_view
 
+    @cached_property
+    def _tree_model_state_t(self):
+        return index_tree_model_state_t(self._base_view.adapter.item_t)
+
     def _tree_model_state(self, list_state):
-        return {
-            'current_item': list_state.current_item,
-            'current_path': [*self._current_path, list_state.current_idx],
-            }
+        return self._tree_model_state_t(
+            current_item=list_state.current_item,
+            current_path=[*self._current_path, list_state.current_idx],
+            )
 
 
 class KeyTreeAsListWrapperView(TreeAsListWrapperView):
     _piece_t = htypes.tree_as_list.key_view
 
+    @cached_property
+    def _tree_model_state_t(self):
+        return key_tree_model_state_t(self._base_view.adapter.item_t, self._base_view.adapter.key_field_t)
+
     def _tree_model_state(self, list_state):
         if not list_state:
-            return {
-                'current_item': None,
-                'current_path': None,
-                }
+            return self._tree_model_state_t(
+                current_item=None,
+                current_path=None,
+                )
         else:
-            return {
-                'current_item': list_state.current_item,
-                'current_path': [*self._current_path, list_state.current_key],
-                }
+            return self._tree_model_state_t(
+                current_item=list_state.current_item,
+                current_path=[*self._current_path, list_state.current_key],
+                )
 
 
 def list_model_fn(piece, ctx, system_fn_creg):
