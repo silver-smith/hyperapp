@@ -104,22 +104,21 @@ def test_key_view(key_view_piece, key_wrapper_view):
     assert key_wrapper_view.piece == key_view_piece
 
 
-def test_index_open_command(tree_model, ctx, index_wrapper_view):
+@mark.fixture
+def run_open_command_test(tree_model, ctx, wrapper_view, current_path):
     hook = Mock()
-    current_idx = 1
     current_item = htypes.tree_as_list_tests.item(1, "two", "Second item")
     state = None
-    tree_as_list.index_open(tree_model, current_idx, current_item, index_wrapper_view, state, ctx, hook)
+    tree_as_list.open(tree_model, current_path, current_item, wrapper_view, state, ctx, hook)
     hook.replace_view.assert_called_once()
 
 
-def test_key_open_command(tree_model, ctx, key_wrapper_view):
-    hook = Mock()
-    current_key = 1
-    current_item = htypes.tree_as_list_tests.item(1, "two", "Second item")
-    state = None
-    tree_as_list.key_open(tree_model, current_key, current_item, key_wrapper_view, state, ctx, hook)
-    hook.replace_view.assert_called_once()
+def test_index_open_command(run_open_command_test, index_wrapper_view):
+    run_open_command_test(index_wrapper_view, current_path=[1])
+
+
+def test_key_open_command(run_open_command_test, key_wrapper_view):
+    run_open_command_test(key_wrapper_view, current_path=[1])
 
 
 @mark.fixture

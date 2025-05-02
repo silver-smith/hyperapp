@@ -66,44 +66,6 @@ definitions:
       service_params:
       - view_reg
       - system_fn_creg
-  index_open:
-    type: legacy_type.builtin:attribute
-    value:
-      object: tree_as_list.module
-      attr_name: index_open
-  index_open.d:
-    type: index_open_d
-    value: {}
-  index_open.fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: index_open
-      ctx_params:
-      - model
-      - current_idx
-      - current_item
-      - view
-      - state
-      - ctx
-      - hook
-      service_params:
-      - view_reg
-  index_open.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: index_open.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: index_open.fn
-  index_open_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: tree_as_list
-      name: index_open_d
-      base: null
-      fields: {}
   index_tree_as_list_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -138,44 +100,6 @@ definitions:
     value:
       module_name: tree_as_list
       name: index_tree_as_list_ui_type_layout_k
-      base: null
-      fields: {}
-  key_open:
-    type: legacy_type.builtin:attribute
-    value:
-      object: tree_as_list.module
-      attr_name: key_open
-  key_open.d:
-    type: key_open_d
-    value: {}
-  key_open.fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: key_open
-      ctx_params:
-      - model
-      - current_key
-      - current_item
-      - view
-      - state
-      - ctx
-      - hook
-      service_params:
-      - view_reg
-  key_open.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: key_open.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: key_open.fn
-  key_open_d:
-    type: legacy_type.builtin:record_mt
-    value:
-      module_name: tree_as_list
-      name: key_open_d
       base: null
       fields: {}
   key_tree_as_list_ui_type_layout:
@@ -214,6 +138,44 @@ definitions:
       name: key_tree_as_list_ui_type_layout_k
       base: null
       fields: {}
+  open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: open
+  open.d:
+    type: open_d
+    value: {}
+  open.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open
+      ctx_params:
+      - model
+      - current_path
+      - current_item
+      - view
+      - state
+      - ctx
+      - hook
+      service_params:
+      - view_reg
+  open.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: open.fn
+  open_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tree_as_list
+      name: open_d
+      base: null
+      fields: {}
   parent:
     type: legacy_type.builtin:attribute
     value:
@@ -250,11 +212,11 @@ definitions:
       name: parent_d
       base: null
       fields: {}
-  tree_as_list-index_view-index_open.command-cfg-item:
+  tree_as_list-index_view-open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.tree_as_list:index_view
-      command: index_open.ui-command
+      command: open.ui-command
   tree_as_list-index_view-parent.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -265,11 +227,11 @@ definitions:
     value:
       t: legacy_type.tree_as_list:index_view
       system_fn: IndexTreeAsListWrapperView_from_piece.system-fn
-  tree_as_list-key_view-key_open.command-cfg-item:
+  tree_as_list-key_view-open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.tree_as_list:key_view
-      command: key_open.ui-command
+      command: open.ui-command
   tree_as_list-key_view-parent.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

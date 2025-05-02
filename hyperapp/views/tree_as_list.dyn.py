@@ -155,15 +155,8 @@ def list_model_fn(piece, ctx, system_fn_creg):
 
 
 @mark.ui_command
-def index_open(model, current_idx, current_item, view, state, ctx, hook, view_reg):
-    elt_view = view.element_view(view_reg, ctx, model, current_idx, current_item)
-    if elt_view:
-        hook.replace_view(elt_view, new_state=None)
-
-
-@mark.ui_command
-def key_open(model, current_key, current_item, view, state, ctx, hook, view_reg):
-    elt_view = view.element_view(view_reg, ctx, model, current_key, current_item)
+def open(model, current_path, current_item, view, state, ctx, hook, view_reg):
+    elt_view = view.element_view(view_reg, ctx, model, current_path[-1], current_item)
     if elt_view:
         hook.replace_view(elt_view, new_state=None)
 
