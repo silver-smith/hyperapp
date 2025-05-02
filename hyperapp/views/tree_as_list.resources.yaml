@@ -16,6 +16,7 @@ import:
 - legacy_type.list_adapter:key_fn_list_adapter
 - legacy_type.model:index_tree_ui_t
 - legacy_type.model:key_tree_ui_t
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tree_as_list:index_view
 - legacy_type.tree_as_list:key_view
@@ -66,6 +67,18 @@ definitions:
       service_params:
       - view_reg
       - system_fn_creg
+  format_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree_as_list.module
+      attr_name: format_list_model
+  formatter_creg-tree_as_list-list_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.tree_as_list:list_model
+      function: format_list_model
+      service_params:
+      - format
   index_tree_as_list_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:

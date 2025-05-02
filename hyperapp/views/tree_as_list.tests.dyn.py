@@ -143,3 +143,14 @@ def test_index_parent_command(run_parent_command_test, index_wrapper_view):
 
 def test_key_parent_command(run_parent_command_test, key_wrapper_view):
     run_parent_command_test(key_wrapper_view, htypes.tree_as_list.key_view)
+
+
+def test_list_model_formatter(tree_model):
+    list_model = htypes.tree_as_list.list_model(
+        tree_model=mosaic.put(tree_model),
+        tree_model_fn=mosaic.put(None),  # Unused
+        current_path=(mosaic.put(11), mosaic.put(22)),
+        parent_item=None,  # Unused
+        )
+    title = tree_as_list.format_list_model(list_model)
+    assert type(title) is str

@@ -208,3 +208,11 @@ def key_tree_as_list_ui_type_layout(piece, system_fn_ref):
         system_fn=mosaic.put(_list_fn()),
         )
     return _ui_type_layout(system_fn_ref, list_adapter, htypes.tree_as_list.key_view)
+
+
+@mark.actor.formatter_creg
+def format_list_model(piece, format):
+    tree_model = web.summon(piece.tree_model)
+    tree_model_text = format(tree_model)
+    path = '/'.join(str(web.summon(elt)) for elt in piece.current_path)
+    return f"{tree_model_text}: /{path}"
