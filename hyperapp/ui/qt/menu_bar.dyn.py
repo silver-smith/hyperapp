@@ -42,7 +42,7 @@ class MenuBarView(View):
     def widget_state(self, widget):
         return htypes.menu_bar.state()
 
-    async def children_changed(self, ctx, rctx, widget):
+    async def children_changed(self, ctx, rctx, widget, save_layout):
         commands = rctx.get('commands', [])
         used_shortcuts = rctx.get('used_shortcuts', set())
         global_d = htypes.command_groups.global_d()

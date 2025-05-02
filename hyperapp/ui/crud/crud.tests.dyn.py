@@ -184,7 +184,7 @@ async def test_crud_context_view(view_reg, model_layout_reg, qapp, ctx, view_pie
     new_label = htypes.label.view("Another sample label")
     view._base_view = view_reg.animate(new_label, ctx)
     rctx = Context()
-    await view.children_changed(ctx, rctx, widget)
+    await view.children_changed(ctx, rctx, widget, save_layout=True)
     model_layout_reg.__setitem__.assert_called_once()
     assert isinstance(model_layout_reg.__setitem__.call_args.args[0], htypes.crud.layout_k)
 

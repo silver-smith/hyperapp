@@ -133,16 +133,16 @@ class _Item:
     def get_child_widget(self, idx):
         return self.view.item_widget(self.widget, idx)
 
-    def children_changed(self):
-        self.parent.children_changed()
+    def children_changed(self, save_layout=True):
+        self.parent.children_changed(save_layout)
 
-    async def update_children(self):
+    async def update_children(self, save_layout=True):
         kid = self.current_child
         if kid:
-            rctx = await kid.update_children()
+            rctx = await kid.update_children(save_layout)
         else:
             rctx = Context()
-        await self.view.children_changed(self.ctx, rctx, self.widget)
+        await self.view.children_changed(self.ctx, rctx, self.widget, save_layout)
         self.view_commands, rctx = self.my_reverse_context(rctx)
         rctx = await self.update_other_children(rctx)
         return rctx
@@ -155,7 +155,7 @@ class _Item:
             rctx = await kid.update_other_children(rctx)
             kid.view_commands, _unused_rctx = kid.my_reverse_context(rctx)
             if kid.view:
-                await kid.view.children_changed(kid.ctx, rctx, kid.widget)
+                await kid.view.children_changed(kid.ctx, rctx, kid.widget, save_layout=False)
                 rctx = kid.view.secondary_parent_context(rctx, kid.widget)
         return rctx
 
@@ -239,7 +239,7 @@ class _Item:
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
-        self.children_changed()
+        self.children_changed(save_layout=False)
 
     def current_changed_hook(self):
         log.info("Controller: current changed from: %s", self)
@@ -251,29 +251,29 @@ class _Item:
     async def _send_model_diff(self, model_diff):
         await self._meta.feed.send(model_diff)
 
-    def _replace_child_item(self, idx):
+    def _replace_child_item(self, idx, save_layout):
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
         self._children[idx] = item
-        self.children_changed()
+        self.children_changed(save_layout)
         self.save_state()
         model_diff = TreeDiff.Replace(self.path, self.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
 
-    def replace_view_hook(self, new_view, new_state=None):
-        log.info("Controller: Replace view @%s -> %s", self, new_view)
+    def replace_view_hook(self, new_view, new_state, save_layout):
+        log.info("Controller: Replace view (save layout=%s) @%s -> %s", save_layout, self, new_view)
         parent = self.parent
         idx = self.idx
         new_widget = new_view.construct_widget(new_state, self.ctx)
         parent.view.replace_child(self.ctx, parent.widget, idx, new_view, new_widget)
-        parent._replace_child_item(idx)
+        parent._replace_child_item(idx, save_layout)
 
     def element_replaced_hook(self, idx, new_view, new_widget):
         log.info("Controller: Element replaced @%s #%d -> %s", self, idx, new_view)
         # When a view calls element_replaced hook it may not yet be in new consistent state. For example, navigator.
         # So, we need to postpone this, because we will call this view inside.
         loop = asyncio.get_running_loop()
-        loop.call_soon(self._replace_child_item, idx)
+        loop.call_soon(self._replace_child_item, idx, True)
 
     def element_inserted_hook(self, idx):
         view_items = self.view.items()
@@ -345,8 +345,8 @@ class _WindowItem(_Item):
         self._meta.id_to_item[self.id] = self
         self._window_widget = widget  # Prevent windows refs from be gone.
 
-    def children_changed(self):
-        asyncio.create_task(self.update_children())
+    def children_changed(self, save_layout=True):
+        asyncio.create_task(self.update_children(save_layout))
 
     def save_state(self):
         self.parent.save_state()
@@ -390,7 +390,7 @@ class _RootItem(_Item):
     def current_child_idx(self):
         return None
 
-    def children_changed(self):
+    def children_changed(self, save_layout=True):
         pass
 
     def save_state(self):
@@ -486,8 +486,8 @@ class CtlHook:
     def parent_context_changed(self):
         self._item.parent_context_changed_hook()
 
-    def replace_view(self, new_view, new_state=None):
-        self._item.replace_view_hook(new_view, new_state)
+    def replace_view(self, new_view, new_state=None, save_layout=True):
+        self._item.replace_view_hook(new_view, new_state, save_layout)
 
     def element_inserted(self, idx):
         self._item.element_inserted_hook(idx)

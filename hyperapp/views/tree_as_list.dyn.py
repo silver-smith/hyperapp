@@ -159,7 +159,7 @@ def list_model_fn(piece, ctx, system_fn_creg):
 def open(model, current_path, current_item, view, state, ctx, hook, view_reg):
     elt_view = view.element_view(view_reg, ctx, model, current_path[-1], current_item)
     if elt_view:
-        hook.replace_view(elt_view, new_state=None)
+        hook.replace_view(elt_view, new_state=None, save_layout=False)
 
 
 @mark.ui_command
@@ -167,7 +167,7 @@ def parent(model, view, state, ctx, hook, view_reg):
     parent_view = view.parent_view(view_reg, ctx, model)
     new_state = parent_view.make_list_state(view.parent_key)
     if parent_view:
-        hook.replace_view(parent_view, new_state)
+        hook.replace_view(parent_view, new_state, save_layout=False)
 
 
 def _list_fn():

@@ -83,9 +83,9 @@ class CrudContextView(ContextView):
             commit_value_field=self._commit_value_field,
             )
 
-    async def children_changed(self, ctx, rctx, widget):
+    async def children_changed(self, ctx, rctx, widget, save_layout):
         layout = self._base_view.piece
-        if layout != self._current_layout:
+        if save_layout and layout != self._current_layout:
             self._set_layout(layout)
 
     def _set_layout(self, layout):

@@ -23,7 +23,7 @@ class AutoTabsView(TabsView):
     def piece(self):
         return htypes.auto_tabs.view(self._tabs_data)
 
-    async def children_changed(self, ctx, rctx, widget):
+    async def children_changed(self, ctx, rctx, widget, save_layout):
         try:
             model = rctx.current_model
         except KeyError:

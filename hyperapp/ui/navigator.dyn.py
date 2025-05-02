@@ -164,9 +164,9 @@ class NavigatorView(View):
         self._current_view = new_child_view
         self._ctl_hook.replace_parent_widget(new_child_widget)
 
-    async def children_changed(self, ctx, rctx, widget):
+    async def children_changed(self, ctx, rctx, widget, save_layout):
         layout = self._current_view.piece
-        if layout != self._current_layout:
+        if save_layout and layout != self._current_layout:
             self._set_layout(layout)
 
     def items(self):

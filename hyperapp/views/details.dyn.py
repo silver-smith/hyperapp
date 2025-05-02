@@ -73,7 +73,7 @@ class DetailsView(WrapperView):
         # TODO: Save layout.
         super().replace_child(ctx, widget, idx, new_child_view, new_child_widget)
 
-    async def children_changed(self, ctx, rctx, widget):
+    async def children_changed(self, ctx, rctx, widget, save_layout):
         log.info("Details view: children changed; updating details view")
         await self._update_details_view(ctx, rctx.model_state, widget)
         pass  # TODO: Save layout.
