@@ -68,7 +68,7 @@ class NavigatorView(View):
         state = self.widget_state(widget)
         return rctx.clone_with(
             navigator=_NavigatorRec(self, state, weakref.ref(widget), self._ctl_hook),
-            current_model=self._model,
+            current_model=rctx.get('current_model', self._model),
             )
 
     def widget_state(self, widget):
