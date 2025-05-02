@@ -57,6 +57,7 @@ class TreeAsListWrapperView(WrapperView):
     def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
             model_state=self._tree_model_state(rctx.model_state),
+            current_model=self._list_model,
             )
 
     @property
