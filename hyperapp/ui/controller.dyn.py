@@ -298,8 +298,7 @@ class _Item:
         parent = self.parent
         parent.view.replace_child_widget(parent.widget, self.idx, new_widget)
         self._widget_wr = None
-        self._view_commands = None
-        self._model_commands = None
+        self.view_commands = None
 
     def save_state_hook(self):
         self.save_state()
