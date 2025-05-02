@@ -116,7 +116,7 @@ class IndexTreeAsListWrapperView(TreeAsListWrapperView):
     def _tree_model_state(self, list_state):
         return self._tree_model_state_t(
             current_item=list_state.current_item,
-            current_path=[*self._current_path, list_state.current_idx],
+            current_path=(*self._current_path, list_state.current_idx),
             )
 
 
@@ -136,7 +136,7 @@ class KeyTreeAsListWrapperView(TreeAsListWrapperView):
         else:
             return self._tree_model_state_t(
                 current_item=list_state.current_item,
-                current_path=[*self._current_path, list_state.current_key],
+                current_path=(*self._current_path, list_state.current_key),
                 )
 
 
