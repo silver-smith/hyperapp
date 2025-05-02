@@ -163,7 +163,6 @@ class NavigatorView(View):
         assert idx == 0
         self._current_view = new_child_view
         self._ctl_hook.replace_parent_widget(new_child_widget)
-        self._set_layout(new_child_view.piece)
 
     async def children_changed(self, ctx, rctx, widget):
         layout = self._current_view.piece
