@@ -215,12 +215,15 @@ class _Item:
         return ctx
 
     def navigator_rec(self, rctx):
-        rctx = self.view.primary_parent_context(rctx, self.widget)
         try:
             return rctx.navigator
         except KeyError:
             pass
-        return self.parent.navigator_rec(rctx)
+        return self.parent._navigator_rec(rctx)
+
+    def _navigator_rec(self, rctx):
+        rctx = self.view.primary_parent_context(rctx, self.widget)
+        return self.navigator_rec(rctx)
 
     def update_context(self):
         if not self.view:
@@ -433,7 +436,7 @@ class _RootItem(_Item):
         model_diff = TreeDiff.Insert(item.path, item.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
 
-    def navigator_rec(self, rctx):
+    def _navigator_rec(self, rctx):
         return None
 
     def element_removed_hook(self, idx):
