@@ -164,27 +164,33 @@ class _Item:
             return ([], rctx)
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self.command_context(my_rctx)
-        unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.view)
-        view_commands = self._bind_commands(unbound_view_commands, command_ctx)
-        if self.parent.view:
-            parent_command_ctx = self.parent.command_context(my_rctx)
-            unbound_element_commands = self._meta.svc.get_view_element_commands(parent_command_ctx, self.parent.view)
-            element_command_ctx = parent_command_ctx.clone_with(
-                element_idx=self.idx,
-                )
-            element_commands = self._bind_commands(unbound_element_commands, element_command_ctx)
-            view_commands = [*view_commands, *element_commands]
-        all_commands = view_commands
-        if 'model' in self.ctx.diffs(self.parent.ctx):  # Added or replaced by self.view.children_context.
-            model_t = deduce_t(command_ctx.model)
-            unbound_model_commands = self._meta.svc.get_ui_model_commands(
-                self.ctx.lcs, model_t, command_ctx)
-            model_commands = self._bind_commands(unbound_model_commands, command_ctx)
-            all_commands = all_commands + model_commands
+        view_commands = self._view_commands(my_rctx, command_ctx)
+        model_commands = self._model_commands(command_ctx)
         commands_rctx = my_rctx.clone_with(
-            commands=rctx.get('commands', []) + all_commands,
+            commands=rctx.get('commands', []) + view_commands + model_commands,
             )
         return (view_commands, commands_rctx)
+
+    def _view_commands(self, my_rctx, command_ctx):
+        unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.view)
+        view_commands = self._bind_commands(unbound_view_commands, command_ctx)
+        if not self.parent.view:
+            return view_commands
+        parent_command_ctx = self.parent.command_context(my_rctx)
+        unbound_element_commands = self._meta.svc.get_view_element_commands(parent_command_ctx, self.parent.view)
+        element_command_ctx = parent_command_ctx.clone_with(
+            element_idx=self.idx,
+            )
+        element_commands = self._bind_commands(unbound_element_commands, element_command_ctx)
+        return [*view_commands, *element_commands]
+
+    def _model_commands(self, command_ctx):
+        if 'model' not in self.ctx.diffs(self.parent.ctx):  # Added or replaced by self.view.children_context.
+            return []
+        model_t = deduce_t(command_ctx.model)
+        unbound_model_commands = self._meta.svc.get_ui_model_commands(
+            self.ctx.lcs, model_t, command_ctx)
+        return self._bind_commands(unbound_model_commands, command_ctx)
 
     @staticmethod
     def _bind_commands(commands, ctx):
