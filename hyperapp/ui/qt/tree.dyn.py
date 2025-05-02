@@ -274,10 +274,14 @@ class TreeView(View):
 
     def _model_state(self, widget):
         index = widget.currentIndex()
-        item_id = index.internalId()
-        item = self._adapter.get_item(item_id)
-        path = self._adapter.get_path(item_id)
-        return self._adapter.make_model_state(current_path=tuple(path), current_item=item)
+        if index == QtCore.QModelIndex():
+            item = None
+            path = None
+        else:
+            item_id = index.internalId()
+            item = self._adapter.get_item(item_id)
+            path = tuple(self._adapter.get_path(item_id))
+        return self._adapter.make_model_state(current_path=path, current_item=item)
 
     @property
     def adapter(self):

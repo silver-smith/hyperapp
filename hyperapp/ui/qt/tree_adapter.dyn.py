@@ -21,14 +21,14 @@ log = logging.getLogger(__name__)
 
 def index_tree_model_state_t(item_t):
     return TRecord('ui_tree', f'tree_model_state_{item_t.module_name}_{item_t.name}', {
-        'current_path': TList(tInt),
+        'current_path': TOptional(TList(tInt)),
         'current_item': TOptional(item_t),
         })
 
 
 def key_tree_model_state_t(item_t, key_field_t):
     return TRecord('ui_tree', f'tree_model_state_{item_t.module_name}_{item_t.name}', {
-        'current_path': TList(key_field_t),
+        'current_path': TOptional(TList(key_field_t)),
         'current_item': TOptional(item_t),
         })
 
@@ -103,7 +103,7 @@ class KeyTreeAdapterMixin:
     def make_model_state(self, current_path, current_item):
         key_path = []
         item_id = 0
-        for idx in current_path:
+        for idx in current_path or []:
             id_list = self._get_id_list(item_id)
             item_id = id_list[idx]
             item = self._id_to_item[item_id]
