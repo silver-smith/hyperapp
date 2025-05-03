@@ -54,7 +54,7 @@ def sample_fn_2_open(piece, current_item):
 @mark.fixture
 def open_command_1(rpc_system_call_factory):
     open_1_fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=sample_fn_1_open,
@@ -69,7 +69,7 @@ def open_command_1(rpc_system_call_factory):
 @mark.fixture
 def open_command_2(rpc_system_call_factory):
     open_2_fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=sample_fn_2_open,

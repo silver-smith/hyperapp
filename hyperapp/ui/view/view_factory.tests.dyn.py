@@ -24,7 +24,7 @@ def test_service(view_factory_reg, ctx):
 
 def test_item(rpc_system_call_factory, format, visualizer_reg):
     system_fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
@@ -53,13 +53,13 @@ def _sample_get(k):
 
 def test_multi_key(rpc_system_call_factory, format, visualizer_reg, ctx):
     list_fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_list,
         )
     get_fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_get,

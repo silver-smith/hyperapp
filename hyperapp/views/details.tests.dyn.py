@@ -22,7 +22,7 @@ def command_d():
 @mark.fixture
 def unbound_command(rpc_system_call_factory, command_d):
     fn = ModelCommandFn(
-        rpc_system_call_factory=rpc_system_call_factory, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
         service_params=(),
         raw_fn=details_command,

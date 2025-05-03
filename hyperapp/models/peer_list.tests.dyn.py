@@ -106,7 +106,7 @@ def command_d():
 @mark.config_fixture('global_model_command_reg')
 def global_model_command_reg_config(rpc_system_call_factory, command_d):
     fn = ModelCommandFn(
-        rpc_system_call_factory=rpc_system_call_factory, 
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
