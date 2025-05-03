@@ -16,6 +16,7 @@ import:
 - legacy_type.list_adapter:key_fn_list_adapter
 - legacy_type.model:index_tree_ui_t
 - legacy_type.model:key_tree_ui_t
+- legacy_type.model:remote_model
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tree_as_list:index_view
@@ -267,6 +268,7 @@ definitions:
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.index_fn_list_adapter: legacy_type.list_adapter:index_fn_list_adapter
         htypes.list_adapter.key_fn_list_adapter: legacy_type.list_adapter:key_fn_list_adapter
+        htypes.model.remote_model: legacy_type.model:remote_model
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         htypes.tree_as_list.index_view: legacy_type.tree_as_list:index_view
         htypes.tree_as_list.key_view: legacy_type.tree_as_list:key_view

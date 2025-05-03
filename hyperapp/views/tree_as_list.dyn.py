@@ -29,12 +29,21 @@ class TreeAsListWrapperView(WrapperView):
 
     @staticmethod
     def _list_model_and_view(view_reg, ctx, tree_model, list_view_piece, tree_model_fn, current_path, parent_item):
+        if isinstance(tree_model, htypes.model.remote_model):
+            real_tree_model = web.summon(tree_model.model)
+        else:
+            real_tree_model = tree_model
         list_model = htypes.tree_as_list.list_model(
-            tree_model=mosaic.put(tree_model),
+            tree_model=mosaic.put(real_tree_model),
             tree_model_fn=tree_model_fn,
             current_path=current_path,
             parent_item=parent_item,
             )
+        if isinstance(tree_model, htypes.model.remote_model):
+            list_model = htypes.model.remote_model(
+                model=mosaic.put(list_model),
+                remote_peer=tree_model.remote_peer,
+                )
         list_ctx = ctx.clone_with(
             model=list_model,
             piece=list_model,
