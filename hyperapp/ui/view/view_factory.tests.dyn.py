@@ -28,7 +28,6 @@ def test_item(rpc_system_call_factory, format, visualizer_reg):
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
-        bound_fn=_sample_fn,
         )
     factory = view_factory.ViewFactory(
         format=format,
@@ -58,14 +57,12 @@ def test_multi_key(rpc_system_call_factory, format, visualizer_reg, ctx):
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_list,
-        bound_fn=_sample_list,
         )
     get_fn = ContextFn(
         rpc_system_call_factory=rpc_system_call_factory, 
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_get,
-        bound_fn=_sample_get,
         )
     factory = view_factory.ViewMultiFactory(
         format=format,

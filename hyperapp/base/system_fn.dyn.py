@@ -19,6 +19,8 @@ class ContextFn:
         self._service_params = service_params
         self._raw_fn = raw_fn
         self._bound_fn = bound_fn  # Can be None if we use this only to create it's piece.
+        if not service_params and not bound_fn:
+            self._bound_fn = raw_fn
 
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self._raw_fn}({self._ctx_params}/{self._service_params})>"

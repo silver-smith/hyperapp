@@ -86,7 +86,6 @@ def view_ui_command_reg_config(rpc_system_call_factory):
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_auto_tabs_command,
-        bound_fn=_sample_auto_tabs_command,
         )
     command = UnboundUiCommand(
         d=htypes.layout_tests.sample_command_d(),

@@ -36,7 +36,6 @@ def test_command_item_to_item(rpc_system_call_factory, format, diff_creg, feed_f
         ctx_params=('view', 'state'),
         service_params=(),
         raw_fn=_sample_fn,
-        bound_fn=_sample_fn,
         )
     model_command = UnboundModelCommand(
         d=htypes.command_list_model_tests.sample_model_command_d(),

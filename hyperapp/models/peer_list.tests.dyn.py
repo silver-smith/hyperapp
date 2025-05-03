@@ -110,7 +110,6 @@ def global_model_command_reg_config(rpc_system_call_factory, command_d):
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
-        bound_fn=_sample_fn,
         )
     command = UnboundModelCommand(
         d=command_d,

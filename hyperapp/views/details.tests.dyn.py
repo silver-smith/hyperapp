@@ -26,7 +26,6 @@ def unbound_command(rpc_system_call_factory, command_d):
         ctx_params=(),
         service_params=(),
         raw_fn=details_command,
-        bound_fn=details_command,
         )
     return UnboundModelCommand(
         d=command_d,

@@ -26,7 +26,6 @@ def factory(rpc_system_call_factory, format, visualizer_reg):
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
-        bound_fn=_sample_fn,
         )
     return ViewFactory(
         format=format,
@@ -48,7 +47,6 @@ def model_factory(rpc_system_call_factory, format, visualizer_reg):
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
-        bound_fn=_sample_fn,
         )
     return ViewFactory(
         format=format,
@@ -70,7 +68,6 @@ def ui_t_factory(rpc_system_call_factory, format, visualizer_reg):
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
-        bound_fn=_sample_fn,
         )
     return ViewFactory(
         format=format,

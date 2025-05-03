@@ -79,7 +79,6 @@ def _sample_selector_get_fn(rpc_system_call_factory):
         ctx_params=('value',),
         service_params=(),
         raw_fn=_sample_selector_get,
-        bound_fn=_sample_selector_get,
         )
 
 
@@ -90,7 +89,6 @@ def _sample_selector_pick_fn(rpc_system_call_factory):
         ctx_params=('piece', 'current_item'),
         service_params=(),
         raw_fn=_sample_selector_pick,
-        bound_fn=_sample_selector_pick,
         )
 
 

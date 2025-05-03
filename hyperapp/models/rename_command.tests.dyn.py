@@ -22,7 +22,6 @@ def model_command_reg_config(rpc_system_call_factory):
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
         raw_fn=_sample_fn,
-        bound_fn=_sample_fn,
         )
     command = UnboundModelCommand(
         d=htypes.rename_command_tests.sample_command_d(),

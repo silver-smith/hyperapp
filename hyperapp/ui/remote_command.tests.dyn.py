@@ -27,7 +27,6 @@ def sample_command_fn(rpc_system_call_factory):
         ctx_params=(),
         service_params=(),
         raw_fn=sample_command,
-        bound_fn=sample_command,
         )
 
 

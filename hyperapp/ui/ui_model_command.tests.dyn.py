@@ -32,7 +32,6 @@ def global_model_command_reg_config(rpc_system_call_factory):
         ctx_params=('model', 'state'),
         service_params=(),
         raw_fn=_sample_fn_1,
-        bound_fn=_sample_fn_1,
         )
     command = UnboundModelCommand(
         d=htypes.ui_model_command_tests.sample_model_command_1_d(),
@@ -50,7 +49,6 @@ def model_command_reg_config(rpc_system_call_factory, model_servant):
         ctx_params=('model', 'state'),
         service_params=(),
         raw_fn=_sample_fn_2,
-        bound_fn=_sample_fn_2,
         )
     command = UnboundModelCommand(
         d=htypes.ui_model_command_tests.sample_model_command_2_d(),
@@ -193,7 +191,6 @@ def sample_servant_fn(rpc_system_call_factory):
         ctx_params=('piece',),
         service_params=(),
         raw_fn=_sample_model_servant,
-        bound_fn=_sample_model_servant,
         )
 
 
