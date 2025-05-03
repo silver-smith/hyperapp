@@ -16,12 +16,25 @@ import:
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.selector:template
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:factory
 - legacy_type.view_factory:item
 - legacy_type.view_factory_list:model
 - ui.directory:directory.module
 definitions:
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_factory_list.module
+      attr_name: format_model
+  formatter_creg-view_factory_list-model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.view_factory_list:model
+      function: format_model
+      service_params:
+      - format
   open_view_factory_list:
     type: legacy_type.builtin:attribute
     value:

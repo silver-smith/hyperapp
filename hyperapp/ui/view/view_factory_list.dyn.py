@@ -44,3 +44,12 @@ def view_factory_list_pick(piece, current_item):
         model=None,
         k=current_item.k,
         )
+
+
+@mark.actor.formatter_creg
+def format_model(piece, format):
+    target_model = web.summon_opt(piece.model)
+    if target_model is None:
+        return f"View factory list"
+    target_model_title = format(target_model)
+    return f"View factories for: {target_model_title}"

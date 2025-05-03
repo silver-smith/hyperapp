@@ -165,3 +165,8 @@ def test_selector_pick():
         )
     factory = view_factory_list.view_factory_list_pick(piece, current_item)
     assert isinstance(factory, htypes.view_factory.factory)
+
+
+def test_model_formatter(piece):
+    title = view_factory_list.format_model(piece)
+    assert type(title) is str
