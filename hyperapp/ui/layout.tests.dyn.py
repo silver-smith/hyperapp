@@ -198,3 +198,9 @@ async def test_add_view_command():
 
 async def test_open_layout_tree():
     result = await layout.open_layout_tree()
+
+
+def test_model_formatter():
+    piece = htypes.layout.view()
+    title = layout.format_layout_model(piece)
+    assert type(title) is str

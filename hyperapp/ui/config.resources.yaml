@@ -44,6 +44,7 @@ import:
 - ui.format:format.service
 - ui.formatter_creg:formatter_creg.service
 - ui.int_adapter:ui_adapter_creg-int_adapter-int_adapter.actor-template
+- ui.layout:formatter_creg-layout-view.actor-template
 - ui.layout:layout-command_list-add_view_command.command-cfg-item
 - ui.layout:layout-command_list-set_escape_shortcut.command-cfg-item
 - ui.layout:layout-command_list-set_shortcut.command-cfg-item
@@ -264,6 +265,7 @@ definitions:
       - ui.crud.canned_args_command_fn:formatter_creg-command-canned_arg_command_d.actor-template
       - ui.crud.crud:formatter_creg-crud-layout_k.actor-template
       - ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-template
+      - ui.layout:formatter_creg-layout-view.actor-template
       - ui.ref_formatter:formatter_creg-builtin-ref.actor-template
       - ui.remote_model:formatter_creg-model-remote_model.actor-template
       - ui.visualizer:formatter_creg-ui-model_layout_k.actor-template

@@ -158,3 +158,8 @@ async def set_escape_shortcut(piece, current_idx, current_item, shortcut_reg, fe
 @mark.command
 async def add_view_command(piece, current_item):
     log.info("Add view command for %s: %s", piece, current_item)
+
+
+@mark.actor.formatter_creg
+def format_layout_model(piece):
+    return "Layout"

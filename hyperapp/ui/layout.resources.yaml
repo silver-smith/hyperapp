@@ -29,6 +29,7 @@ import:
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:index_tree_ui_t
 - legacy_type.model:model
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - ui.command:command.module
 - ui.directory:directory.module
@@ -77,6 +78,17 @@ definitions:
     type: legacy_type.command:model_command_enumerator
     value:
       system_fn: enum_layout_tree_commands.fn
+  format_layout_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: layout.module
+      attr_name: format_layout_model
+  formatter_creg-layout-view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.layout:view
+      function: format_layout_model
+      service_params: []
   layout-command_list-add_view_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
