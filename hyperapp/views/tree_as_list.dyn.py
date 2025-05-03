@@ -19,21 +19,28 @@ class TreeAsListWrapperView(WrapperView):
     @classmethod
     @mark.view
     def from_piece(cls, piece, model, ctx, view_reg, system_fn_creg):
+        list_model, list_view = cls._list_model_and_view(
+            view_reg, ctx, model, web.summon(piece.list_view), piece.tree_model_fn, piece.current_path,
+            parent_item=piece.parent_items[-1] if piece.parent_items else None)
+        tree_model_fn = system_fn_creg.invite(piece.tree_model_fn)
+        current_path = [web.summon(elt) for elt in piece.current_path]
+        parent_items = [web.summon(item) for item in piece.parent_items]
+        return cls(list_view, tree_model_fn, list_model, current_path, parent_items)
+
+    @staticmethod
+    def _list_model_and_view(view_reg, ctx, tree_model, list_view_piece, tree_model_fn, current_path, parent_item):
         list_model = htypes.tree_as_list.list_model(
-            tree_model=mosaic.put(model),
-            tree_model_fn=piece.tree_model_fn,
-            current_path=piece.current_path,
-            parent_item=piece.parent_items[-1] if piece.parent_items else None,
+            tree_model=mosaic.put(tree_model),
+            tree_model_fn=tree_model_fn,
+            current_path=current_path,
+            parent_item=parent_item,
             )
         list_ctx = ctx.clone_with(
             model=list_model,
             piece=list_model,
             )
-        list_view = view_reg.invite(piece.list_view, list_ctx)
-        tree_model_fn = system_fn_creg.invite(piece.tree_model_fn)
-        current_path = [web.summon(elt) for elt in piece.current_path]
-        parent_items = [web.summon(item) for item in piece.parent_items]
-        return cls(list_view, tree_model_fn, list_model, current_path, parent_items)
+        list_view = view_reg.animate(list_view_piece, list_ctx)
+        return (list_model, list_view)
 
     def __init__(self, list_view, tree_model_fn, list_model, current_path, parent_items):
         super().__init__(list_view)
@@ -86,17 +93,13 @@ class TreeAsListWrapperView(WrapperView):
             )
 
     def _wrapper_view(self, view_reg, ctx, tree_model, current_path, parent_items):
-        list_model = htypes.tree_as_list.list_model(
-            tree_model=mosaic.put(tree_model),
+        list_model, list_view = self._list_model_and_view(
+            view_reg, ctx, tree_model,
+            list_view_piece=self._base_view.piece,
             tree_model_fn=mosaic.put(self._tree_model_fn.piece),
             current_path=tuple(mosaic.put(elt) for elt in current_path),
             parent_item=mosaic.put(parent_items[-1]) if parent_items else None,
             )
-        list_ctx = ctx.clone_with(
-            model=list_model,
-            piece=list_model,
-            )
-        list_view = view_reg.animate(self._base_view.piece, list_ctx)
         return self.__class__(
             list_view=list_view,
             tree_model_fn=self._tree_model_fn,
