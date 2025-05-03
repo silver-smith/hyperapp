@@ -90,7 +90,7 @@ async def test_controller_and_duplicate_window(
     lcs = Mock()
     lcs.get.return_value = None  # command list - mock is not iterable.
     ctx = Context(lcs=lcs)
-    feed = feed_factory(htypes.layout.view())
+    feed = feed_factory(htypes.layout.model())
 
     async with controller_running(PhonyLayoutBundle(), default_layout, ctx, show=False, load_state=False) as ctl:
         root_item = ctl._root_item

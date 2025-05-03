@@ -116,7 +116,7 @@ async def ctl(controller_running, default_layout, ctx):
 
 
 async def test_layout_tree(qapp, ctl):
-    piece = htypes.layout.view()
+    piece = htypes.layout.model()
     items = layout.layout_tree(piece, None, ctl)
     assert items
     parent = htypes.layout.item(1, "Some item", True, "Item description")
@@ -124,7 +124,7 @@ async def test_layout_tree(qapp, ctl):
 
 
 async def test_enum_layout_tree_commands(qapp, ctl):
-    piece = htypes.layout.view()
+    piece = htypes.layout.model()
     windows = layout.layout_tree(piece, None, ctl)
     window_items = layout.layout_tree(piece, windows[0], ctl)
     commands = layout.enum_layout_tree_commands(piece, window_items[1], ctl)
@@ -132,7 +132,7 @@ async def test_enum_layout_tree_commands(qapp, ctl):
 
 
 async def test_open_view_item_commands():
-    piece = htypes.layout.view()
+    piece = htypes.layout.model()
     item = Mock()
     item.id = 123
     result = await layout.open_view_item_commands(piece, current_item=item)
@@ -148,7 +148,7 @@ def shortcut_reg():
 
 async def test_view_item_commands(qapp, ctx, ctl):
     ctx = ctx.clone_with(controller=ctl)
-    layout_piece = htypes.layout.view()
+    layout_piece = htypes.layout.model()
     windows = layout.layout_tree(layout_piece, None, ctl)
     window_items = layout.layout_tree(layout_piece, windows[0], ctl)
     item_id = window_items[1].id
@@ -201,6 +201,6 @@ async def test_open_layout_tree():
 
 
 def test_model_formatter():
-    piece = htypes.layout.view()
+    piece = htypes.layout.model()
     title = layout.format_layout_model(piece)
     assert type(title) is str

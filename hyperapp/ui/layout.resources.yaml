@@ -21,11 +21,11 @@ import:
 - legacy_type.layout:command_item
 - legacy_type.layout:command_list
 - legacy_type.layout:item
+- legacy_type.layout:model
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:set_escape_shortcut_d
 - legacy_type.layout:set_shortcut_d
-- legacy_type.layout:view
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:index_tree_ui_t
 - legacy_type.model:model
@@ -83,10 +83,10 @@ definitions:
     value:
       object: layout.module
       attr_name: format_layout_model
-  formatter_creg-layout-view.actor-template:
+  formatter_creg-layout-model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.layout:view
+      t: legacy_type.layout:model
       function: format_layout_model
       service_params: []
   layout-command_list-add_view_command.command-cfg-item:
@@ -137,40 +137,40 @@ definitions:
       - ctx
       service_params:
       - shortcut_reg
-  layout-view-enum_layout_tree_commands.command-cfg-item:
+  layout-model-enum_layout_tree_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.layout:view
+      t: legacy_type.layout:model
       command: enum_layout_tree_commands.model-command-enumerator
-  layout-view-open_view_item_commands.command-cfg-item:
+  layout-model-open_view_item_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.layout:view
+      t: legacy_type.layout:model
       command: open_view_item_commands.model-command
-  layout-view.feed-template:
+  layout-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.layout:view
-      feed_type: layout-view.feed-type
-  layout-view.feed-type:
+      model_t: legacy_type.layout:model
+      feed_type: layout-model.feed-type
+  layout-model.feed-type:
     type: legacy_type.feed:index_tree_feed_type
     value:
       item_t: legacy_type.layout:item
-  layout-view.index-tree-ui-t:
+  layout-model.index-tree-ui-t:
     type: legacy_type.model:index_tree_ui_t
     value:
       item_t: legacy_type.layout:item
-  layout-view.model:
+  layout-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: layout-view.index-tree-ui-t
-      system_fn: layout-view.system-fn
-  layout-view.model-cfg-item:
+      ui_t: layout-model.index-tree-ui-t
+      system_fn: layout-model.system-fn
+  layout-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
-      t: legacy_type.layout:view
-      value: layout-view.model
-  layout-view.system-fn:
+      t: legacy_type.layout:model
+      value: layout-model.model
+  layout-model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: layout_tree
@@ -193,7 +193,7 @@ definitions:
         htypes.command_groups.pane_2_d: legacy_type.command_groups:pane_2_d
         htypes.layout.command_item: legacy_type.layout:command_item
         htypes.layout.command_list: legacy_type.layout:command_list
-        htypes.layout.view: legacy_type.layout:view
+        htypes.layout.model: legacy_type.layout:model
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
   layout_tree:

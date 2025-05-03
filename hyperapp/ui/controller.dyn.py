@@ -527,7 +527,7 @@ class Controller:
             svc=svc,
             counter=itertools.count(start=1),
             id_to_item=self._id_to_item,
-            feed=svc.feed_factory(htypes.layout.view()),
+            feed=svc.feed_factory(htypes.layout.model()),
             )
         root_ctx = ctx.clone_with(controller=self)
         self._root_item = _RootItem.from_piece(meta, show, root_ctx, layout_bundle, layout)
