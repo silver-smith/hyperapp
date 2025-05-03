@@ -1,11 +1,11 @@
 from . import htypes
 from .services import (
-    deduce_t,
     mosaic,
     pyobj_creg,
     web,
     )
 from .code.mark import mark
+from .code.remote_model import real_model_t
 
 
 class ViewFactoryBase:
@@ -41,7 +41,7 @@ class ViewFactory(ViewFactoryBase):
 
     async def call(self, ctx, adapter=None):
         if self._ui_t_t is not None:
-            model_t = deduce_t(ctx.model)
+            model_t = real_model_t(ctx.model)
             ui_t, system_fn_ref = self._visualizer_reg(model_t)
             fn_ctx = ctx.clone_with(
                 piece=ui_t,
@@ -137,7 +137,7 @@ class ViewFactoryReg:
             ui_t = None
         else:
             if model_t is None:
-                model_t = deduce_t(model)
+                model_t = real_model_t(model)
             try:
                 ui_t, unused_system_fn_ref = self._visualizer_reg(model_t)
             except KeyError:

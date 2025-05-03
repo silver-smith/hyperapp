@@ -2,7 +2,6 @@
 
 import:
 - base.mark:mark.module
-- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -12,6 +11,7 @@ import:
 - legacy_type.system:service_template
 - legacy_type.view_factory:item
 - legacy_type.view_factory:multi_item_k
+- ui.remote_model:remote_model.module
 definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
@@ -23,9 +23,9 @@ definitions:
       file_name: view_factory.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        code.remote_model: ui.remote_model:remote_model.module
         htypes.view_factory.item: legacy_type.view_factory:item
         htypes.view_factory.multi_item_k: legacy_type.view_factory:multi_item_k
-        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service

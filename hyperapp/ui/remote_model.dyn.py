@@ -6,10 +6,17 @@ from .services import (
 from .code.mark import mark
 
 
+def real_model(model):
+    if isinstance(model, htypes.model.remote_model):
+        return web.summon(model.model)
+    else:
+        return model
+
+
 def real_model_t(model):
     if isinstance(model, htypes.model.remote_model):
-        real_model = web.summon(model.model)
-        return deduce_t(real_model)
+        _unused_real_model, model_t = web.summon_with_t(model.model)
+        return model_t
     else:
         return deduce_t(model)
 

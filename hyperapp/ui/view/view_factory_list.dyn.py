@@ -6,6 +6,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.directory import k_to_name
+from .code.remote_model import real_model
 
 
 @mark.model
@@ -51,5 +52,5 @@ def format_model(piece, format):
     target_model = web.summon_opt(piece.model)
     if target_model is None:
         return f"View factory list"
-    target_model_title = format(target_model)
+    target_model_title = format(real_model(target_model))
     return f"View factories for: {target_model_title}"

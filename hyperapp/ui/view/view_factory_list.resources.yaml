@@ -22,6 +22,7 @@ import:
 - legacy_type.view_factory:item
 - legacy_type.view_factory_list:model
 - ui.directory:directory.module
+- ui.remote_model:remote_model.module
 definitions:
   format_model:
     type: legacy_type.builtin:attribute
@@ -149,6 +150,7 @@ definitions:
       import_list:
         code.directory: ui.directory:directory.module
         code.mark: base.mark:mark.module
+        code.remote_model: ui.remote_model:remote_model.module
         htypes.view_factory.factory: legacy_type.view_factory:factory
         htypes.view_factory_list.model: legacy_type.view_factory_list:model
         services.deduce_t: builtins:deduce_t.service
