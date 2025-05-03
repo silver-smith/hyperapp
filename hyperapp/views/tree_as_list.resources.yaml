@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.context:context.module
 - base.mark:mark.module
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
@@ -262,6 +263,7 @@ definitions:
       module_name: tree_as_list
       file_name: tree_as_list.dyn.py
       import_list:
+        code.context: base.context:context.module
         code.mark: base.mark:mark.module
         code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
         code.wrapper_view: ui.wrapper_view:wrapper_view.module

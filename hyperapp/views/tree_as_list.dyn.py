@@ -8,6 +8,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.context import Context
 from .code.wrapper_view import WrapperView
 from .code.tree_adapter import index_tree_model_state_t, key_tree_model_state_t
 
@@ -152,12 +153,13 @@ class KeyTreeAsListWrapperView(TreeAsListWrapperView):
                 )
 
 
-def list_model_fn(piece, ctx, system_fn_creg):
+def list_model_fn(piece, system_fn_creg, **kw):
     tree_model = web.summon(piece.tree_model)
     tree_model_fn = system_fn_creg.invite(piece.tree_model_fn)
     current_path = tuple(web.summon(idx) for idx in piece.current_path)
     parent_item = web.summon_opt(piece.parent_item)
-    tree_ctx = ctx.clone_with(
+    tree_ctx = Context(
+        kw,
         model=tree_model,
         piece=tree_model,
         current_path=current_path,
@@ -182,21 +184,22 @@ def parent(model, view, state, ctx, hook, view_reg):
         hook.replace_view(parent_view, new_state, save_layout=False)
 
 
-def _list_fn():
+def _list_model_fn(tree_model_fn):
+    ctx_params = set(tree_model_fn.ctx_params) - {'current_path', 'parent'} | {'piece'}
     return htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(list_model_fn),
-        ctx_params=('piece', 'ctx'),
+        ctx_params=tuple(ctx_params),
         service_params=('system_fn_creg',),
         )
 
 
-def _ui_type_layout(system_fn, list_adapter, view_t):
+def _ui_type_layout(tree_model_fn, list_adapter, view_t):
     list_view = htypes.list.view(
         adapter=mosaic.put(list_adapter),
         )
     return view_t(
         list_view=mosaic.put(list_view),
-        tree_model_fn=mosaic.put(system_fn.piece),
+        tree_model_fn=mosaic.put(tree_model_fn.piece),
         current_path=(),
         parent_items=(),
         )
@@ -204,20 +207,22 @@ def _ui_type_layout(system_fn, list_adapter, view_t):
 
 @mark.view_factory.ui_t
 def index_tree_as_list_ui_type_layout(piece, system_fn):
+    list_model_fn = _list_model_fn(system_fn)
     list_adapter = htypes.list_adapter.index_fn_list_adapter(
         item_t=piece.item_t,
-        system_fn=mosaic.put(_list_fn()),
+        system_fn=mosaic.put(list_model_fn),
         )
     return _ui_type_layout(system_fn, list_adapter, htypes.tree_as_list.index_view)
 
 
 @mark.view_factory.ui_t
 def key_tree_as_list_ui_type_layout(piece, system_fn):
+    list_model_fn = _list_model_fn(system_fn)
     list_adapter = htypes.list_adapter.key_fn_list_adapter(
         item_t=piece.item_t,
         key_field=piece.key_field,
         key_field_t=piece.key_field_t,
-        system_fn=mosaic.put(_list_fn()),
+        system_fn=mosaic.put(list_model_fn),
         )
     return _ui_type_layout(system_fn, list_adapter, htypes.tree_as_list.key_view)
 
