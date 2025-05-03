@@ -293,10 +293,10 @@ class TreeView(View):
 
 
 @mark.view_factory.ui_t
-def index_tree_ui_type_layout(piece, system_fn_ref):
+def index_tree_ui_type_layout(piece, system_fn):
     adapter = htypes.tree_adapter.fn_index_tree_adapter(
         item_t=piece.item_t,
-        system_fn=system_fn_ref,
+        system_fn=mosaic.put(system_fn.piece),
         )
     return htypes.tree.view(
         adapter=mosaic.put(adapter),

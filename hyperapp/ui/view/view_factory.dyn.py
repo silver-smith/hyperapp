@@ -42,10 +42,10 @@ class ViewFactory(ViewFactoryBase):
     async def call(self, ctx, adapter=None):
         if self._ui_t_t is not None:
             model_t = real_model_t(ctx.model)
-            ui_t, system_fn_ref = self._visualizer_reg(model_t)
+            ui_t, system_fn = self._visualizer_reg(model_t)
             fn_ctx = ctx.clone_with(
                 piece=ui_t,
-                system_fn_ref=system_fn_ref,
+                system_fn=system_fn,
                 )
         else:
             fn_ctx = ctx
@@ -139,7 +139,7 @@ class ViewFactoryReg:
             if model_t is None:
                 model_t = real_model_t(model)
             try:
-                ui_t, unused_system_fn_ref = self._visualizer_reg(model_t)
+                ui_t, unused_system_fn = self._visualizer_reg(model_t)
             except KeyError:
                 ui_t = None
         item_list = []

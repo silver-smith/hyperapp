@@ -72,7 +72,7 @@ definitions:
       function: index_list_ui_type_layout
       ctx_params:
       - piece
-      - system_fn_ref
+      - system_fn
       service_params: []
   index_list_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template
@@ -108,7 +108,7 @@ definitions:
       function: key_list_ui_type_layout
       ctx_params:
       - piece
-      - system_fn_ref
+      - system_fn
       service_params: []
   key_list_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template

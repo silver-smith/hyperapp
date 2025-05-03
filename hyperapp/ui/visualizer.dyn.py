@@ -28,14 +28,14 @@ def model_reg(config):
 
 
 @mark.service
-def visualizer_reg(model_reg, t):
+def visualizer_reg(system_fn_creg, model_reg, t):
     try:
         model = model_reg[t]
     except KeyError:
         raise
     ui_t = web.summon(model.ui_t)
-    system_fn_ref = model.system_fn
-    return (ui_t, system_fn_ref)
+    system_fn = system_fn_creg.invite(model.system_fn)
+    return (ui_t, system_fn)
 
 
 @mark.service
@@ -57,10 +57,10 @@ def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, model_t):
     except KeyError:
         pass
     try:
-        ui_t, system_fn_ref = visualizer_reg(model_t)
+        ui_t, system_fn = visualizer_reg(model_t)
     except KeyError:
         raise RuntimeError(f"No view is known for model: {model_t!r}")
-    return ui_type_creg.animate(ui_t, system_fn_ref)
+    return ui_type_creg.animate(ui_t, system_fn)
 
 
 @mark.actor.resource_name_creg

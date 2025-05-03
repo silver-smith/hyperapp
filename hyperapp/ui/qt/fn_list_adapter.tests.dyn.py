@@ -10,6 +10,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
 from .code.list_diff import IndexListDiff, KeyListDiff
 from .fixtures import feed_fixtures
 from .tested.code import fn_list_adapter
@@ -28,11 +29,12 @@ def sample_list_model(piece):
 
 
 @mark.fixture
-def sample_list_model_fn():
-    return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_list_model),
+def sample_list_model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece',),
         service_params=(),
+        raw_fn=sample_list_model,
         )
 
 
@@ -79,7 +81,7 @@ async def _send_append_diff(feed):
 async def test_index_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     adapter_piece = htypes.list_adapter.index_fn_list_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        system_fn=mosaic.put(sample_list_model_fn),
+        system_fn=mosaic.put(sample_list_model_fn.piece),
         )
     adapter = fn_list_adapter.FnIndexListAdapter.from_piece(adapter_piece, model, ctx)
 
@@ -112,7 +114,7 @@ async def test_key_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
         key_field='id',
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
-        system_fn=mosaic.put(sample_list_model_fn),
+        system_fn=mosaic.put(sample_list_model_fn.piece),
         )
     adapter = fn_list_adapter.FnKeyListAdapter.from_piece(adapter_piece, model, ctx)
 
@@ -251,20 +253,18 @@ def test_fn_adapter_with_remote_context(
 
 
 def test_index_list_ui_type_layout(sample_list_model_fn):
-    system_fn_ref = mosaic.put(sample_list_model_fn)
     piece = htypes.model.index_list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
         )
-    layout = fn_list_adapter.index_list_ui_type_layout(piece, system_fn_ref)
+    layout = fn_list_adapter.index_list_ui_type_layout(piece, sample_list_model_fn)
     assert isinstance(layout, htypes.list.view)
 
 
 def test_key_list_ui_type_layout(sample_list_model_fn):
-    system_fn_ref = mosaic.put(sample_list_model_fn)
     piece = htypes.model.key_list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
         key_field='id',
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
         )
-    layout = fn_list_adapter.key_list_ui_type_layout(piece, system_fn_ref)
+    layout = fn_list_adapter.key_list_ui_type_layout(piece, sample_list_model_fn)
     assert isinstance(layout, htypes.list.view)

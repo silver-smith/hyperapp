@@ -114,6 +114,7 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: visualizer_reg
       service_params:
+      - system_fn_creg
       - model_reg
       want_config: false
       free_params:

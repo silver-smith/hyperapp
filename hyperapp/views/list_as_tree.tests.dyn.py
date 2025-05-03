@@ -31,11 +31,12 @@ def root_list_model(piece):
 
 
 @mark.fixture
-def root_list_model_fn():
-    return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(root_list_model),
+def root_list_model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece',),
         service_params=(),
+        raw_fn=root_list_model,
         )
 
 
@@ -90,11 +91,10 @@ def model_command_reg_config(open_command_1, open_command_2):
 
 
 def test_ui_type_layout(root_list_model_fn):
-    system_fn_ref = mosaic.put(root_list_model_fn)
     piece = htypes.model.index_list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
         )
-    layout = list_as_tree.list_as_tree_ui_type_layout(piece, system_fn_ref)
+    layout = list_as_tree.list_as_tree_ui_type_layout(piece, root_list_model_fn)
     assert isinstance(layout, htypes.tree.view)
 
 
@@ -113,7 +113,7 @@ def ctx(root_model):
 def test_switch_list_as_tree(ui_adapter_creg, ctx, root_list_model_fn, root_model):
     piece = htypes.list_adapter.index_fn_list_adapter(
         item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
-        system_fn=mosaic.put(root_list_model_fn),
+        system_fn=mosaic.put(root_list_model_fn.piece),
         )
     adapter = ui_adapter_creg.animate(piece, root_model, ctx)
 
@@ -137,7 +137,7 @@ def root_item_t():
 def adapter_piece(root_item_t, root_list_model_fn, open_command_1):
     return htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(root_list_model_fn),
+        root_function=mosaic.put(root_list_model_fn.piece),
         root_open_children_command=mosaic.put(open_command_1.piece),
         layers=(),
         )
@@ -226,7 +226,7 @@ async def test_set_root_open_command(model_layout_reg, ctx, open_command_1, root
     current_command = mosaic.put(open_command_1.piece)
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(root_list_model_fn),
+        root_function=mosaic.put(root_list_model_fn.piece),
         root_open_children_command=None,
         layers=(),
         )
@@ -255,7 +255,7 @@ async def test_set_non_root_open_command(model_layout_reg, ctx, open_command_1, 
         )
     adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
-        root_function=mosaic.put(root_list_model_fn),
+        root_function=mosaic.put(root_list_model_fn.piece),
         root_open_children_command=None,
         layers=layers,
         )

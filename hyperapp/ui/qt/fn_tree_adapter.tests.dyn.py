@@ -11,6 +11,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
 from .code.tree_diff import TreeDiff
 from .code.tree_visual_diff import (
     VisualTreeDiffAppend,
@@ -45,11 +46,12 @@ def sample_index_tree_model(piece, parent, sample_ctx):
 
 
 @mark.fixture
-def sample_index_tree_model_fn():
-    return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_index_tree_model),
+def sample_index_tree_model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'parent', 'sample_ctx'),
         service_params=(),
+        raw_fn=sample_index_tree_model,
         )
 
 
@@ -69,11 +71,12 @@ def sample_key_tree_model(piece, current_path, sample_ctx):
 
 
 @mark.fixture
-def sample_key_tree_model_fn():
-    return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(sample_key_tree_model),
+def sample_key_tree_model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'current_path', 'sample_ctx'),
         service_params=(),
+        raw_fn=sample_key_tree_model,
         )
 
 
@@ -90,7 +93,7 @@ def index_adapter(model, ctx, sample_index_tree_model_fn):
     item_t = htypes.tree_adapter_tests.index_item
     piece = htypes.tree_adapter.fn_index_tree_adapter(
         item_t=pyobj_creg.actor_to_ref(item_t),
-        system_fn=mosaic.put(sample_index_tree_model_fn),
+        system_fn=mosaic.put(sample_index_tree_model_fn.piece),
         )
     return fn_tree_adapter.FnIndexTreeAdapter.from_piece(piece, model, ctx)
 
@@ -245,7 +248,7 @@ def key_adapter(model, ctx, sample_key_tree_model_fn):
         item_t=pyobj_creg.actor_to_ref(item_t),
         key_field='key',
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
-        system_fn=mosaic.put(sample_key_tree_model_fn),
+        system_fn=mosaic.put(sample_key_tree_model_fn.piece),
         )
     return fn_tree_adapter.FnKeyTreeAdapter.from_piece(piece, model, ctx)
 
@@ -578,20 +581,18 @@ def test_index_adapter_with_remote_context(
 
 
 def test_index_ui_type_layout(sample_index_tree_model_fn):
-    system_fn_ref = mosaic.put(sample_index_tree_model_fn)
     piece = htypes.model.index_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.index_item),
         )
-    layout = fn_tree_adapter.index_tree_ui_type_layout(piece, system_fn_ref)
+    layout = fn_tree_adapter.index_tree_ui_type_layout(piece, sample_index_tree_model_fn)
     assert isinstance(layout, htypes.tree.view)
 
 
 def test_key_ui_type_layout(sample_key_tree_model_fn):
-    system_fn_ref = mosaic.put(sample_key_tree_model_fn)
     piece = htypes.model.key_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.key_item),
         key_field='key',
         key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
         )
-    layout = fn_tree_adapter.key_tree_ui_type_layout(piece, system_fn_ref)
+    layout = fn_tree_adapter.key_tree_ui_type_layout(piece, sample_key_tree_model_fn)
     assert isinstance(layout, htypes.tree.view)

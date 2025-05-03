@@ -9,6 +9,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
 from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import tree
 
@@ -27,11 +28,12 @@ def _sample_tree_model(piece, parent):
 
 
 @mark.fixture
-def model_fn():
-    return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(_sample_tree_model),
+def model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'parent'),
         service_params=(),
+        raw_fn=_sample_tree_model,
         )
 
 
@@ -40,7 +42,7 @@ def adapter_piece(model_fn):
     return htypes.tree_adapter.fn_index_tree_adapter(
         item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        system_fn=mosaic.put(model_fn),
+        system_fn=mosaic.put(model_fn.piece),
         )
 
 
@@ -69,5 +71,5 @@ def test_index_layout(model_fn):
     ui_t = htypes.model.index_tree_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.tree_tests.item),
         )
-    piece = tree.index_tree_ui_type_layout(ui_t, mosaic.put(model_fn))
+    piece = tree.index_tree_ui_type_layout(ui_t, model_fn)
     assert isinstance(piece, htypes.tree.view)

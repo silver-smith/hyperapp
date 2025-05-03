@@ -159,7 +159,7 @@ definitions:
       function: list_as_tree_ui_type_layout
       ctx_params:
       - piece
-      - system_fn_ref
+      - system_fn
       service_params: []
   list_as_tree_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template

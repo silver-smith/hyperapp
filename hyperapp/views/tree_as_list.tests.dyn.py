@@ -8,6 +8,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
 from .tested.code import tree_as_list
 
 log = logging.getLogger(__name__)
@@ -31,11 +32,12 @@ def _tree_model(piece, current_path, parent):
 
 
 @mark.fixture
-def tree_model_fn():
-    return htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(_tree_model),
+def tree_model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'current_path', 'parent'),
         service_params=(),
+        raw_fn=_tree_model,
         )
 
 
@@ -70,12 +72,12 @@ def ctx(tree_model):
 
 @mark.fixture
 def index_view_piece(tree_model_fn, index_tree_ui_t):
-    return tree_as_list.index_tree_as_list_ui_type_layout(index_tree_ui_t, mosaic.put(tree_model_fn))
+    return tree_as_list.index_tree_as_list_ui_type_layout(index_tree_ui_t, tree_model_fn)
 
 
 @mark.fixture
 def key_view_piece(tree_model_fn, key_tree_ui_t):
-    return tree_as_list.key_tree_as_list_ui_type_layout(key_tree_ui_t, mosaic.put(tree_model_fn))
+    return tree_as_list.key_tree_as_list_ui_type_layout(key_tree_ui_t, tree_model_fn)
     
 
 def test_index_ui_type_layout(index_view_piece):

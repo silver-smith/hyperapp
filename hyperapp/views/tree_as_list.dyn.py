@@ -190,36 +190,36 @@ def _list_fn():
         )
 
 
-def _ui_type_layout(system_fn_ref, list_adapter, view_t):
+def _ui_type_layout(system_fn, list_adapter, view_t):
     list_view = htypes.list.view(
         adapter=mosaic.put(list_adapter),
         )
     return view_t(
         list_view=mosaic.put(list_view),
-        tree_model_fn=system_fn_ref,
+        tree_model_fn=mosaic.put(system_fn.piece),
         current_path=(),
         parent_items=(),
         )
 
 
 @mark.view_factory.ui_t
-def index_tree_as_list_ui_type_layout(piece, system_fn_ref):
+def index_tree_as_list_ui_type_layout(piece, system_fn):
     list_adapter = htypes.list_adapter.index_fn_list_adapter(
         item_t=piece.item_t,
         system_fn=mosaic.put(_list_fn()),
         )
-    return _ui_type_layout(system_fn_ref, list_adapter, htypes.tree_as_list.index_view)
+    return _ui_type_layout(system_fn, list_adapter, htypes.tree_as_list.index_view)
 
 
 @mark.view_factory.ui_t
-def key_tree_as_list_ui_type_layout(piece, system_fn_ref):
+def key_tree_as_list_ui_type_layout(piece, system_fn):
     list_adapter = htypes.list_adapter.key_fn_list_adapter(
         item_t=piece.item_t,
         key_field=piece.key_field,
         key_field_t=piece.key_field_t,
         system_fn=mosaic.put(_list_fn()),
         )
-    return _ui_type_layout(system_fn_ref, list_adapter, htypes.tree_as_list.key_view)
+    return _ui_type_layout(system_fn, list_adapter, htypes.tree_as_list.key_view)
 
 
 @mark.actor.formatter_creg

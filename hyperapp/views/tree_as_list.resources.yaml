@@ -94,7 +94,7 @@ definitions:
       function: index_tree_as_list_ui_type_layout
       ctx_params:
       - piece
-      - system_fn_ref
+      - system_fn
       service_params: []
   index_tree_as_list_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template
@@ -130,7 +130,7 @@ definitions:
       function: key_tree_as_list_ui_type_layout
       ctx_params:
       - piece
-      - system_fn_ref
+      - system_fn
       service_params: []
   key_tree_as_list_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template

@@ -7,6 +7,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
 from .fixtures import feed_fixtures
 from .tested.code import record_adapter
 
@@ -30,23 +31,28 @@ def test_static_adapter(ctx):
     assert adapter.get_field('text') == "Sample static item"
 
 
-def _sample_record_fn(piece):
+def _sample_record_model(piece):
     log.info("Sample record fn: %s", piece)
     assert isinstance(piece, htypes.record_adapter_tests.sample_record), repr(piece)
     return htypes.record_adapter_tests.item(123, "Sample fn item")
 
 
-def test_fn_adapter(ctx):
-    model = htypes.record_adapter_tests.sample_record()
-    record_t_res = pyobj_creg.actor_to_piece(htypes.record_adapter_tests.item)
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(_sample_record_fn),
+@mark.fixture
+def sample_record_model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece',),
         service_params=(),
+        raw_fn=_sample_record_model,
         )
+
+
+def test_fn_adapter(ctx, sample_record_model_fn):
+    model = htypes.record_adapter_tests.sample_record()
+    record_t_res = pyobj_creg.actor_to_piece(htypes.record_adapter_tests.item)
     adapter_piece = htypes.record_adapter.fn_record_adapter(
         record_t=mosaic.put(record_t_res),
-        system_fn=mosaic.put(system_fn),
+        system_fn=mosaic.put(sample_record_model_fn.piece),
         )
     adapter = record_adapter.FnRecordAdapter.from_piece(adapter_piece, model, ctx)
 
@@ -55,15 +61,9 @@ def test_fn_adapter(ctx):
     assert adapter.get_field('text') == "Sample fn item"
 
 
-def test_record_ui_type_layout():
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(_sample_record_fn),
-        ctx_params=(),
-        service_params=(),
-        )
-    system_fn_ref = mosaic.put(system_fn)
+def test_record_ui_type_layout(sample_record_model_fn):
     piece = htypes.model.record_ui_t(
         record_t=pyobj_creg.actor_to_ref(htypes.record_adapter_tests.item),
         )
-    layout = record_adapter.record_ui_type_layout(piece, system_fn_ref)
+    layout = record_adapter.record_ui_type_layout(piece, sample_record_model_fn)
     assert isinstance(layout, htypes.form.view)

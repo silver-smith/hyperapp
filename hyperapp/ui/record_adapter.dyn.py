@@ -3,6 +3,7 @@ import weakref
 
 from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -132,10 +133,10 @@ class FnRecordAdapter(FnRecordAdapterBase):
 
 
 @mark.actor.ui_type_creg
-def record_ui_type_layout(piece, system_fn_ref, visualizer):
+def record_ui_type_layout(piece, system_fn, visualizer):
     record_t = pyobj_creg.invite(piece.record_t)
     adapter = htypes.record_adapter.fn_record_adapter(
         record_t=piece.record_t,
-        system_fn=system_fn_ref,
+        system_fn=mosaic.put(system_fn.piece),
         )
     return construct_default_form(visualizer, adapter, record_t)

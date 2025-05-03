@@ -46,11 +46,10 @@ class ListAsTreeAdapter(TreeAdapter, IndexTreeAdapterMixin):
             model_state_t=index_list_model_state_t(root_item_t),
             list_fn=system_fn_creg.invite(piece.root_function),
             )
-        return cls(system_fn_creg, command_creg, get_model_commands, visualizer_reg, model, root_item_t, ctx, root_layer, layers)
+        return cls(command_creg, get_model_commands, visualizer_reg, model, root_item_t, ctx, root_layer, layers)
 
-    def __init__(self, system_fn_creg, command_creg, get_model_commands, visualizer_reg, model, item_t, ctx, root_layer, layers):
+    def __init__(self, command_creg, get_model_commands, visualizer_reg, model, item_t, ctx, root_layer, layers):
         super().__init__(model, item_t)
-        self._system_fn_creg = system_fn_creg
         self._command_creg = command_creg
         self._get_model_commands = get_model_commands
         self._visualizer_reg = visualizer_reg
@@ -164,7 +163,7 @@ class ListAsTreeAdapter(TreeAdapter, IndexTreeAdapterMixin):
         piece = await self._run_open_command(pp_layer, model=pp_piece, current_item_id=parent_id)
         piece_t = deduce_t(piece)
         try:
-            ui_t, fn_ref = self._visualizer_reg(piece_t)
+            ui_t, fn = self._visualizer_reg(piece_t)
         except KeyError:
             log.info("List-to-tree adapter: Model for %s is not available", piece_t)
             return None
@@ -179,7 +178,7 @@ class ListAsTreeAdapter(TreeAdapter, IndexTreeAdapterMixin):
             self._layers[piece_t] = layer
         layer.item_t = pyobj_creg.invite(ui_t.item_t)
         layer.model_state_t = index_list_model_state_t(layer.item_t)
-        layer.list_fn = self._system_fn_creg.invite(fn_ref)
+        layer.list_fn = fn
         self._parent_id_to_layer[parent_id] = layer
         self._id_to_piece[parent_id] = piece
         item_list = self._load_item_list(layer, piece)

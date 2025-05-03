@@ -18,10 +18,10 @@ log = logging.getLogger(__name__)
 
 
 @mark.view_factory.ui_t
-def list_as_tree_ui_type_layout(piece, system_fn_ref):
+def list_as_tree_ui_type_layout(piece, system_fn):
     adapter = htypes.list_as_tree_adapter.adapter(
         root_item_t=piece.item_t,
-        root_function=system_fn_ref,
+        root_function=mosaic.put(system_fn.piece),
         root_open_children_command=None,
         layers=(),
         )

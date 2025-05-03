@@ -20,13 +20,17 @@ def ctx():
 
 
 @mark.fixture
-def factory(rpc_system_call_factory, format, visualizer_reg):
-    system_fn = ContextFn(
+def sample_fn(rpc_system_call_factory):
+    return ContextFn(
         rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
         service_params=(),
         raw_fn=_sample_fn,
         )
+
+
+@mark.fixture
+def factory(format, visualizer_reg, sample_fn):
     return ViewFactory(
         format=format,
         visualizer_reg=visualizer_reg,
@@ -36,18 +40,12 @@ def factory(rpc_system_call_factory, format, visualizer_reg):
         view_t=htypes.view_factory_list_tests.sample_view,
         is_wrapper=False,
         view_ctx_params=[],
-        system_fn=system_fn,
+        system_fn=sample_fn,
         )
 
 
 @mark.fixture
-def model_factory(rpc_system_call_factory, format, visualizer_reg):
-    system_fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory,
-        ctx_params=(),
-        service_params=(),
-        raw_fn=_sample_fn,
-        )
+def model_factory(format, visualizer_reg, sample_fn):
     return ViewFactory(
         format=format,
         visualizer_reg=visualizer_reg,
@@ -57,18 +55,12 @@ def model_factory(rpc_system_call_factory, format, visualizer_reg):
         view_t=htypes.view_factory_list_tests.sample_model_1_view,
         is_wrapper=False,
         view_ctx_params=[],
-        system_fn=system_fn,
+        system_fn=sample_fn,
         )
 
 
 @mark.fixture
-def ui_t_factory(rpc_system_call_factory, format, visualizer_reg):
-    system_fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory,
-        ctx_params=(),
-        service_params=(),
-        raw_fn=_sample_fn,
-        )
+def ui_t_factory(format, visualizer_reg, sample_fn):
     return ViewFactory(
         format=format,
         visualizer_reg=visualizer_reg,
@@ -78,7 +70,7 @@ def ui_t_factory(rpc_system_call_factory, format, visualizer_reg):
         view_t=htypes.view_factory_list_tests.sample_model_2_view,
         is_wrapper=False,
         view_ctx_params=[],
-        system_fn=system_fn,
+        system_fn=sample_fn,
         )
 
 
@@ -104,12 +96,12 @@ def test_view_factory_list(ctx, factory, piece):
 
 
 @mark.config_fixture('model_reg')
-def model_reg_config():
+def model_reg_config(sample_fn):
     ui_t = htypes.view_factory_list_tests.sample_ui_t()
     return {
         htypes.view_factory_list_tests.sample_model_2: htypes.model.model(
             ui_t=mosaic.put(ui_t),
-            system_fn=mosaic.put(None),
+            system_fn=mosaic.put(sample_fn.piece),
             ),
         }
 
