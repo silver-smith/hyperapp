@@ -39,6 +39,7 @@ class AutoTabsView(TabsView):
 
     def _tab_label(self, piece):
         title = self._format(piece)
+        title = title.replace('\n', ' ')
         if len(title) > 40:
             return title[:37] + '...'
         else:
