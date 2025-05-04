@@ -4,6 +4,9 @@ from functools import partial
 from PySide6 import QtCore, QtWidgets
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 from .code.list_diff import IndexListDiff
 from .code.view import View
@@ -173,3 +176,25 @@ class ListView(View):
     def _on_data_changed(self, widget, *args):
         log.info("List: on_data_changed: %s: %s", widget, args)
         widget.resizeColumnsToContents()
+
+
+@mark.actor.ui_type_creg
+@mark.view_factory.ui_t
+def index_list_ui_type_layout(piece, system_fn):
+    adapter = htypes.list_adapter.index_fn_list_adapter(
+        item_t=piece.item_t,
+        system_fn=mosaic.put(system_fn.piece),
+        )
+    return htypes.list.view(mosaic.put(adapter))
+
+
+@mark.actor.ui_type_creg
+@mark.view_factory.ui_t
+def key_list_ui_type_layout(piece, system_fn):
+    adapter = htypes.list_adapter.key_fn_list_adapter(
+        item_t=piece.item_t,
+        key_field=piece.key_field,
+        key_field_t=piece.key_field_t,
+        system_fn=mosaic.put(system_fn.piece),
+        )
+    return htypes.list.view(mosaic.put(adapter))

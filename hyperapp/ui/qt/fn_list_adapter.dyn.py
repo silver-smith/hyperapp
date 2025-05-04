@@ -3,7 +3,6 @@ from functools import partial
 
 from . import htypes
 from .services import (
-    mosaic,
     pyobj_creg,
     web,
     )
@@ -119,25 +118,3 @@ class FnKeyListAdapter(FnListAdapter, KeyListAdapterMixin):
         super().__init__(system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
                          model, real_model, item_t, remote_peer, ctx, fn)
         KeyListAdapterMixin.__init__(self, key_field, key_field_t)
-
-
-@mark.actor.ui_type_creg
-@mark.view_factory.ui_t
-def index_list_ui_type_layout(piece, system_fn):
-    adapter = htypes.list_adapter.index_fn_list_adapter(
-        item_t=piece.item_t,
-        system_fn=mosaic.put(system_fn.piece),
-        )
-    return htypes.list.view(mosaic.put(adapter))
-
-
-@mark.actor.ui_type_creg
-@mark.view_factory.ui_t
-def key_list_ui_type_layout(piece, system_fn):
-    adapter = htypes.list_adapter.key_fn_list_adapter(
-        item_t=piece.item_t,
-        key_field=piece.key_field,
-        key_field_t=piece.key_field_t,
-        system_fn=mosaic.put(system_fn.piece),
-        )
-    return htypes.list.view(mosaic.put(adapter))

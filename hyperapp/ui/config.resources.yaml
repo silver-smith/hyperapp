@@ -87,12 +87,8 @@ import:
 - ui.qt.box_layout:box_layout-view.view-template
 - ui.qt.box_layout:wrap_box_layout.view-factory-template
 - ui.qt.command_pane:command_pane-view.view-template
-- ui.qt.fn_list_adapter:index_list_ui_type_layout.view-factory-template
-- ui.qt.fn_list_adapter:key_list_ui_type_layout.view-factory-template
 - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-template
 - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-template
-- ui.qt.fn_list_adapter:ui_type_creg-model-index_list_ui_t.actor-template
-- ui.qt.fn_list_adapter:ui_type_creg-model-key_list_ui_t.actor-template
 - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
 - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template
 - ui.qt.form:form-view.view-template
@@ -105,7 +101,11 @@ import:
 - ui.qt.line_edit:line_view.view-factory-template
 - ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-template
 - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
+- ui.qt.list:index_list_ui_type_layout.view-factory-template
+- ui.qt.list:key_list_ui_type_layout.view-factory-template
 - ui.qt.list:list-view.view-template
+- ui.qt.list:ui_type_creg-model-index_list_ui_t.actor-template
+- ui.qt.list:ui_type_creg-model-key_list_ui_t.actor-template
 - ui.qt.menu_bar:menu_bar-view.view-template
 - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
 - ui.qt.tabs:tabs-view-open_tab_list.command-cfg-item
@@ -404,8 +404,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.qt.fn_list_adapter:ui_type_creg-model-index_list_ui_t.actor-template
-      - ui.qt.fn_list_adapter:ui_type_creg-model-key_list_ui_t.actor-template
+      - ui.qt.list:ui_type_creg-model-index_list_ui_t.actor-template
+      - ui.qt.list:ui_type_creg-model-key_list_ui_t.actor-template
       - ui.qt.tree:ui_type_creg-model-index_tree_ui_t.actor-template
       - ui.qt.tree:ui_type_creg-model-key_tree_ui_t.actor-template
       - ui.record_adapter:ui_type_creg-model-record_ui_t.actor-template
@@ -430,11 +430,11 @@ definitions:
     value:
       items:
       - ui.qt.box_layout:wrap_box_layout.view-factory-template
-      - ui.qt.fn_list_adapter:index_list_ui_type_layout.view-factory-template
-      - ui.qt.fn_list_adapter:key_list_ui_type_layout.view-factory-template
       - ui.qt.label:label_view.view-factory-template
       - ui.qt.line_edit:line_edit.view-factory-template
       - ui.qt.line_edit:line_view.view-factory-template
+      - ui.qt.list:index_list_ui_type_layout.view-factory-template
+      - ui.qt.list:key_list_ui_type_layout.view-factory-template
       - ui.qt.text:text_edit.view-factory-template
       - ui.qt.text:text_view.view-factory-template
       - ui.qt.tree:index_tree_ui_type_layout.view-factory-template

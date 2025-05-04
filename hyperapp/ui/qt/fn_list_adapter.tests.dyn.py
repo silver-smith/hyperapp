@@ -250,21 +250,3 @@ def test_fn_adapter_with_remote_context(
             servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
             )
         assert get_fn_called_flag_call()
-
-
-def test_index_list_ui_type_layout(sample_list_model_fn):
-    piece = htypes.model.index_list_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
-        )
-    layout = fn_list_adapter.index_list_ui_type_layout(piece, sample_list_model_fn)
-    assert isinstance(layout, htypes.list.view)
-
-
-def test_key_list_ui_type_layout(sample_list_model_fn):
-    piece = htypes.model.key_list_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.list_adapter_tests.item),
-        key_field='id',
-        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.int),
-        )
-    layout = fn_list_adapter.key_list_ui_type_layout(piece, sample_list_model_fn)
-    assert isinstance(layout, htypes.list.view)
