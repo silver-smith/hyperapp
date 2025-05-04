@@ -29,6 +29,7 @@ class FnListAdapter(FnListAdapterBase):
 
     def __init__(self, system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
                  model, real_model, item_t, remote_peer, ctx, fn):
+        assert not (remote_peer and 'ctx' in fn.ctx_params)  # Functions with 'ctx' param are not remotable.
         super().__init__(column_visible_reg, real_model, item_t)
         self._system_fn_creg = system_fn_creg
         self._rpc_system_call_factory = rpc_system_call_factory
