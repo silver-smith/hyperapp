@@ -95,8 +95,6 @@ import:
 - ui.qt.fn_list_adapter:ui_type_creg-model-key_list_ui_t.actor-template
 - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
 - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template
-- ui.qt.fn_tree_adapter:ui_type_creg-model-index_tree_ui_t.actor-template
-- ui.qt.fn_tree_adapter:ui_type_creg-model-key_tree_ui_t.actor-template
 - ui.qt.form:form-view.view-template
 - ui.qt.label:label-view-set_label_text.command-cfg-item
 - ui.qt.label:label-view.view-template
@@ -117,7 +115,10 @@ import:
 - ui.qt.text:text_edit.view-factory-template
 - ui.qt.text:text_view.view-factory-template
 - ui.qt.tree:index_tree_ui_type_layout.view-factory-template
+- ui.qt.tree:key_tree_ui_type_layout.view-factory-template
 - ui.qt.tree:tree-view.view-template
+- ui.qt.tree:ui_type_creg-model-index_tree_ui_t.actor-template
+- ui.qt.tree:ui_type_creg-model-key_tree_ui_t.actor-template
 - ui.qt.wiki:resource_name_creg-wiki-adapter.actor-template
 - ui.qt.wiki:ui_adapter_creg-wiki-adapter.actor-template
 - ui.qt.wiki:wiki-text_view.view-template
@@ -405,8 +406,8 @@ definitions:
       items:
       - ui.qt.fn_list_adapter:ui_type_creg-model-index_list_ui_t.actor-template
       - ui.qt.fn_list_adapter:ui_type_creg-model-key_list_ui_t.actor-template
-      - ui.qt.fn_tree_adapter:ui_type_creg-model-index_tree_ui_t.actor-template
-      - ui.qt.fn_tree_adapter:ui_type_creg-model-key_tree_ui_t.actor-template
+      - ui.qt.tree:ui_type_creg-model-index_tree_ui_t.actor-template
+      - ui.qt.tree:ui_type_creg-model-key_tree_ui_t.actor-template
       - ui.record_adapter:ui_type_creg-model-record_ui_t.actor-template
   universal_ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
@@ -437,6 +438,7 @@ definitions:
       - ui.qt.text:text_edit.view-factory-template
       - ui.qt.text:text_view.view-factory-template
       - ui.qt.tree:index_tree_ui_type_layout.view-factory-template
+      - ui.qt.tree:key_tree_ui_type_layout.view-factory-template
       - ui.qt.wiki:wiki.view-factory-template
       - ui.qt.wiki:wiki_text.view-factory-template
   view_reg:

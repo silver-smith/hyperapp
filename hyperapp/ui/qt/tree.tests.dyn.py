@@ -14,35 +14,60 @@ from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import tree
 
 
-def _sample_tree_model(piece, parent):
+def sample_index_tree_model(piece, parent):
     assert isinstance(piece, htypes.tree_tests.sample_tree), repr(piece)
     if parent:
         base = parent.id
     else:
         base = 0
     return [
-        htypes.tree_tests.item(base*10 + 1, "First item"),
-        htypes.tree_tests.item(base*10 + 2, "Second item"),
-        htypes.tree_tests.item(base*10 + 3, "Third item"),
+        htypes.tree_tests.index_item(base*10 + 1, "First item"),
+        htypes.tree_tests.index_item(base*10 + 2, "Second item"),
+        htypes.tree_tests.index_item(base*10 + 3, "Third item"),
         ]
 
 
 @mark.fixture
-def model_fn(rpc_system_call_factory):
+def sample_index_tree_model_fn(rpc_system_call_factory):
     return ContextFn(
         rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'parent'),
         service_params=(),
-        raw_fn=_sample_tree_model,
+        raw_fn=sample_index_tree_model,
+        )
+
+
+def sample_key_tree_model(piece, current_path, sample_ctx):
+    log.info("Sample key tree fn: %s @ %s", piece, current_path)
+    assert isinstance(piece, htypes.tree_tests.sample_tree), repr(piece)
+    assert sample_ctx == 'sample-ctx'
+    if current_path:
+        base = int(current_path[-1])
+    else:
+        base = 0
+    return [
+        htypes.tree_tests.key_item(str(base*10 + 1), "First item"),
+        htypes.tree_tests.key_item(str(base*10 + 2), "Second item"),
+        htypes.tree_tests.key_item(str(base*10 + 3), "Third item"),
+        ]
+
+
+@mark.fixture
+def sample_key_tree_model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
+        ctx_params=('piece', 'current_path', 'sample_ctx'),
+        service_params=(),
+        raw_fn=sample_key_tree_model,
         )
 
 
 @mark.fixture
-def adapter_piece(model_fn):
+def adapter_piece(sample_index_tree_model_fn):
     return htypes.tree_adapter.fn_index_tree_adapter(
-        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_tests.item)),
+        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_tests.index_item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        system_fn=mosaic.put(model_fn.piece),
+        system_fn=mosaic.put(sample_index_tree_model_fn.piece),
         )
 
 
@@ -67,9 +92,19 @@ def test_tree(qapp, piece):
     assert model_state
 
 
-def test_index_layout(model_fn):
-    ui_t = htypes.model.index_tree_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.tree_tests.item),
+def test_index_ui_type_layout(sample_index_tree_model_fn):
+    piece = htypes.model.index_tree_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.tree_tests.index_item),
         )
-    piece = tree.index_tree_ui_type_layout(ui_t, model_fn)
-    assert isinstance(piece, htypes.tree.view)
+    layout = tree.index_tree_ui_type_layout(piece, sample_index_tree_model_fn)
+    assert isinstance(layout, htypes.tree.view)
+
+
+def test_key_ui_type_layout(sample_key_tree_model_fn):
+    piece = htypes.model.key_tree_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.tree_tests.key_item),
+        key_field='key',
+        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+        )
+    layout = tree.key_tree_ui_type_layout(piece, sample_key_tree_model_fn)
+    assert isinstance(layout, htypes.tree.view)

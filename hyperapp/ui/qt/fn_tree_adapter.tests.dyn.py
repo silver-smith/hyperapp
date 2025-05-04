@@ -578,21 +578,3 @@ def test_index_adapter_with_remote_context(
         assert adapter.cell_data(row_2, 0) == 23
 
         assert pop_fn_called_flag_call()
-
-
-def test_index_ui_type_layout(sample_index_tree_model_fn):
-    piece = htypes.model.index_tree_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.index_item),
-        )
-    layout = fn_tree_adapter.index_tree_ui_type_layout(piece, sample_index_tree_model_fn)
-    assert isinstance(layout, htypes.tree.view)
-
-
-def test_key_ui_type_layout(sample_key_tree_model_fn):
-    piece = htypes.model.key_tree_ui_t(
-        item_t=pyobj_creg.actor_to_ref(htypes.tree_adapter_tests.key_item),
-        key_field='key',
-        key_field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
-        )
-    layout = fn_tree_adapter.key_tree_ui_type_layout(piece, sample_key_tree_model_fn)
-    assert isinstance(layout, htypes.tree.view)

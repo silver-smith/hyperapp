@@ -5,7 +5,6 @@ from hyperapp.boot.htypes import TList, TOptional, TRecord
 
 from . import htypes
 from .services import (
-    mosaic,
     pyobj_creg,
     web,
     )
@@ -155,23 +154,3 @@ class FnKeyTreeAdapter(FnTreeAdapter, KeyTreeAdapterMixin):
                  model, real_model, item_t, remote_peer, ctx, fn, key_field, key_field_t):
         super().__init__(rpc_system_call_factory, feed_factory, model, real_model, item_t, remote_peer, ctx, fn)
         KeyTreeAdapterMixin.__init__(self, key_field, key_field_t)
-
-
-@mark.actor.ui_type_creg
-def index_tree_ui_type_layout(piece, system_fn):
-    adapter = htypes.tree_adapter.fn_index_tree_adapter(
-        item_t=piece.item_t,
-        system_fn=mosaic.put(system_fn.piece),
-        )
-    return htypes.tree.view(mosaic.put(adapter))
-
-
-@mark.actor.ui_type_creg
-def key_tree_ui_type_layout(piece, system_fn):
-    adapter = htypes.tree_adapter.fn_key_tree_adapter(
-        item_t=piece.item_t,
-        key_field=piece.key_field,
-        key_field_t=piece.key_field_t,
-        system_fn=mosaic.put(system_fn.piece),
-        )
-    return htypes.tree.view(mosaic.put(adapter))
