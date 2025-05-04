@@ -17,6 +17,7 @@ import:
 - legacy_type.navigator:view
 - legacy_type.system_fn:ctx_fn
 - legacy_type.ui:model_layout_k
+- ui.remote_model:remote_model.module
 - ui.view.view:view.module
 definitions:
   NavigatorView:
@@ -116,6 +117,7 @@ definitions:
       file_name: navigator.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        code.remote_model: ui.remote_model:remote_model.module
         code.view: ui.view.view:view.module
         htypes.navigator.history_rec: legacy_type.navigator:history_rec
         htypes.navigator.view: legacy_type.navigator:view

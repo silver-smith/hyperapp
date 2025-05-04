@@ -11,6 +11,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.view import Item, View
+from .code.remote_model import real_model_t
 
 log = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ class NavigatorView(View):
     def _safe_open(self, ctx, model, new_view, widget, key=None, layout_k=None, set_layout=False):
         history_rec = self._history_rec(widget)
         if set_layout and layout_k is None:
-            model_t = deduce_t(model)
+            model_t = real_model_t(model)
             layout_k = htypes.ui.model_layout_k(
                 model_t=pyobj_creg.actor_to_ref(model_t),
                 )
