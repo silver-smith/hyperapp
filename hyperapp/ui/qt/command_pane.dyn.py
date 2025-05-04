@@ -62,13 +62,16 @@ class CommandPaneView(View):
         pane_1_d = htypes.command_groups.pane_1_d()
         pane_2_d = htypes.command_groups.pane_2_d()
         layout = widget.layout()
-        new_commands = {
+        new_commands = [
             cmd for cmd in commands
             if {pane_1_d, pane_2_d} & cmd.groups
-            }
-        removed_commands = set(widget.command_to_button) - new_commands
+            ]
+        removed_commands = set(widget.command_to_button) - set(new_commands)
         widget.spacing_idx -= sum(1 for cmd in removed_commands if pane_1_d in cmd.groups)
-        new_commands = new_commands - set(widget.command_to_button)
+        new_commands = [
+            cmd for cmd in new_commands
+            if cmd not in set(widget.command_to_button)
+            ]
         for cmd in removed_commands:
             button = widget.command_to_button.pop(cmd)
             button.deleteLater()
