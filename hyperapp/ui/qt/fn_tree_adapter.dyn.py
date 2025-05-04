@@ -28,6 +28,7 @@ class FnTreeAdapter(TreeAdapter):
         return (remote_peer, real_model)
 
     def __init__(self, rpc_system_call_factory, feed_factory, model, real_model, item_t, remote_peer, ctx, fn):
+        assert not (remote_peer and 'ctx' in fn.ctx_params)  # Functions with 'ctx' param are not remotable.
         super().__init__(real_model, item_t)
         self._rpc_system_call_factory = rpc_system_call_factory
         self._remote_peer = remote_peer

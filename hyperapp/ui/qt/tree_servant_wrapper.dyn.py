@@ -11,11 +11,18 @@ from .code.context import Context
 log = logging.getLogger(__name__)
 
 
+def _make_context(model, **kw):
+    if 'ctx' in kw:
+        return kw['ctx'].clone_with(**kw)
+    else:
+        return Context(**kw)
+
+
 def index_tree_wrapper(servant_fn_piece, model, parent, grand_parent, is_lateral, lateral_parent, result_mt, system_fn_creg, **kw):
     result_t = pyobj_creg.animate(result_mt)
     servant_fn = system_fn_creg.animate(servant_fn_piece)
     log.info("Index tree servant wrapper: Loading items for %s using %s", parent, servant_fn)
-    ctx = Context(
+    ctx = _make_context(
         model=model,
         piece=model,
         **kw,
@@ -39,7 +46,7 @@ def key_tree_wrapper(servant_fn_piece, model, current_path, key_field, is_latera
     result_t = pyobj_creg.animate(result_mt)
     servant_fn = system_fn_creg.animate(servant_fn_piece)
     log.info("Key tree servant wrapper: Loading items for %s using %s", current_path, servant_fn)
-    ctx = Context(
+    ctx = _make_context(
         model=model,
         piece=model,
         **kw,
