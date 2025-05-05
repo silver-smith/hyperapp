@@ -13,6 +13,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.system_fn import ContextFn
+from .code.tree_diff import TreeDiff
 from .code.model_command import model_command_ctx
 from .code.list_adapter import index_list_model_state_t
 from .code.tree_adapter import IndexTreeAdapterMixin, TreeAdapter
@@ -140,9 +141,9 @@ class ListAsTreeAdapter(TreeAdapter, IndexTreeAdapterMixin):
         command_ctx = self._make_command_ctx(layer, self._ctx, model, current_item_id)
         unbound_command = layer.open_command
         bound_command = unbound_command.bind(command_ctx)
-        piece = await bound_command.run()
-        log.info("List-to-tree adapter: open command result: %s", piece)
-        return piece
+        result = await bound_command.run()
+        log.info("List-to-tree adapter: open command result: %s", result)
+        return result
         
     def _load_item_list(self, layer, piece):
         kw = {
@@ -160,31 +161,34 @@ class ListAsTreeAdapter(TreeAdapter, IndexTreeAdapterMixin):
         if pp_layer.open_command is None:
             log.info("List-to-tree adapter: Open command for parent#%d is not specified", parent_id)
             return None
-        piece = await self._run_open_command(pp_layer, model=pp_piece, current_item_id=parent_id)
-        piece_t = deduce_t(piece)
+        result = await self._run_open_command(pp_layer, model=pp_piece, current_item_id=parent_id)
+        model = web.summon(result.model)
+        model_t = deduce_t(model)
         try:
-            ui_t, fn = self._visualizer_reg(piece_t)
+            ui_t, fn = self._visualizer_reg(model_t)
         except KeyError:
-            log.info("List-to-tree adapter: Model for %s is not available", piece_t)
+            log.info("List-to-tree adapter: Model for %s is not available", model_t)
             return None
         if not isinstance(ui_t, htypes.model.index_list_ui_t):
-            log.info("List-to-tree adapter: Model for %s is not a list", piece_t)
+            log.info("List-to-tree adapter: Model for %s is not a list", model_t)
             return None
         try:
-            layer = self._layers[piece_t]
+            layer = self._layers[model_t]
         except KeyError:
             # Not yet included, but parent layer has open command - show it anyway.
             layer = self._Layer()
-            self._layers[piece_t] = layer
+            self._layers[model_t] = layer
         layer.item_t = pyobj_creg.invite(ui_t.item_t)
         layer.model_state_t = index_list_model_state_t(layer.item_t)
         layer.list_fn = fn
         self._parent_id_to_layer[parent_id] = layer
-        self._id_to_piece[parent_id] = piece
-        item_list = self._load_item_list(layer, piece)
-        log.info("List-to-tree adapter: loaded layer for parent#%d piece %r: %s", parent_id, piece, item_list)
+        self._id_to_piece[parent_id] = model
+        item_list = self._load_item_list(layer, model)
+        log.info("List-to-tree adapter: loaded layer for parent#%d model %r: %s", parent_id, model, item_list)
         for item in item_list:
             self._append_item(parent_id, item)
+            diff = TreeDiff.Append(self.get_path(parent_id), item)
+            self.process_diff(diff)
 
     def _get_layer(self, parent_id):
         try:

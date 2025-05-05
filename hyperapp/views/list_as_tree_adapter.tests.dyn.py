@@ -8,8 +8,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.system_fn import ContextFn
-from .code.model_command import UnboundModelCommand
+from .code.model_command import ModelCommandFn, UnboundModelCommand
 from .tested.code import list_as_tree_adapter
 
 log = logging.getLogger(__name__)
@@ -110,7 +109,7 @@ class MockSubscriber:
 
 @mark.fixture
 def open_command_1(rpc_system_call_factory):
-    open_1_fn = ContextFn(
+    open_1_fn = ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'current_item'),
         service_params=(),
@@ -125,7 +124,7 @@ def open_command_1(rpc_system_call_factory):
 
 @mark.fixture
 def open_command_2(rpc_system_call_factory):
-    open_2_fn = ContextFn(
+    open_2_fn = ModelCommandFn(
         rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('piece', 'current_item'),
         service_params=(),

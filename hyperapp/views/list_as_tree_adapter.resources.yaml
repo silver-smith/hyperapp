@@ -6,6 +6,7 @@ import:
 - builtins:deduce_t.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.tree_diff:tree_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.list_as_tree_adapter:adapter
@@ -36,6 +37,7 @@ definitions:
         code.model_command: ui.model_command:model_command.module
         code.system_fn: base.system_fn:system_fn.module
         code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
+        code.tree_diff: common.tree_diff:tree_diff.module
         htypes.list_as_tree_adapter.adapter: legacy_type.list_as_tree_adapter:adapter
         htypes.model.index_list_ui_t: legacy_type.model:index_list_ui_t
         services.deduce_t: builtins:deduce_t.service
