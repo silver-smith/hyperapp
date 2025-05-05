@@ -105,7 +105,8 @@ class _Model(QtCore.QAbstractItemModel):
             self.endInsertRows()
         if not isinstance(diff, (VisualTreeDiffReplace, VisualTreeDiffRemove)):
             self.layoutChanged.emit()
-        self._view._ctl_hook.parent_context_changed()
+        if self._view._ctl_hook:  # Not yet fully initialized?
+            self._view._ctl_hook.parent_context_changed()
 
 
 class _TreeWidget(QtWidgets.QTreeView):
