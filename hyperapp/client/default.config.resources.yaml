@@ -1,30 +1,40 @@
 # Automatically generated file. Do not edit.
 
 import:
+- demo.fs:fs-model.system-fn
 - legacy_type.box_layout:view
-- legacy_type.command:model_command
+- legacy_type.builtin:attribute
+- legacy_type.builtin:string
 - legacy_type.data_browser:list_view
 - legacy_type.data_browser:record_data_adapter
 - legacy_type.data_browser:record_item
 - legacy_type.data_browser:record_view
 - legacy_type.data_browser:ref_list_view
 - legacy_type.data_service:config_item
-- legacy_type.global_commands:command_arg
+- legacy_type.fs:item
+- legacy_type.fs:model
 - legacy_type.line_edit:readonly_view
 - legacy_type.list:view
-- legacy_type.list_adapter:index_fn_list_adapter
-- legacy_type.list_adapter:static_list_adapter
+- legacy_type.list_adapter:key_fn_list_adapter
 - legacy_type.list_as_tree_adapter:adapter
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- legacy_type.system_fn:ctx_fn
 - legacy_type.tree:view
+- legacy_type.tree_as_list:key_view
 - legacy_type.ui:model_layout_k
 - models.data_browser:data_browser-record_view.system-fn
 - models.data_browser:list_open.model-command
 - models.data_browser:record_open.model-command
 - models.data_browser:ref_list_open.model-command
+- views.tree_as_list:tree_as_list.module
 definitions:
-  box_layout_view_2:
+  attribute_1:
+    type: legacy_type.builtin:attribute
+    value:
+      object: views.tree_as_list:tree_as_list.module
+      attr_name: list_model_fn
+  box_layout_view_1:
     type: legacy_type.box_layout:view
     value:
       direction: TopToBottom
@@ -33,6 +43,14 @@ definitions:
         focusable: false
         stretch: 0
       - view: tree_view_1
+        focusable: true
+        stretch: 1
+  box_layout_view_2:
+    type: legacy_type.box_layout:view
+    value:
+      direction: TopToBottom
+      elements:
+      - view: key_view_1
         focusable: true
         stretch: 1
   config:
@@ -44,11 +62,42 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: data_browser.record_view-model_layout_k
+      value: box_layout_view_1
+  config_item-fs.model-model_layout_k:
+    type: legacy_type.data_service:config_item
+    value:
+      key: fs.model-model_layout_k
       value: box_layout_view_2
+  ctx_fn_1:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: attribute_1
+      ctx_params:
+      - piece
+      service_params:
+      - system_fn_creg
   data_browser.record_view-model_layout_k:
     type: legacy_type.ui:model_layout_k
     value:
       model_t: legacy_type.data_browser:record_view
+  fs.model-model_layout_k:
+    type: legacy_type.ui:model_layout_k
+    value:
+      model_t: legacy_type.fs:model
+  key_fn_list_adapter_1:
+    type: legacy_type.list_adapter:key_fn_list_adapter
+    value:
+      item_t: legacy_type.fs:item
+      key_field: name
+      key_field_t: legacy_type.builtin:string
+      system_fn: ctx_fn_1
+  key_view_1:
+    type: legacy_type.tree_as_list:key_view
+    value:
+      list_view: list_view_1
+      tree_model_fn: demo.fs:fs-model.system-fn
+      current_path: []
+      parent_items: []
   line_view-record_data_adapter_1:
     type: legacy_type.line_edit:readonly_view
     value:
@@ -62,11 +111,16 @@ definitions:
       layers:
         legacy_type.data_browser:ref_list_view: models.data_browser:ref_list_open.model-command
         legacy_type.data_browser:list_view: models.data_browser:list_open.model-command
+  list_view_1:
+    type: legacy_type.list:view
+    value:
+      adapter: key_fn_list_adapter_1
   model_layout_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-data_browser.record_view-model_layout_k
+      - config_item-fs.model-model_layout_k
   record_data_adapter_1:
     type: legacy_type.data_browser:record_data_adapter
     value: {}
