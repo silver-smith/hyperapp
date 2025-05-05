@@ -12,11 +12,25 @@ from .code.model_command import ModelCommandFn, UnboundModelCommand
 from .tested.code import command_list_model, model_commands
 
 
-def test_open_model_commands():
+@mark.fixture
+def ctx():
+    return Context()
+
+
+def test_open_model_commands(view_reg, ctx):
+    model = htypes.model_commands_tests.sample_model_1()
+    label_view = htypes.label.view("Sample label")
+    navigator_piece = htypes.navigator.view(
+        current_view=mosaic.put(label_view),
+        current_model=mosaic.put(model),
+        layout_k=None,
+        prev=None,
+        next=None,
+        )
+    navigator = view_reg.animate(navigator_piece, ctx)
     model_state = htypes.model_commands_tests.sample_model_state()
-    model_1 = htypes.model_commands_tests.sample_model_1()
-    piece_1 = model_commands.open_model_commands(model_1, model_state)
-    assert piece_1
+    piece = model_commands.open_model_commands(navigator, model_state)
+    assert isinstance(piece, htypes.model_commands.model)
 
 
 def _sample_fn_1(model, sample_service):
@@ -76,8 +90,7 @@ def piece():
         )
 
 
-def test_list_model_commands(lcs, piece):
-    ctx = Context()
+def test_list_model_commands(lcs, ctx, piece):
     item_list = model_commands.list_model_commands(piece, ctx, lcs)
     assert 'Sample command 2' in [item.name for item in item_list]
 

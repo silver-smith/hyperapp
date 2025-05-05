@@ -11,12 +11,14 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
+- legacy_type.command:ui_command
 - legacy_type.command_list_model:item
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
 - legacy_type.model_commands:model
+- legacy_type.navigator:view
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - models.command_list_model:command_list_model.module
@@ -88,8 +90,14 @@ definitions:
         code.mark: base.mark:mark.module
         code.model_command: ui.model_command:model_command.module
         htypes.model_commands.model: legacy_type.model_commands:model
+        htypes.navigator.view: legacy_type.navigator:view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+  navigator-view-open_model_commands.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.navigator:view
+      command: open_model_commands.ui-model-command
   open_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -103,15 +111,15 @@ definitions:
     value:
       function: open_model_commands
       ctx_params:
-      - piece
+      - view
       - model_state
       service_params: []
-  open_model_commands.global-model-command:
-    type: legacy_type.command:model_command
+  open_model_commands.ui-model-command:
+    type: legacy_type.command:ui_command
     value:
       d: open_model_commands.d
       properties:
-        is_global: true
+        is_global: false
         uses_state: true
         remotable: true
       system_fn: open_model_commands.fn

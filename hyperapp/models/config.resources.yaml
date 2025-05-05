@@ -57,7 +57,7 @@ import:
 - models.model_commands:formatter_creg-model_commands-model.actor-template
 - models.model_commands:model_commands-model-run_command.command-cfg-item
 - models.model_commands:model_commands-model.model-cfg-item
-- models.model_commands:open_model_commands.global-model-command
+- models.model_commands:navigator-view-open_model_commands.command-cfg-item
 - models.model_list:formatter_creg-model_list-model.actor-template
 - models.model_list:formatter_creg-model_list-model_arg.actor-template
 - models.model_list:model_list-model.feed-template
@@ -164,7 +164,6 @@ definitions:
       - models.data_browser:browse_current_model.global-model-command
       - models.file_bundles:open_file_bundle_list.global-model-command
       - models.global_commands:open_global_commands.global-model-command
-      - models.model_commands:open_model_commands.global-model-command
       - models.model_list:open_model_list.global-model-command
       - models.peer_list:open_peer_list.global-model-command
       - models.ref_list:open_ref_list.global-model-command
@@ -260,3 +259,4 @@ definitions:
     value:
       items:
       - models.column_list:list-view-open_column_list.command-cfg-item
+      - models.model_commands:navigator-view-open_model_commands.command-cfg-item

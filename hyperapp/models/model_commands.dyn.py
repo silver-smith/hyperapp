@@ -47,10 +47,10 @@ async def run_command(piece, current_item, ctx, lcs, ui_model_command_items):
     return result
 
 
-@mark.global_command
-def open_model_commands(piece, model_state):
+@mark.ui_model_command(htypes.navigator.view)
+def open_model_commands(view, model_state):
     return htypes.model_commands.model(
-        model=mosaic.put(piece),
+        model=mosaic.put(view.model),
         model_state=mosaic.put(model_state),
         )
 
