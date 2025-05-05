@@ -53,7 +53,6 @@ definitions:
       - view
       - state
       - hook
-      - current_model
       - ctx
       service_params:
       - view_reg

@@ -60,8 +60,9 @@ class MarkView(ContextView):
 
 
 @mark.ui_command
-def add_mark(view, state, hook, current_model, ctx, view_reg, selector_reg):
-    model_t = deduce_t(current_model)
+def add_mark(view, state, hook, ctx, view_reg, selector_reg):
+    model = view.model
+    model_t = deduce_t(model)
     if not isinstance(model_t, TRecord):
         log.warning("Model is not a record, not marking: %s", model)
         return
@@ -71,14 +72,14 @@ def add_mark(view, state, hook, current_model, ctx, view_reg, selector_reg):
         value = None
     else:
         fn_ctx = ctx.clone_with(
-            piece=current_model,
-            model=current_model,
+            piece=model,
+            model=model,
             **ctx.attributes(ctx.model_state),
             )
         value = selector.pick_fn.call(fn_ctx)
     new_view_piece = htypes.arg_mark.view(
         base=mosaic.put(view.piece),
-        model=mosaic.put(current_model),
+        model=mosaic.put(model),
         value=mosaic.put_opt(value),
         )
     new_state = htypes.context_view.state(

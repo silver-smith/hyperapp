@@ -54,7 +54,7 @@ def test_add_mark(view_reg, model):
         )
     navigator = view_reg.animate(navigator_piece, ctx)
     hook = Mock()
-    result = arg_mark.add_mark(navigator, state, hook, model, ctx)
+    result = arg_mark.add_mark(navigator, state, hook, ctx)
     hook.replace_view.assert_called_once()
 
 

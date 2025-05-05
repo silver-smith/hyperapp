@@ -92,6 +92,10 @@ class NavigatorView(View):
             next=self._next,
             )
 
+    @property
+    def model(self):
+        return self._model
+
     def open(self, ctx, model, view, widget, key=None, layout_k=None, set_layout=True):
         try:
             self._safe_open(ctx, model, view, widget, key, layout_k, set_layout)
