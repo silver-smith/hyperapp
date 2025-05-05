@@ -80,6 +80,29 @@ def test_move(system, piece):
     target_layer.set.assert_called_once()
 
 
+def test_remove(system, piece):
+    key = 123
+    config = {
+        'sample_service': {
+            key: 'value-123',
+            }
+        }
+    layer = Mock(config=config)
+    system.load_config_layer('sample-layer', layer)
+
+    key = htypes.config_item_list_tests.sample_key(key)
+    current_item = htypes.config_item_list.item(
+        key=mosaic.put(key),
+        key_str="<unused>",
+        value_str="<unused>",
+        layers=('sample-layer',),
+        layers_str="<unused>",
+        )
+    result = config_item_list.remove(piece, current_item)
+    assert result is True
+    layer.remove.assert_called_once()
+
+
 def test_format_model(piece):
     title = config_item_list.format_model(piece)
     assert type(title) is str

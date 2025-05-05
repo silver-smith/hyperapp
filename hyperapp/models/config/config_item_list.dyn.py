@@ -97,6 +97,15 @@ def config_item_move_to_another_layer(piece, key, layers, value, system):
     return (piece, key)
 
 
+@mark.command.remove
+def remove(piece, current_item, system):
+    layer_name = current_item.layers[0]  # Will remove from first layer.
+    layer = system.name_to_layer[layer_name]
+    key = web.summon(current_item.key)
+    layer.remove(piece.service_name, key)
+    return True
+
+
 @mark.actor.formatter_creg
 def format_model(piece):
     return f"Config for service: {piece.service_name}"
