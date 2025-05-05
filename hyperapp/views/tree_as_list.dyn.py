@@ -179,8 +179,8 @@ def open(model, current_path, current_item, view, state, ctx, hook, view_reg):
 @mark.ui_command
 def parent(model, view, state, ctx, hook, view_reg):
     parent_view = view.parent_view(view_reg, ctx, model)
-    new_state = parent_view.make_list_state(view.parent_key)
     if parent_view:
+        new_state = parent_view.make_list_state(view.parent_key)
         hook.replace_view(parent_view, new_state, save_layout=False)
 
 
