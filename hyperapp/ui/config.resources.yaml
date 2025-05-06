@@ -109,7 +109,9 @@ import:
 - ui.qt.menu_bar:menu_bar-view.view-template
 - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
 - ui.qt.tabs:tabs-view-open_tab_list.command-cfg-item
+- ui.qt.tabs:tabs-view-unwrap.command-cfg-item
 - ui.qt.tabs:tabs-view.view-template
+- ui.qt.tabs:wrap_in_tabs.view-factory-template
 - ui.qt.text:text-edit_view.view-template
 - ui.qt.text:text-readonly_view.view-template
 - ui.qt.text:text_edit.view-factory-template
@@ -435,6 +437,7 @@ definitions:
       - ui.qt.line_edit:line_view.view-factory-template
       - ui.qt.list:index_list_ui_type_layout.view-factory-template
       - ui.qt.list:key_list_ui_type_layout.view-factory-template
+      - ui.qt.tabs:wrap_in_tabs.view-factory-template
       - ui.qt.text:text_edit.view-factory-template
       - ui.qt.text:text_view.view-factory-template
       - ui.qt.tree:index_tree_ui_type_layout.view-factory-template
@@ -477,6 +480,7 @@ definitions:
       - ui.qt.auto_tabs:auto_tabs-view-duplicate_tab.command-cfg-item
       - ui.qt.box_layout:box_layout-view-add_stretch.command-cfg-item
       - ui.qt.box_layout:box_layout-view-unwrap.command-cfg-item
+      - ui.qt.tabs:tabs-view-unwrap.command-cfg-item
       - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
       - ui.qt.window_commands:window-view-quit.command-cfg-item
       - ui.tab_groups:tabs-view-move_tab_to_new_group.command-cfg-item

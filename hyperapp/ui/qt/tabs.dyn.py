@@ -162,3 +162,25 @@ def open_tab_list(view):
         htypes.tabs.list_item(item.name)
         for item in view.items()
         ]
+
+
+@mark.ui_command
+def unwrap(view, state, hook, ctx):
+    log.info("Unwrap tabs: %s / %s", view, state)
+    idx = state.current_tab
+    inner_view = view.tabs[idx].view
+    inner_state = web.summon(state.tabs[idx])
+    hook.replace_view(inner_view, inner_state)
+
+
+@mark.view_factory
+def wrap_in_tabs(inner):
+    log.info("Wrap with tabs: %s", inner)
+    return htypes.tabs.view(
+        tabs=(
+            htypes.tabs.tab(
+                label="A tab",
+                view=mosaic.put(inner),
+                ),
+            ),
+        )

@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command_fn
@@ -16,6 +17,7 @@ import:
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
+- legacy_type.view_factory:template
 - ui.view.view:view.module
 definitions:
   TabsView:
@@ -66,6 +68,11 @@ definitions:
     value:
       t: legacy_type.tabs:view
       command: open_tab_list.ui-model-command
+  tabs-view-unwrap.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tabs:view
+      command: unwrap.ui-command
   tabs-view.view-template:
     type: legacy_type.cfg_item:typed_fn_cfg_item
     value:
@@ -85,3 +92,71 @@ definitions:
         htypes.tabs.view: legacy_type.tabs:view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+  unwrap:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tabs.module
+      attr_name: unwrap
+  unwrap.d:
+    type: unwrap_d
+    value: {}
+  unwrap.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: unwrap
+      ctx_params:
+      - view
+      - state
+      - hook
+      - ctx
+      service_params: []
+  unwrap.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: unwrap.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: unwrap.fn
+  unwrap_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tabs
+      name: unwrap_d
+      base: null
+      fields: {}
+  wrap_in_tabs:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tabs.module
+      attr_name: wrap_in_tabs
+  wrap_in_tabs.k:
+    type: wrap_in_tabs_k
+    value: {}
+  wrap_in_tabs.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: wrap_in_tabs
+      ctx_params:
+      - inner
+      service_params: []
+  wrap_in_tabs.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: wrap_in_tabs.k
+      model_t: null
+      ui_t_t: null
+      view_t: legacy_type.tabs:view
+      is_wrapper: true
+      view_ctx_params:
+      - piece
+      - ctx
+      system_fn: wrap_in_tabs.system-fn
+  wrap_in_tabs_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tabs
+      name: wrap_in_tabs_k
+      base: null
+      fields: {}
