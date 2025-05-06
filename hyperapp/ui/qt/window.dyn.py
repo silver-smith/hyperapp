@@ -86,6 +86,11 @@ class WindowView(View):
             return widget.centralWidget()
         return super().item_widget(widget, idx)
 
+    def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
+        assert idx == 1  # Replacing menu bar is not yet supported.
+        self._central_view = new_child_view
+        widget.setCentralWidget(new_child_widget)
+
     def _on_close(self, w):
         log.info("Window closed: %s", w)
         self._ctl_hook.removed()
