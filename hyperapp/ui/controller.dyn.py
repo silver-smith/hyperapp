@@ -257,7 +257,7 @@ class _Item:
         self._children[idx] = item
         self.children_changed(save_layout)
         self.save_state()
-        model_diff = TreeDiff.Replace(self.path, self.model_item)
+        model_diff = TreeDiff.Replace([*self.path, idx], item.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
 
     def replace_view_hook(self, new_view, new_state, save_layout):
