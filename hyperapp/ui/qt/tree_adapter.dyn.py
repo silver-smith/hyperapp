@@ -1,4 +1,5 @@
 import abc
+import asyncio
 import itertools
 import logging
 import weakref
@@ -302,5 +303,11 @@ class TreeAdapter(metaclass=abc.ABCMeta):
             for kid_id in children_ids:
                 self._cleanup_item(kid_id)
             del self._id_to_children_id_list[item_id]
-        del self._id_to_parent_id[item_id]
         del self._id_to_item[item_id]
+        # Postpone removing parent id: It is used by view to check which item select next.
+        # Overwise, selection will jump to start.
+        loop = asyncio.get_running_loop()
+        loop.call_soon(self._remove_parent_id, item_id)
+
+    def _remove_parent_id(self, item_id):
+        del self._id_to_parent_id[item_id]
