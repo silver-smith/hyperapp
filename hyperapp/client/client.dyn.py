@@ -47,17 +47,12 @@ def make_default_piece(visualizer):
                 ),
             ),
         )
-    inner_tabs_piece = htypes.auto_tabs.view(
-        tabs=(htypes.tabs.tab("Inner", mosaic.put(box_layout)),),
-        )
-    outer_tabs_piece = htypes.tabs.view(
-        tabs=(
-            htypes.tabs.tab("Outer", mosaic.put(inner_tabs_piece)),
-            ),
+    tabs_piece = htypes.auto_tabs.view(
+        tabs=(htypes.tabs.tab("First tab", mosaic.put(box_layout)),),
         )
     window_piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.view()),
-        central_view_ref=mosaic.put(outer_tabs_piece),
+        central_view_ref=mosaic.put(tabs_piece),
         )
     return htypes.root.view(
         window_list=(mosaic.put(window_piece),),
@@ -75,17 +70,13 @@ def make_default_state():
             mosaic.put(command_pane_state),
             ),
         )
-    inner_tabs_state = htypes.tabs.state(
+    tabs_state = htypes.tabs.state(
         current_tab=0,
         tabs=(mosaic.put(box_layout_state),),
         )
-    outer_tabs_state = htypes.tabs.state(
-        current_tab=0,
-        tabs=(mosaic.put(inner_tabs_state),),
-        )
     window_state = htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),
-        central_view_state=mosaic.put(outer_tabs_state),
+        central_view_state=mosaic.put(tabs_state),
         size=htypes.window.size(1000, 1100),
         pos=htypes.window.pos(700, 200),
         )

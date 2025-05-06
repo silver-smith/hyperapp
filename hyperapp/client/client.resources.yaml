@@ -26,7 +26,6 @@ import:
 - legacy_type.system:service_template
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
-- legacy_type.tabs:view
 - legacy_type.text:state
 - legacy_type.window:pos
 - legacy_type.window:size
@@ -60,7 +59,6 @@ definitions:
         htypes.root.view: legacy_type.root:view
         htypes.tabs.state: legacy_type.tabs:state
         htypes.tabs.tab: legacy_type.tabs:tab
-        htypes.tabs.view: legacy_type.tabs:view
         htypes.text.state: legacy_type.text:state
         htypes.window.pos: legacy_type.window:pos
         htypes.window.size: legacy_type.window:size
