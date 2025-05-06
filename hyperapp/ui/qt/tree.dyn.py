@@ -51,7 +51,10 @@ class _Model(QtCore.QAbstractItemModel):
 
     def parent(self, index):
         id = index.internalId() or 0
-        parent_id = self.adapter.parent_id(id)
+        try:
+            parent_id = self.adapter.parent_id(id)
+        except KeyError:
+            return QtCore.QModelIndex()  # Probably was already removed.
         if parent_id == 0:  # It already was parent.
             return QtCore.QModelIndex()
         return self.createIndex(0, 0, parent_id)
@@ -265,7 +268,10 @@ class TreeView(View):
     def widget_state(self, widget):
         index = widget.currentIndex()
         item_id = index.internalId()
-        path = self._adapter.get_path(item_id)
+        try:
+            path = self._adapter.get_path(item_id)
+        except KeyError:
+            path = []
         return htypes.tree.state(current_path=tuple(path))
 
     def primary_parent_context(self, rctx, widget):
@@ -281,7 +287,10 @@ class TreeView(View):
         else:
             item_id = index.internalId()
             item = self._adapter.get_item(item_id)
-            path = tuple(self._adapter.get_path(item_id))
+            if item is None:
+                path = None
+            else:
+                path = tuple(self._adapter.get_path(item_id))
         return self._adapter.make_model_state(current_path=path, current_item=item)
 
     @property
