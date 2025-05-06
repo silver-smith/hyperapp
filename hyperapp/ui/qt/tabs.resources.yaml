@@ -13,7 +13,6 @@ import:
 - legacy_type.command:ui_command
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tabs:list_item
-- legacy_type.tabs:open_tab_list_d
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
@@ -45,7 +44,7 @@ definitions:
       object: tabs.module
       attr_name: open_tab_list
   open_tab_list.d:
-    type: legacy_type.tabs:open_tab_list_d
+    type: open_tab_list_d
     value: {}
   open_tab_list.fn:
     type: legacy_type.command:model_command_fn
@@ -63,6 +62,13 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_tab_list.fn
+  open_tab_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: tabs
+      name: open_tab_list_d
+      base: null
+      fields: {}
   tabs-view-open_tab_list.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

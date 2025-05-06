@@ -10,7 +10,5 @@ state = record:
   tabs: ref list
 
 
-open_tab_list_d = record
-
 list_item = record:
   name: string
