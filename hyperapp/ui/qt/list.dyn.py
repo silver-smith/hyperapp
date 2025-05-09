@@ -70,7 +70,7 @@ class _TableView(QtWidgets.QTableView):
     def __init__(self):
         super().__init__()
         self._focusable = False
-        self._on_state_changed = None
+        self._on_state_changed = lambda: None
 
     def init_widget(self, focusable, on_state_changed):
         self._focusable = focusable
@@ -81,8 +81,7 @@ class _TableView(QtWidgets.QTableView):
 
     def currentChanged(self, current, previous):
         result = super().currentChanged(current, previous)
-        if self._on_state_changed:
-            self._on_state_changed()
+        self._on_state_changed()
         return result
 
     def setVisible(self, visible):
