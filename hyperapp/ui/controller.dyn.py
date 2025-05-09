@@ -51,7 +51,6 @@ class _Item:
     view: View
     focusable: bool
     view_commands: list = None  # Bound commands.
-    _current_child_idx: int | None = None
     _widget_wr: Any | None = None
     _children: list[Self] | None = None
 
@@ -99,9 +98,7 @@ class _Item:
 
     @property
     def current_child_idx(self):
-        if self._current_child_idx is None:
-            self._current_child_idx = self.view.get_current(self.widget)
-        return self._current_child_idx
+        return self.view.get_current(self.widget)
 
     @property
     def current_child(self):
@@ -243,7 +240,6 @@ class _Item:
 
     def current_changed_hook(self):
         log.info("Controller: current changed from: %s", self)
-        self._current_child_idx = None
         self.children_changed()
         self.save_state()
 
@@ -279,7 +275,6 @@ class _Item:
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
         self._children.insert(idx, item)
-        self._current_child_idx = None
         self.children_changed()
         self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
@@ -289,14 +284,12 @@ class _Item:
         kid = self._children[idx]
         model_diff = TreeDiff.Remove(kid.path)
         del self._children[idx]
-        self._current_child_idx = None
         self.children_changed()
         self.save_state()
         asyncio.create_task(self._send_model_diff(model_diff))
 
     def elements_changed_hook(self):
         self._children = None
-        self._current_child_idx = None
         self.children_changed()
         self.save_state()
 
