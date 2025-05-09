@@ -95,11 +95,12 @@ class _TableView(QtWidgets.QTableView):
     # When opened in splitter, show which pane is active using selection.
     def focusInEvent(self, event):
         self.selectRow(self.currentIndex().row())
-        return super().focusInEvent(event)
+        super().focusInEvent(event)
+        self._on_state_changed()
 
     def focusOutEvent(self, event):
         self.clearSelection()
-        return super().focusOutEvent(event)
+        super().focusOutEvent(event)
 
 
 class ListView(View):
