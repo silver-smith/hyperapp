@@ -337,6 +337,7 @@ class _WindowItem(_Item):
         self.view.set_controller_hook(self.hook)
         self._meta.id_to_item[self.id] = self
         self._window_widget = widget  # Prevent windows refs from be gone.
+        self.view.init_widget(widget, focusable=True)
 
     def children_changed(self, save_layout=True):
         asyncio.create_task(self.update_children(save_layout))
