@@ -57,7 +57,10 @@ class SplitterView(View):
         return widget
 
     def replace_child_widget(self, widget, idx, new_child_widget):
+        has_focus = widget.widget(idx).hasFocus()
         widget.replaceWidget(idx, new_child_widget)
+        if has_focus:
+            new_child_widget.setFocus()
 
     def get_current(self, widget):
         for idx in range(len(self._elements)):
