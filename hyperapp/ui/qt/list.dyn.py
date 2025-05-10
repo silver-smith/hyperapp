@@ -96,7 +96,6 @@ class _TableView(QtWidgets.QTableView):
     def focusInEvent(self, event):
         self.selectRow(self.currentIndex().row())
         super().focusInEvent(event)
-        self._on_state_changed()
 
     def focusOutEvent(self, event):
         self.clearSelection()

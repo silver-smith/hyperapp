@@ -19,12 +19,23 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, on_close):
         super().__init__()
         self._on_close = on_close
+        self._parent_context_changed = lambda: None
+        self._focused_obj = None
 
     def closeEvent(self, event):
         result = super().closeEvent(event)
         if event.spontaneous():
             self._on_close(self)
         return result
+
+    def init_widget(self, parent_context_changed):
+        self._parent_context_changed = parent_context_changed
+
+    def focus_changed(self, focused_obj):
+        if focused_obj is self._focused_obj:
+            return
+        self._focused_obj = focused_obj
+        self._parent_context_changed()
 
 
 class WindowView(View):
@@ -59,6 +70,9 @@ class WindowView(View):
         w.move(state.pos.x, state.pos.y)
         w.resize(state.size.w, state.size.h)
         return w
+
+    def init_widget(self, widget, focusable):
+        widget.init_widget(self._ctl_hook.parent_context_changed)
 
     def get_current(self, widget):
         return 1

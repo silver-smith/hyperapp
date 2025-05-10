@@ -69,6 +69,9 @@ class KeyInputDialog(QtWidgets.QDialog):
     def _key_event_to_str(event):
         return QtGui.QKeySequence.listToString([event.keyCombination()])
 
+    def focus_changed(self, focused_obj):
+        pass
+
 
 def run_key_input_dialog():
     dialog = KeyInputDialog()

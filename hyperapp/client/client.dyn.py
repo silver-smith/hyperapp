@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import logging
 from pathlib import Path
 
 from PySide6 import QtWidgets
@@ -15,6 +16,8 @@ from .code.context import Context
 from .code.lcs import LCSheet
 from .code.controller import Controller
 from .code.reconstructors import register_reconstructors
+
+log = logging.getLogger(__name__)
 
 
 default_lcs_layers_path = hyperapp_dir / 'client/lcs-layers.yaml'
@@ -135,6 +138,13 @@ async def client_async_main(
             await stop_event.wait()
 
 
+def _on_focus_changed(focused_obj):
+    if not focused_obj:
+        return
+    window = focused_obj.window()
+    window.focus_changed(focused_obj)
+
+
 @mark.service
 def client_main(client_async_main, name_to_project, sys_argv):
     args = _parse_args(sys_argv)
@@ -149,4 +159,5 @@ def client_main(client_async_main, name_to_project, sys_argv):
     with event_loop:
         stop_event = asyncio.Event()
         app.aboutToQuit.connect(stop_event.set)
+        app.focusObjectChanged.connect(_on_focus_changed)
         event_loop.run_until_complete(client_async_main(args, client_project, app, stop_event))
