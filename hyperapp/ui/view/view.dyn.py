@@ -30,6 +30,16 @@ class View(metaclass=abc.ABCMeta):
     def get_current(self, widget):
         return None
 
+    def me_or_child_has_focus(self, widget):
+        if widget.hasFocus():
+            return True
+        idx = self.get_current(widget)
+        if idx is None:
+            return False
+        item_view = self.items()[idx].view
+        item_widget = self.item_widget(widget, idx)
+        return item_view.me_or_child_has_focus(item_widget)
+
     def children_context(self, ctx):
         return ctx
 
