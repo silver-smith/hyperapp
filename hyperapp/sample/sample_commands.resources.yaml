@@ -147,6 +147,7 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.sample_commands.system_info_item: legacy_type.sample_commands:system_info_item
         htypes.sample_list.item: legacy_type.sample_list:item
+        htypes.sample_tree.model: legacy_type.sample_tree:model
         htypes.wiki.wiki: legacy_type.wiki:wiki
         htypes.wiki.wiki_ref: legacy_type.wiki:wiki_ref
         services.mosaic: builtins:mosaic.service
