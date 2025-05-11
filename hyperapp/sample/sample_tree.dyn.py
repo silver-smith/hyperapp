@@ -115,7 +115,7 @@ async def insert_tree_item(piece, current_item, feed_factory, get_sample_tree_it
 
 @mark.global_command
 async def open_sample_fn_tree():
-    return htypes.sample_tree.sample_tree()
+    return htypes.sample_tree.model()
 
 
 @mark.actor.formatter_creg

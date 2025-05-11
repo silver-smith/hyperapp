@@ -12,7 +12,7 @@ import:
 - legacy_type.sample_commands:system_info_item
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
-- legacy_type.sample_tree:sample_tree
+- legacy_type.sample_tree:model
 - legacy_type.wiki:wiki
 - legacy_type.wiki:wiki_ref
 definitions:
@@ -155,10 +155,10 @@ definitions:
     value:
       t: legacy_type.sample_list:sample_list
       command: details.model-command
-  sample_tree-sample_tree-sample_tree_info.command-cfg-item:
+  sample_tree-model-sample_tree_info.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.sample_tree:sample_tree
+      t: legacy_type.sample_tree:model
       command: sample_tree_info.model-command
   sample_tree_info:
     type: legacy_type.builtin:attribute

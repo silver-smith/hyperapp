@@ -1,4 +1,4 @@
-sample_tree = record
+model = record
 
 item = record:
   id: int

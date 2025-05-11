@@ -8,7 +8,7 @@ from .tested.code import sample_tree
 
 @mark.fixture
 def piece():
-    return htypes.sample_tree.sample_tree()
+    return htypes.sample_tree.model()
 
 
 def test_sample_tree(piece):
