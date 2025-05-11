@@ -142,6 +142,8 @@ def _on_focus_changed(focused_obj):
     if not focused_obj:
         return
     window = focused_obj.window()
+    if isinstance(window, QtWidgets.QMenu):
+        return
     window.focus_changed(focused_obj)
 
 
