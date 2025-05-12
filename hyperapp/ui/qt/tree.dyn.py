@@ -125,6 +125,7 @@ class _TreeWidget(QtWidgets.QTreeView):
         self._focusable = focusable
         self._on_state_changed = on_state_changed
         if focusable and self.isVisible():
+            self.setFocusPolicy(QtCore.Qt.StrongFocus)  # May be removed if setVisible was called first.
             self.setFocus()
 
     def currentChanged(self, current, previous):
