@@ -271,7 +271,7 @@ class TreeView(View):
         item_id = index.internalId()
         try:
             path = self._adapter.get_path(item_id)
-        except KeyError:
+        except (KeyError, ValueError):
             path = []
         return htypes.tree.state(current_path=tuple(path))
 
