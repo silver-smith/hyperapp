@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 import docutils_tinyhtml
@@ -132,9 +133,9 @@ class WikiView(WikiTextView):
 
     def _on_anchor_clicked(self, url):
         log.info('Wiki view: Anchor clicked: url.path=%r', url.path())
-        self._open_ref(url.path())
+        asyncio.create_task(self._open_ref(url.path()))
 
-    def _open_ref(self, ref_id):
+    async def _open_ref(self, ref_id):
         target_ref = self._adapter.get_ref(ref_id)
         model = web.summon(target_ref)
         log.info('Wiki view: Open target: %r', model)
@@ -146,7 +147,7 @@ class WikiView(WikiTextView):
         model_ctx = self._ctx.clone_with(model=model)
         view = self._view_reg.animate(view_piece, model_ctx)
         log.info("Wiki view: visualizing with view: %s", view)
-        navigator_rec.view.open(self._ctx, model, view, navigator_w)
+        await navigator_rec.view.open(self._ctx, model, view, navigator_w)
 
 
 @mark.view_factory.model_t

@@ -1,6 +1,6 @@
 import logging
 import weakref
-from unittest.mock import MagicMock, Mock
+from unittest.mock import AsyncMock, MagicMock, Mock
 
 from . import htypes
 from .services import (
@@ -106,7 +106,7 @@ def navigator_widget():
 
 @mark.fixture
 def navigator_rec(navigator_widget):
-    return Mock(view=Mock(), widget_wr=weakref.ref(navigator_widget))
+    return Mock(view=AsyncMock(), widget_wr=weakref.ref(navigator_widget))
 
 
 @mark.fixture
@@ -226,7 +226,7 @@ async def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sam
         )
     assert not fn.missing_params(ctx)
     new_model = await fn.call(ctx)
-    navigator_rec.view.open.assert_called_once()
+    navigator_rec.view.open.assert_awaited_once()
 
 
 async def test_open_command_fn_to_form(run_open_command_fn_test):

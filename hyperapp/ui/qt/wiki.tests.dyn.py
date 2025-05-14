@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 from . import htypes
 from .services import (
@@ -94,8 +94,9 @@ def model_layout_reg_config():
         }
 
 
-def test_wiki_view(qapp, ctx, wiki_piece, state, model):
+async def test_wiki_view(qapp, ctx, wiki_piece, state, model):
     ctl_hook = Mock()
+    ctl_hook.navigator.view = AsyncMock()
     view = wiki.WikiView.from_piece(wiki_piece, model, ctx)
     view.set_controller_hook(ctl_hook)
     assert view.piece == wiki_piece
@@ -104,8 +105,8 @@ def test_wiki_view(qapp, ctx, wiki_piece, state, model):
     assert isinstance(widget_state, htypes.wiki.state)
     assert widget_state == state
 
-    view._open_ref('a')
-    ctl_hook.navigator.view.open.assert_called_once()
+    await view._open_ref('a')
+    ctl_hook.navigator.view.open.assert_awaited_once()
 
 
 def test_text_view_factory(model):

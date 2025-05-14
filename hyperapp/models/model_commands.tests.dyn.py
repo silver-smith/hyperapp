@@ -1,5 +1,5 @@
 from functools import partial
-from unittest.mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 from . import htypes
 from .services import (
@@ -107,7 +107,8 @@ def model_layout_reg_config():
 
 
 async def test_run_command(lcs, piece):
-    navigator = Mock()
+    navigator_rec = Mock()
+    navigator_rec.view.open = AsyncMock()
     current_item = htypes.command_list_model.item(
         ui_command_d=mosaic.put(htypes.model_commands_tests.sample_command_2_d()),
         model_command_d=mosaic.put(htypes.model_commands_tests.sample_model_command_2_d()),
@@ -119,11 +120,11 @@ async def test_run_command(lcs, piece):
         tooltip="",
         )
     ctx = Context(
-        navigator=navigator,
+        navigator=navigator_rec,
         )
     result = await model_commands.run_command(piece, current_item, ctx, lcs)
-    navigator.view.open.assert_called_once()
-    assert navigator.view.open.call_args.args[1] == 'sample-fn-2: a-service'
+    navigator_rec.view.open.assert_awaited_once()
+    assert navigator_rec.view.open.await_args.args[1] == 'sample-fn-2: a-service'
 
 
 def test_format_model(piece):

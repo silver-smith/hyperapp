@@ -106,7 +106,7 @@ class BoundUiModelCommand(BoundCommandBase):
         except Exception as x:
             log.exception("Error running command %r", self._model_command)
             model, model_ctx, view_piece = self._error_view(x, self._ctx)
-            self._open_view(navigator_w, model, model_ctx, view_piece)
+            await self._open_view(navigator_w, model, model_ctx, view_piece)
             return
         if result is None:
             return None
@@ -115,7 +115,7 @@ class BoundUiModelCommand(BoundCommandBase):
         key = web.summon_opt(result.key)
         if result.diff:
             await self._process_diff(result.diff)
-        self._open(navigator_w, model, key)
+        await self._open(navigator_w, model, key)
 
     async def _process_diff(self, model_diff_ref):
         model_diff = web.summon(model_diff_ref)
@@ -124,7 +124,7 @@ class BoundUiModelCommand(BoundCommandBase):
         feed = self._feed_factory(model)
         await feed.send(diff)
 
-    def _open(self, navigator_w, model, key):
+    async def _open(self, navigator_w, model, key):
         if model is None:
             if key is None:
                 return
@@ -133,12 +133,12 @@ class BoundUiModelCommand(BoundCommandBase):
             return
         view_piece = self._visualizer(real_model_t(model))
         model_ctx = self._ctx.pop().clone_with(model=model)
-        self._open_view(navigator_w, model, model_ctx, view_piece, key)
+        await self._open_view(navigator_w, model, model_ctx, view_piece, key)
 
-    def _open_view(self, navigator_w, model, model_ctx, view_piece, key=None):
+    async def _open_view(self, navigator_w, model, model_ctx, view_piece, key=None):
         view = self._view_reg.animate(view_piece, model_ctx)
         log.info("Model command %r: visualizing with view: %s", self.name, view)
-        self._navigator_rec.view.open(self._ctx, model, view, navigator_w, key=key)
+        await self._navigator_rec.view.open(self._ctx, model, view, navigator_w, key=key)
 
 
 class CustomCommands:

@@ -85,13 +85,13 @@ def model_layout_reg():
     return MagicMock()
 
 
-def test_open_with_default_model_layout(view_reg, qapp, model, state, ctx, view):
+async def test_open_with_default_model_layout(view_reg, qapp, model, state, ctx, view):
     widget = view.construct_widget(state, ctx)
     adapter_piece = htypes.str_adapter.static_str_adapter()
     text_piece = htypes.text.edit_view(mosaic.put(adapter_piece))
     new_child_view = view_reg.animate(text_piece, ctx)
     new_child_widget = new_child_view.construct_widget(None, ctx)
-    view.open(ctx, model, new_child_view, new_child_widget)
+    await view.open(ctx, model, new_child_view, new_child_widget)
 
 
 async def test_set_layout(view_reg, model_layout_reg, qapp, state, ctx, view):

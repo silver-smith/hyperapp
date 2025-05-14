@@ -1,5 +1,5 @@
 import weakref
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 from . import htypes
 from .services import (
@@ -36,7 +36,7 @@ def navigator_widget():
 
 @mark.fixture
 def navigator_rec(navigator_widget):
-    return Mock(view=Mock(), widget_wr=weakref.ref(navigator_widget))
+    return Mock(view=AsyncMock(), widget_wr=weakref.ref(navigator_widget))
 
 
 async def test_args_picker_fn(navigator_rec):

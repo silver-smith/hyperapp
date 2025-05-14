@@ -155,7 +155,7 @@ def model_layout_reg_config():
 async def test_command_run_open_view(get_ui_model_commands, lcs):
     model_t = htypes.ui_model_command_tests.sample_model
     model = model_t()
-    navigator_rec = Mock()
+    navigator_rec = Mock(view=AsyncMock())
     ctx = Context(
         navigator=navigator_rec,
         ).push(
@@ -171,7 +171,7 @@ async def test_command_run_open_view(get_ui_model_commands, lcs):
     unbound_command = d_to_command[command_d]
     bound_command = unbound_command.bind(ctx)
     await bound_command.run()
-    navigator_rec.view.open.assert_called_once()
+    navigator_rec.view.open.assert_awaited_once()
 
 
 def _sample_model_servant(piece):
