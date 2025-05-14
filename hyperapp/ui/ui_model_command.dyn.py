@@ -131,7 +131,7 @@ class BoundUiModelCommand(BoundCommandBase):
             log.info("Model command %r: Set current key: %r", self.name, key)
             self._navigator_rec.view.set_current_key(navigator_w, key)
             return
-        view_piece = self._visualizer(real_model_t(model))
+        view_piece = await self._visualizer(real_model_t(model))
         model_ctx = self._ctx.pop().clone_with(model=model)
         await self._open_view(navigator_w, model, model_ctx, view_piece, key)
 

@@ -27,7 +27,7 @@ async def _run_details_command(error_view, visualizer, ctx, unbound_command, mod
     else:
         details_model = web.summon(result.model)
         details_ctx = _details_context(ctx, details_model)
-        view_piece = visualizer(real_model_t(details_model))
+        view_piece = await visualizer(real_model_t(details_model))
     return (details_model, details_ctx, view_piece)
 
 

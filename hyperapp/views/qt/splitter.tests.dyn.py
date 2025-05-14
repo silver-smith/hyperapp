@@ -68,9 +68,9 @@ def model_layout_reg_config():
         }
 
 
-def test_split_horizontally(visualizer, view_reg, ctx):
+async def test_split_horizontally(visualizer, view_reg, ctx):
     text = "Sample text"
-    text_view = visualizer(deduce_t(text))
+    text_view = await visualizer(deduce_t(text))
     navigator_piece = htypes.navigator.view(
         current_view=mosaic.put(text_view),
         current_model=mosaic.put(text),

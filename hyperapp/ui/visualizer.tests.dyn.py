@@ -27,22 +27,22 @@ def model_layout_reg_config():
         }
 
 
-def test_string(visualizer):
-    layout = visualizer(htypes.builtin.string)
+async def test_string(visualizer):
+    layout = await visualizer(htypes.builtin.string)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_int(visualizer):
-    layout = visualizer(htypes.builtin.int)
+async def test_int(visualizer):
+    layout = await visualizer(htypes.builtin.int)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-def test_list(visualizer):
+async def test_list(visualizer):
     value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = visualizer(deduce_t(value))
+    layout = await visualizer(deduce_t(value))
     assert isinstance(layout, htypes.list.view)
 
 
@@ -76,9 +76,9 @@ def ui_type_creg_config():
         }
 
 
-def test_sample_list(visualizer):
+async def test_sample_list(visualizer):
     model_t = htypes.visualizer_tests.sample_list
-    layout = visualizer(model_t)
+    layout = await visualizer(model_t)
     assert isinstance(layout, htypes.list.view)
 
 
