@@ -63,7 +63,7 @@ class ResourceRegistry:
         try:
             is_cached, piece = self._resolve(name_pair)
         except KeyError:
-            raise UnknownResourceName(f"Unknown module or name: {name_pair[0]}.{name_pair[1]}")
+            raise UnknownResourceName(f"Unknown module or name: {name_pair[0]}/{name_pair[1]}")
 
     def resolve(self, name_pair):
         try:
