@@ -24,9 +24,9 @@ default_lcs_layers_path = hyperapp_dir / 'client/lcs-layers.yaml'
 default_layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
 
 
-async def make_default_piece(visualizer):
+async def make_default_piece(visualizer, ctx):
     text = "Sample text"
-    text_view = await visualizer(htypes.builtin.string)
+    text_view = await visualizer(ctx, htypes.builtin.string)
     navigator = htypes.navigator.view(
         current_view=mosaic.put(text_view),
         current_model=mosaic.put(text),
@@ -89,9 +89,9 @@ def make_default_state():
         )
 
 
-async def make_default_layout(visualizer):
+async def make_default_layout(visualizer, ctx):
     return htypes.root.layout(
-        piece=await make_default_piece(visualizer),
+        piece=await make_default_piece(visualizer, ctx),
         state=make_default_state(),
         )
 
@@ -130,7 +130,7 @@ async def client_async_main(
         identity=identity,
         rpc_endpoint=rpc_endpoint,
         )
-    default_layout = await make_default_layout(visualizer)
+    default_layout = await make_default_layout(visualizer, ctx)
     layout_bundle = file_bundle_factory(args.layout_path)
 
     async with controller_running(layout_bundle, default_layout, ctx, show=not args.test_mode, load_state=not args.clean) as ctl:

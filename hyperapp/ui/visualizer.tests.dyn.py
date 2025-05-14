@@ -9,8 +9,14 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.context import Context
 from .code.list import index_list_ui_type_layout
 from .tested.code import visualizer as visualizer_module
+
+
+@mark.fixture
+def ctx():
+    return Context()
 
 
 @mark.config_fixture('model_layout_reg')
@@ -27,22 +33,22 @@ def model_layout_reg_config():
         }
 
 
-async def test_string(visualizer):
-    layout = await visualizer(htypes.builtin.string)
+async def test_string(visualizer, ctx):
+    layout = await visualizer(ctx, htypes.builtin.string)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-async def test_int(visualizer):
-    layout = await visualizer(htypes.builtin.int)
+async def test_int(visualizer, ctx):
+    layout = await visualizer(ctx, htypes.builtin.int)
     assert isinstance(layout, htypes.text.edit_view)
 
 
-async def test_list(visualizer):
+async def test_list(visualizer, ctx):
     value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = await visualizer(deduce_t(value))
+    layout = await visualizer(ctx, deduce_t(value))
     assert isinstance(layout, htypes.list.view)
 
 
@@ -76,9 +82,9 @@ def ui_type_creg_config():
         }
 
 
-async def test_sample_list(visualizer):
+async def test_sample_list(visualizer, ctx):
     model_t = htypes.visualizer_tests.sample_list
-    layout = await visualizer(model_t)
+    layout = await visualizer(ctx, model_t)
     assert isinstance(layout, htypes.list.view)
 
 

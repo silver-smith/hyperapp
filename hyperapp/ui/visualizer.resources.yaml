@@ -101,6 +101,7 @@ definitions:
       - ui_type_creg
       want_config: false
       free_params:
+      - ctx
       - model_t
   visualizer_reg:
     type: legacy_type.builtin:attribute

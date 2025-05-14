@@ -263,7 +263,7 @@ class Crud:
             selector_result = await get_fn.call(ctx, value=value)
             selector_model, key = split_command_result(selector_result)
             selector_model_t = real_model_t(selector_model)
-            base_view_piece = await self._visualizer(selector_model_t)
+            base_view_piece = await self._visualizer(ctx, selector_model_t)
             new_model = selector_model
         else:
             assert init_action_fn  # Init action fn may be omitted only for selectors.
