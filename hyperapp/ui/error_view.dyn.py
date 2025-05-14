@@ -7,7 +7,7 @@ from .code.mark import mark
 
 
 @mark.service
-def error_view(view_reg, visualizer, exception, ctx):
+async def error_view(view_reg, visualizer, exception, ctx):
     tb_lines = traceback.format_exception(exception)
     model = str(exception) + '\n\n' + ''.join(tb_lines)
     view_piece = visualizer(deduce_t(model))

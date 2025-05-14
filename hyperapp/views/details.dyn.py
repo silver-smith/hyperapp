@@ -23,7 +23,7 @@ async def _run_details_command(error_view, visualizer, ctx, unbound_command, mod
         result = await bound_command.run()
     except Exception as x:
         log.exception("Error running details command %r", bound_command)
-        details_model, details_ctx, view_piece = error_view(x, ctx)
+        details_model, details_ctx, view_piece = await error_view(x, ctx)
     else:
         details_model = web.summon(result.model)
         details_ctx = _details_context(ctx, details_model)

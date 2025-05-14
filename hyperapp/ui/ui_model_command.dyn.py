@@ -105,7 +105,7 @@ class BoundUiModelCommand(BoundCommandBase):
             result = await self._model_command.run()
         except Exception as x:
             log.exception("Error running command %r", self._model_command)
-            model, model_ctx, view_piece = self._error_view(x, self._ctx)
+            model, model_ctx, view_piece = await self._error_view(x, self._ctx)
             await self._open_view(navigator_w, model, model_ctx, view_piece)
             return
         if result is None:

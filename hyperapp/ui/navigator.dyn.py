@@ -101,7 +101,7 @@ class NavigatorView(View):
             self._safe_open(ctx, model, view, widget, key, layout_k, set_layout)
         except Exception as x:
             log.exception("Navigator: Error opening %r", model)
-            model, model_ctx, view_piece = self._error_view(x, ctx)
+            model, model_ctx, view_piece = await self._error_view(x, ctx)
             view = self._view_reg.animate(view_piece, model_ctx)
             self._safe_open(ctx, model, view, widget)
 
