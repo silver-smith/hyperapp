@@ -1,0 +1,52 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
+definitions:
+  model_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer_reg.module
+      attr_name: model_reg
+  model_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: model_reg
+      ctl: system-dict_config_ctl.ctl
+      function: model_reg
+      service_params: []
+      want_config: true
+      free_params: []
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}
+  visualizer_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer_reg.module
+      attr_name: visualizer_reg
+  visualizer_reg.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: visualizer_reg
+      file_name: visualizer_reg.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        services.web: builtins:web.service
+  visualizer_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: visualizer_reg
+      ctl: system-dict_config_ctl.ctl
+      function: visualizer_reg
+      service_params:
+      - system_fn_creg
+      - model_reg
+      want_config: false
+      free_params:
+      - t

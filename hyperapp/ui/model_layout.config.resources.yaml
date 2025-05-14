@@ -1,16 +1,11 @@
 import:
-- legacy_type.builtin:int
 - legacy_type.builtin:string
-- legacy_type.data_service:config_item
-- legacy_type.int_adapter:int_adapter
-- legacy_type.str_adapter:static_str_adapter
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
-- legacy_type.text:edit_view
-- legacy_type.ui:model_layout_k
-- legacy_type.wiki:adapter
 - legacy_type.wiki:wiki
-- legacy_type.wiki:wiki_view
+- ui.qt.text:text_view.k
+- ui.qt.wiki:wiki.k
 
 definitions:
 
@@ -18,72 +13,23 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
-        model_layout_reg: model_layout_reg.config
+        default_model_t_factory: default_model_t_factory.config
 
-  model_layout_reg.config:
+  default_model_t_factory.config:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - config_item-int.layout-item
-      - config_item-string.layout-item
-      - config_item-wiki.layout-item
+      - config_item-string.factory-config-item
+      - config_item-wiki.factory-config-item
 
-  config_item-int.layout-item:
-    type: legacy_type.data_service:config_item
+  config_item-string.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
-      key: model_layout_k-int
-      value: edit_view-int.layout
+      t: legacy_type.builtin:string
+      value: ui.qt.text:text_view.k
 
-  model_layout_k-int:
-    type: legacy_type.ui:model_layout_k
+  config_item-wiki.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
-      model_t: legacy_type.builtin:int
-
-  edit_view-int.layout:
-    type: legacy_type.text:edit_view
-    value:
-      adapter: static_int_adapter
-
-  static_int_adapter:
-    type: legacy_type.int_adapter:int_adapter
-    value: {}
-
-  config_item-string.layout-item:
-    type: legacy_type.data_service:config_item
-    value:
-      key: model_layout_k-string
-      value: edit_view-string.layout
-
-  model_layout_k-string:
-    type: legacy_type.ui:model_layout_k
-    value:
-      model_t: legacy_type.builtin:string
-
-  edit_view-string.layout:
-    type: legacy_type.text:edit_view
-    value:
-      adapter: static_str_adapter
-
-  static_str_adapter:
-    type: legacy_type.str_adapter:static_str_adapter
-    value: {}
-
-  config_item-wiki.layout-item:
-    type: legacy_type.data_service:config_item
-    value:
-      key: model_layout_k-wiki
-      value: wiki.layout
-
-  model_layout_k-wiki:
-    type: legacy_type.ui:model_layout_k
-    value:
-      model_t: legacy_type.wiki:wiki
-
-  wiki.layout:
-    type: legacy_type.wiki:wiki_view
-    value:
-      adapter: static_wiki_adapter
-
-  static_wiki_adapter:
-    type: legacy_type.wiki:adapter
-    value: {}
+      t: legacy_type.wiki:wiki
+      value: ui.qt.wiki:wiki.k

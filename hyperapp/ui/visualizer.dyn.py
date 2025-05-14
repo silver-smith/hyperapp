@@ -8,7 +8,6 @@ from .services import (
     deduce_t,
     mosaic,
     pyobj_creg,
-    web,
     )
 from .code.mark import mark
 
@@ -23,28 +22,12 @@ def _primitive_value_layout(t):
 
 
 @mark.service
-def model_reg(config):
-    return config
-
-
-@mark.service
-def visualizer_reg(system_fn_creg, model_reg, t):
-    try:
-        model = model_reg[t]
-    except KeyError:
-        raise
-    ui_t = web.summon(model.ui_t)
-    system_fn = system_fn_creg.invite(model.system_fn)
-    return (ui_t, system_fn)
-
-
-@mark.service
 def ui_type_creg(config):
     return code_registry_ctr('ui_type_creg', config)
 
 
 @mark.service
-async def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model_t):
+async def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, default_model_t_factory, ctx, model_t):
     layout_k = htypes.ui.model_layout_k(
         model_t=pyobj_creg.actor_to_ref(model_t),
         )
@@ -56,6 +39,12 @@ async def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, ctx, model_
         return _primitive_value_layout(model_t)
     except KeyError:
         pass
+    try:
+        factory = default_model_t_factory(model_t)
+    except KeyError:
+        pass
+    else:
+        return await factory.call(ctx)
     try:
         ui_t, system_fn = visualizer_reg(model_t)
     except KeyError:

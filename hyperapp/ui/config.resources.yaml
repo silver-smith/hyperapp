@@ -178,11 +178,11 @@ import:
 - ui.view.view_registry:view_reg.service
 - ui.view.wrap_view:wrap_view.universal-ui-command-enumerator
 - ui.visualizer:formatter_creg-ui-model_layout_k.actor-template
-- ui.visualizer:model_reg.service
 - ui.visualizer:resource_name_creg-ui-model_layout_k.actor-template
 - ui.visualizer:ui_type_creg.service
 - ui.visualizer:visualizer.service
-- ui.visualizer:visualizer_reg.service
+- ui.visualizer_reg:model_reg.service
+- ui.visualizer_reg:visualizer_reg.service
 definitions:
   cfg_item_creg:
     type: legacy_type.system:item_list_config
@@ -365,10 +365,10 @@ definitions:
       - ui.view.default_view_factory:default_model_t_factory.service
       - ui.view.view_factory:view_factory_reg.service
       - ui.view.view_registry:view_reg.service
-      - ui.visualizer:model_reg.service
       - ui.visualizer:ui_type_creg.service
       - ui.visualizer:visualizer.service
-      - ui.visualizer:visualizer_reg.service
+      - ui.visualizer_reg:model_reg.service
+      - ui.visualizer_reg:visualizer_reg.service
   system_fn_creg:
     type: legacy_type.system:item_list_config
     value:
