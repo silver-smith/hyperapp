@@ -81,3 +81,14 @@ def split_params(fn, args, kw):
         if name not in ctx_names
         ]
     return Params(called_class_name, ctx_names, service_names, values)
+
+
+def process_awaitable_result(fn, result, *args, **kw):
+    if not inspect.iscoroutine(result):
+        fn(result, *args, **kw)
+        return result
+    async def await_result():
+        real_result = await result
+        fn(real_result, *args, **kw)
+        return real_result
+    return await_result()

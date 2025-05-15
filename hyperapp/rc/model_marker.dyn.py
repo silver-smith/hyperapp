@@ -11,6 +11,7 @@ from .services import (
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
+    process_awaitable_result,
     split_params,
     )
 from .code.model_ctr import ModelCtr
@@ -46,16 +47,9 @@ class ModelProbe:
             for name in params.service_names
             }
         result = self._fn(*args, **kw, **service_kw)
-        if inspect.iscoroutine(result):
-            async def await_result():
-                real_result = await result
-                self._add_constructors(params, model_t, real_result)
-                return real_result
-            return await_result()
-        self._add_constructors(params, model_t, result)
-        return result
+        return process_awaitable_result(self._add_constructors, result, params, model_t)
 
-    def _add_constructors(self, params, model_t, result):
+    def _add_constructors(self, result, params, model_t):
         result_t = self._deduce_t(result, f"{self._fn}: Returned not a deducible data type: {result!r}")
         tree_params = {'parent'}
         if self._key_field:
