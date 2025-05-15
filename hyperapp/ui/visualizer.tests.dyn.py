@@ -33,12 +33,12 @@ def model_layout_reg_config():
 
 
 async def test_string(visualizer, ctx):
-    layout = await visualizer(ctx, htypes.builtin.string)
+    layout = await visualizer(ctx, htypes.builtin.string, accessor=None)
     assert isinstance(layout, htypes.text.edit_view)
 
 
 async def test_int(visualizer, ctx):
-    layout = await visualizer(ctx, htypes.builtin.int)
+    layout = await visualizer(ctx, htypes.builtin.int, accessor=None)
     assert isinstance(layout, htypes.text.edit_view)
 
 
@@ -47,7 +47,7 @@ async def test_list(visualizer, ctx):
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = await visualizer(ctx, deduce_t(value))
+    layout = await visualizer(ctx, deduce_t(value), accessor=None)
     assert isinstance(layout, htypes.list.view)
 
 
@@ -91,7 +91,7 @@ def view_factory_reg_config():
 
 async def test_sample_list(visualizer, ctx):
     model_t = htypes.visualizer_tests.sample_list
-    view = await visualizer(ctx, model_t)
+    view = await visualizer(ctx, model_t, accessor=None)
     assert view == htypes.visualizer_tests.sample_view()
 
 

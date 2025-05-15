@@ -74,3 +74,4 @@ definitions:
       free_params:
       - ctx
       - model_t
+      - accessor

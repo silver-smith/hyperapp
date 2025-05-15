@@ -22,7 +22,7 @@ def _primitive_value_layout(t):
 
 
 @mark.service
-async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, default_ui_factory, ctx, model_t):
+async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, default_ui_factory, ctx, model_t, accessor=None):
     layout_k = htypes.ui.model_layout_k(
         model_t=pyobj_creg.actor_to_ref(model_t),
         )
@@ -39,13 +39,13 @@ async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, de
     except KeyError:
         pass
     else:
-        return await factory.call(ctx)
+        return await factory.call(ctx, adapter=accessor)
     try:
         ui_t, system_fn = visualizer_reg(model_t)
     except KeyError:
         raise RuntimeError(f"No view is known for model: {model_t!r}")
     factory = default_ui_factory(ui_t)
-    return await factory.call_ui_t(ctx, ui_t, system_fn)
+    return await factory.call_ui_t(ctx, ui_t, system_fn, adapter=accessor)
 
 
 @mark.actor.resource_name_creg
