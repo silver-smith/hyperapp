@@ -8,11 +8,14 @@ from hyperapp.boot.htypes import TRecord
 from . import htypes
 from .services import (
     deduce_t,
+    mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
 from .code.view import Item, View
 from .code.box_layout import BoxLayoutView
+from .code.construct_default_form import construct_default_form
 
 log = logging.getLogger(__name__)
 
@@ -64,3 +67,13 @@ class FormView(BoxLayoutView):
 
     def get_value(self, widget):
         return self._adapter.value
+
+
+@mark.view_factory.ui_t
+def form_view_factory(piece, system_fn, visualizer):
+    record_t = pyobj_creg.invite(piece.record_t)
+    adapter = htypes.record_adapter.fn_record_adapter(
+        record_t=piece.record_t,
+        system_fn=mosaic.put(system_fn.piece),
+        )
+    return construct_default_form(visualizer, adapter, record_t)

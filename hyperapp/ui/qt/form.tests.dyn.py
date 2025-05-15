@@ -9,14 +9,25 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
 from .code.construct_default_form import construct_default_form
 from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import form
 
 
-def _sample_form_fn(piece):
+def _sample_record_model(piece):
     assert isinstance(piece, htypes.form_tests.sample_form), repr(piece)
     return htypes.form_tests.value(123, "Sample  text")
+
+
+@mark.fixture
+def sample_record_model_fn(rpc_system_call_factory):
+    return ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
+        ctx_params=('piece',),
+        service_params=(),
+        raw_fn=_sample_record_model,
+        )
 
 
 @mark.fixture
@@ -32,16 +43,11 @@ def ctx(model):
 
 
 @mark.fixture
-def adapter_piece():
+def adapter_piece(sample_record_model_fn):
     item_t_res = pyobj_creg.actor_to_piece(htypes.form_tests.value)
-    system_fn = htypes.system_fn.ctx_fn(
-        function=pyobj_creg.actor_to_ref(_sample_form_fn),
-        ctx_params=('piece',),
-        service_params=(),
-        )
     return htypes.record_adapter.fn_record_adapter(
         record_t=mosaic.put(item_t_res),
-        system_fn=mosaic.put(system_fn),
+        system_fn=mosaic.put(sample_record_model_fn.piece),
         )
 
 
@@ -111,3 +117,11 @@ def view(view_reg, piece, ctx, ctl_hook):
 @mark.fixture
 def widget(view, state, ctx):
     return  view.construct_widget(state, ctx)
+
+
+def test_form_view_factory(sample_record_model_fn):
+    piece = htypes.model.record_ui_t(
+        record_t=pyobj_creg.actor_to_ref(htypes.record_adapter_tests.item),
+        )
+    view = form.form_view_factory(piece, sample_record_model_fn)
+    assert isinstance(view, htypes.form.view)

@@ -59,11 +59,3 @@ def test_fn_adapter(ctx, sample_record_model_fn):
     assert adapter.record_t == htypes.record_adapter_tests.item
     assert adapter.get_field('id') == 123
     assert adapter.get_field('text') == "Sample fn item"
-
-
-def test_record_ui_type_layout(sample_record_model_fn):
-    piece = htypes.model.record_ui_t(
-        record_t=pyobj_creg.actor_to_ref(htypes.record_adapter_tests.item),
-        )
-    layout = record_adapter.record_ui_type_layout(piece, sample_record_model_fn)
-    assert isinstance(layout, htypes.form.view)
