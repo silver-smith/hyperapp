@@ -83,7 +83,7 @@ definitions:
       - model_layout_reg
       - visualizer_reg
       - ui_type_creg
-      - default_model_t_factory
+      - default_model_factory
       want_config: false
       free_params:
       - ctx

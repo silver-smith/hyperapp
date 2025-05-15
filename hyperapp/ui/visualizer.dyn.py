@@ -27,7 +27,7 @@ def ui_type_creg(config):
 
 
 @mark.service
-async def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, default_model_t_factory, ctx, model_t):
+async def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, default_model_factory, ctx, model_t):
     layout_k = htypes.ui.model_layout_k(
         model_t=pyobj_creg.actor_to_ref(model_t),
         )
@@ -40,7 +40,7 @@ async def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, default_mod
     except KeyError:
         pass
     try:
-        factory = default_model_t_factory(model_t)
+        factory = default_model_factory(model_t)
     except KeyError:
         pass
     else:

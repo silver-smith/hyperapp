@@ -13,9 +13,9 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
-        default_model_t_factory: default_model_t_factory.config
+        default_model_factory: default_model_factory.config
 
-  default_model_t_factory.config:
+  default_model_factory.config:
     type: legacy_type.system:item_list_config
     value:
       items:

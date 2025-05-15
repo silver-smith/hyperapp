@@ -7,17 +7,17 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
-  default_model_t_factory:
+  default_model_factory:
     type: legacy_type.builtin:attribute
     value:
       object: default_view_factory.module
-      attr_name: default_model_t_factory
-  default_model_t_factory.service:
+      attr_name: default_model_factory
+  default_model_factory.service:
     type: legacy_type.system:service_template
     value:
-      name: default_model_t_factory
+      name: default_model_factory
       ctl: system-dict_config_ctl.ctl
-      function: default_model_t_factory
+      function: default_model_factory
       service_params:
       - view_factory_reg
       want_config: true
