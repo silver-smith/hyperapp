@@ -165,6 +165,7 @@ import:
 - ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
 - ui.view.default_view_factory:default_model_factory.service
+- ui.view.default_view_factory:default_ui_factory.service
 - ui.view.replace_view:replace_view.universal-ui-command-enumerator
 - ui.view.view_factory:view_factory_reg.service
 - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-template
@@ -363,6 +364,7 @@ definitions:
       - ui.ui_model_command:ui_global_command_items.service
       - ui.ui_model_command:ui_model_command_items.service
       - ui.view.default_view_factory:default_model_factory.service
+      - ui.view.default_view_factory:default_ui_factory.service
       - ui.view.view_factory:view_factory_reg.service
       - ui.view.view_registry:view_reg.service
       - ui.visualizer:ui_type_creg.service
