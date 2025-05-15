@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
+from hyperapp.boot.config_item_missing import ConfigItemMissingError
+
 from . import htypes
 from .services import (
     mosaic,
@@ -117,6 +119,8 @@ class LazyDictConfig:
     def _resolve_template(self, key, value_template):
         try:
             value = self._ctl.resolve_item(self._system, self._service_name, value_template)
+        except ConfigItemMissingError:
+            raise
         except KeyError as x:
             # This is not a key error for the caller.
             raise RuntimeError(
