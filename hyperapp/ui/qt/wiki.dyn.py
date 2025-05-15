@@ -150,8 +150,8 @@ class WikiView(WikiTextView):
         await navigator_rec.view.open(self._ctx, model, view, navigator_w)
 
 
-@mark.view_factory.model_t
-def wiki_text(piece, adapter=None):
+@mark.view_factory.model_t(htypes.wiki.wiki)
+def wiki_text(adapter=None):
     if adapter is None:
         adapter = htypes.str_adapter.static_str_adapter()
     return htypes.wiki.text_view(
@@ -159,8 +159,8 @@ def wiki_text(piece, adapter=None):
         )
 
 
-@mark.view_factory.model_t
-def wiki(piece, adapter=None):
+@mark.view_factory.model_t(htypes.wiki.wiki)
+def wiki(adapter=None):
     if adapter is None:
         adapter = htypes.str_adapter.static_str_adapter()
     return htypes.wiki.wiki_view(

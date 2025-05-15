@@ -119,6 +119,7 @@ definitions:
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.wiki.state: legacy_type.wiki:state
         htypes.wiki.text_view: legacy_type.wiki:text_view
+        htypes.wiki.wiki: legacy_type.wiki:wiki
         htypes.wiki.wiki_view: legacy_type.wiki:wiki_view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
@@ -127,7 +128,6 @@ definitions:
     value:
       function: wiki
       ctx_params:
-      - piece
       - adapter
       service_params: []
   wiki.view-factory-template:
@@ -163,7 +163,6 @@ definitions:
     value:
       function: wiki_text
       ctx_params:
-      - piece
       - adapter
       service_params: []
   wiki_text.view-factory-template:

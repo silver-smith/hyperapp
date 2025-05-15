@@ -23,6 +23,6 @@ def test_adapter(record_view):
     assert type(adapter.get_text()) is str
 
 
-def test_data_view_factory(record_view):
-    view = data_browser_adapter.data_browser_data_view(record_view, adapter=None)
+def test_data_view_factory():
+    view = data_browser_adapter.data_browser_data_view(adapter=None)
     assert view

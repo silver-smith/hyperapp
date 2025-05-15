@@ -50,12 +50,10 @@ def test_edit_text(qapp):
 
 
 def test_view_factory():
-    model = "Sample text"
-    piece = text.text_view(model, adapter=None)
+    piece = text.text_view(adapter=None)
     assert piece
 
 
 def test_edit_factory():
-    model = "Sample text"
-    piece = text.text_edit(model, adapter=None)
+    piece = text.text_edit(adapter=None)
     assert piece

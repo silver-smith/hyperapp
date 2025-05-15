@@ -95,8 +95,8 @@ class ViewLineView(EditLineView):
         return w
 
 
-@mark.view_factory.model_t
-def line_edit(piece, adapter=None):
+@mark.view_factory.model_t(htypes.builtin.string)
+def line_edit(adapter=None):
     if adapter is None:
         adapter = htypes.str_adapter.static_str_adapter()
     return htypes.line_edit.edit_view(
@@ -104,8 +104,8 @@ def line_edit(piece, adapter=None):
         )
 
 
-@mark.view_factory.model_t
-def line_view(piece, adapter=None):
+@mark.view_factory.model_t(htypes.builtin.string)
+def line_view(adapter=None):
     if adapter is None:
         adapter = htypes.str_adapter.static_str_adapter()
     return htypes.line_edit.readonly_view(

@@ -33,8 +33,8 @@ class DataBrowserViewDataAdapter:
         log.debug("Data browser view data adapter: Ignoring new value: %r", new_value)
 
 
-@mark.view_factory.model_t
-def data_browser_data_view(piece, adapter=None):
+@mark.view_factory.model_t(htypes.data_browser.record_view)
+def data_browser_data_view(adapter=None):
     if adapter is None:
         adapter = htypes.data_browser.record_data_adapter()
     return htypes.line_edit.readonly_view(

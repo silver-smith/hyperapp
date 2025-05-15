@@ -84,6 +84,7 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
+        htypes.builtin.string: legacy_type.builtin:string
         htypes.line_edit.edit_view: legacy_type.line_edit:edit_view
         htypes.line_edit.readonly_view: legacy_type.line_edit:readonly_view
         htypes.line_edit.state: legacy_type.line_edit:state
@@ -95,7 +96,6 @@ definitions:
     value:
       function: line_edit
       ctx_params:
-      - piece
       - adapter
       service_params: []
   line_edit.view-factory-template:
@@ -136,7 +136,6 @@ definitions:
     value:
       function: line_view
       ctx_params:
-      - piece
       - adapter
       service_params: []
   line_view.view-factory-template:

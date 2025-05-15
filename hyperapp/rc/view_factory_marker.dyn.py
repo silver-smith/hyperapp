@@ -1,5 +1,6 @@
 from enum import Enum
 
+from hyperapp.boot.htypes import Type
 from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
 
 from .services import (
@@ -21,12 +22,13 @@ class ViewFactoryProbe(ProbeBase):
         model_t = 'model_t'
         ui_t = 'ui_t'
 
-    def __init__(self, system_probe, ctr_collector, module_name, fn, kind):
+    def __init__(self, system_probe, ctr_collector, module_name, fn, kind, model_t=None):
         self._system = system_probe
         self._ctr_collector = ctr_collector
         self._module_name = module_name
         self._fn = fn
         self._kind = kind
+        self._model_t = model_t
         system_probe.add_global(self)
 
     def migrate_to(self, system_probe):
@@ -44,7 +46,7 @@ class ViewFactoryProbe(ProbeBase):
         if self._kind == self.Kind.view:
             pass
         elif self._kind == self.Kind.model_t:
-            model_t = self._deduce_model_t(params)
+            model_t = self._model_t
         elif self._kind == self.Kind.ui_t:
             ui_t_t = self._deduce_ui_t_t(params)
         else:
@@ -52,13 +54,6 @@ class ViewFactoryProbe(ProbeBase):
         result = self._fn(*args, **kw, **service_kw)
         self._add_constructor(params, model_t, ui_t_t, result)
         return result
-
-    def _deduce_model_t(self, params):
-        if len(params.ctx_names) < 1 or params.ctx_names[0] != 'piece':
-            raise RuntimeError(
-                "First parameter for model_t view factory expected to be a 'piece':"
-                f" {self.real_fn!r}: {params.ctx_names!r}")
-        return deduce_t(params.values['piece'])
 
     def _deduce_ui_t_t(self, params):
         if len(params.ctx_names) < 1 or params.ctx_names[0] != 'piece':
@@ -90,28 +85,41 @@ class ViewFactoryProbe(ProbeBase):
 
 class Marker:
 
-    def __init__(self, module_name, system, ctr_collector, kind):
+    def __init__(self, module_name, system, ctr_collector, kind, model_t=None):
         self._module_name = module_name
         self._system = system
         self._ctr_collector = ctr_collector
         self._kind = kind
+        self._model_t = model_t
+
+
+class FnMarker(Marker):
 
     def __call__(self, fn):
         check_not_classmethod(fn)
         check_is_function(fn)
         return ViewFactoryProbe(
-            self._system, self._ctr_collector, self._module_name, fn, self._kind)
+            self._system, self._ctr_collector, self._module_name, fn, self._kind, self._model_t)
 
 
-class ViewFactoryMarker(Marker):
+class TypeMarker(Marker):
+
+    def __call__(self, model_t):
+        if not isinstance(model_t, Type):
+            raise RuntimeError(f"Model view factory should have type specialization: {model_t!r}")
+        return FnMarker(
+            self._module_name, self._system, self._ctr_collector, self._kind, model_t)
+
+
+class ViewFactoryMarker(FnMarker):
 
     def __init__(self, module_name, system, ctr_collector):
         super().__init__(module_name, system, ctr_collector, kind=ViewFactoryProbe.Kind.view)
 
     @property
     def model_t(self):
-        return Marker(self._module_name, self._system, self._ctr_collector, kind=ViewFactoryProbe.Kind.model_t)
+        return TypeMarker(self._module_name, self._system, self._ctr_collector, kind=ViewFactoryProbe.Kind.model_t)
 
     @property
     def ui_t(self):
-        return Marker(self._module_name, self._system, self._ctr_collector, kind=ViewFactoryProbe.Kind.ui_t)
+        return FnMarker(self._module_name, self._system, self._ctr_collector, kind=ViewFactoryProbe.Kind.ui_t)

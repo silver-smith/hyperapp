@@ -74,6 +74,7 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
+        htypes.builtin.string: legacy_type.builtin:string
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.readonly_view: legacy_type.text:readonly_view
@@ -92,7 +93,6 @@ definitions:
     value:
       function: text_edit
       ctx_params:
-      - piece
       - adapter
       service_params: []
   text_edit.view-factory-template:
@@ -128,7 +128,6 @@ definitions:
     value:
       function: text_view
       ctx_params:
-      - piece
       - adapter
       service_params: []
   text_view.view-factory-template:

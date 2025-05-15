@@ -32,6 +32,7 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         htypes.data_browser.record_data_adapter: legacy_type.data_browser:record_data_adapter
+        htypes.data_browser.record_view: legacy_type.data_browser:record_view
         htypes.line_edit.readonly_view: legacy_type.line_edit:readonly_view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
@@ -48,7 +49,6 @@ definitions:
     value:
       function: data_browser_data_view
       ctx_params:
-      - piece
       - adapter
       service_params: []
   data_browser_data_view.view-factory-template:
