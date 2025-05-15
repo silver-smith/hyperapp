@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 from hyperapp.boot.htypes import tString, tInt
 
@@ -10,7 +10,6 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
-from .code.list import index_list_ui_type_layout
 from .tested.code import visualizer as visualizer_module
 
 
@@ -75,17 +74,25 @@ def model_reg_config():
         }
 
 
-@mark.config_fixture('ui_type_creg')
-def ui_type_creg_config():
+@mark.config_fixture('default_ui_factory')
+def default_ui_factory_config():
     return {
-        htypes.model.index_list_ui_t: index_list_ui_type_layout,
+        htypes.model.index_list_ui_t: htypes.visualizer_tests.sample_k(),
         }
+
+
+@mark.config_fixture('view_factory_reg')
+def view_factory_reg_config():
+    k = htypes.visualizer_tests.sample_k()
+    factory = AsyncMock()
+    factory.call_ui_t.return_value = htypes.visualizer_tests.sample_view()
+    return {k: factory}
 
 
 async def test_sample_list(visualizer, ctx):
     model_t = htypes.visualizer_tests.sample_list
-    layout = await visualizer(ctx, model_t)
-    assert isinstance(layout, htypes.list.view)
+    view = await visualizer(ctx, model_t)
+    assert view == htypes.visualizer_tests.sample_view()
 
 
 @mark.fixture

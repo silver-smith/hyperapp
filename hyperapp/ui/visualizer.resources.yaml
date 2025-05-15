@@ -82,8 +82,8 @@ definitions:
       service_params:
       - model_layout_reg
       - visualizer_reg
-      - ui_type_creg
       - default_model_factory
+      - default_ui_factory
       want_config: false
       free_params:
       - ctx

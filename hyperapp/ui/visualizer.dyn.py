@@ -27,7 +27,7 @@ def ui_type_creg(config):
 
 
 @mark.service
-async def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, default_model_factory, ctx, model_t):
+async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, default_ui_factory, ctx, model_t):
     layout_k = htypes.ui.model_layout_k(
         model_t=pyobj_creg.actor_to_ref(model_t),
         )
@@ -49,7 +49,8 @@ async def visualizer(model_layout_reg, visualizer_reg, ui_type_creg, default_mod
         ui_t, system_fn = visualizer_reg(model_t)
     except KeyError:
         raise RuntimeError(f"No view is known for model: {model_t!r}")
-    return ui_type_creg.animate(ui_t, system_fn)
+    factory = default_ui_factory(ui_t)
+    return await factory.call_ui_t(ctx, ui_t, system_fn)
 
 
 @mark.actor.resource_name_creg

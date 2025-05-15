@@ -51,6 +51,14 @@ class ViewFactory(ViewFactoryBase):
             fn_ctx = ctx
         return self._system_fn.call(fn_ctx, adapter=adapter)
 
+    async def call_ui_t(self, ctx, ui_t, system_fn, adapter=None):
+        assert self._ui_t_t is not None
+        fn_ctx = ctx.clone_with(
+            piece=ui_t,
+            system_fn=system_fn,
+            )
+        return self._system_fn.call(fn_ctx, adapter=adapter)
+
     @property
     def item(self):
         return htypes.view_factory.item(
