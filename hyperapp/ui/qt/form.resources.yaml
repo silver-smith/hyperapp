@@ -76,6 +76,7 @@ definitions:
       ctx_params:
       - piece
       - system_fn
+      - ctx
       service_params:
       - visualizer
   form_view_factory.view-factory-template:

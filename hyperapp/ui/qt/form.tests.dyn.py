@@ -52,8 +52,8 @@ def adapter_piece(sample_record_model_fn):
 
 
 @mark.fixture
-def piece(visualizer, adapter_piece):
-    return construct_default_form(visualizer, adapter_piece, htypes.form_tests.value)
+def piece(visualizer, ctx, adapter_piece):
+    return construct_default_form(visualizer, ctx, adapter_piece, htypes.form_tests.value)
 
 
 @mark.fixture
@@ -119,9 +119,9 @@ def widget(view, state, ctx):
     return  view.construct_widget(state, ctx)
 
 
-def test_form_view_factory(sample_record_model_fn):
+def test_form_view_factory(ctx, sample_record_model_fn):
     piece = htypes.model.record_ui_t(
         record_t=pyobj_creg.actor_to_ref(htypes.record_adapter_tests.item),
         )
-    view = form.form_view_factory(piece, sample_record_model_fn)
+    view = form.form_view_factory(piece, sample_record_model_fn, ctx)
     assert isinstance(view, htypes.form.view)

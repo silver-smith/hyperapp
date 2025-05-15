@@ -4,11 +4,17 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.context import Context
 from .tested.code import construct_default_form
 
 
 def _sample_form_fn(piece):
     pass
+
+
+@mark.fixture
+def ctx():
+    return Context()
 
 
 @mark.fixture
@@ -24,7 +30,7 @@ def adapter_piece():
         )
 
 
-def test_construct(visualizer, adapter_piece):
+def test_construct(visualizer, ctx, adapter_piece):
     piece = construct_default_form.construct_default_form(
-        visualizer, adapter_piece, htypes.construct_default_form_tests.value)
+        visualizer, ctx, adapter_piece, htypes.construct_default_form_tests.value)
     assert isinstance(piece, htypes.form.view)

@@ -274,7 +274,7 @@ class Crud:
                 if isinstance(value_t, TPrimitive):
                     base_view_piece = self._primitive_view(value_t)
                 else:
-                    base_view_piece = self._form_view(value_t)
+                    base_view_piece = self._form_view(ctx, value_t)
             if isinstance(value_t, TPrimitive):
                 new_model = self._run_init(ctx, init_action_fn, model, init_args)
             else:
@@ -327,9 +327,9 @@ class Crud:
             kw.update(Context.attributes(model_state))
         return kw
 
-    def _form_view(self, value_t):
+    def _form_view(self, ctx, value_t):
         adapter = htypes.crud.record_adapter()
-        return construct_default_form(self._visualizer, adapter, value_t)
+        return construct_default_form(self._visualizer, ctx, adapter, value_t)
 
     def _primitive_view(self, value_t):
         if value_t is htypes.builtin.string:
