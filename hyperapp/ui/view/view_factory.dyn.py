@@ -1,3 +1,5 @@
+import inspect
+
 from . import htypes
 from .services import (
     mosaic,
@@ -49,7 +51,8 @@ class ViewFactory(ViewFactoryBase):
                 )
         else:
             fn_ctx = ctx
-        return self._system_fn.call(fn_ctx, adapter=adapter)
+        result = self._system_fn.call(fn_ctx, adapter=adapter)
+        return await self._await_if_coro(result)
 
     async def call_ui_t(self, ctx, ui_t, system_fn, adapter=None):
         assert self._ui_t_t is not None
@@ -57,7 +60,15 @@ class ViewFactory(ViewFactoryBase):
             piece=ui_t,
             system_fn=system_fn,
             )
-        return self._system_fn.call(fn_ctx, adapter=adapter)
+        result = self._system_fn.call(fn_ctx, adapter=adapter)
+        return await self._await_if_coro(result)
+
+    @staticmethod
+    async def _await_if_coro(result):
+        if inspect.iscoroutine(result):
+            return await result
+        else:
+            return result
 
     @property
     def item(self):
