@@ -30,7 +30,7 @@ def adapter_piece():
         )
 
 
-def test_construct(visualizer, ctx, adapter_piece):
-    piece = construct_default_form.construct_default_form(
+async def test_construct(visualizer, ctx, adapter_piece):
+    piece = await construct_default_form.construct_default_form(
         visualizer, ctx, adapter_piece, htypes.construct_default_form_tests.value)
     assert isinstance(piece, htypes.form.view)

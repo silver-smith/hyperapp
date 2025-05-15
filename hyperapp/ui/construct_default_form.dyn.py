@@ -5,7 +5,7 @@ from .services import (
     )
 
 
-def construct_default_form(visualizer, ctx, record_adapter, record_t):
+async def construct_default_form(visualizer, ctx, record_adapter, record_t):
     element_list = []
     for name, t in record_t.fields.items():
         label_view = htypes.label.view(name)

@@ -70,10 +70,10 @@ class FormView(BoxLayoutView):
 
 
 @mark.view_factory.ui_t
-def form_view_factory(piece, system_fn, ctx, visualizer):
+async def form_view_factory(piece, system_fn, ctx, visualizer):
     record_t = pyobj_creg.invite(piece.record_t)
     adapter = htypes.record_adapter.fn_record_adapter(
         record_t=piece.record_t,
         system_fn=mosaic.put(system_fn.piece),
         )
-    return construct_default_form(visualizer, ctx, adapter, record_t)
+    return await construct_default_form(visualizer, ctx, adapter, record_t)
