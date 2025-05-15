@@ -9,6 +9,7 @@ from .services import (
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
+    process_awaitable_result,
     split_params,
     )
 from .code.probe import ProbeBase
@@ -52,8 +53,7 @@ class ViewFactoryProbe(ProbeBase):
         else:
             assert False, self._kind
         result = self._fn(*args, **kw, **service_kw)
-        self._add_constructor(params, model_t, ui_t_t, result)
-        return result
+        return process_awaitable_result(self._add_constructor, result, params, model_t, ui_t_t)
 
     def _deduce_ui_t_t(self, params):
         if len(params.ctx_names) < 1 or params.ctx_names[0] != 'piece':
@@ -66,7 +66,7 @@ class ViewFactoryProbe(ProbeBase):
                 f" {self.real_fn!r}: {params.ctx_names!r}")
         return deduce_t(params.values['piece'])
 
-    def _add_constructor(self, params, model_t, ui_t_t, result):
+    def _add_constructor(self, result, params, model_t, ui_t_t):
         try:
             result_t = deduce_t(result)
         except DeduceTypeError as x:
