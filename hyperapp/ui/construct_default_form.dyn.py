@@ -19,10 +19,7 @@ async def construct_default_form(visualizer, ctx, record_adapter, record_t):
             field_name=name,
             field_t=pyobj_creg.actor_to_ref(t),
             )
-        # TODO: Investigate how to amend and use visualizer.
-        field_view = htypes.line_edit.edit_view(
-            adapter=mosaic.put(field_adapter),
-            )
+        field_view = await visualizer(ctx, t, accessor=field_adapter)
         element = htypes.box_layout.element(
             view=mosaic.put(field_view),
             focusable=True,
