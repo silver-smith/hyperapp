@@ -303,7 +303,6 @@ class TreeView(View):
         widget.check_is_just_shown()
 
 
-@mark.actor.ui_type_creg
 @mark.view_factory.ui_t
 def index_tree_ui_type_layout(piece, system_fn):
     adapter = htypes.tree_adapter.fn_index_tree_adapter(
@@ -313,7 +312,6 @@ def index_tree_ui_type_layout(piece, system_fn):
     return htypes.tree.view(mosaic.put(adapter))
 
 
-@mark.actor.ui_type_creg
 @mark.view_factory.ui_t
 def key_tree_ui_type_layout(piece, system_fn):
     adapter = htypes.tree_adapter.fn_key_tree_adapter(

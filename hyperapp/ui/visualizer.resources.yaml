@@ -40,20 +40,6 @@ definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
-  ui_type_creg:
-    type: legacy_type.builtin:attribute
-    value:
-      object: visualizer.module
-      attr_name: ui_type_creg
-  ui_type_creg.service:
-    type: legacy_type.system:service_template
-    value:
-      name: ui_type_creg
-      ctl: system-dict_config_ctl.ctl
-      function: ui_type_creg
-      service_params: []
-      want_config: true
-      free_params: []
   visualizer:
     type: legacy_type.builtin:attribute
     value:

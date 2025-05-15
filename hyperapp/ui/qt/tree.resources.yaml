@@ -9,7 +9,6 @@ import:
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.model:index_tree_ui_t
 - legacy_type.model:key_tree_ui_t
-- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tree:state
 - legacy_type.tree:view
@@ -130,15 +129,3 @@ definitions:
         htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
         htypes.tree_adapter.fn_key_tree_adapter: legacy_type.tree_adapter:fn_key_tree_adapter
         services.mosaic: builtins:mosaic.service
-  ui_type_creg-model-index_tree_ui_t.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.model:index_tree_ui_t
-      function: index_tree_ui_type_layout
-      service_params: []
-  ui_type_creg-model-key_tree_ui_t.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.model:key_tree_ui_t
-      function: key_tree_ui_type_layout
-      service_params: []

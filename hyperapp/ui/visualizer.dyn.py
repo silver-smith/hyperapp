@@ -22,11 +22,6 @@ def _primitive_value_layout(t):
 
 
 @mark.service
-def ui_type_creg(config):
-    return code_registry_ctr('ui_type_creg', config)
-
-
-@mark.service
 async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, default_ui_factory, ctx, model_t):
     layout_k = htypes.ui.model_layout_k(
         model_t=pyobj_creg.actor_to_ref(model_t),
