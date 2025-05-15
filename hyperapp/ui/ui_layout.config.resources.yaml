@@ -1,0 +1,53 @@
+import:
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.model:index_list_ui_t
+- legacy_type.model:key_list_ui_t
+- legacy_type.model:index_tree_ui_t
+- legacy_type.model:key_tree_ui_t
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+- ui.qt.list:index_list_ui_type_layout.k
+- ui.qt.list:key_list_ui_type_layout.k
+- ui.qt.tree:index_tree_ui_type_layout.k
+- ui.qt.tree:key_tree_ui_type_layout.k
+
+definitions:
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        default_ui_factory: default_ui_factory.config
+
+  default_ui_factory.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-index_list.factory-config-item
+      - config_item-key_list.factory-config-item
+      - config_item-index_tree.factory-config-item
+      - config_item-key_tree.factory-config-item
+
+  config_item-index_list.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model:index_list_ui_t
+      value: ui.qt.list:index_list_ui_type_layout.k
+
+  config_item-key_list.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model:key_list_ui_t
+      value: ui.qt.list:key_list_ui_type_layout.k
+
+  config_item-index_tree.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model:index_tree_ui_t
+      value: ui.qt.tree:index_tree_ui_type_layout.k
+
+  config_item-key_tree.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model:key_tree_ui_t
+      value: ui.qt.tree:key_tree_ui_type_layout.k
