@@ -45,13 +45,8 @@ class ViewFactory(ViewFactoryBase):
         if self._ui_t_t is not None:
             model_t = real_model_t(ctx.model)
             ui_t, system_fn = self._visualizer_reg(model_t)
-            fn_ctx = ctx.clone_with(
-                piece=ui_t,
-                system_fn=system_fn,
-                )
-        else:
-            fn_ctx = ctx
-        result = self._system_fn.call(fn_ctx, adapter=adapter)
+            return self.call_ui_t(ctx, ui_t, system_fn, adapter)
+        result = self._system_fn.call(ctx, adapter=adapter)
         return await self._await_if_coro(result)
 
     async def call_ui_t(self, ctx, ui_t, system_fn, adapter=None):
