@@ -8,6 +8,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .fixtures import visualizer_fixtures
 from .tested.code import args_picker_fn
 
 

@@ -1,0 +1,4 @@
+string_view_k = record
+int_view_k = record
+
+sample_view = record

@@ -13,7 +13,9 @@ from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import ModelCommandFn
 from .code.selector import Selector
-from .fixtures import error_view_fixtures, qapp_fixtures
+from .fixtures import qapp_fixtures
+from .fixtures import error_view_fixtures
+from .fixtures import visualizer_fixtures
 from .tested.code import crud
 
 log = logging.getLogger(__name__)
@@ -161,9 +163,7 @@ def model_layout_reg(format, commit_command_layout_k):
             return htypes.label.view("Sample label")
         if layout_k == k(htypes.crud_tests.sample_selector_model):
             return htypes.crud_tests.selector_view()
-        if layout_k == commit_command_layout_k:
-            raise KeyError(layout_k)
-        raise RuntimeError(f"Mock model_layout_reg: __getitem__ with {format(layout_k)} was not expected")
+        raise KeyError(layout_k)
     reg = MagicMock()
     reg.__getitem__ = getitem
     return reg
@@ -225,7 +225,7 @@ async def run_open_command_fn_test(ctx, navigator_rec, _sample_crud_get_fn, _sam
         current_item=htypes.crud_tests.sample_item(id=item_id),
         )
     assert not fn.missing_params(ctx)
-    new_model = await fn.call(ctx)
+    await fn.call(ctx)
     navigator_rec.view.open.assert_awaited_once()
 
 
@@ -251,9 +251,10 @@ def selector_reg_config(_sample_selector_get_fn, _sample_selector_pick_fn):
 
 
 @mark.config_fixture('view_reg')
-def view_reg_config():
+def view_reg_config(view_fn_mock, visualizer_view_reg_config):
     return {
-        htypes.crud_tests.selector_view: Mock(),
+        **visualizer_view_reg_config,
+        **view_fn_mock(htypes.crud_tests.selector_view()),
         }
 
 

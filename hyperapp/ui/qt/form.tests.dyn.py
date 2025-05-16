@@ -10,8 +10,9 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
-from .code.construct_default_form import construct_default_form
-from .fixtures import qapp_fixtures, feed_fixtures
+from .fixtures import qapp_fixtures
+from .fixtures import feed_fixtures
+from .fixtures import visualizer_fixtures
 from .tested.code import form
 
 
@@ -30,7 +31,7 @@ def sample_record_model_fn(rpc_system_call_factory):
         )
 
 
-@mark.fixture
+@mark.fixture.obj
 def model():
     return htypes.form_tests.sample_form()
 
@@ -53,26 +54,43 @@ def adapter_piece(sample_record_model_fn):
 
 @mark.fixture
 async def piece(visualizer, ctx, adapter_piece):
-    return await construct_default_form(visualizer, ctx, adapter_piece, htypes.form_tests.value)
+    label = htypes.label.view("Sample label")
+    field_adapter = htypes.record_field_adapter.record_field_adapter(
+        record_adapter=mosaic.put(adapter_piece),
+        field_name='text',
+        field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+        )
+    field_view = htypes.line_edit.readonly_view(
+        adapter=mosaic.put(field_adapter),
+        )
+    element_list = [
+        htypes.box_layout.element(
+            view=mosaic.put(label),
+            focusable=False,
+            stretch=0,
+            ),
+        htypes.box_layout.element(
+            view=mosaic.put(field_view),
+            focusable=True,
+            stretch=0,
+            ),
+        htypes.box_layout.element(
+            view=None,
+            focusable=False,
+            stretch=1,
+            ),
+        ]
+    return htypes.form.view(
+        direction='TopToBottom',
+        elements=tuple(element_list),
+        adapter=mosaic.put(adapter_piece),
+        )
+
 
 
 @mark.fixture
 def state():
     return None
-
-
-@mark.config_fixture('model_layout_reg')
-def model_layout_reg_config():
-    def k(t):
-        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
-    return {
-        k(htypes.builtin.int): htypes.text.edit_view(
-            adapter=mosaic.put(htypes.int_adapter.int_adapter()),
-            ),
-        k(htypes.builtin.string): htypes.text.edit_view(
-            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
-            ),
-        }
 
 
 def test_form(qapp, model, ctx, piece):
