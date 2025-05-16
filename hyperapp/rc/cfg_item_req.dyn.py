@@ -46,7 +46,7 @@ class CfgItemReq(Requirement):
 
     @property
     def desc(self):
-        return f"{self._service_name}:{self._t.full_name} actor"
+        return f"{self._service_name}:{self._t} actor"
 
     def get_target(self, target_factory):
         resolved_tgt = target_factory.config_item_resolved(self._service_name, self._type_name)
