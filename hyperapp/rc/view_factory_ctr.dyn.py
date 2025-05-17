@@ -1,3 +1,5 @@
+from hyperapp.boot.htypes import TPrimitive, TOptional, TRecord
+
 from . import htypes
 from .services import (
     mosaic,
@@ -87,10 +89,18 @@ class ViewFactoryTemplateCtr(Constructor):
             system_fn=mosaic.put(system_fn),
             )
         if name_to_res is not None:
+            self._add_complex_type(self._model_t, name_to_res)
             name_to_res[f'{self._fn_name}.system-fn'] = system_fn
             name_to_res[f'{self._fn_name}.k'] = k
             name_to_res[f'{self._fn_name}.view-factory-template'] = template
         return template
+
+    def _add_complex_type(self, t, name_to_res):
+        if isinstance(t, TOptional):
+            assert isinstance(t.base_t, (TRecord, TPrimitive)), t.base_t
+            name = f'{t.base_t.module_name}-{t.base_t.name}-opt'
+            mt = pyobj_creg.actor_to_piece(t)
+            name_to_res[name] = mt
 
     @property
     def _fn_name(self):
