@@ -142,6 +142,10 @@ import:
 - ui.tab_groups:tabs-view-move_tab_to_new_group.command-cfg-item
 - ui.text_toggle_editable:text-edit_view-toggle_editable.command-cfg-item
 - ui.text_toggle_editable:text-readonly_view-toggle_editable.command-cfg-item
+- ui.type_convertor:convertor_creg-type_convertor-int_to_string_convertor.actor-template
+- ui.type_convertor:convertor_creg-type_convertor-noop_convertor.actor-template
+- ui.type_convertor:convertor_creg-type_convertor-opt_convertor.actor-template
+- ui.type_convertor:convertor_creg.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command:command_creg-command-ui_command.actor-template
 - ui.ui_command:command_creg-command-ui_command_enumerator.actor-template
@@ -210,6 +214,7 @@ definitions:
         cfg_item_creg: cfg_item_creg
         command_creg: command_creg
         config_ctl_creg: config_ctl_creg
+        convertor_creg: convertor_creg
         editor_default_reg: editor_default_reg
         feed_factory: feed_factory
         feed_type_creg: feed_type_creg
@@ -237,6 +242,13 @@ definitions:
       items:
       - ui.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template
       - ui.list_config_ctl:config_ctl_creg-list_config_ctl-flat_list_config_ctl.actor-template
+  convertor_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.type_convertor:convertor_creg-type_convertor-int_to_string_convertor.actor-template
+      - ui.type_convertor:convertor_creg-type_convertor-noop_convertor.actor-template
+      - ui.type_convertor:convertor_creg-type_convertor-opt_convertor.actor-template
   editor_default_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -342,6 +354,7 @@ definitions:
       - ui.remote_command:remote_command_from_model_command.service
       - ui.selector:selector_reg.service
       - ui.shortcut_reg:shortcut_reg.service
+      - ui.type_convertor:convertor_creg.service
       - ui.ui_adapter_creg:ui_adapter_creg.service
       - ui.ui_command:get_view_commands.service
       - ui.ui_command:get_view_element_commands.service

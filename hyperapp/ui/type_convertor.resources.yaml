@@ -1,0 +1,88 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:code_registry_ctr.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:actor_template
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
+- legacy_type.type_convertor:int_to_string_convertor
+- legacy_type.type_convertor:noop_convertor
+- legacy_type.type_convertor:opt_convertor
+definitions:
+  IntToStringConvertor:
+    type: legacy_type.builtin:attribute
+    value:
+      object: type_convertor.module
+      attr_name: IntToStringConvertor
+  IntToStringConvertor.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: IntToStringConvertor
+      attr_name: from_piece
+  NoOpConvertor:
+    type: legacy_type.builtin:attribute
+    value:
+      object: type_convertor.module
+      attr_name: NoOpConvertor
+  NoOpConvertor.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: NoOpConvertor
+      attr_name: from_piece
+  OptionalConvertor:
+    type: legacy_type.builtin:attribute
+    value:
+      object: type_convertor.module
+      attr_name: OptionalConvertor
+  OptionalConvertor.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: OptionalConvertor
+      attr_name: from_piece
+  convertor_creg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: type_convertor.module
+      attr_name: convertor_creg
+  convertor_creg-type_convertor-int_to_string_convertor.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.type_convertor:int_to_string_convertor
+      function: IntToStringConvertor.from_piece
+      service_params: []
+  convertor_creg-type_convertor-noop_convertor.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.type_convertor:noop_convertor
+      function: NoOpConvertor.from_piece
+      service_params: []
+  convertor_creg-type_convertor-opt_convertor.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.type_convertor:opt_convertor
+      function: OptionalConvertor.from_piece
+      service_params:
+      - convertor_creg
+  convertor_creg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: convertor_creg
+      ctl: system-dict_config_ctl.ctl
+      function: convertor_creg
+      service_params: []
+      want_config: true
+      free_params: []
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}
+  type_convertor.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: type_convertor
+      file_name: type_convertor.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        services.code_registry_ctr: builtins:code_registry_ctr.service
