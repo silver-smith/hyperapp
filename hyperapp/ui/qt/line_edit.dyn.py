@@ -104,6 +104,15 @@ def line_edit(adapter=None):
         )
 
 
+@mark.view_factory.model_t(htypes.builtin.int)
+def int_line_edit(adapter=None):
+    if adapter is None:
+        adapter = htypes.int_adapter.int_adapter()
+    return htypes.line_edit.edit_view(
+        adapter=mosaic.put(adapter),
+        )
+
+
 @mark.view_factory.model_t(htypes.builtin.string)
 def line_view(adapter=None):
     if adapter is None:

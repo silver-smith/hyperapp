@@ -1,10 +1,12 @@
 import:
 - legacy_type.builtin:optional_mt
+- legacy_type.builtin:int
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.wiki:wiki
+- ui.qt.line_edit:int_line_edit.k
 - ui.qt.line_edit:line_edit.k
 - ui.qt.wiki:wiki.k
 
@@ -21,6 +23,7 @@ definitions:
     value:
       items:
       - config_item-string.factory-config-item
+      - config_item-int.factory-config-item
       - config_item-wiki.factory-config-item
 
   config_item-string.factory-config-item:
@@ -28,6 +31,12 @@ definitions:
     value:
       t: legacy_type.builtin:string
       value: ui.qt.line_edit:line_edit.k
+
+  config_item-int.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:int
+      value: ui.qt.line_edit:int_line_edit.k
 
   config_item-wiki.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item

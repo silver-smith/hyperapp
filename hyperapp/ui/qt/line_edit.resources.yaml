@@ -5,10 +5,12 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
+- legacy_type.builtin:int
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.int_adapter:int_adapter
 - legacy_type.line_edit:edit_view
 - legacy_type.line_edit:readonly_view
 - legacy_type.line_edit:state
@@ -58,6 +60,41 @@ definitions:
       - ctx
       service_params:
       - ui_adapter_creg
+  int_line_edit:
+    type: legacy_type.builtin:attribute
+    value:
+      object: line_edit.module
+      attr_name: int_line_edit
+  int_line_edit.k:
+    type: int_line_edit_k
+    value: {}
+  int_line_edit.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: int_line_edit
+      ctx_params:
+      - adapter
+      service_params: []
+  int_line_edit.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: int_line_edit.k
+      model_t: legacy_type.builtin:int
+      ui_t_t: null
+      view_t: legacy_type.line_edit:edit_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: int_line_edit.system-fn
+  int_line_edit_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: line_edit
+      name: int_line_edit_k
+      base: null
+      fields: {}
   line_edit:
     type: legacy_type.builtin:attribute
     value:
@@ -84,7 +121,9 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.view: ui.view.view:view.module
+        htypes.builtin.int: legacy_type.builtin:int
         htypes.builtin.string: legacy_type.builtin:string
+        htypes.int_adapter.int_adapter: legacy_type.int_adapter:int_adapter
         htypes.line_edit.edit_view: legacy_type.line_edit:edit_view
         htypes.line_edit.readonly_view: legacy_type.line_edit:readonly_view
         htypes.line_edit.state: legacy_type.line_edit:state

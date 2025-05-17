@@ -59,6 +59,11 @@ def test_edit_factory():
     assert piece
 
 
+def test_int_edit_factory():
+    piece = line_edit.int_line_edit(adapter=None)
+    assert piece
+
+
 def test_view_factory():
     piece = line_edit.line_view(adapter=None)
     assert piece
