@@ -101,6 +101,7 @@ import:
 - ui.qt.line_edit:line_edit-readonly_view.view-template
 - ui.qt.line_edit:line_edit.view-factory-template
 - ui.qt.line_edit:line_view.view-factory-template
+- ui.qt.line_edit:opt_line_edit.view-factory-template
 - ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-template
 - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
 - ui.qt.list:index_list_ui_type_layout.view-factory-template
@@ -439,6 +440,7 @@ definitions:
       - ui.qt.line_edit:int_line_edit.view-factory-template
       - ui.qt.line_edit:line_edit.view-factory-template
       - ui.qt.line_edit:line_view.view-factory-template
+      - ui.qt.line_edit:opt_line_edit.view-factory-template
       - ui.qt.list:index_list_ui_type_layout.view-factory-template
       - ui.qt.list:key_list_ui_type_layout.view-factory-template
       - ui.qt.tabs:wrap_in_tabs.view-factory-template

@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:int
+- legacy_type.builtin:optional_mt
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
@@ -60,6 +61,10 @@ definitions:
       - ctx
       service_params:
       - ui_adapter_creg
+  builtin-string-opt:
+    type: legacy_type.builtin:optional_mt
+    value:
+      base: legacy_type.builtin:string
   int_line_edit:
     type: legacy_type.builtin:attribute
     value:
@@ -202,6 +207,41 @@ definitions:
     value:
       object: line_edit.module
       attr_name: line_view_resource_name
+  opt_line_edit:
+    type: legacy_type.builtin:attribute
+    value:
+      object: line_edit.module
+      attr_name: opt_line_edit
+  opt_line_edit.k:
+    type: opt_line_edit_k
+    value: {}
+  opt_line_edit.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: opt_line_edit
+      ctx_params:
+      - adapter
+      service_params: []
+  opt_line_edit.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: opt_line_edit.k
+      model_t: builtin-string-opt
+      ui_t_t: null
+      view_t: legacy_type.line_edit:edit_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: opt_line_edit.system-fn
+  opt_line_edit_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: line_edit
+      name: opt_line_edit_k
+      base: null
+      fields: {}
   resource_name_creg-line_edit-edit_view.actor-template:
     type: legacy_type.system:actor_template
     value:

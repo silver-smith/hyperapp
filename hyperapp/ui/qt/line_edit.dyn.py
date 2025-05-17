@@ -1,3 +1,5 @@
+from hyperapp.boot.htypes import TOptional
+
 import logging
 import weakref
 
@@ -97,6 +99,15 @@ class ViewLineView(EditLineView):
 
 @mark.view_factory.model_t(htypes.builtin.string)
 def line_edit(adapter=None):
+    if adapter is None:
+        adapter = htypes.str_adapter.static_str_adapter()
+    return htypes.line_edit.edit_view(
+        adapter=mosaic.put(adapter),
+        )
+
+
+@mark.view_factory.model_t(TOptional(htypes.builtin.string))
+def opt_line_edit(adapter=None):
     if adapter is None:
         adapter = htypes.str_adapter.static_str_adapter()
     return htypes.line_edit.edit_view(
