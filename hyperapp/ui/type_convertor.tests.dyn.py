@@ -1,3 +1,5 @@
+from hyperapp.boot.htypes import TOptional
+
 from . import htypes
 from .services import (
     mosaic,
@@ -29,3 +31,18 @@ def test_optional_convertor():
     assert cvt.view_to_value(0, '123') == 123
     assert cvt.value_to_view(None) == ''
     assert cvt.view_to_value(0, '') == None
+
+
+def test_string_to_text_cvt():
+    cvt = type_convertor.type_to_text_convertor(htypes.builtin.string)
+    assert cvt == htypes.type_convertor.noop_convertor()
+
+
+def test_int_to_text_cvt():
+    cvt = type_convertor.type_to_text_convertor(htypes.builtin.int)
+    assert cvt == htypes.type_convertor.int_to_string_convertor()
+
+
+def test_int_opt_to_text_cvt():
+    cvt = type_convertor.type_to_text_convertor(TOptional(htypes.builtin.int))
+    assert isinstance(cvt, htypes.type_convertor.opt_convertor)

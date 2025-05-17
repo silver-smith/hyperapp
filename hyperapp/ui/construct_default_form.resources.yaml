@@ -8,6 +8,7 @@ import:
 - legacy_type.form:view
 - legacy_type.label:view
 - legacy_type.record_field_adapter:record_field_adapter
+- ui.type_convertor:type_convertor.module
 definitions:
   construct_default_form.module:
     type: legacy_type.builtin:python_module
@@ -15,6 +16,7 @@ definitions:
       module_name: construct_default_form
       file_name: construct_default_form.dyn.py
       import_list:
+        code.type_convertor: ui.type_convertor:type_convertor.module
         htypes.box_layout.element: legacy_type.box_layout:element
         htypes.form.view: legacy_type.form:view
         htypes.label.view: legacy_type.label:view

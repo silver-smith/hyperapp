@@ -1,5 +1,9 @@
+from hyperapp.boot.htypes import TOptional
+
+from . import htypes
 from .services import (
     code_registry_ctr,
+    mosaic,
     )
 from .code.mark import mark
 
@@ -59,3 +63,14 @@ class OptionalConvertor:
 def convertor_creg(config):
     return code_registry_ctr('convertor_creg', config)
 
+
+def type_to_text_convertor(t):
+    if t is htypes.builtin.string:
+        return htypes.type_convertor.noop_convertor()
+    if t is htypes.builtin.int:
+        return htypes.type_convertor.int_to_string_convertor()
+    if isinstance(t, TOptional):
+        return htypes.type_convertor.opt_convertor(
+            base=mosaic.put(type_to_text_convertor(t.base_t)),
+            )
+    raise RuntimeError(f"Unsupported type for convertor: {t}")

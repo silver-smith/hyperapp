@@ -55,10 +55,12 @@ def adapter_piece(sample_record_model_fn):
 @mark.fixture
 async def piece(visualizer, ctx, adapter_piece):
     label = htypes.label.view("Sample label")
+    cvt = htypes.type_convertor.noop_convertor()
     field_adapter = htypes.record_field_adapter.record_field_adapter(
         record_adapter=mosaic.put(adapter_piece),
         field_name='text',
         field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+        cvt=mosaic.put(cvt),
         )
     field_view = htypes.line_edit.readonly_view(
         adapter=mosaic.put(field_adapter),

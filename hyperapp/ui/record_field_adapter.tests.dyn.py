@@ -31,10 +31,12 @@ def test_adapter(ui_adapter_creg):
         record_t=mosaic.put(record_t_res),
         system_fn=mosaic.put(system_fn),
         )
+    cvt = htypes.type_convertor.noop_convertor()
     adapter_piece = htypes.record_field_adapter.record_field_adapter(
         record_adapter=mosaic.put(record_adapter_piece),
         field_name='text',
         field_t=pyobj_creg.actor_to_ref(htypes.builtin.string),
+        cvt=mosaic.put(cvt),
         )
     adapter = record_field_adapter.RecordFieldAdapter.from_piece(adapter_piece, model, ctx)
     assert adapter.value == "Sample fn item"

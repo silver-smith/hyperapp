@@ -33,3 +33,4 @@ definitions:
       function: RecordFieldAdapter.from_piece
       service_params:
       - ui_adapter_creg
+      - convertor_creg
