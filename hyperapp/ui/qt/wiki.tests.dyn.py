@@ -17,26 +17,36 @@ def ctx():
 
 
 @mark.fixture
-def str_adapter():
-    return htypes.str_adapter.static_str_adapter()
+def wiki_to_string_convertor():
+    return htypes.wiki.wiki_to_string_convertor()
 
 
 @mark.fixture
-def wiki_adapter():
-    return htypes.wiki.adapter()
+def accessor():
+    return htypes.accessor.model_accessor()
 
 
 @mark.fixture
-def text_piece(str_adapter):
+def text_piece(accessor):
+    cvt = htypes.type_convertor.noop_convertor()
+    adapter = htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
     return htypes.wiki.text_view(
-        adapter=mosaic.put(str_adapter),
+        adapter=mosaic.put(adapter),
         )
 
 
 @mark.fixture
-def wiki_piece(wiki_adapter):
+def wiki_piece(accessor):
+    cvt = htypes.type_convertor.noop_convertor()
+    adapter = htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
     return htypes.wiki.wiki_view(
-        adapter=mosaic.put(wiki_adapter),
+        adapter=mosaic.put(adapter),
         )
 
 
@@ -53,23 +63,24 @@ def sample_ref_target():
 @mark.fixture
 def model(sample_ref_target):
     return htypes.wiki.wiki(
-        text="Sample value",
+        text="Sample text",
         refs=(
           htypes.wiki.wiki_ref('a', sample_ref_target),
           ),
         )
 
 
-def test_adapter(ctx, wiki_adapter, sample_ref_target, model):
-    adapter = wiki.StaticWikiAdapter.from_piece(wiki_adapter, model, ctx)
-    assert adapter.model == model
-    assert adapter.get_text() == model.text
-    assert adapter.get_ref('a') == sample_ref_target
+def test_convertor(ctx, wiki_to_string_convertor, model):
+    cvt = wiki.WikiToTextConvertor.from_piece(wiki_to_string_convertor)
+    assert cvt.value_to_view(model) == model.text
+    new_value = cvt.view_to_value(model, "New text")
+    assert new_value.text == "New text"
+    assert new_value.refs == model.refs
 
 
-def test_adapter_resource_name(wiki_adapter):
+def test_convertor_resource_name(wiki_to_string_convertor):
     gen = Mock()
-    name = wiki.static_wiki_adapter_resource_name(wiki_adapter, gen)
+    name = wiki.wiki_convertor_resource_name(wiki_to_string_convertor, gen)
     assert type(name) is str
 
 
@@ -109,11 +120,11 @@ async def test_wiki_view(qapp, ctx, wiki_piece, state, model):
     ctl_hook.navigator.view.open.assert_awaited_once()
 
 
-def test_text_view_factory():
-    piece = wiki.wiki_text(adapter=None)
+def test_text_view_factory(accessor):
+    piece = wiki.wiki_text(accessor)
     assert isinstance(piece, htypes.wiki.text_view)
 
 
-def test_wiki_view_factory():
-    piece = wiki.wiki(adapter=None)
+def test_wiki_view_factory(accessor):
+    piece = wiki.wiki(accessor)
     assert isinstance(piece, htypes.wiki.wiki_view)

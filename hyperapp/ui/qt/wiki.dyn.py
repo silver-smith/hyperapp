@@ -17,42 +17,26 @@ from .code.view import View
 log = logging.getLogger(__name__)
 
 
-class StaticWikiAdapter:
+class WikiToTextConvertor:
 
     @classmethod
-    @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx):
-        return cls(model)
+    @mark.actor.convertor_creg
+    def from_piece(cls, piece):
+        return cls()
 
-    def __init__(self, wiki):
-        self._wiki = wiki
-        self._id_to_ref = {
-          ref.id: ref.target
-          for ref in wiki.refs
-          }
+    def value_to_view(self, value):
+        return value.text
 
-    @property
-    def model(self):
-        return self._wiki
-
-    def get_text(self):
-        return self._wiki.text
-
-    def get_ref(self, id):
-        return self._id_to_ref[id]
-      
-    def text_to_value(self, text):
-        return text
-
-    def value_changed(self, new_value):
-        if new_value == self._wiki:
-            return
-        log.debug("Static wiki adapter: Ignoring new value: %r", new_value)
+    def view_to_value(self, old_value, view_value):
+        return htypes.wiki.wiki(
+            text=view_value,
+            refs=old_value.refs,
+            )
 
 
 @mark.actor.resource_name_creg
-def static_wiki_adapter_resource_name(piece, gen):
-    return 'static_wiki_adapter'
+def wiki_convertor_resource_name(piece, gen):
+    return 'wiki_to_string_convertor'
 
 
 class WikiTextView(View):
@@ -78,7 +62,7 @@ class WikiTextView(View):
         w = QtWidgets.QTextBrowser(
             openLinks=False,
             )
-        w.setHtml(self._text_to_html(self._adapter.get_text()))
+        w.setHtml(self._text_to_html(self._get_text()))
         w.anchorClicked.connect(self._on_anchor_clicked)
         return w
 
@@ -98,7 +82,10 @@ class WikiTextView(View):
 
     def get_value(self, widget):
         text = self.get_plain_text(widget)
-        return self._adapter.text_to_value(text)
+        return self._adapter.view_to_value(text)
+
+    def _get_text(self):
+        return self._adapter.get_value()
 
     def _on_anchor_clicked(self, url):
         log.info('Wiki text view: Anchor clicked: url.path=%r', url.path())
@@ -131,12 +118,15 @@ class WikiView(WikiTextView):
             adapter=self._adapter_ref,
             )
 
+    def _get_text(self):
+        return self._adapter.get_value().text
+
     def _on_anchor_clicked(self, url):
         log.info('Wiki view: Anchor clicked: url.path=%r', url.path())
         asyncio.create_task(self._open_ref(url.path()))
 
     async def _open_ref(self, ref_id):
-        target_ref = self._adapter.get_ref(ref_id)
+        target_ref = self._get_ref(ref_id)
         model = web.summon(target_ref)
         log.info('Wiki view: Open target: %r', model)
         navigator_rec = self._ctl_hook.navigator
@@ -149,20 +139,33 @@ class WikiView(WikiTextView):
         log.info("Wiki view: visualizing with view: %s", view)
         await navigator_rec.view.open(self._ctx, model, view, navigator_w)
 
+    def _get_ref(self, ref_id):
+        wiki = self._adapter.get_value()
+        id_to_ref = {
+          ref.id: ref.target
+          for ref in wiki.refs
+          }
+        return id_to_ref[ref_id]
+
 
 @mark.view_factory.model_t(htypes.wiki.wiki)
-def wiki_text(adapter=None):
-    if adapter is None:
-        adapter = htypes.str_adapter.static_str_adapter()
+def wiki_text(accessor):
+    cvt = htypes.wiki.wiki_to_string_convertor()
+    adapter = htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
     return htypes.wiki.text_view(
         adapter=mosaic.put(adapter),
         )
 
 
 @mark.view_factory.model_t(htypes.wiki.wiki)
-def wiki(adapter=None):
-    if adapter is None:
-        adapter = htypes.str_adapter.static_str_adapter()
+def wiki(accessor):
+    adapter = htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(htypes.type_convertor.noop_convertor()),
+        )
     return htypes.wiki.wiki_view(
         adapter=mosaic.put(adapter),
         )

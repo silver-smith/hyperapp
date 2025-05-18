@@ -8,28 +8,19 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_fn_cfg_item
-- legacy_type.str_adapter:static_str_adapter
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.type_convertor:noop_convertor
+- legacy_type.value_adapter:value_adapter
 - legacy_type.view_factory:template
-- legacy_type.wiki:adapter
 - legacy_type.wiki:state
 - legacy_type.wiki:text_view
 - legacy_type.wiki:wiki
+- legacy_type.wiki:wiki_to_string_convertor
 - legacy_type.wiki:wiki_view
 - ui.remote_model:remote_model.module
 - ui.view.view:view.module
 definitions:
-  StaticWikiAdapter:
-    type: legacy_type.builtin:attribute
-    value:
-      object: wiki.module
-      attr_name: StaticWikiAdapter
-  StaticWikiAdapter.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: StaticWikiAdapter
-      attr_name: from_piece
   WikiTextView:
     type: legacy_type.builtin:attribute
     value:
@@ -50,6 +41,16 @@ definitions:
       - ctx
       service_params:
       - ui_adapter_creg
+  WikiToTextConvertor:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: WikiToTextConvertor
+  WikiToTextConvertor.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: WikiToTextConvertor
+      attr_name: from_piece
   WikiView:
     type: legacy_type.builtin:attribute
     value:
@@ -72,22 +73,17 @@ definitions:
       - ui_adapter_creg
       - view_reg
       - visualizer
-  resource_name_creg-wiki-adapter.actor-template:
+  convertor_creg-wiki-wiki_to_string_convertor.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.wiki:adapter
-      function: static_wiki_adapter_resource_name
+      t: legacy_type.wiki:wiki_to_string_convertor
+      function: WikiToTextConvertor.from_piece
       service_params: []
-  static_wiki_adapter_resource_name:
-    type: legacy_type.builtin:attribute
-    value:
-      object: wiki.module
-      attr_name: static_wiki_adapter_resource_name
-  ui_adapter_creg-wiki-adapter.actor-template:
+  resource_name_creg-wiki-wiki_to_string_convertor.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.wiki:adapter
-      function: StaticWikiAdapter.from_piece
+      t: legacy_type.wiki:wiki_to_string_convertor
+      function: wiki_convertor_resource_name
       service_params: []
   wiki:
     type: legacy_type.builtin:attribute
@@ -116,10 +112,12 @@ definitions:
         code.mark: base.mark:mark.module
         code.remote_model: ui.remote_model:remote_model.module
         code.view: ui.view.view:view.module
-        htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
+        htypes.type_convertor.noop_convertor: legacy_type.type_convertor:noop_convertor
+        htypes.value_adapter.value_adapter: legacy_type.value_adapter:value_adapter
         htypes.wiki.state: legacy_type.wiki:state
         htypes.wiki.text_view: legacy_type.wiki:text_view
         htypes.wiki.wiki: legacy_type.wiki:wiki
+        htypes.wiki.wiki_to_string_convertor: legacy_type.wiki:wiki_to_string_convertor
         htypes.wiki.wiki_view: legacy_type.wiki:wiki_view
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
@@ -128,7 +126,7 @@ definitions:
     value:
       function: wiki
       ctx_params:
-      - adapter
+      - accessor
       service_params: []
   wiki.view-factory-template:
     type: legacy_type.view_factory:template
@@ -143,6 +141,11 @@ definitions:
       - model
       - ctx
       system_fn: wiki.system-fn
+  wiki_convertor_resource_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: wiki_convertor_resource_name
   wiki_k:
     type: legacy_type.builtin:record_mt
     value:
@@ -163,7 +166,7 @@ definitions:
     value:
       function: wiki_text
       ctx_params:
-      - adapter
+      - accessor
       service_params: []
   wiki_text.view-factory-template:
     type: legacy_type.view_factory:template

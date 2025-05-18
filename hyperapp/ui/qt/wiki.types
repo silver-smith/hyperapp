@@ -6,7 +6,7 @@ wiki = record:
   text: string
   refs: wiki_ref list
 
-adapter = record
+wiki_to_string_convertor = record
 
 text_view = record:
   adapter: ref
