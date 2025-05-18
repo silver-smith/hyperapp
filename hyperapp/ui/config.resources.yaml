@@ -3,6 +3,7 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- ui.accessor:accessor_creg.service
 - ui.arg_mark:arg_mark-view-remove_mark.command-cfg-item
 - ui.arg_mark:arg_mark-view.view-template
 - ui.arg_mark:navigator-view-add_mark.command-cfg-item
@@ -331,6 +332,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.accessor:accessor_creg.service
       - ui.column_visible_reg:column_visible_reg.service
       - ui.command_creg:command_creg.service
       - ui.controller:canned_ctl_item_factory.service
