@@ -18,7 +18,7 @@ class NoOpConvertor:
     def value_to_view(self, value):
         return value
 
-    def view_to_value(self, value, view_value):
+    def view_to_value(self, old_value, view_value):
         return view_value
 
 
@@ -32,7 +32,7 @@ class IntToStringConvertor:
     def value_to_view(self, value):
         return str(value)
 
-    def view_to_value(self, value, view_value):
+    def view_to_value(self, old_value, view_value):
         return int(view_value)
 
 
@@ -53,10 +53,10 @@ class OptionalConvertor:
         else:
             return self._base_cvt.value_to_view(value)
 
-    def view_to_value(self, value, view_value):
+    def view_to_value(self, old_value, view_value):
         if not view_value:
             return None
-        return self._base_cvt.view_to_value(value, view_value)
+        return self._base_cvt.view_to_value(old_value, view_value)
 
 
 @mark.service
