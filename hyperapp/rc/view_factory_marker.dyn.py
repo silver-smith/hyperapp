@@ -37,7 +37,7 @@ class ViewFactoryProbe(ProbeBase):
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
     def __call__(self, *args, **kw):
-        params = split_params(self._fn, args, kw)
+        params = split_params(self.real_fn, args, kw)
         service_kw = {
             name: self._system.resolve_service(name)
             for name in params.service_names
@@ -70,10 +70,10 @@ class ViewFactoryProbe(ProbeBase):
         try:
             result_t = deduce_t(result)
         except DeduceTypeError as x:
-            raise RuntimeError(f"{self._fn}: Returned not a deducible data type: {result!r}") from x
+            raise RuntimeError(f"{self.real_fn}: Returned not a deducible data type: {result!r}") from x
         ctr = ViewFactoryTemplateCtr(
             module_name=self._module_name,
-            attr_qual_name=params.real_qual_name(self._fn),
+            attr_qual_name=params.real_qual_name(self.real_fn),
             model_t=model_t,
             ui_t_t=ui_t_t,
             ctx_params=params.ctx_names,
