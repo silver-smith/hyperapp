@@ -41,21 +41,28 @@ class ViewFactory(ViewFactoryBase):
     def k(self):
         return self._k
 
-    async def call(self, ctx, adapter=None):
+    async def call(self, ctx, accessor=None):
+        if accessor is None:
+            accessor = htypes.accessor.model_accessor()
         if self._ui_t_t is not None:
             model_t = real_model_t(ctx.model)
             ui_t, system_fn = self._visualizer_reg(model_t)
-            return self.call_ui_t(ctx, ui_t, system_fn, adapter)
-        result = self._system_fn.call(ctx, adapter=adapter)
+            return self.call_ui_t(ctx, ui_t, system_fn, accessor)
+        fn_ctx = ctx.clone_with(
+            model_t=self._model_t,
+            )
+        result = self._system_fn.call(fn_ctx, accessor=accessor)
         return await self._await_if_coro(result)
 
-    async def call_ui_t(self, ctx, ui_t, system_fn, adapter=None):
+    async def call_ui_t(self, ctx, ui_t, system_fn, accessor=None):
         assert self._ui_t_t is not None
+        if accessor is None:
+            accessor = htypes.accessor.model_accessor()
         fn_ctx = ctx.clone_with(
             piece=ui_t,
             system_fn=system_fn,
             )
-        result = self._system_fn.call(fn_ctx, adapter=adapter)
+        result = self._system_fn.call(fn_ctx, accessor=accessor)
         return await self._await_if_coro(result)
 
     @staticmethod
@@ -87,8 +94,10 @@ class ViewMultiFactoryItem:
         self._k = k
         self._get_fn = get_fn
 
-    async def call(self, ctx, adapter=None):
-        return await self._get_fn.call(ctx, k=self._k, adapter=adapter)
+    async def call(self, ctx, accessor=None):
+        if accessor is None:
+            accessor = htypes.accessor.model_accessor()
+        return await self._get_fn.call(ctx, k=self._k, accessor=accessor)
 
 
 class ViewMultiFactory(ViewFactoryBase):

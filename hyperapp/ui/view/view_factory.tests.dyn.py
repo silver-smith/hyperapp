@@ -8,7 +8,9 @@ from .code.system_fn import ContextFn
 from .tested.code import view_factory
 
 
-def _sample_fn():
+def _sample_fn(model_t, accessor):
+    assert model_t is htypes.builtin.string
+    assert accessor == htypes.accessor.model_accessor()
     return 'sample-fn'
 
 
@@ -22,10 +24,10 @@ def test_service(view_factory_reg, ctx):
     assert factory_reg.items(ctx, model=None) == []
 
 
-def test_item(rpc_system_call_factory, format, visualizer_reg):
+async def test_item(rpc_system_call_factory, format, visualizer_reg, ctx):
     system_fn = ContextFn(
         rpc_system_call_factory=rpc_system_call_factory,
-        ctx_params=(),
+        ctx_params=('model_t', 'accessor'),
         service_params=(),
         raw_fn=_sample_fn,
         )
@@ -33,7 +35,7 @@ def test_item(rpc_system_call_factory, format, visualizer_reg):
         format=format,
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_tests.sample_k(),
-        model_t=None,
+        model_t=htypes.builtin.string,
         ui_t_t=None,
         view_t=htypes.view_factory_tests.sample_view,
         is_wrapper=False,
@@ -41,6 +43,8 @@ def test_item(rpc_system_call_factory, format, visualizer_reg):
         system_fn=system_fn,
         )
     assert isinstance(factory.item, htypes.view_factory.item)
+    result = await factory.call(ctx)
+    assert result == 'sample-fn'
 
 
 def _sample_list():
