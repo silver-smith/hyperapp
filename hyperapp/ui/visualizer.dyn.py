@@ -39,13 +39,13 @@ async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, de
     except KeyError:
         pass
     else:
-        return await factory.call(ctx, adapter=accessor)
+        return await factory.call(ctx, accessor=accessor)
     try:
         ui_t, system_fn = visualizer_reg(model_t)
     except KeyError:
         raise RuntimeError(f"No view is known for model: {model_t!r}")
     factory = default_ui_factory(ui_t)
-    return await factory.call_ui_t(ctx, ui_t, system_fn, adapter=accessor)
+    return await factory.call_ui_t(ctx, ui_t, system_fn, accessor=accessor)
 
 
 @mark.actor.resource_name_creg
