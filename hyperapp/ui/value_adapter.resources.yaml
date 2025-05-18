@@ -1,0 +1,34 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:actor_template
+- legacy_type.value_adapter:value_adapter
+definitions:
+  ValueAdapter:
+    type: legacy_type.builtin:attribute
+    value:
+      object: value_adapter.module
+      attr_name: ValueAdapter
+  ValueAdapter.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ValueAdapter
+      attr_name: from_piece
+  ui_adapter_creg-value_adapter-value_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.value_adapter:value_adapter
+      function: ValueAdapter.from_piece
+      service_params:
+      - accessor_creg
+      - convertor_creg
+  value_adapter.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: value_adapter
+      file_name: value_adapter.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module

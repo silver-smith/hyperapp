@@ -169,6 +169,7 @@ import:
 - ui.ui_model_command:get_ui_model_commands.service
 - ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
+- ui.value_adapter:ui_adapter_creg-value_adapter-value_adapter.actor-template
 - ui.view.default_view_factory:default_model_factory.service
 - ui.view.default_view_factory:default_ui_factory.service
 - ui.view.replace_view:replace_view.universal-ui-command-enumerator
@@ -418,6 +419,7 @@ definitions:
       - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template
       - ui.record_field_adapter:ui_adapter_creg-record_field_adapter-record_field_adapter.actor-template
       - ui.str_adapter:ui_adapter_creg-str_adapter-static_str_adapter.actor-template
+      - ui.value_adapter:ui_adapter_creg-value_adapter-value_adapter.actor-template
   ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
     value:
