@@ -1,0 +1,5 @@
+sample_model = record:
+  id: int
+  value: string
+
+sample_record_adapter = record

@@ -4,11 +4,34 @@ import:
 - base.mark:mark.module
 - builtins:code_registry_ctr.service
 - builtins:mosaic.service
+- legacy_type.accessor:model_accessor
+- legacy_type.accessor:record_field_accessor
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
+  ModelAccessor:
+    type: legacy_type.builtin:attribute
+    value:
+      object: accessor.module
+      attr_name: ModelAccessor
+  ModelAccessor.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ModelAccessor
+      attr_name: from_piece
+  RecordFieldAccessor:
+    type: legacy_type.builtin:attribute
+    value:
+      object: accessor.module
+      attr_name: RecordFieldAccessor
+  RecordFieldAccessor.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: RecordFieldAccessor
+      attr_name: from_piece
   accessor.module:
     type: legacy_type.builtin:python_module
     value:
@@ -23,6 +46,19 @@ definitions:
     value:
       object: accessor.module
       attr_name: accessor_creg
+  accessor_creg-accessor-model_accessor.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.accessor:model_accessor
+      function: ModelAccessor.from_piece
+      service_params: []
+  accessor_creg-accessor-record_field_accessor.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.accessor:record_field_accessor
+      function: RecordFieldAccessor.from_piece
+      service_params:
+      - ui_adapter_creg
   accessor_creg.service:
     type: legacy_type.system:service_template
     value:

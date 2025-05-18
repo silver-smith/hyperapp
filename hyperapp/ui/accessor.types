@@ -1,0 +1,5 @@
+model_accessor = record
+
+record_field_accessor = record:
+  record_adapter: ref
+  field_name: string
