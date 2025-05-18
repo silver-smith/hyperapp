@@ -6,9 +6,7 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.wiki:wiki
-- ui.qt.line_edit:int_line_edit.k
 - ui.qt.line_edit:line_edit.k
-- ui.qt.line_edit:opt_line_edit.k
 - ui.qt.wiki:wiki.k
 
 definitions:
@@ -38,13 +36,13 @@ definitions:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.builtin:int
-      value: ui.qt.line_edit:int_line_edit.k
+      value: ui.qt.line_edit:line_edit.k
 
   config_item-string-opt.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: string-opt
-      value: ui.qt.line_edit:opt_line_edit.k
+      value: ui.qt.line_edit:line_edit.k
 
   string-opt:
     type: legacy_type.builtin:optional_mt

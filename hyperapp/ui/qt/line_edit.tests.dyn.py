@@ -1,5 +1,7 @@
 from unittest.mock import Mock
 
+from hyperapp.boot.htypes import TOptional
+
 from . import htypes
 from .services import (
     mosaic,
@@ -54,23 +56,28 @@ def test_readonly_view(qapp, ctx, view_piece, state):
     assert state
 
 
-def test_edit_factory():
-    piece = line_edit.line_edit(adapter=None)
+@mark.fixture
+def accessor():
+    return htypes.accessor.model_accessor()
+
+
+def test_edit_factory(accessor):
+    piece = line_edit.line_edit(htypes.builtin.string, accessor)
     assert piece
 
 
-def test_opt_edit_factory():
-    piece = line_edit.opt_line_edit(adapter=None)
+def test_opt_edit_factory(accessor):
+    piece = line_edit.line_edit(TOptional(htypes.builtin.string), accessor)
     assert piece
 
 
-def test_int_edit_factory():
-    piece = line_edit.int_line_edit(adapter=None)
+def test_int_edit_factory(accessor):
+    piece = line_edit.line_edit(htypes.builtin.int, accessor)
     assert piece
 
 
-def test_view_factory():
-    piece = line_edit.line_view(adapter=None)
+def test_view_factory(accessor):
+    piece = line_edit.line_view(htypes.builtin.string, accessor)
     assert piece
 
 
