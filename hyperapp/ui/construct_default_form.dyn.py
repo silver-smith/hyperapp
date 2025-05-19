@@ -16,13 +16,11 @@ async def construct_default_form(visualizer, ctx, record_adapter, record_t):
             stretch=0,
             )
         cvt = type_to_text_convertor(t)
-        field_adapter = htypes.record_field_adapter.record_field_adapter(
+        field_accessor = htypes.accessor.record_field_accessor(
             record_adapter=mosaic.put(record_adapter),
             field_name=name,
-            field_t=pyobj_creg.actor_to_ref(t),
-            cvt=mosaic.put(cvt),
             )
-        field_view = await visualizer(ctx, t, accessor=field_adapter)
+        field_view = await visualizer(ctx, t, accessor=field_accessor)
         element = htypes.box_layout.element(
             view=mosaic.put(field_view),
             focusable=True,
