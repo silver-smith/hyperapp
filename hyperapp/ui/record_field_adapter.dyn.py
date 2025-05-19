@@ -22,7 +22,7 @@ class RecordFieldAdapter:
 
     @property
     def value(self):
-        return getattr(self._record_adapter.value, self._field_name)
+        return getattr(self._record_adapter.get_value(), self._field_name)
 
     def get_value(self):
         return self._cvt.value_to_view(self.value)

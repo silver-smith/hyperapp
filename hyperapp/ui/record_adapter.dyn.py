@@ -33,7 +33,7 @@ class RecordAdapter:
         return self._record_t
 
     def get_field(self, name):
-        return getattr(self.value, name)
+        return getattr(self.get_value(), name)
 
 
 class StaticRecordAdapter(RecordAdapter):
@@ -47,8 +47,7 @@ class StaticRecordAdapter(RecordAdapter):
     def __init__(self, model, record_t):
         super().__init__(model, record_t)
 
-    @property
-    def value(self):
+    def get_value(self):
         return self._model
 
 
@@ -87,8 +86,7 @@ class FnRecordAdapterBase(RecordAdapter):
         else:
             self._feed.subscribe(self)
 
-    @property
-    def value(self):
+    def get_value(self):
         if self._value.value is None:
             self._populate()
         return self._value.value

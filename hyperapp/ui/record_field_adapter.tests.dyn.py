@@ -44,4 +44,4 @@ def test_adapter(ui_adapter_creg):
     adapter.value_changed("New item")
     
     record_adapter = ui_adapter_creg.animate(record_adapter_piece, model, ctx)
-    assert record_adapter.value.text == "New item"
+    assert record_adapter.get_value().text == "New item"
