@@ -19,6 +19,9 @@ class ValueAdapter:
         return self._cvt.value_to_view(value)
 
     def value_changed(self, view_value):
-        old_value = self._accessor.get_value()
-        new_value = self._cvt.view_to_value(old_value, view_value)
+        new_value = self.view_to_value(view_value)
         self._accessor.value_changed(new_value)
+
+    def view_to_value(self, view_value):
+        old_value = self._accessor.get_value()
+        return self._cvt.view_to_value(old_value, view_value)
