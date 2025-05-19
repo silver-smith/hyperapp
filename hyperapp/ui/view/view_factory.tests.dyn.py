@@ -14,9 +14,16 @@ def _sample_fn(model_t, accessor):
     return 'sample-fn'
 
 
+@mark.fixture.obj
+def model():
+    return "Sample model"
+
+
 @mark.fixture
-def ctx():
-    return Context()
+def ctx(model):
+    return Context(
+        model=model,
+        )
 
 
 def test_service(view_factory_reg, ctx):
@@ -35,7 +42,7 @@ async def test_item(rpc_system_call_factory, format, visualizer_reg, ctx):
         format=format,
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_tests.sample_k(),
-        model_t=htypes.builtin.string,
+        model_t_list=[htypes.builtin.string],
         ui_t_t=None,
         view_t=htypes.view_factory_tests.sample_view,
         is_wrapper=False,
@@ -55,7 +62,7 @@ def _sample_get(k):
     assert isinstance(k, htypes.view_factory_tests.sample_item_k)
 
 
-def test_multi_key(rpc_system_call_factory, format, visualizer_reg, ctx):
+def test_multi_key(rpc_system_call_factory, format, visualizer_reg, model, ctx):
     list_fn = ContextFn(
         rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=(),
@@ -72,12 +79,11 @@ def test_multi_key(rpc_system_call_factory, format, visualizer_reg, ctx):
         format=format,
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_tests.sample_k(),
-        model_t=None,
+        model_t_list=None,
         ui_t_t=None,
         list_fn=list_fn,
         get_fn=get_fn,
         )
-    model = "Sample model"
     item_list = factory.get_item_list(ctx, model)
     assert len(item_list) == 1
     k = web.summon(item_list[0].k)

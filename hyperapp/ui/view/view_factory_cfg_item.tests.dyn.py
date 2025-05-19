@@ -25,7 +25,7 @@ def sample_fn():
 def template_piece(sample_fn):
     return htypes.view_factory.template(
         k=mosaic.put(htypes.view_factory_cfg_item_tests.sample_k()),
-        model_t=None,
+        model_t_list=None,
         ui_t_t=None,
         view_t=pyobj_creg.actor_to_ref(htypes.view_factory_cfg_item_tests.sample_view),
         is_wrapper=False,
@@ -38,7 +38,7 @@ def template_piece(sample_fn):
 def multi_template_piece(sample_fn):
     return htypes.view_factory.multi_template(
         k=mosaic.put(htypes.view_factory_cfg_item_tests.sample_k()),
-        model_t=None,
+        model_t_list=None,
         ui_t_t=None,
         list_fn=mosaic.put(sample_fn),
         get_fn=mosaic.put(sample_fn),

@@ -58,7 +58,7 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: index_list_ui_type_layout.k
-      model_t: null
+      model_t_list: null
       ui_t_t: legacy_type.model:index_list_ui_t
       view_t: legacy_type.list:view
       is_wrapper: false
@@ -94,7 +94,7 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: key_list_ui_type_layout.k
-      model_t: null
+      model_t_list: null
       ui_t_t: legacy_type.model:key_list_ui_t
       view_t: legacy_type.list:view
       is_wrapper: false

@@ -1,6 +1,6 @@
 template = record:
   k: ref
-  model_t: ref opt
+  model_t_list: ref list opt
   ui_t_t: ref opt
   view_t: ref
   is_wrapper: bool
@@ -9,7 +9,7 @@ template = record:
 
 multi_template = record:
   k: ref
-  model_t: ref opt
+  model_t_list: ref list opt
   ui_t_t: ref opt
   list_fn: ref
   get_fn: ref
@@ -25,7 +25,7 @@ item = record:
   view_t_str: string
   is_wrapper: bool
   view_ctx_params: string list
-  model_t: ref opt
+  model_t_list: ref list opt
 
 factory = record:
   model: ref opt

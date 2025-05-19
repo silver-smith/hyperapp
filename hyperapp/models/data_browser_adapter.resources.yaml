@@ -55,7 +55,8 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: data_browser_data_view.k
-      model_t: legacy_type.data_browser:record_view
+      model_t_list:
+      - legacy_type.data_browser:record_view
       ui_t_t: null
       view_t: legacy_type.line_edit:readonly_view
       is_wrapper: false

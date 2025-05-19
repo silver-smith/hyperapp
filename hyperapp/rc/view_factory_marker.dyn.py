@@ -13,7 +13,7 @@ from .code.marker_utils import (
     split_params,
     )
 from .code.probe import ProbeBase
-from .code.view_factory_ctr import ViewFactoryTemplateCtr
+from .code.view_factory_ctr import ViewFactoryTemplateSingleModelCtr
 
 
 class ViewFactoryProbe(ProbeBase):
@@ -71,7 +71,7 @@ class ViewFactoryProbe(ProbeBase):
             result_t = deduce_t(result)
         except DeduceTypeError as x:
             raise RuntimeError(f"{self.real_fn}: Returned not a deducible data type: {result!r}") from x
-        ctr = ViewFactoryTemplateCtr(
+        ctr = ViewFactoryTemplateSingleModelCtr(
             module_name=self._module_name,
             attr_qual_name=params.real_qual_name(self.real_fn),
             model_t=model_t,

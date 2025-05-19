@@ -35,7 +35,7 @@ def factory(format, visualizer_reg, sample_fn):
         format=format,
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_list_tests.sample_1_k(),
-        model_t=None,
+        model_t_list=None,
         ui_t_t=None,
         view_t=htypes.view_factory_list_tests.sample_view,
         is_wrapper=False,
@@ -50,7 +50,7 @@ def model_factory(format, visualizer_reg, sample_fn):
         format=format,
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_list_tests.sample_2_k(),
-        model_t=htypes.view_factory_list_tests.sample_model_1,
+        model_t_list=[htypes.view_factory_list_tests.sample_model_1],
         ui_t_t=None,
         view_t=htypes.view_factory_list_tests.sample_model_1_view,
         is_wrapper=False,
@@ -65,7 +65,7 @@ def ui_t_factory(format, visualizer_reg, sample_fn):
         format=format,
         visualizer_reg=visualizer_reg,
         k=htypes.view_factory_list_tests.sample_3_k(),
-        model_t=None,
+        model_t_list=None,
         ui_t_t=htypes.view_factory_list_tests.sample_ui_t,
         view_t=htypes.view_factory_list_tests.sample_model_2_view,
         is_wrapper=False,
@@ -150,7 +150,7 @@ def test_selector_pick():
         view_t_str="<unused>",
         is_wrapper=False,
         view_ctx_params=(),
-        model_t=None,
+        model_t_list=None,
         )
     factory = view_factory_list.view_factory_list_pick(piece, current_item)
     assert isinstance(factory, htypes.view_factory.factory)

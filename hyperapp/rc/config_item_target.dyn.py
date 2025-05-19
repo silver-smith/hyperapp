@@ -119,6 +119,10 @@ class ConfigItemResolvedTarget(Target):
         assert self._completed
         return self._ctr
 
+    @property
+    def non_complete_constructor(self):
+        return self._ctr
+
     def resolve(self, ctr):
         self._ctr = ctr
         self._provider_resource_tgt = self._ready_tgt.provider_resource_tgt

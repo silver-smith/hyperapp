@@ -284,7 +284,7 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: wrap_box_layout.k
-      model_t: null
+      model_t_list: null
       ui_t_t: null
       view_t: legacy_type.box_layout:view
       is_wrapper: true

@@ -5,11 +5,11 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
-from .code.rc_constructor import Constructor
+from .code.rc_constructor import ModuleCtr
 from .code.d_type import k_type
 
 
-class ViewFactoryTemplateCtr(Constructor):
+class ViewFactoryTemplateSingleModelCtr(ModuleCtr):
 
     _service_name = 'view_factory_reg'
 
@@ -26,7 +26,7 @@ class ViewFactoryTemplateCtr(Constructor):
             )
 
     def __init__(self, module_name, attr_qual_name, model_t, ui_t_t, ctx_params, service_params, view_t):
-        self._module_name = module_name
+        super().__init__(module_name)
         self._attr_qual_name = attr_qual_name
         self._model_t = model_t
         self._ui_t_t = ui_t_t
@@ -37,7 +37,7 @@ class ViewFactoryTemplateCtr(Constructor):
 
     @property
     def piece(self):
-        return htypes.view_factory_ctr.ctr(
+        return htypes.view_factory_ctr.single_model_ctr(
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             model_t=pyobj_creg.actor_to_ref_opt(self._model_t),
@@ -47,16 +47,91 @@ class ViewFactoryTemplateCtr(Constructor):
             view_t=pyobj_creg.actor_to_ref(self._view_t),
             )
 
-    def update_targets(self, target_set):
-        resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
-        ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
+    def update_resource_targets(self, resource_tgt, target_set):
+        _, resolved_tgt, _ = target_set.factory.config_items(
             self._service_name, self._fn_name,
             provider=resource_tgt,
-            ctr=self,
             )
+        multi_ctr = resolved_tgt.non_complete_constructor
+        if multi_ctr is None:
+            multi_ctr = ViewFactoryTemplateMultiModelCtr(
+                module_name=self._module_name,
+                attr_qual_name=self._attr_qual_name,
+                ui_t_t=self._ui_t_t,
+                ctx_params=self._ctx_params,
+                service_params=self._service_params,
+                view_t=self._view_t,
+                )
+            multi_ctr.init_view_factory_targets(resource_tgt, target_set, resolved_tgt)
+        if self._model_t is not None:
+            multi_ctr.add_model_t(self._model_t)
+
+    @property
+    def _fn_name(self):
+        return '_'.join(self._attr_qual_name)
+
+
+class ViewFactoryTemplateMultiModelCtr(ModuleCtr):
+
+    @classmethod
+    def from_piece(cls, piece):
+        if piece.model_t_list is not None:
+            model_t_list = [
+                pyobj_creg.invite(model_t) for model_t in piece.model_t_list
+                ]
+        else:
+            model_t_list = None
+        return cls(
+            module_name=piece.module_name,
+            attr_qual_name=piece.attr_qual_name,
+            ui_t_t=pyobj_creg.invite_opt(piece.ui_t_t),
+            ctx_params=piece.ctx_params,
+            service_params=piece.service_params,
+            view_t=pyobj_creg.invite(piece.view_t),
+            model_t_list=model_t_list,
+            )
+
+    def __init__(self, module_name, attr_qual_name, ui_t_t, ctx_params, service_params, view_t, model_t_list=None):
+        super().__init__(module_name)
+        self._attr_qual_name = attr_qual_name
+        self._ui_t_t = ui_t_t
+        self._ctx_params = ctx_params
+        self._service_params = service_params
+        self._view_t = view_t
+        self._view_resolved_tgt = None
+        self._model_t_set = set(model_t_list) if model_t_list is not None else None
+
+    @property
+    def piece(self):
+        return htypes.view_factory_ctr.multi_model_ctr(
+            module_name=self._module_name,
+            attr_qual_name=tuple(self._attr_qual_name),
+            model_t_list=self._model_t_list_field,
+            ui_t_t=pyobj_creg.actor_to_ref_opt(self._ui_t_t),
+            ctx_params=tuple(self._ctx_params),
+            service_params=tuple(self._service_params),
+            view_t=pyobj_creg.actor_to_ref(self._view_t),
+            )
+
+    @property
+    def _model_t_list_field(self):
+        if self._model_t_set is None:
+            return None
+        return tuple(sorted(
+            pyobj_creg.actor_to_ref(model_t) for model_t in self._model_t_set
+            ))
+
+    def init_view_factory_targets(self, resource_tgt, target_set, resolved_tgt):
         self._view_resolved_tgt = target_set.factory.config_item_resolved('view_reg', self._view_type_name)
         resolved_tgt.add_dep(self._view_resolved_tgt)
+        resolved_tgt.resolve(self)
         resource_tgt.add_cfg_item_target(resolved_tgt)
+
+    def add_model_t(self, model_t):
+        if self._model_t_set is not None:
+            self._model_t_set.add(model_t)
+        else:
+            self._model_t_set = {model_t}
 
     def get_component(self, name_to_res):
         return name_to_res[f'{self._fn_name}.view-factory-template']
@@ -81,7 +156,7 @@ class ViewFactoryTemplateCtr(Constructor):
         k = k_t()
         template = htypes.view_factory.template(
             k=mosaic.put(k),
-            model_t=pyobj_creg.actor_to_ref_opt(self._model_t),
+            model_t_list=self._model_t_list_field,
             ui_t_t=pyobj_creg.actor_to_ref_opt(self._ui_t_t),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
             is_wrapper='inner' in self._ctx_params,
@@ -89,7 +164,8 @@ class ViewFactoryTemplateCtr(Constructor):
             system_fn=mosaic.put(system_fn),
             )
         if name_to_res is not None:
-            self._add_complex_type(self._model_t, name_to_res)
+            for model_t in self._model_t_set or []:
+                self._add_complex_type(model_t, name_to_res)
             name_to_res[f'{self._fn_name}.system-fn'] = system_fn
             name_to_res[f'{self._fn_name}.k'] = k
             name_to_res[f'{self._fn_name}.view-factory-template'] = template

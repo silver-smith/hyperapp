@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:int
+- legacy_type.builtin:optional_mt
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
@@ -60,6 +61,10 @@ definitions:
       - ctx
       service_params:
       - ui_adapter_creg
+  builtin-string-opt:
+    type: legacy_type.builtin:optional_mt
+    value:
+      base: legacy_type.builtin:string
   line_edit:
     type: legacy_type.builtin:attribute
     value:
@@ -107,7 +112,10 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: line_edit.k
-      model_t: legacy_type.builtin:string
+      model_t_list:
+      - builtin-string-opt
+      - legacy_type.builtin:int
+      - legacy_type.builtin:string
       ui_t_t: null
       view_t: legacy_type.line_edit:edit_view
       is_wrapper: false
@@ -148,7 +156,8 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: line_view.k
-      model_t: legacy_type.builtin:string
+      model_t_list:
+      - legacy_type.builtin:string
       ui_t_t: null
       view_t: legacy_type.line_edit:readonly_view
       is_wrapper: false

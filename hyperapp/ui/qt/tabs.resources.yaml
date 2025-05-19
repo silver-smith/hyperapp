@@ -151,7 +151,7 @@ definitions:
     type: legacy_type.view_factory:template
     value:
       k: wrap_in_tabs.k
-      model_t: null
+      model_t_list: null
       ui_t_t: null
       view_t: legacy_type.tabs:view
       is_wrapper: true

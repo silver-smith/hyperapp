@@ -70,7 +70,8 @@ definitions:
     type: legacy_type.view_factory:multi_template
     value:
       k: record_field.k
-      model_t: legacy_type.crud:form_model
+      model_t_list:
+      - legacy_type.crud:form_model
       ui_t_t: null
       list_fn: record_field_list.system-fn
       get_fn: record_field_get.system-fn

@@ -12,14 +12,14 @@ from .code.remote_model import real_model_t
 
 class ViewFactoryBase:
 
-    def __init__(self, model_t, ui_t_t):
-        assert not (model_t is not None and ui_t_t is not None)  # Not both.
-        self._model_t = model_t
+    def __init__(self, model_t_list, ui_t_t):
+        assert not (model_t_list is not None and ui_t_t is not None)  # Not both.
+        self._model_t_list = model_t_list
         self._ui_t_t = ui_t_t
 
     def match_model(self, model_t, ui_t, only_model):
-        if self._model_t is not None:
-            return model_t is self._model_t
+        if self._model_t_list is not None:
+            return model_t in self._model_t_list
         if self._ui_t_t is not None:
             return isinstance(ui_t, self._ui_t_t)
         return not only_model
@@ -27,8 +27,8 @@ class ViewFactoryBase:
 
 class ViewFactory(ViewFactoryBase):
 
-    def __init__(self, format, visualizer_reg, k, model_t, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
-        super().__init__(model_t, ui_t_t)
+    def __init__(self, format, visualizer_reg, k, model_t_list, ui_t_t, view_t, is_wrapper, view_ctx_params, system_fn):
+        super().__init__(model_t_list, ui_t_t)
         self._format = format
         self._visualizer_reg = visualizer_reg
         self._k = k
@@ -44,13 +44,17 @@ class ViewFactory(ViewFactoryBase):
     async def call(self, ctx, accessor=None):
         if accessor is None:
             accessor = htypes.accessor.model_accessor()
-        if self._ui_t_t is not None:
+        try:
             model_t = real_model_t(ctx.model)
-            ui_t, system_fn = self._visualizer_reg(model_t)
-            return self.call_ui_t(ctx, ui_t, system_fn, accessor)
-        fn_ctx = ctx.clone_with(
-            model_t=self._model_t,
-            )
+        except KeyError:
+            fn_ctx = ctx
+        else:
+            if self._ui_t_t is not None:
+                ui_t, system_fn = self._visualizer_reg(model_t)
+                return self.call_ui_t(ctx, ui_t, system_fn, accessor)
+            fn_ctx = ctx.clone_with(
+                model_t=model_t,
+                )
         result = self._system_fn.call(fn_ctx, accessor=accessor)
         return await self._await_if_coro(result)
 
@@ -81,7 +85,7 @@ class ViewFactory(ViewFactoryBase):
             view_t_str=str(self._view_t),
             is_wrapper=self._is_wrapper,
             view_ctx_params=tuple(self._view_ctx_params),
-            model_t=None,
+            model_t_list=None,
             )
 
     def get_item_list(self, ctx, model):
@@ -102,8 +106,8 @@ class ViewMultiFactoryItem:
 
 class ViewMultiFactory(ViewFactoryBase):
 
-    def __init__(self, format, visualizer_reg, k, model_t, ui_t_t, list_fn, get_fn):
-        super().__init__(model_t, ui_t_t)
+    def __init__(self, format, visualizer_reg, k, model_t_list, ui_t_t, list_fn, get_fn):
+        super().__init__(model_t_list, ui_t_t)
         self._format = format
         self._visualizer_reg = visualizer_reg
         self._k = k
@@ -132,7 +136,7 @@ class ViewMultiFactory(ViewFactoryBase):
                 view_t_str="",
                 is_wrapper=False,
                 view_ctx_params=(),
-                model_t=None,
+                model_t_list=None,
                 )
             item_list.append(item)
         return item_list

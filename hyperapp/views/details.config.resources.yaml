@@ -75,7 +75,7 @@ definitions:
     type: legacy_type.view_factory:multi_template
     value:
       k: details.k
-      model_t: null
+      model_t_list: null
       ui_t_t: legacy_type.model:index_list_ui_t
       list_fn: details_command_list.system-fn
       get_fn: details_get.system-fn

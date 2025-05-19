@@ -6,7 +6,8 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:template
-- legacy_type.view_factory_ctr:ctr
+- legacy_type.view_factory_ctr:multi_model_ctr
+- legacy_type.view_factory_ctr:single_model_ctr
 - rc.d_type:d_type.module
 - rc.rc_constructor:rc_constructor.module
 
@@ -21,27 +22,47 @@ definitions:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         htypes.view_factory.template: legacy_type.view_factory:template
-        htypes.view_factory_ctr.ctr: legacy_type.view_factory_ctr:ctr
+        htypes.view_factory_ctr.multi_model_ctr: legacy_type.view_factory_ctr:multi_model_ctr
+        htypes.view_factory_ctr.single_model_ctr: legacy_type.view_factory_ctr:single_model_ctr
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
         code.d_type: rc.d_type:d_type.module
 
-  ViewFactoryTemplateCtr:
+  ViewFactoryTemplateSingleModelCtr:
     type: legacy_type.builtin:attribute
     value:
       object: view_factory_ctr.module
-      attr_name: ViewFactoryTemplateCtr
+      attr_name: ViewFactoryTemplateSingleModelCtr
 
-  ViewFactoryTemplateCtr.from_piece:
+  ViewFactoryTemplateSingleModelCtr.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ViewFactoryTemplateCtr
+      object: ViewFactoryTemplateSingleModelCtr
       attr_name: from_piece
 
-  view_factory_ctr-ctr.actor-template:
+  view_factory_ctr-single_model_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.view_factory_ctr:ctr
-      function: ViewFactoryTemplateCtr.from_piece
+      t: legacy_type.view_factory_ctr:single_model_ctr
+      function: ViewFactoryTemplateSingleModelCtr.from_piece
+      service_params: []
+
+  ViewFactoryTemplateMultiModelCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_factory_ctr.module
+      attr_name: ViewFactoryTemplateMultiModelCtr
+
+  ViewFactoryTemplateMultiModelCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ViewFactoryTemplateMultiModelCtr
+      attr_name: from_piece
+
+  view_factory_ctr-multi_model_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.view_factory_ctr:multi_model_ctr
+      function: ViewFactoryTemplateMultiModelCtr.from_piece
       service_params: []

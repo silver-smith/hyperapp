@@ -96,7 +96,8 @@ import:
 - rc.test_requirement:test_target-tested_code_resource.actor-template
 - rc.type_req:type_resource-type_req.actor-template
 - rc.view_ctr:view_ctr-template_ctr.actor-template
-- rc.view_factory_ctr:view_factory_ctr-ctr.actor-template
+- rc.view_factory_ctr:view_factory_ctr-multi_model_ctr.actor-template
+- rc.view_factory_ctr:view_factory_ctr-single_model_ctr.actor-template
 - rc.view_factory_marker:view_factory.marker-template
 - rc.view_marker:view.marker-template
 
@@ -202,7 +203,8 @@ definitions:
       - rc.service_ctr:service_resource-service_template_ctr.actor-template
       - rc.service_probe_resource:service_resource-service_probe_ctr.actor-template
       - rc.view_ctr:view_ctr-template_ctr.actor-template
-      - rc.view_factory_ctr:view_factory_ctr-ctr.actor-template
+      - rc.view_factory_ctr:view_factory_ctr-multi_model_ctr.actor-template
+      - rc.view_factory_ctr:view_factory_ctr-single_model_ctr.actor-template
 
   rc_job_creg:
     type: legacy_type.system:item_list_config
