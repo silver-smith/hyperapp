@@ -39,7 +39,7 @@ async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, de
     except KeyError:
         pass
     else:
-        return await factory.call(ctx, accessor=accessor)
+        return await factory.call(ctx, model_t=model_t, accessor=accessor)
     try:
         ui_t, system_fn = visualizer_reg(model_t)
     except KeyError:

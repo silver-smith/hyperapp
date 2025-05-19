@@ -41,20 +41,23 @@ class ViewFactory(ViewFactoryBase):
     def k(self):
         return self._k
 
-    async def call(self, ctx, accessor=None):
+    async def call(self, ctx, model_t=None, accessor=None):
         if accessor is None:
             accessor = htypes.accessor.model_accessor()
-        try:
-            model_t = real_model_t(ctx.model)
-        except KeyError:
-            fn_ctx = ctx
-        else:
+        if model_t is None:
+            try:
+                model_t = real_model_t(ctx.model)
+            except KeyError:
+                pass
+        if model_t is not None:
             if self._ui_t_t is not None:
                 ui_t, system_fn = self._visualizer_reg(model_t)
                 return self.call_ui_t(ctx, ui_t, system_fn, accessor)
             fn_ctx = ctx.clone_with(
                 model_t=model_t,
                 )
+        else:
+            fn_ctx = ctx
         result = self._system_fn.call(fn_ctx, accessor=accessor)
         return await self._await_if_coro(result)
 
@@ -98,10 +101,10 @@ class ViewMultiFactoryItem:
         self._k = k
         self._get_fn = get_fn
 
-    async def call(self, ctx, accessor=None):
+    async def call(self, ctx, model_t=None, accessor=None):
         if accessor is None:
             accessor = htypes.accessor.model_accessor()
-        return await self._get_fn.call(ctx, k=self._k, accessor=accessor)
+        return await self._get_fn.call(ctx, k=self._k, model_t=model_t, accessor=accessor)
 
 
 class ViewMultiFactory(ViewFactoryBase):
