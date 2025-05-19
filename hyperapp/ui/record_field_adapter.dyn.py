@@ -24,7 +24,7 @@ class RecordFieldAdapter:
     def value(self):
         return getattr(self._record_adapter.value, self._field_name)
 
-    def get_text(self):
+    def get_value(self):
         return self._cvt.value_to_view(self.value)
 
     def text_to_value(self, text):
