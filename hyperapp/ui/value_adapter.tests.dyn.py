@@ -21,4 +21,5 @@ def test_value_adapter(ctx):
         convertor=mosaic.put(cvt),
         )
     adapter = value_adapter.ValueAdapter.from_piece(piece, model, ctx)
-    assert adapter.get_value() == '123'
+    assert adapter.get_value() == 123
+    assert adapter.get_view_value() == '123'

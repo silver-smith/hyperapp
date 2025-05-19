@@ -52,7 +52,7 @@ class EditLineView(View):
         if state:
             text = state.text
         else:
-            text = self._adapter.get_value()
+            text = self._adapter.get_view_value()
         w.setText(text)
         w.textEdited.connect(self._on_text_edited)
         return w

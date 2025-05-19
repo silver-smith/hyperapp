@@ -66,7 +66,7 @@ class FormView(BoxLayoutView):
         return self.get_value(widget)
 
     def get_value(self, widget):
-        return self._adapter.value
+        return self._adapter.get_value()
 
 
 @mark.view_factory.ui_t

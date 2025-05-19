@@ -15,6 +15,9 @@ class ValueAdapter:
         self._cvt = cvt
 
     def get_value(self):
+        return self._accessor.get_value()
+
+    def get_view_value(self):
         value = self._accessor.get_value()
         return self._cvt.value_to_view(value)
 

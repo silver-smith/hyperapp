@@ -21,7 +21,7 @@ class DataBrowserViewDataAdapter:
     def model(self):
         return self._data
 
-    def get_text(self):
+    def get_view_value(self):
         return str(self._data)
 
     def text_to_value(self, text):
