@@ -15,7 +15,6 @@ async def construct_default_form(visualizer, ctx, record_adapter, record_t):
             focusable=False,
             stretch=0,
             )
-        cvt = type_to_text_convertor(t)
         field_accessor = htypes.accessor.record_field_accessor(
             record_adapter=mosaic.put(record_adapter),
             field_name=name,
