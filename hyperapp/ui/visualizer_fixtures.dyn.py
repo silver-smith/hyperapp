@@ -12,13 +12,25 @@ def default_model_factory_config():
         }
 
 
+@mark.fixture.obj
+def sample_string_view():
+    return htypes.visualizer_fixtures.sample_string_view()
+
+
+@mark.fixture.obj
+def sample_int_view():
+    return htypes.visualizer_fixtures.sample_int_view()
+
+
 @mark.config_fixture('view_factory_reg')
-def view_factory_reg_config():
-    factory = AsyncMock()
-    factory.call.return_value = htypes.visualizer_fixtures.sample_view()
+def view_factory_reg_config(sample_string_view, sample_int_view):
+    string_view_factory = AsyncMock()
+    string_view_factory.call.return_value = sample_string_view
+    int_view_factory = AsyncMock()
+    int_view_factory.call.return_value = sample_int_view
     return {
-        htypes.visualizer_fixtures.string_view_k(): factory,
-        htypes.visualizer_fixtures.int_view_k(): factory,
+        htypes.visualizer_fixtures.string_view_k(): string_view_factory,
+        htypes.visualizer_fixtures.int_view_k(): int_view_factory,
         }
 
 
@@ -32,7 +44,8 @@ def view_fn_mock(piece):
 @mark.fixture
 def visualizer_view_reg_config(view_fn_mock):
     return {
-        **view_fn_mock(htypes.visualizer_fixtures.sample_view())
+        **view_fn_mock(htypes.visualizer_fixtures.sample_string_view()),
+        **view_fn_mock(htypes.visualizer_fixtures.sample_int_view()),
         }
 
 

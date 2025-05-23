@@ -10,6 +10,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .fixtures import visualizer_fixtures
 from .tested.code import visualizer as visualizer_module
 
 
@@ -18,28 +19,14 @@ def ctx():
     return Context()
 
 
-@mark.config_fixture('model_layout_reg')
-def model_layout_reg_config():
-    def k(t):
-        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
-    return {
-        k(htypes.builtin.int): htypes.text.edit_view(
-            adapter=mosaic.put(htypes.int_adapter.int_adapter()),
-            ),
-        k(htypes.builtin.string): htypes.text.edit_view(
-            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
-            ),
-        }
+async def test_string(visualizer, sample_string_view, ctx):
+    view = await visualizer(ctx, htypes.builtin.string, accessor=None)
+    assert view == sample_string_view
 
 
-async def test_string(visualizer, ctx):
-    layout = await visualizer(ctx, htypes.builtin.string, accessor=None)
-    assert isinstance(layout, htypes.text.edit_view)
-
-
-async def test_int(visualizer, ctx):
-    layout = await visualizer(ctx, htypes.builtin.int, accessor=None)
-    assert isinstance(layout, htypes.text.edit_view)
+async def test_int(visualizer, sample_int_view, ctx):
+    view = await visualizer(ctx, htypes.builtin.int, accessor=None)
+    assert view == sample_int_view
 
 
 async def test_list(visualizer, ctx):
@@ -47,8 +34,8 @@ async def test_list(visualizer, ctx):
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = await visualizer(ctx, deduce_t(value), accessor=None)
-    assert isinstance(layout, htypes.list.view)
+    view = await visualizer(ctx, deduce_t(value), accessor=None)
+    assert isinstance(view, htypes.list.view)
 
 
 def sample_fn():
