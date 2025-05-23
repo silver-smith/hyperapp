@@ -71,7 +71,7 @@ class ViewTextView(View):
 
     def get_value(self, widget):
         text = self.get_plain_text(widget)
-        return self._adapter.text_to_value(text)
+        return self._adapter.view_to_value(text)
 
 
 class EditTextView(View):
