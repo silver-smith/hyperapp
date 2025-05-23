@@ -1,5 +1,6 @@
 import asyncio
 from pathlib import Path
+from unittest.mock import AsyncMock
 
 from PySide6 import QtWidgets
 
@@ -7,20 +8,35 @@ from . import htypes
 from .services import (
     mosaic,
     project_factory,
-    pyobj_creg,
     )
 from .code.mark import mark
+from .fixtures import visualizer_fixtures
 from .tested.code import client
 
 
-@mark.config_fixture('model_layout_reg')
-def model_layout_reg_config():
-    def k(t):
-        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
+@mark.fixture
+def adapter():
+    accessor = htypes.accessor.model_accessor()
+    cvt = htypes.type_convertor.noop_convertor()
+    return htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
+
+
+@mark.fixture
+def text_view(adapter):
+    return htypes.text.readonly_view(
+        adapter=mosaic.put(adapter),
+        )
+
+
+@mark.config_fixture('view_factory_reg')
+def view_factory_reg_config(text_view):
+    factory = AsyncMock()
+    factory.call.return_value = text_view
     return {
-        k(htypes.builtin.string): htypes.text.edit_view(
-            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
-            ),
+        htypes.visualizer_fixtures.string_view_k(): factory,
         }
 
 
