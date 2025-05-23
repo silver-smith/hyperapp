@@ -51,9 +51,7 @@ def model_command_reg_config(unbound_command):
 
 @mark.fixture
 def details_view():
-    return htypes.text.edit_view(
-        adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
-        )
+    return htypes.label.view("Sample label")
 
 
 @mark.config_fixture('model_layout_reg')
