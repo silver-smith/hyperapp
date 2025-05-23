@@ -13,15 +13,11 @@ from .tested.code import controller
 from .tested.code import layout
 
 
-def make_text_layout():
-    adapter = htypes.str_adapter.static_str_adapter()
-    return htypes.text.readonly_view(mosaic.put(adapter))
-
-
-def make_default_piece():
-    text = make_text_layout()
+@mark.fixture
+def default_piece():
+    label = htypes.label.view("Sample label")
     navigator = htypes.navigator.view(
-        current_view=mosaic.put(text),
+        current_view=mosaic.put(label),
         current_model=mosaic.put("Sample model"),
         layout_k=None,
         prev=None,
@@ -39,9 +35,10 @@ def make_default_piece():
         ))
 
 
-def make_default_state():
-    text_state = htypes.text.state('')
-    navigator_state = text_state
+@mark.fixture
+def default_state():
+    label_state = htypes.label.state()
+    navigator_state = label_state
     tabs_state = htypes.tabs.state(
         current_tab=0,
         tabs=(mosaic.put(navigator_state),),
@@ -59,10 +56,10 @@ def make_default_state():
 
 
 @mark.fixture
-def default_layout():
+def default_layout(default_piece, default_state):
     return htypes.root.layout(
-        piece=make_default_piece(),
-        state=make_default_state(),
+        piece=default_piece,
+        state=default_state,
         )
 
 
