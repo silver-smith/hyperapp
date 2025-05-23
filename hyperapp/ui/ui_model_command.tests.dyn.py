@@ -9,6 +9,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import ModelCommandFn, ModelCommandAddFn, UnboundModelCommand
+from .fixtures import visualizer_fixtures
 from .fixtures import error_view_fixtures
 from .tested.code import ui_model_command
 
@@ -139,17 +140,6 @@ def test_split_command_result():
         )
     model, key = ui_model_command.split_command_result(result)
     assert model == 'sample-model'
-
-
-@mark.config_fixture('model_layout_reg')
-def model_layout_reg_config():
-    def k(t):
-        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
-    return {
-        k(htypes.builtin.string): htypes.text.edit_view(
-            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
-            ),
-        }
 
 
 async def test_command_run_open_view(get_ui_model_commands, lcs):
