@@ -23,20 +23,19 @@ def model():
 
 @mark.fixture
 def piece(model):
-    adapter_piece = htypes.str_adapter.static_str_adapter()
-    text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
+    label = htypes.label.view("Sample label")
     prev_rec = htypes.navigator.history_rec(
-        view=mosaic.put(text_piece),
+        view=mosaic.put(label),
         model=mosaic.put(model),
-        state=mosaic.put(htypes.text.state('')),
+        state=mosaic.put(htypes.label.state()),
         layout_k=None,
         prev=None,
         next=None,
         )
     next_rec = htypes.navigator.history_rec(
-        view=mosaic.put(text_piece),
+        view=mosaic.put(label),
         model=mosaic.put(model),
-        state=mosaic.put(htypes.text.state('')),
+        state=mosaic.put(htypes.label.state()),
         layout_k=None,
         prev=None,
         next=None,
@@ -46,7 +45,7 @@ def piece(model):
         model_t=pyobj_creg.actor_to_ref(model_t),
         )
     return htypes.navigator.view(
-        current_view=mosaic.put(text_piece),
+        current_view=mosaic.put(label),
         current_model=mosaic.put(model),
         layout_k=mosaic.put(layout_k),
         prev=mosaic.put(prev_rec),
@@ -56,7 +55,7 @@ def piece(model):
 
 @mark.fixture
 def state():
-    return htypes.text.state('')
+    return htypes.label.state()
 
 
 @mark.fixture
@@ -77,7 +76,7 @@ def test_widget(qapp, state, ctx, view):
     widget = view.construct_widget(state, ctx)
     assert view.piece
     state = view.widget_state(widget)
-    assert state == htypes.text.state("Sample piece")
+    assert state == htypes.label.state()
 
 
 @mark.fixture.obj
@@ -87,18 +86,16 @@ def model_layout_reg():
 
 async def test_open_with_default_model_layout(view_reg, qapp, model, state, ctx, view):
     widget = view.construct_widget(state, ctx)
-    adapter_piece = htypes.str_adapter.static_str_adapter()
-    text_piece = htypes.text.edit_view(mosaic.put(adapter_piece))
-    new_child_view = view_reg.animate(text_piece, ctx)
+    label = htypes.label.view("Sample label")
+    new_child_view = view_reg.animate(label, ctx)
     new_child_widget = new_child_view.construct_widget(None, ctx)
     await view.open(ctx, model, new_child_view, new_child_widget)
 
 
 async def test_set_layout(view_reg, model_layout_reg, qapp, state, ctx, view):
     widget = view.construct_widget(state, ctx)
-    adapter_piece = htypes.str_adapter.static_str_adapter()
-    text_piece = htypes.text.edit_view(mosaic.put(adapter_piece))
-    new_child_view = view_reg.animate(text_piece, ctx)
+    label = htypes.label.view("Another sample label")
+    new_child_view = view_reg.animate(label, ctx)
     new_child_widget = new_child_view.construct_widget(None, ctx)
     view.replace_child(ctx, widget, 0, new_child_view, new_child_widget)
     rctx = Context()
