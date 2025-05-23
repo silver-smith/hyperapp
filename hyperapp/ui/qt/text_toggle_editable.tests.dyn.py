@@ -14,17 +14,26 @@ from .tested.code import text_toggle_editable
 
 @mark.fixture
 def adapter():
-    return htypes.str_adapter.static_str_adapter()
+    accessor = htypes.accessor.model_accessor()
+    cvt = htypes.type_convertor.noop_convertor()
+    return htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
 
 
 @mark.fixture
-def readonly_piece(adapter):
-    return htypes.text.readonly_view(mosaic.put(adapter))
+def view_piece(adapter):
+    return htypes.text.readonly_view(
+        adapter=mosaic.put(adapter),
+        )
 
 
 @mark.fixture
 def edit_piece(adapter):
-    return htypes.text.edit_view(mosaic.put(adapter))
+    return htypes.text.edit_view(
+        adapter=mosaic.put(adapter),
+        )
 
 
 @mark.fixture
@@ -49,8 +58,8 @@ def hook():
     return Mock()
 
 
-def test_readonly_to_edit(qapp, view_reg, readonly_piece, state, model, ctx, hook):
-    view = view_reg.animate(readonly_piece, ctx)
+def test_readonly_to_edit(qapp, view_reg, view_piece, state, model, ctx, hook):
+    view = view_reg.animate(view_piece, ctx)
     text_toggle_editable.toggle_editable(model, view, hook, ctx)
     hook.replace_view.assert_called_once()
 
