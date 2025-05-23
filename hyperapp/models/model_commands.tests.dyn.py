@@ -9,6 +9,7 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.model_command import ModelCommandFn, UnboundModelCommand
+from .fixtures import visualizer_fixtures
 from .tested.code import command_list_model, model_commands
 
 
@@ -93,17 +94,6 @@ def piece():
 def test_list_model_commands(lcs, ctx, piece):
     item_list = model_commands.list_model_commands(piece, ctx, lcs)
     assert 'Sample command 2' in [item.name for item in item_list]
-
-
-@mark.config_fixture('model_layout_reg')
-def model_layout_reg_config():
-    def k(t):
-        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
-    return {
-        k(htypes.builtin.string): htypes.text.edit_view(
-            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
-            ),
-        }
 
 
 async def test_run_command(lcs, piece):
