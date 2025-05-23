@@ -20,17 +20,26 @@ def ctx():
 
 @mark.fixture
 def adapter():
-    return htypes.str_adapter.static_str_adapter()
+    accessor = htypes.accessor.model_accessor()
+    cvt = htypes.type_convertor.noop_convertor()
+    return htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
 
 
 @mark.fixture
 def view_piece(adapter):
-    return htypes.line_edit.readonly_view(mosaic.put(adapter))
+    return htypes.line_edit.readonly_view(
+        adapter=mosaic.put(adapter),
+        )
 
 
 @mark.fixture
 def edit_piece(adapter):
-    return htypes.line_edit.edit_view(mosaic.put(adapter))
+    return htypes.line_edit.edit_view(
+        adapter=mosaic.put(adapter),
+        )
 
 
 @mark.fixture
@@ -43,8 +52,8 @@ def test_edit_view(qapp, ctx, edit_piece, state):
     view = line_edit.EditLineView.from_piece(edit_piece, model, ctx)
     widget = view.construct_widget(state, ctx)
     assert view.piece == edit_piece
-    state = view.widget_state(widget)
-    assert state
+    widget_state = view.widget_state(widget)
+    assert widget_state == state
 
 
 def test_readonly_view(qapp, ctx, view_piece, state):
@@ -52,8 +61,8 @@ def test_readonly_view(qapp, ctx, view_piece, state):
     view = line_edit.ViewLineView.from_piece(view_piece, model, ctx)
     widget = view.construct_widget(state, ctx)
     assert view.piece == view_piece
-    state = view.widget_state(widget)
-    assert state
+    widget_state = view.widget_state(widget)
+    assert widget_state == state
 
 
 @mark.fixture
