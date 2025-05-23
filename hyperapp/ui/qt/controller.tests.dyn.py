@@ -15,10 +15,9 @@ from .tested.code import window_commands
 
 @mark.fixture
 def default_piece():
-    adapter = htypes.str_adapter.static_str_adapter()
-    text = htypes.text.readonly_view(mosaic.put(adapter))
+    label = htypes.label.view("Sample label")
     navigator = htypes.navigator.view(
-        current_view=mosaic.put(text),
+        current_view=mosaic.put(label),
         current_model=mosaic.put("Sample model"),
         layout_k=None,
         prev=None,
@@ -38,8 +37,8 @@ def default_piece():
 
 @mark.fixture
 def default_state():
-    text_state = htypes.text.state('')
-    navigator_state = text_state
+    label_state = htypes.label.state()
+    navigator_state = label_state
     tabs_state = htypes.tabs.state(
         current_tab=0,
         tabs=(mosaic.put(navigator_state),),
