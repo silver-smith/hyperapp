@@ -20,7 +20,7 @@ def test_adapter(record_view):
     model = record_view
     piece = htypes.data_browser.record_data_adapter()
     adapter = data_browser_adapter.DataBrowserViewDataAdapter.from_piece(piece, model, ctx)
-    assert type(adapter.get_text()) is str
+    assert type(adapter.get_view_value()) is str
 
 
 def test_data_view_factory():
