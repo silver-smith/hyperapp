@@ -3,50 +3,58 @@ from .tested.code import text
 from .services import (
     mosaic,
     )
+from .code.mark import mark
 from .fixtures import qapp_fixtures
 from .code.context import Context
 
 
-def make_adapter():
-    return htypes.str_adapter.static_str_adapter()
+@mark.fixture
+def adapter():
+    accessor = htypes.accessor.model_accessor()
+    cvt = htypes.type_convertor.noop_convertor()
+    return htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
 
 
-def make_view_piece():
-    adapter = make_adapter()
-    return htypes.text.readonly_view(mosaic.put(adapter))
+@mark.fixture
+def view_piece(adapter):
+    return htypes.text.readonly_view(
+        adapter=mosaic.put(adapter),
+        )
 
 
-def make_edit_piece():
-    adapter = make_adapter()
-    return htypes.text.edit_view(mosaic.put(adapter))
+@mark.fixture
+def edit_piece(adapter):
+    return htypes.text.edit_view(
+        adapter=mosaic.put(adapter),
+        )
 
 
-def make_state():
+@mark.fixture.obj
+def state():
     return htypes.text.state('')
 
 
-def test_view_text(qapp):
+def test_view_text(qapp, view_piece, state):
     ctx = Context()
-    piece = make_view_piece()
-    state = make_state()
     model = "Sample text"
-    view = text.ViewTextView.from_piece(piece, model, ctx)
+    view = text.ViewTextView.from_piece(view_piece, model, ctx)
     widget = view.construct_widget(state, ctx)
-    assert view.piece
-    state = view.widget_state(widget)
-    assert state
+    assert view.piece == view_piece
+    widget_state = view.widget_state(widget)
+    assert widget_state == state, widget_state
 
 
-def test_edit_text(qapp):
+def test_edit_text(qapp, edit_piece, state):
     ctx = Context()
-    piece = make_edit_piece()
-    state = make_state()
     model = "Sample text"
-    view = text.EditTextView.from_piece(piece, model, ctx)
+    view = text.EditTextView.from_piece(edit_piece, model, ctx)
     widget = view.construct_widget(state, ctx)
-    assert view.piece
-    state = view.widget_state(widget)
-    assert state
+    assert view.piece == edit_piece
+    widget_state = view.widget_state(widget)
+    assert widget_state == state
 
 
 def test_view_factory():

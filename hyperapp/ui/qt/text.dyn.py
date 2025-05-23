@@ -46,7 +46,11 @@ class ViewTextView(View):
 
     def construct_widget(self, state, ctx):
         w = QtWidgets.QTextBrowser()
-        w.setPlainText(self._adapter.get_text())
+        if isinstance(state, htypes.text.state):
+            text = state.text
+        else:
+            text = self._adapter.get_view_value()
+        w.setPlainText(text)
         return w
 
     def widget_state(self, widget):
