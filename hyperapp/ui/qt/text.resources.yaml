@@ -8,12 +8,13 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_fn_cfg_item
-- legacy_type.str_adapter:static_str_adapter
 - legacy_type.system_fn:ctx_fn
 - legacy_type.text:edit_view
 - legacy_type.text:readonly_view
 - legacy_type.text:state
+- legacy_type.value_adapter:value_adapter
 - legacy_type.view_factory:template
+- ui.type_convertor:type_convertor.module
 - ui.view.view:view.module
 definitions:
   EditTextView:
@@ -73,12 +74,13 @@ definitions:
       file_name: text.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        code.type_convertor: ui.type_convertor:type_convertor.module
         code.view: ui.view.view:view.module
         htypes.builtin.string: legacy_type.builtin:string
-        htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.readonly_view: legacy_type.text:readonly_view
         htypes.text.state: legacy_type.text:state
+        htypes.value_adapter.value_adapter: legacy_type.value_adapter:value_adapter
         services.mosaic: builtins:mosaic.service
   text_edit:
     type: legacy_type.builtin:attribute
@@ -93,7 +95,8 @@ definitions:
     value:
       function: text_edit
       ctx_params:
-      - adapter
+      - model_t
+      - accessor
       service_params: []
   text_edit.view-factory-template:
     type: legacy_type.view_factory:template
@@ -129,7 +132,8 @@ definitions:
     value:
       function: text_view
       ctx_params:
-      - adapter
+      - model_t
+      - accessor
       service_params: []
   text_view.view-factory-template:
     type: legacy_type.view_factory:template

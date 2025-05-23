@@ -10,6 +10,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.view import View
+from .code.type_convertor import type_to_text_convertor
 
 log = logging.getLogger(__name__)
 
@@ -125,18 +126,24 @@ class EditTextView(View):
 
 
 @mark.view_factory.model_t(htypes.builtin.string)
-def text_view(adapter=None):
-    if adapter is None:
-        adapter = htypes.str_adapter.static_str_adapter()
+def text_view(model_t, accessor):
+    cvt = type_to_text_convertor(model_t)
+    adapter = htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
     return htypes.text.readonly_view(
         adapter=mosaic.put(adapter),
         )
 
 
 @mark.view_factory.model_t(htypes.builtin.string)
-def text_edit(adapter=None):
-    if adapter is None:
-        adapter = htypes.str_adapter.static_str_adapter()
+def text_edit(model_t, accessor):
+    cvt = type_to_text_convertor(model_t)
+    adapter = htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
     return htypes.text.edit_view(
         adapter=mosaic.put(adapter),
         )

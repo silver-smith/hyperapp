@@ -57,11 +57,16 @@ def test_edit_text(qapp, edit_piece, state):
     assert widget_state == state
 
 
-def test_view_factory():
-    piece = text.text_view(adapter=None)
+@mark.fixture
+def accessor():
+    return htypes.accessor.model_accessor()
+
+
+def test_view_factory(accessor):
+    piece = text.text_view(htypes.builtin.string, accessor)
     assert piece
 
 
-def test_edit_factory():
-    piece = text.text_edit(adapter=None)
+def test_edit_factory(accessor):
+    piece = text.text_edit(htypes.builtin.string, accessor)
     assert piece
