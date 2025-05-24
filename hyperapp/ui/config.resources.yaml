@@ -131,7 +131,6 @@ import:
 - ui.qt.window_commands:window-view-quit.command-cfg-item
 - ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-template
 - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template
-- ui.record_field_adapter:ui_adapter_creg-record_field_adapter-record_field_adapter.actor-template
 - ui.ref_formatter:formatter_creg-builtin-ref.actor-template
 - ui.remote_command:model-remote_model-remote_command_enum.command-cfg-item
 - ui.remote_command:remote_command_from_model_command.service
@@ -410,7 +409,6 @@ definitions:
       - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
       - ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-template
       - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template
-      - ui.record_field_adapter:ui_adapter_creg-record_field_adapter-record_field_adapter.actor-template
       - ui.value_adapter:ui_adapter_creg-value_adapter-value_adapter.actor-template
   ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
