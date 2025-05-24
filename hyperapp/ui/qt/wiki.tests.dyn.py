@@ -8,6 +8,7 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .fixtures import qapp_fixtures
+from .fixtures import visualizer_fixtures
 from .tested.code import wiki
 
 
@@ -92,17 +93,6 @@ def test_text_view(qapp, ctx, text_piece, state):
     widget_state = view.widget_state(widget)
     assert isinstance(widget_state, htypes.wiki.state)
     assert widget_state == state
-
-
-@mark.config_fixture('model_layout_reg')
-def model_layout_reg_config():
-    def k(t):
-        return htypes.ui.model_layout_k(pyobj_creg.actor_to_ref(t))
-    return {
-        k(htypes.builtin.string): htypes.text.edit_view(
-            adapter=mosaic.put(htypes.str_adapter.static_str_adapter()),
-            ),
-        }
 
 
 async def test_wiki_view(qapp, ctx, wiki_piece, state, model):
