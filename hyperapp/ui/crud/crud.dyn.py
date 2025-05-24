@@ -272,7 +272,7 @@ class Crud:
                 base_view_piece = self._model_layout_reg[layout_k]
             except KeyError:
                 if isinstance(value_t, TPrimitive):
-                    base_view_piece = self._primitive_view(value_t)
+                    base_view_piece = await self._primitive_view(ctx, value_t)
                 else:
                     base_view_piece = await self._form_view(ctx, value_t)
             if isinstance(value_t, TPrimitive):
@@ -331,11 +331,8 @@ class Crud:
         adapter = htypes.crud.record_adapter()
         return await construct_default_form(self._visualizer, ctx, adapter, value_t)
 
-    def _primitive_view(self, value_t):
-        if value_t is htypes.builtin.string:
-            adapter = htypes.str_adapter.static_str_adapter()
-            return htypes.text.edit_view(mosaic.put(adapter))
-        raise NotImplementedError(f"TODO: CRUD editor: Add support for primitive type: {value_t}")
+    async def _primitive_view(self, ctx, value_t):
+        return await self._visualizer(ctx, value_t)
 
     def _run_init(self, ctx, init_action_fn, model, args):
         fn_ctx = self.fn_ctx(ctx, model, args)
