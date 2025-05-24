@@ -3,11 +3,6 @@ canned_ctl_item = record:
   path: int list
 
 
-external_ui_model_command_impl = record:
-  model_command_impl: ref
-  layout: ref opt
-
-
 # For storing command list in lcs.
 ui_model_command_list = record:
   commands: ref list
