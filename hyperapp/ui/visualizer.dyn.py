@@ -22,7 +22,9 @@ def _primitive_value_layout(t):
 
 
 @mark.service
-async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, default_ui_factory, ctx, model_t, accessor=None):
+async def visualizer(
+        model_layout_reg, visualizer_reg, default_model_factory, default_ui_factory,
+        ctx, model_t, accessor=None, properties=None, **kw):
     layout_k = htypes.ui.model_layout_k(
         model_t=pyobj_creg.actor_to_ref(model_t),
         )
@@ -34,8 +36,9 @@ async def visualizer(model_layout_reg, visualizer_reg, default_model_factory, de
         return _primitive_value_layout(model_t)
     except KeyError:
         pass
+    all_properties = {**(properties or {}), **kw}
     try:
-        factory = default_model_factory(model_t)
+        factory = default_model_factory(model_t, all_properties)
     except KeyError:
         pass
     else:

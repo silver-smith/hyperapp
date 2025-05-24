@@ -11,3 +11,13 @@ ui_model_command_list = record:
 # model_layout_reg key.
 model_layout_k = record:
   model_t: ref
+
+
+# Visualizer property for default model factory.
+property = record:
+  name: string
+  value: bool
+
+default_model_factory = record:
+  properties: property list
+  layout_k: ref

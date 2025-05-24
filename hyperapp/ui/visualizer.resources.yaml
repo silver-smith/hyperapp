@@ -75,3 +75,5 @@ definitions:
       - ctx
       - model_t
       - accessor
+      - properties
+      - kw

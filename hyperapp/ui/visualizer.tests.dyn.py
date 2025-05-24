@@ -20,12 +20,12 @@ def ctx():
 
 
 async def test_string(visualizer, sample_string_view, ctx):
-    view = await visualizer(ctx, htypes.builtin.string, accessor=None)
+    view = await visualizer(ctx, htypes.builtin.string, accessor=None, inline=True)
     assert view == sample_string_view
 
 
 async def test_int(visualizer, sample_int_view, ctx):
-    view = await visualizer(ctx, htypes.builtin.int, accessor=None)
+    view = await visualizer(ctx, htypes.builtin.int, accessor=None, properties={'inline': False})
     assert view == sample_int_view
 
 
@@ -34,7 +34,7 @@ async def test_list(visualizer, ctx):
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    view = await visualizer(ctx, deduce_t(value), accessor=None)
+    view = await visualizer(ctx, deduce_t(value), accessor=None, properties=None)
     assert isinstance(view, htypes.list.view)
 
 
@@ -78,7 +78,7 @@ def view_factory_reg_config():
 
 async def test_sample_list(visualizer, ctx):
     model_t = htypes.visualizer_tests.sample_list
-    view = await visualizer(ctx, model_t, accessor=None)
+    view = await visualizer(ctx, model_t, accessor=None, properties=None)
     assert view == htypes.visualizer_tests.sample_view()
 
 

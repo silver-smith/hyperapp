@@ -1,14 +1,25 @@
 from unittest.mock import Mock, AsyncMock
 
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.mark import mark
 
 
 @mark.config_fixture('default_model_factory')
 def default_model_factory_config():
+    string_factory = htypes.ui.default_model_factory(
+        properties=(),
+        layout_k=mosaic.put(htypes.visualizer_fixtures.string_view_k()),
+        )
+    int_factory = htypes.ui.default_model_factory(
+        properties=(),
+        layout_k=mosaic.put(htypes.visualizer_fixtures.int_view_k()),
+        )
     return {
-        htypes.builtin.string: htypes.visualizer_fixtures.string_view_k(),
-        htypes.builtin.int: htypes.visualizer_fixtures.int_view_k(),
+        htypes.builtin.string: [string_factory],
+        htypes.builtin.int: [int_factory],
         }
 
 
