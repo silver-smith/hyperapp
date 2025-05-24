@@ -5,11 +5,11 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- legacy_type.accessor:record_field_accessor
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.crud:record_adapter
 - legacy_type.crud_field_view_factory:factory_k
-- legacy_type.record_field_adapter:record_field_adapter
 - legacy_type.system:actor_template
 - ui.type_convertor:type_convertor.module
 definitions:
@@ -21,9 +21,9 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.type_convertor: ui.type_convertor:type_convertor.module
+        htypes.accessor.record_field_accessor: legacy_type.accessor:record_field_accessor
         htypes.crud.record_adapter: legacy_type.crud:record_adapter
         htypes.crud_field_view_factory.factory_k: legacy_type.crud_field_view_factory:factory_k
-        htypes.record_field_adapter.record_field_adapter: legacy_type.record_field_adapter:record_field_adapter
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service

@@ -34,11 +34,8 @@ async def record_field_get(k, ctx, view_factory_reg):
     base_factory = view_factory_reg[base_factory_k]
     record_adapter = htypes.crud.record_adapter()
     field_t = pyobj_creg.invite(k.field_t)
-    cvt = type_to_text_convertor(field_t)
-    adapter = htypes.record_field_adapter.record_field_adapter(
+    accessor = htypes.accessor.record_field_accessor(
         record_adapter=mosaic.put(record_adapter),
         field_name=k.field_name,
-        field_t=k.field_t,
-        cvt=mosaic.put(cvt),
         )
-    return base_factory.call(ctx, adapter=adapter)
+    return await base_factory.call(ctx, model_t=field_t, accessor=accessor)

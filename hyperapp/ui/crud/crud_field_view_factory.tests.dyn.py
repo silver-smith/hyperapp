@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, AsyncMock
 
 from . import htypes
 from .services import (
@@ -17,7 +17,9 @@ def ctx():
 
 @mark.fixture
 def view_factory_reg():
-    return MagicMock()
+    reg = MagicMock()
+    reg.__getitem__.return_value = AsyncMock()
+    return reg
 
 
 def test_format():
@@ -34,7 +36,7 @@ def test_format():
 def test_list(view_factory_reg, ctx):
     base_factory_k = htypes.crud_field_view_factory_tests.base_factory_k()
     view_factory_reg.items.return_value = [
-        Mock(k=mosaic.put(base_factory_k)),
+        AsyncMock(k=mosaic.put(base_factory_k)),
         ]
     model = htypes.crud_field_view_factory_tests.sample_model()
     form_model = htypes.crud.form_model(
