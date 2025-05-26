@@ -5,7 +5,7 @@ from .services import (
     )
 from .code.actor_ctr import ActorTemplateCtr
 from .code.probe import ProbeBase
-from .code.marker_utils import split_params
+from .code.marker_utils import split_actor_params
 
 
 class ActorProbeBase(ProbeBase):
@@ -20,7 +20,7 @@ class ActorProbeBase(ProbeBase):
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
     def __call__(self, *args, **kw):
-        params = split_params(self.real_fn, args, kw)
+        params = split_actor_params(self.real_fn, args, kw)
         if len(params.ctx_names) < 1 or params.ctx_names[0] != 'piece':
             raise RuntimeError(f"First parameter expected to be a 'piece': {self.real_fn!r}: {params.ctx_names!r}")
         piece = params.values[params.ctx_names[0]]

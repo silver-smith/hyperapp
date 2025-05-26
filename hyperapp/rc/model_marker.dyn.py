@@ -12,7 +12,7 @@ from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
     process_awaitable_result,
-    split_params,
+    split_actor_params,
     )
 from .code.model_ctr import ModelCtr
 from .code.feed_ctr import ListFeedCtr, IndexTreeFeedCtr
@@ -33,7 +33,7 @@ class ModelProbe:
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
     def __call__(self, *args, **kw):
-        params = split_params(self._fn, args, kw)
+        params = split_actor_params(self._fn, args, kw)
         try:
             model = params.values['model']
         except KeyError:

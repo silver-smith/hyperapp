@@ -15,7 +15,7 @@ from .code.probe import ProbeBase
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
-    split_params,
+    split_actor_params,
     )
 
 
@@ -32,7 +32,7 @@ class CommandProbe(ProbeBase):
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
     def __call__(self, *args, **kw):
-        params = split_params(self.real_fn, args, kw)
+        params = split_actor_params(self.real_fn, args, kw)
         self.add_constructor(params)
         service_kw = {
             name: self._system.resolve_service(name)

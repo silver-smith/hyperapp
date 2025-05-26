@@ -55,7 +55,7 @@ def fn_params(fn):
     return list(inspect.signature(fn).parameters)
 
 
-def split_params(fn, args, kw):
+def split_actor_params(fn, args, kw):
     fn_names = fn_params(fn)
     if args and is_cls_arg(fn, args[0]):
         # fn is a classmethod and args[0] is a 'cls' argument.
