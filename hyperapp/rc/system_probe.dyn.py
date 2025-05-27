@@ -13,6 +13,7 @@ from .services import (
     )
 from .code.system import UnknownServiceError, System
 from .code.probe import ProbeBase
+from .code.marker_utils import split_service_params
 
 log = logging.getLogger(__name__)
 
@@ -41,46 +42,6 @@ def service_async_finalize(system, fn, gen):
         pass
     else:
         raise RuntimeError(f"Async generator function {fn!r} should have only one 'yield' statement")
-
-
-def check_no_running_loop(fn):
-    if have_running_loop():
-        raise RuntimeError(f"Use mark.fixture.obj for async fixtures used inside async tests or fixtures: {fn}")
-
-
-def resolve_service_fn(system, service_name, fn, fn_params, service_params, args, kw):
-    free_params_ofs = len(service_params)
-    try:
-        idx = service_params.index('config')
-    except ValueError:
-        want_config = False
-        config_args = []
-    else:
-        if idx != 0:
-            raise RuntimeError("'config' should be first parameter")
-        service_params = service_params[1:]
-        want_config = True
-        config_args = [system.resolve_config(service_name)]
-        free_params_ofs += 1
-    free_params = fn_params[free_params_ofs:]
-    service_args = [
-        system.resolve_service(name)
-        for name in service_params
-        ]
-    result = fn(*config_args, *service_args, *args, **kw)
-    if inspect.isgeneratorfunction(fn) and not free_params:
-        gen = result
-        result = next(gen)
-        system.add_finalizer(service_name, partial(service_finalize, fn, gen))
-        is_gen = True
-    else:
-        is_gen = False
-    if inspect.isasyncgenfunction(fn):
-        gen = result
-        check_no_running_loop(fn)
-        result = system.run_async_coroutine(anext(gen))
-        system.add_finalizer(service_name, partial(service_async_finalize, system, fn, gen))
-    return (want_config, service_params, free_params, is_gen, result, service_args)
 
 
 class ServiceConfigProbe:
@@ -175,10 +136,10 @@ class Probe:
     def apply_if_no_params(self):
         if self._params:
             return
-        self._apply_obj(service_params=[])
+        self._apply()
 
     def apply_obj(self):
-        return self._apply_obj(self._params)
+        return self._apply()
 
     def __eq__(self, rhs):
         service = self.apply_obj()
@@ -193,12 +154,7 @@ class Probe:
         return bool(service)
 
     def __call__(self, *args, **kw):
-        free_param_count = len(args) + len(kw)
-        if free_param_count:
-            service_params = self._params[:-free_param_count]
-        else:
-            service_params = self._params
-        return self._apply(service_params, *args, **kw)
+        return self._apply(*args, **kw)
 
     def __getattr__(self, name):
         try:
@@ -228,33 +184,63 @@ class Probe:
         service = self.apply_obj()
         return service / other
 
-    def _apply(self, service_params, *args, **kw):
+    def _apply(self, *args, **kw):
         if self._resolved:
             if self._service_kind == self._Kind.object:
                 return self._service
             else:
                 return self._service(*args, **kw)
-        want_config, service_params, free_params, is_gen, result, service_args = resolve_service_fn(
-            self._system, self._name, self._fn, self._params, service_params, args, kw)
-        if free_params:
+        params = split_service_params(self._fn, args, kw)
+        service_args, result = self._resolve_service(params, args, kw)
+        if params.free_names:
             self._service = partial(self._fn, *service_args)
             self._service_kind = self._Kind.function
+            is_gen = False
         else:
+            is_gen, result = self._resolve_result(result)
             self._service = result
             self._service_kind = self._Kind.object
-        self._add_service_constructor(want_config, service_params, is_gen)
+        self._add_service_constructor(params, is_gen)
         self._resolved = True
         return result
 
-    def _apply_obj(self, service_params, *args, **kw):
-        service = self._apply(service_params, *args, **kw)
-        if inspect.iscoroutine(service):
-            check_no_running_loop(self._fn)
-            service = self._system.run_async_coroutine(service)
-            self._service = service
-        return service
+    def _resolve_service(self, params, args, kw):
+        if params.has_config:
+            config_args = [self._system.resolve_config(self._name)]
+        else:
+            config_args = []
+        service_args = [
+            self._system.resolve_service(name)
+            for name in params.service_names
+            ]
+        result = self._fn(*config_args, *service_args, *args, **kw)
+        return ([*config_args, *service_args], result)
 
-    def _add_service_constructor(self, want_config, template, is_gen):
+    def _resolve_result(self, result):
+        if inspect.isgeneratorfunction(self._fn):
+            gen = result
+            result = next(gen)
+            self._system.add_finalizer(self._name, partial(service_finalize, self._fn, gen))
+            return (True, result)
+        if inspect.isasyncgenfunction(self._fn):
+            gen = result
+            result = self._run_coro(anext(gen))
+            is_gen = True
+            self._system.add_finalizer(self._name, partial(service_async_finalize, self._system, self._fn, gen))
+            return (True, result)
+        if inspect.iscoroutine(result):
+            result = self._run_coro(result)
+        return (False, result)
+
+    def _run_coro(self, coro):
+        self._check_no_running_loop()
+        return self._system.run_async_coroutine(coro)
+
+    def _check_no_running_loop(self):
+        if have_running_loop():
+            raise RuntimeError(f"Use mark.fixture.obj for async fixtures used inside async tests or fixtures: {self._fn}")
+
+    def _add_service_constructor(self, params, is_gen):
         pass
 
 

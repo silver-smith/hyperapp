@@ -23,25 +23,22 @@ class ServiceProbe(Probe):
     def __repr__(self):
         return f"<ServiceProbe {self._attr_name} {self._fn} {self._params}>"
 
-    def _add_service_constructor(self, want_config, service_params, is_gen):
-        free_params_ofs = len(service_params)
-        if want_config:
-            free_params_ofs += 1
+    def _add_service_constructor(self, params, is_gen):
         if is_gen:
             ctr_cls = FinalizerGenServiceTemplateCtr
             kw = {}
         else:
             ctr_cls = ServiceTemplateCtr
             kw = dict(
-                free_params=self._params[free_params_ofs:],
+                free_params=params.free_names,
                 )
         ctr = ctr_cls(
             config_ctl=self._config_ctl,
             attr_name=self._attr_name,
             name=self._name,
             ctl_ref=self._ctl_ref,
-            service_params=service_params,
-            want_config=want_config,
+            service_params=params.service_names,
+            want_config=params.has_config,
             **kw,
             )
         self._system.add_constructor(ctr)
