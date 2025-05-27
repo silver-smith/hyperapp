@@ -6,7 +6,6 @@ from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
     is_cls_arg,
-    fn_params,
     )
 
 
