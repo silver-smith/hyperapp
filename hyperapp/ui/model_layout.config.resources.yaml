@@ -5,6 +5,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- legacy_type.ui:default_model_factory
 - legacy_type.wiki:wiki
 - ui.qt.line_edit:line_edit.k
 - ui.qt.wiki:wiki.k
@@ -30,19 +31,25 @@ definitions:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.builtin:string
-      value: ui.qt.line_edit:line_edit.k
+      value: config_item-line_edit.model-factory
 
   config_item-int.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.builtin:int
-      value: ui.qt.line_edit:line_edit.k
+      value: config_item-line_edit.model-factory
+
+  config_item-line_edit.model-factory:
+    type: legacy_type.ui:default_model_factory
+    value:
+      properties: []
+      layout_k: ui.qt.line_edit:line_edit.k
 
   config_item-string-opt.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: string-opt
-      value: ui.qt.line_edit:line_edit.k
+      value: config_item-line_edit.model-factory
 
   string-opt:
     type: legacy_type.builtin:optional_mt
@@ -53,4 +60,10 @@ definitions:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki:wiki
-      value: ui.qt.wiki:wiki.k
+      value: config_item-wiki.model-factory
+
+  config_item-wiki.model-factory:
+    type: legacy_type.ui:default_model_factory
+    value:
+      properties: []
+      layout_k: ui.qt.wiki:wiki.k
