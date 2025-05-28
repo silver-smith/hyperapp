@@ -64,7 +64,11 @@ def is_cls_arg(fn, arg):
 
 def split_service_params(fn, args, kw):
     fn_params = inspect.signature(fn).parameters
-    param_names = list(fn_params)
+    kw_param_names = list(fn_params)
+    param_names = [
+        name for name, param in fn_params.items()
+        if param.kind != inspect.Parameter.VAR_KEYWORD
+        ]
     if args and is_cls_arg(fn, args[0]):
         # fn is a classmethod and args[0] is a 'cls' argument.
         called_class_name = args[0].__name__
@@ -74,21 +78,21 @@ def split_service_params(fn, args, kw):
         ofs = 0
     has_config = 'config' in fn_params
     if has_config:
-        if param_names[ofs] != 'config':
-            raise RuntimeError(f"{fn}: 'config' should be first parameter: {', '.join(param_names)}")
+        if kw_param_names[ofs] != 'config':
+            raise RuntimeError(f"{fn}: 'config' should be first parameter: {', '.join(kw_param_names)}")
         ofs += 1
     free_param_count = len(args) + len(kw)
-    service_param_count = len(fn_params) - free_param_count - ofs
-    service_names = param_names[ofs:ofs + service_param_count]
+    service_param_count = len(param_names) - free_param_count - ofs
+    service_names = kw_param_names[ofs:ofs + service_param_count]
     args_values = {
-        param_names[idx]: arg
+        kw_param_names[idx]: arg
         for idx, arg in enumerate(args[ofs + service_param_count:])
         }
     values = {
         **args_values,
         **kw,
         }
-    free_names = param_names[ofs + service_param_count:]
+    free_names = kw_param_names[ofs + service_param_count:]
     return ServiceParams(called_class_name, free_names, service_names, values, has_config)
 
 
