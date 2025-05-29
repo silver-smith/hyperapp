@@ -26,6 +26,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      # First item is default if no properties are specified for visualizer.
+      # Non-editable and non-inline variants should be default.
       - config_item-string-text_view.factory-config-item
       - config_item-string-text_edit.factory-config-item
       - config_item-string-line_view.factory-config-item
