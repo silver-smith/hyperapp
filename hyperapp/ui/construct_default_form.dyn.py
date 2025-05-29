@@ -19,7 +19,7 @@ async def construct_default_form(visualizer, ctx, record_adapter, record_t):
             record_adapter=mosaic.put(record_adapter),
             field_name=name,
             )
-        field_view = await visualizer(ctx, t, accessor=field_accessor)
+        field_view = await visualizer(ctx, t, accessor=field_accessor, inline=True, editable=True)
         element = htypes.box_layout.element(
             view=mosaic.put(field_view),
             focusable=True,
