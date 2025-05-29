@@ -258,7 +258,7 @@ async def add_element(view, widget, view_factory, ctx, view_reg, view_factory_re
     view.add_child(ctx, widget, elt_view)
 
 
-@mark.ui_command()
+@mark.ui_command
 def add_stretch(view, widget, ctx):
     view.add_stretch(ctx, widget)
 
