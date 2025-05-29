@@ -96,7 +96,7 @@ class EditTextView(View):
         if state:
             text = state.text
         else:
-            text = self._adapter.get_text()
+            text = self._adapter.get_view_value()
         w.setPlainText(text)
         w.textChanged.connect(partial(self._on_text_changed, w))
         return w
@@ -118,7 +118,7 @@ class EditTextView(View):
 
     def get_value(self, widget):
         text = self.get_text(widget)
-        return self._adapter.text_to_value(text)
+        return self._adapter.view_to_value(text)
 
     def _on_text_changed(self, widget):
         text = self.get_text(widget)
