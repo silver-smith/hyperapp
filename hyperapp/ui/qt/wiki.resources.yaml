@@ -10,6 +10,7 @@ import:
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
+- legacy_type.text:edit_view
 - legacy_type.type_convertor:noop_convertor
 - legacy_type.value_adapter:value_adapter
 - legacy_type.view_factory:template
@@ -112,6 +113,7 @@ definitions:
         code.mark: base.mark:mark.module
         code.remote_model: ui.remote_model:remote_model.module
         code.view: ui.view.view:view.module
+        htypes.text.edit_view: legacy_type.text:edit_view
         htypes.type_convertor.noop_convertor: legacy_type.type_convertor:noop_convertor
         htypes.value_adapter.value_adapter: legacy_type.value_adapter:value_adapter
         htypes.wiki.state: legacy_type.wiki:state
@@ -154,25 +156,61 @@ definitions:
       name: wiki_k
       base: null
       fields: {}
-  wiki_text:
+  wiki_text_edit:
     type: legacy_type.builtin:attribute
     value:
       object: wiki.module
-      attr_name: wiki_text
-  wiki_text.k:
-    type: wiki_text_k
+      attr_name: wiki_text_edit
+  wiki_text_edit.k:
+    type: wiki_text_edit_k
     value: {}
-  wiki_text.system-fn:
+  wiki_text_edit.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
-      function: wiki_text
+      function: wiki_text_edit
       ctx_params:
       - accessor
       service_params: []
-  wiki_text.view-factory-template:
+  wiki_text_edit.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: wiki_text.k
+      k: wiki_text_edit.k
+      model_t_list:
+      - legacy_type.wiki:wiki
+      ui_t_t: null
+      view_t: legacy_type.text:edit_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: wiki_text_edit.system-fn
+  wiki_text_edit_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki
+      name: wiki_text_edit_k
+      base: null
+      fields: {}
+  wiki_text_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: wiki_text_view
+  wiki_text_view.k:
+    type: wiki_text_view_k
+    value: {}
+  wiki_text_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: wiki_text_view
+      ctx_params:
+      - accessor
+      service_params: []
+  wiki_text_view.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: wiki_text_view.k
       model_t_list:
       - legacy_type.wiki:wiki
       ui_t_t: null
@@ -182,11 +220,11 @@ definitions:
       - piece
       - model
       - ctx
-      system_fn: wiki_text.system-fn
-  wiki_text_k:
+      system_fn: wiki_text_view.system-fn
+  wiki_text_view_k:
     type: legacy_type.builtin:record_mt
     value:
       module_name: wiki
-      name: wiki_text_k
+      name: wiki_text_view_k
       base: null
       fields: {}

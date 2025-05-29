@@ -12,6 +12,7 @@ import:
 - ui.qt.text:text_edit.k
 - ui.qt.text:text_view.k
 - ui.qt.wiki:wiki.k
+- ui.qt.wiki:wiki_text_edit.k
 
 definitions:
 
@@ -32,7 +33,8 @@ definitions:
       - config_item-string_opt-line_view.factory-config-item
       - config_item-string_opt-line_edit.factory-config-item
       - config_item-int-line_edit.factory-config-item
-      - config_item-wiki.factory-config-item
+      - config_item-wiki-wiki.factory-config-item
+      - config_item-wiki-text_edit.factory-config-item
 
   string_opt:
     type: legacy_type.builtin:optional_mt
@@ -43,51 +45,57 @@ definitions:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.builtin:string
-      value: config_item-text_view.model-factory
+      value: text_view.model-factory
 
   config_item-string-text_edit.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.builtin:string
-      value: config_item-text_edit.model-factory
+      value: text_edit.model-factory
 
   config_item-string-line_view.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.builtin:string
-      value: config_item-line_view.model-factory
+      value: line_view.model-factory
 
   config_item-string-line_edit.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.builtin:string
-      value: config_item-line_edit.model-factory
+      value: line_edit.model-factory
 
   config_item-int-line_edit.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.builtin:int
-      value: config_item-line_edit.model-factory
+      value: line_edit.model-factory
 
   config_item-string_opt-line_edit.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: string_opt
-      value: config_item-line_edit.model-factory
+      value: line_edit.model-factory
 
   config_item-string_opt-line_view.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: string_opt
-      value: config_item-line_view.model-factory
+      value: line_view.model-factory
 
-  config_item-wiki.factory-config-item:
+  config_item-wiki-wiki.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki:wiki
-      value: config_item-wiki.model-factory
+      value: wiki-wiki.model-factory
 
-  config_item-text_view.model-factory:
+  config_item-wiki-text_edit.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.wiki:wiki
+      value: wiki-text_edit.model-factory
+
+  text_view.model-factory:
     type: legacy_type.ui:default_model_factory
     value:
       properties:
@@ -95,7 +103,7 @@ definitions:
         editable: false
       layout_k: ui.qt.text:text_view.k
 
-  config_item-text_edit.model-factory:
+  text_edit.model-factory:
     type: legacy_type.ui:default_model_factory
     value:
       properties:
@@ -103,7 +111,7 @@ definitions:
         editable: true
       layout_k: ui.qt.text:text_edit.k
 
-  config_item-line_view.model-factory:
+  line_view.model-factory:
     type: legacy_type.ui:default_model_factory
     value:
       properties:
@@ -111,7 +119,7 @@ definitions:
         editable: false
       layout_k: ui.qt.line_edit:line_view.k
 
-  config_item-line_edit.model-factory:
+  line_edit.model-factory:
     type: legacy_type.ui:default_model_factory
     value:
       properties:
@@ -119,8 +127,16 @@ definitions:
         editable: true
       layout_k: ui.qt.line_edit:line_edit.k
 
-  config_item-wiki.model-factory:
+  wiki-wiki.model-factory:
     type: legacy_type.ui:default_model_factory
     value:
-      properties: {}
+      properties:
+        editable: false
       layout_k: ui.qt.wiki:wiki.k
+
+  wiki-text_edit.model-factory:
+    type: legacy_type.ui:default_model_factory
+    value:
+      properties:
+        editable: true
+      layout_k: ui.qt.wiki:wiki_text_edit.k

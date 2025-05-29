@@ -111,8 +111,13 @@ async def test_wiki_view(qapp, ctx, wiki_piece, state, model):
 
 
 def test_text_view_factory(accessor):
-    piece = wiki.wiki_text(accessor)
+    piece = wiki.wiki_text_view(accessor)
     assert isinstance(piece, htypes.wiki.text_view)
+
+
+def test_text_edit_factory(accessor):
+    piece = wiki.wiki_text_edit(accessor)
+    assert isinstance(piece, htypes.text.edit_view)
 
 
 def test_wiki_view_factory(accessor):
