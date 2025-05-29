@@ -107,35 +107,35 @@ def ui_command_enumerator_from_piece(piece, system_fn_creg):
         )
 
 
-def _commands_with_bases(config, view_t):
-    command_list = []
+def _items_with_bases(config, view_t):
+    item_list = []
     while view_t:
-        command_list += config.get(view_t, [])
+        item_list += config.get(view_t, [])
         if not isinstance(view_t, TRecord):
             break
         view_t = view_t.base
-    return command_list
+    return item_list
 
 
 @mark.service(ctl=DictListConfigCtl())
 def view_ui_command_reg(config, view_t):
-    return _commands_with_bases(config, view_t)
+    return _items_with_bases(config, view_t)
 
 
 @mark.service(ctl=DictListConfigCtl())
 def view_element_ui_command_reg(config, view_t):
-    return _commands_with_bases(config, view_t)
+    return _items_with_bases(config, view_t)
 
 
 @mark.service(ctl=DictListConfigCtl())
 def view_element_ui_command_enumerator_reg(config, view_t):
-    return _commands_with_bases(config, view_t)
+    return _items_with_bases(config, view_t)
 
 
 # UI commands returning model.
 @mark.service(ctl=DictListConfigCtl())
 def view_ui_model_command_reg(config, view_t):
-    return config.get(view_t, [])
+    return _items_with_bases(config, view_t)
 
 
 @mark.service(ctl=FlatListConfigCtl())
@@ -145,7 +145,7 @@ def universal_ui_command_reg(config):
 
 @mark.service(ctl=DictListConfigCtl())
 def ui_command_enumerator_reg(config, view_t):
-    return config.get(view_t, [])
+    return _items_with_bases(config, view_t)
 
 
 @mark.service(ctl=FlatListConfigCtl())
