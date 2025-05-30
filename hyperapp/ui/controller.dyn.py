@@ -161,25 +161,27 @@ class _Item:
             return ([], rctx)
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self.command_context(my_rctx)
-        view_commands = self._view_commands(my_rctx, command_ctx)
+        view_commands = self._view_commands(command_ctx)
+        element_commands = self._element_commands(my_rctx)
         model_commands = self._model_commands(command_ctx)
         commands_rctx = my_rctx.clone_with(
-            commands=rctx.get('commands', []) + view_commands + model_commands,
+            commands=rctx.get('commands', []) + view_commands + element_commands + model_commands,
             )
-        return (view_commands, commands_rctx)
+        return ([*view_commands, *element_commands], commands_rctx)
 
-    def _view_commands(self, my_rctx, command_ctx):
+    def _view_commands(self, command_ctx):
         unbound_view_commands = self._meta.svc.get_view_commands(command_ctx, self.view)
-        view_commands = self._bind_commands(unbound_view_commands, command_ctx)
+        return self._bind_commands(unbound_view_commands, command_ctx)
+
+    def _element_commands(self, my_rctx):
         if not self.parent.view:
-            return view_commands
+            return []
         parent_command_ctx = self.parent.command_context(my_rctx)
         unbound_element_commands = self._meta.svc.get_view_element_commands(parent_command_ctx, self.parent.view)
         element_command_ctx = parent_command_ctx.clone_with(
             element_idx=self.idx,
             )
-        element_commands = self._bind_commands(unbound_element_commands, element_command_ctx)
-        return [*view_commands, *element_commands]
+        return self._bind_commands(unbound_element_commands, element_command_ctx)
 
     def _model_commands(self, command_ctx):
         if 'model' not in self.ctx.diffs(self.parent.ctx):  # Added or replaced by self.view.children_context.
