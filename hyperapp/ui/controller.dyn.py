@@ -157,13 +157,18 @@ class _Item:
         return rctx
 
     def my_reverse_context(self, rctx):
-        if not self.view:
-            return ([], rctx)
-        my_rctx = self.view.primary_parent_context(rctx, self.widget)
-        command_ctx = self.command_context(my_rctx)
-        view_commands = self._view_commands(command_ctx)
+        if self.view:
+            my_rctx = self.view.primary_parent_context(rctx, self.widget)
+            my_cmd_ctx = self.command_context(my_rctx)
+            view_commands = self._view_commands(my_cmd_ctx)
+            model_commands = self._model_commands(my_cmd_ctx)
+        else:
+            my_rctx = rctx
+            view_commands = []
+            model_commands = []
+        # Element commands should be collected even when view is missing,
+        # for example for stretch elements of a box layout.
         element_commands = self._element_commands(my_rctx)
-        model_commands = self._model_commands(command_ctx)
         commands_rctx = my_rctx.clone_with(
             commands=rctx.get('commands', []) + view_commands + element_commands + model_commands,
             )
