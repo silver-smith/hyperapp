@@ -91,7 +91,7 @@ class ViewFactory(ViewFactoryBase):
             model_t_list=None,
             )
 
-    def get_item_list(self, ctx, model):
+    def get_item_list(self, ctx, model, ui_t, system_fn):
         return [self.item]
 
 
@@ -117,7 +117,7 @@ class ViewMultiFactory(ViewFactoryBase):
         self._list_fn = list_fn
         self._get_fn = get_fn
 
-    def get_item_list(self, ctx, model):
+    def get_item_list(self, ctx, model, ui_t, system_fn):
         if model is None:
             # model_factory_reg.items(model_t) variant is not supported by multi factory.
             return []
@@ -125,6 +125,11 @@ class ViewMultiFactory(ViewFactoryBase):
             model=model,
             piece=model,
             )
+        if ui_t is not None:
+            model_ctx = model_ctx.clone_with(
+                ui_t=ui_t,
+                system_fn=system_fn,
+                )
         k_list = self._list_fn.call(model_ctx)
         item_list = []
         for k in k_list:
@@ -165,17 +170,19 @@ class ViewFactoryReg:
     def items(self, ctx, model=None, model_t=None, only_model=False):
         if model is None and model_t is None:
             ui_t = None
+            system_fn = None
         else:
             if model_t is None:
                 model_t = real_model_t(model)
             try:
-                ui_t, unused_system_fn = self._visualizer_reg(model_t)
+                ui_t, system_fn = self._visualizer_reg(model_t)
             except KeyError:
                 ui_t = None
+                system_fn = None
         item_list = []
         for factory in self._config.values():
             if factory.match_model(model_t, ui_t, only_model):
-                item_list += factory.get_item_list(ctx, model)
+                item_list += factory.get_item_list(ctx, model, ui_t, system_fn)
         return item_list
 
 

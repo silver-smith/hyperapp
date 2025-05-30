@@ -84,7 +84,7 @@ def test_multi_key(rpc_system_call_factory, format, visualizer_reg, model, ctx):
         list_fn=list_fn,
         get_fn=get_fn,
         )
-    item_list = factory.get_item_list(ctx, model)
+    item_list = factory.get_item_list(ctx, model, ui_t=None, system_fn=None)
     assert len(item_list) == 1
     k = web.summon(item_list[0].k)
     assert isinstance(k, htypes.view_factory.multi_item_k)
