@@ -177,7 +177,8 @@ class BoxLayoutView(View):
         layout = widget.layout()
         item = layout.itemAt(idx)
         del self._elements[idx]
-        item.widget().deleteLater()
+        if item.widget():  # None for a stretch.
+            item.widget().deleteLater()
         layout.removeItem(item)
         self._ctl_hook.element_removed(idx)
 
