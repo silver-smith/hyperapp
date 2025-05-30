@@ -1,0 +1,6 @@
+factory_k = record:
+  field_name: string
+  field_t: ref
+  record_t: ref
+  system_fn: ref
+  base_factory_k: ref

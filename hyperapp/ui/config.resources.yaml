@@ -20,6 +20,7 @@ import:
 - ui.command_creg:command_creg.service
 - ui.controller:canned_ctl_item_factory.service
 - ui.controller:controller_running.service
+- ui.controller:layout-model.feed-template
 - ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-template
 - ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-template
 - ui.crud.args_picker_command_enum:formatter_creg-command-open_args_picker_command_d.actor-template
@@ -53,7 +54,6 @@ import:
 - ui.layout:layout-command_list.model-cfg-item
 - ui.layout:layout-model-enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout-model-open_view_item_commands.command-cfg-item
-- ui.layout:layout-model.feed-template
 - ui.layout:layout-model.model-cfg-item
 - ui.layout:open_layout_tree.global-model-command
 - ui.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template
@@ -132,6 +132,7 @@ import:
 - ui.qt.window_commands:window-view-quit.command-cfg-item
 - ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-template
 - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template
+- ui.record_field_view_factory:formatter_creg-record_field_view_factory-factory_k.actor-template
 - ui.ref_formatter:formatter_creg-builtin-ref.actor-template
 - ui.remote_command:model-remote_model-remote_command_enum.command-cfg-item
 - ui.remote_command:remote_command_from_model_command.service
@@ -268,8 +269,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.controller:layout-model.feed-template
       - ui.layout:layout-command_list.feed-template
-      - ui.layout:layout-model.feed-template
       - ui.view.view_factory_list:view_factory_list-model.feed-template
   feed_type_creg:
     type: legacy_type.system:item_list_config
@@ -287,6 +288,7 @@ definitions:
       - ui.crud.crud:formatter_creg-crud-layout_k.actor-template
       - ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-template
       - ui.layout:formatter_creg-layout-model.actor-template
+      - ui.record_field_view_factory:formatter_creg-record_field_view_factory-factory_k.actor-template
       - ui.ref_formatter:formatter_creg-builtin-ref.actor-template
       - ui.remote_model:formatter_creg-model-remote_model.actor-template
       - ui.view.view_factory_list:formatter_creg-view_factory_list-model.actor-template
