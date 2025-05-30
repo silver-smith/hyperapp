@@ -77,7 +77,7 @@ class EditLineView(View):
         return self._adapter.text_to_value(text)
 
     def _on_text_edited(self, text):
-        self._adapter.value_changed(text)
+        self._adapter.value_changed_by_me(text)
 
 
 class ViewLineView(EditLineView):

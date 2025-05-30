@@ -27,7 +27,7 @@ class DataBrowserViewDataAdapter:
     def text_to_value(self, text):
         return text
 
-    def value_changed(self, new_value):
+    def value_changed_by_me(self, new_value):
         if new_value == self._text:
             return
         log.debug("Data browser view data adapter: Ignoring new value: %r", new_value)

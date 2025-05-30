@@ -39,6 +39,27 @@ def wiki_convertor_resource_name(piece, gen):
     return 'wiki_to_string_convertor'
 
 
+class TextBrowser(QtWidgets.QTextBrowser):
+
+    def __init__(self):
+        super().__init__(
+            openLinks=False,
+            )
+
+    def set_text(self, text):
+        self.setHtml(self._text_to_html(text))
+
+    def value_changed(self, new_value):
+        self.set_text(new_value.text)
+
+    def _text_to_html(self, text):
+        return docutils.core.publish_string(
+            text,
+            writer=docutils_tinyhtml.Writer(),
+            writer_name='html',
+            ).decode()
+
+
 class WikiTextView(View):
 
     @classmethod
@@ -59,11 +80,10 @@ class WikiTextView(View):
             )
 
     def construct_widget(self, state, ctx):
-        w = QtWidgets.QTextBrowser(
-            openLinks=False,
-            )
-        w.setHtml(self._text_to_html(self._get_text()))
+        w = TextBrowser()
+        w.set_text(self._get_text())
         w.anchorClicked.connect(self._on_anchor_clicked)
+        self._adapter.subscribe(w)
         return w
 
     def widget_state(self, widget):
@@ -89,13 +109,6 @@ class WikiTextView(View):
 
     def _on_anchor_clicked(self, url):
         log.info('Wiki text view: Anchor clicked: url.path=%r', url.path())
-
-    def _text_to_html(self, text):
-        return docutils.core.publish_string(
-            text,
-            writer=docutils_tinyhtml.Writer(),
-            writer_name='html',
-            ).decode()
 
 
 class WikiView(WikiTextView):

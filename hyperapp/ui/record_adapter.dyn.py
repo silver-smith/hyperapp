@@ -65,6 +65,14 @@ class EditValue:
             **{field_name: new_value},
             }
         self.value = self._value_t(**kw)
+        self._notify()
+
+    def _notify(self):
+        for subscriber in self._subscribers:
+            subscriber.value_changed(self.value)
+
+    def subscribe(self, subscriber):
+        self._subscribers.add(subscriber)
 
 
 class FnRecordAdapterBase(RecordAdapter):
@@ -85,6 +93,9 @@ class FnRecordAdapterBase(RecordAdapter):
             self._feed = None
         else:
             self._feed.subscribe(self)
+
+    def subscribe(self, subscriber):
+        self._value.subscribe(subscriber)
 
     def get_value(self):
         if self._value.value is None:

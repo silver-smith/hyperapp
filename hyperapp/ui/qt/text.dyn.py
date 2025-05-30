@@ -122,7 +122,7 @@ class EditTextView(View):
 
     def _on_text_changed(self, widget):
         text = self.get_text(widget)
-        self._adapter.value_changed(text)
+        self._adapter.value_changed_by_me(text)
 
 
 @mark.view_factory.model_t(htypes.builtin.string)
