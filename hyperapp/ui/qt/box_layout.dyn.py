@@ -156,7 +156,7 @@ class BoxLayoutView(View):
 
     def add_child(self, ctx, widget, child_view):
         log.info("Box layout: add child: %s", child_view)
-        idx = len(self._elements)
+        idx = len([elt for elt in self._elements if elt.view])
         self._insert_child(idx, ctx, widget, child_view)
 
     def add_stretch(self, ctx, widget):
@@ -244,15 +244,28 @@ def wrap_box_layout(inner):
         )
 
 
+def _last_child(view):
+    idx = view.children_count - 1
+    while idx >= 0:
+        child = view.child_view(idx)
+        if child is not None:
+            return child
+        idx -= 1
+    return None
+
+
 @mark.ui_command(args=['view_factory'])
 async def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
     k = web.summon(view_factory.k)
     factory = view_factory_reg[k]
-    last_child = view.child_view(view.children_count - 1)
     # Just in case we want to add a wrapper.
-    fn_ctx = ctx.clone_with(
-        inner=last_child.piece,
-        )
+    child = _last_child(view)
+    if child is not None:
+        fn_ctx = ctx.clone_with(
+            inner=child,
+            )
+    else:
+        fn_ctx = ctx
     elt_piece = await factory.call(fn_ctx)
     elt_view = view_reg.animate(elt_piece, ctx)
     view.add_child(ctx, widget, elt_view)
