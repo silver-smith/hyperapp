@@ -10,3 +10,8 @@ def sample_record(piece):
 @mark.global_command
 def open_sample_fn_record():
     return htypes.sample_record.sample_record()
+
+
+@mark.command
+def apply(piece, value):
+    return f"Applied sample record with value: {value!r}"

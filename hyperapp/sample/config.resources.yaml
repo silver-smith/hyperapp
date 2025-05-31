@@ -28,6 +28,7 @@ import:
 - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
 - sample.sample_list_selector:sample_list_selector-item.selector-template
 - sample.sample_record:open_sample_fn_record.global-model-command
+- sample.sample_record:sample_record-sample_record-apply.command-cfg-item
 - sample.sample_record:sample_record-sample_record.model-cfg-item
 - sample.sample_tree:formatter_creg-sample_tree-model.actor-template
 - sample.sample_tree:get_sample_tree_items.service
@@ -95,6 +96,7 @@ definitions:
       - sample.sample_commands:sample_list-sample_list-details.command-cfg-item
       - sample.sample_commands:sample_tree-model-sample_tree_info.command-cfg-item
       - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
+      - sample.sample_record:sample_record-sample_record-apply.command-cfg-item
       - sample.sample_tree:sample_tree-model-append_tree_item.command-cfg-item
       - sample.sample_tree:sample_tree-model-insert_tree_item.command-cfg-item
       - sample.sample_tree:sample_tree-model-remove_tree_item.command-cfg-item
