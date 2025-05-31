@@ -11,6 +11,7 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.text:edit_view
+- legacy_type.text:readonly_view
 - legacy_type.type_convertor:noop_convertor
 - legacy_type.value_adapter:value_adapter
 - legacy_type.view_factory:template
@@ -114,6 +115,7 @@ definitions:
         code.remote_model: ui.remote_model:remote_model.module
         code.view: ui.view.view:view.module
         htypes.text.edit_view: legacy_type.text:edit_view
+        htypes.text.readonly_view: legacy_type.text:readonly_view
         htypes.type_convertor.noop_convertor: legacy_type.type_convertor:noop_convertor
         htypes.value_adapter.value_adapter: legacy_type.value_adapter:value_adapter
         htypes.wiki.state: legacy_type.wiki:state
@@ -214,7 +216,7 @@ definitions:
       model_t_list:
       - legacy_type.wiki:wiki
       ui_t_t: null
-      view_t: legacy_type.wiki:text_view
+      view_t: legacy_type.text:readonly_view
       is_wrapper: false
       view_ctx_params:
       - piece
@@ -226,5 +228,41 @@ definitions:
     value:
       module_name: wiki
       name: wiki_text_view_k
+      base: null
+      fields: {}
+  wiki_view:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki.module
+      attr_name: wiki_view
+  wiki_view.k:
+    type: wiki_view_k
+    value: {}
+  wiki_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: wiki_view
+      ctx_params:
+      - accessor
+      service_params: []
+  wiki_view.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: wiki_view.k
+      model_t_list:
+      - legacy_type.wiki:wiki
+      ui_t_t: null
+      view_t: legacy_type.wiki:text_view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: wiki_view.system-fn
+  wiki_view_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki
+      name: wiki_view_k
       base: null
       fields: {}

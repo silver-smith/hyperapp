@@ -162,7 +162,7 @@ class WikiView(WikiTextView):
 
 
 @mark.view_factory.model_t(htypes.wiki.wiki)
-def wiki_text_view(accessor):
+def wiki_view(accessor):
     cvt = htypes.wiki.wiki_to_string_convertor()
     adapter = htypes.value_adapter.value_adapter(
         accessor=mosaic.put(accessor),
@@ -181,6 +181,18 @@ def wiki_text_edit(accessor):
         convertor=mosaic.put(cvt),
         )
     return htypes.text.edit_view(
+        adapter=mosaic.put(adapter),
+        )
+
+
+@mark.view_factory.model_t(htypes.wiki.wiki)
+def wiki_text_view(accessor):
+    cvt = htypes.wiki.wiki_to_string_convertor()
+    adapter = htypes.value_adapter.value_adapter(
+        accessor=mosaic.put(accessor),
+        convertor=mosaic.put(cvt),
+        )
+    return htypes.text.readonly_view(
         adapter=mosaic.put(adapter),
         )
 

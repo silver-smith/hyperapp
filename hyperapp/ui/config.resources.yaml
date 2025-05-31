@@ -127,6 +127,7 @@ import:
 - ui.qt.wiki:wiki.view-factory-template
 - ui.qt.wiki:wiki_text_edit.view-factory-template
 - ui.qt.wiki:wiki_text_view.view-factory-template
+- ui.qt.wiki:wiki_view.view-factory-template
 - ui.qt.window:window-view.view-template
 - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
 - ui.qt.window_commands:window-view-quit.command-cfg-item
@@ -455,6 +456,7 @@ definitions:
       - ui.qt.wiki:wiki.view-factory-template
       - ui.qt.wiki:wiki_text_edit.view-factory-template
       - ui.qt.wiki:wiki_text_view.view-factory-template
+      - ui.qt.wiki:wiki_view.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
