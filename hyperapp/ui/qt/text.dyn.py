@@ -28,6 +28,13 @@ class TextInput:
         return self._view.get_value(widget)
 
 
+class TextEdit(QtWidgets.QTextEdit):
+
+    def value_changed(self, new_value):
+        if self.toPlainText() != new_value:
+            self.setPlainText(new_value)
+
+
 class ViewTextView(View):
 
     @classmethod
@@ -46,12 +53,15 @@ class ViewTextView(View):
         return htypes.text.readonly_view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
-        w = QtWidgets.QTextBrowser()
+        w = TextEdit(
+            readOnly=True,
+            )
         if isinstance(state, htypes.text.state):
             text = state.text
         else:
             text = self._adapter.get_view_value()
         w.setPlainText(text)
+        self._adapter.subscribe(w)
         return w
 
     def widget_state(self, widget):
@@ -92,13 +102,14 @@ class EditTextView(View):
         return htypes.text.edit_view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
-        w = QtWidgets.QTextEdit()
+        w = TextEdit()
         if state:
             text = state.text
         else:
             text = self._adapter.get_view_value()
         w.setPlainText(text)
         w.textChanged.connect(partial(self._on_text_changed, w))
+        self._adapter.subscribe(w)
         return w
 
     def widget_state(self, widget):
