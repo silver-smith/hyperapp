@@ -21,7 +21,7 @@ class WikiPages:
         self._folders = {}
         self._pages = {}
         self._folder_has_names = defaultdict(set)
-        self._folder_has_titles = defaultdict(set)
+        self._folder_title_to_id = {}
 
     def load(self):
         try:
@@ -33,7 +33,7 @@ class WikiPages:
         for folder in self._folders.values():
             self._folder_has_names[folder.parent_id].add(folder.name)
         for page in self._pages.values():
-            self._folder_has_titles[page.parent_id].add(page.title)
+            self._folder_title_to_id[page.parent_id, page.title] = page.id
 
     def _save(self):
         storage = htypes.wiki_pages.storage(
@@ -64,6 +64,14 @@ class WikiPages:
     def get_page(self, item_id):
         return self._pages[item_id]
 
+    def get_folder_path(self, item_id):
+        path = ()
+        while item_id:
+            folder = self._folders[item_id]
+            path = (*path, folder.name)
+            item_id = folder.parent_id
+        return path
+
     def remove(self, item_id):
         try:
             folder = self._folders[item_id]
@@ -72,7 +80,7 @@ class WikiPages:
         except KeyError:
             page = self._pages[item_id]
             del self._pages[item_id]
-            self._folder_has_titles[page.parent_id].remove(page.title)
+            del self._folder_title_to_id[page.parent_id, page.title]
         self._save()
 
     def append_folder(self, parent_id, name):
@@ -89,20 +97,24 @@ class WikiPages:
         self._save()
         return folder.id
 
-    def append_page(self, parent_id, title, wiki):
-        if title in self._folder_has_titles[parent_id]:
-            log.warning("Page with title %r already exists", title)
+    def save_page(self, parent_id, page_id, title, wiki):
+        prev_title_id = self._folder_title_to_id.get((parent_id, title))
+        if prev_title_id and prev_title_id != page_id:
+            log.warning("Page with title %r already exists it this folder", title)
             return None
+        if not page_id:
+            page_id = str(uuid.uuid4())
         page = htypes.wiki_pages.page(
-            id=str(uuid.uuid4()),
+            id=page_id,
             parent_id=parent_id,
             title=title,
             wiki=wiki,
             )
-        self._pages[page.id] = page
-        self._folder_has_titles[parent_id].add(page.title)
+        self._pages[page_id] = page
+        self._folder_title_to_id[parent_id, title] = page_id
         self._save()
-        return page.id
+        log.info("Saved page %s at folder %s", page_id, parent_id)
+        return page_id
 
 
 @mark.service
@@ -136,24 +148,32 @@ def page_model(piece, wiki_pages):
 @mark.command
 def open(piece, current_key, request, wiki_pages):
     try:
-        folder = wiki_pages.get_folder(current_key)
-        path = [folder.name]
-        while folder.parent_id:
-            folder = wiki_pages.get_folder(folder.parent_id)
-            path = [folder.name, *path]
-        piece = htypes.wiki_pages.list_model(
-            parent_id=current_key,
-            folder_path=tuple(path),
-            )
-        if request:
-            piece = htypes.model.remote_model(
-                model=mosaic.put(piece),
-                remote_peer=mosaic.put(request.receiver_identity.peer.piece),
-                )
-        return piece
+        folder = wiki_pages.get_folder(item_id=current_key)
     except KeyError:
-        ref = wiki_pages.get_ref(current_key)
-        return web.summon(ref.ref)
+        return _open_page(wiki_pages, request, page_id=current_key)
+    else:
+        return _open_folder(wiki_pages, request, folder)
+
+
+def _open_folder(wiki_pages, request, folder):
+    path = wiki_pages.get_folder_path(folder.id)
+    piece = htypes.wiki_pages.list_model(
+        parent_id=folder.id,
+        folder_path=tuple(path),
+        )
+    if request:
+        piece = htypes.model.remote_model(
+            model=mosaic.put(piece),
+            remote_peer=mosaic.put(request.receiver_identity.peer.piece),
+            )
+    return piece
+
+
+def _open_page(wiki_pages, request, page_id):
+    page = wiki_pages.get_page(page_id)
+    return htypes.wiki_pages.page_model(
+        parent_id=page.parent_id,
+        id=page.id)
 
 
 @mark.command
@@ -187,6 +207,17 @@ def new_page(piece, wiki_pages):
         parent_id=piece.parent_id,
         id=None,
         )
+
+
+@mark.command
+def save_page(piece, value, wiki_pages):
+    page_id = wiki_pages.save_page(piece.parent_id, piece.id, value.title, value.wiki)
+    path = wiki_pages.get_folder_path(piece.parent_id)
+    model = htypes.wiki_pages.list_model(
+        parent_id=piece.parent_id,
+        folder_path=path,
+        )
+    return (model, page_id)
 
 
 @mark.command.remove

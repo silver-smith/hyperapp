@@ -112,6 +112,15 @@ def test_open_folder_remotely(generate_rsa_identity, root_model, folder_2_model)
     assert web.summon(piece.model) == folder_2_model
 
 
+def test_open_page_locally(root_model):
+    page_id = 'page_1'
+    piece = wiki_pages.open(root_model, current_key=page_id, request=None)
+    assert piece == htypes.wiki_pages.page_model(
+        parent_id=None,
+        id=page_id,
+        )
+
+
 def test_open_parent_locally(root_model, folder_2_model):
     piece, key = wiki_pages.open_parent(folder_2_model, request=None)
     assert piece == root_model
@@ -137,6 +146,28 @@ def test_new_page(folder_2_model):
     piece = wiki_pages.new_page(folder_2_model)
     assert piece.parent_id == folder_2_model.parent_id
     assert piece.id is None
+
+
+def test_save_new_page(folder_2_model):
+    piece = htypes.wiki_pages.page_model(
+        parent_id=folder_2_model.parent_id,
+        id=None,
+        )
+    ref_1_piece = htypes.wiki_pages_tests.sample_model()
+    page = htypes.wiki_pages.page(
+        id='',
+        parent_id=piece.parent_id,
+        title="New page",
+        wiki=htypes.wiki.wiki(
+            text="New page text",
+            refs=(
+                htypes.wiki.wiki_ref('1', mosaic.put(ref_1_piece)),
+                ),
+            ),
+        )
+    model, page_id = wiki_pages.save_page(piece, page)
+    assert isinstance(model, htypes.wiki_pages.list_model)
+    assert page_id
 
 
 def test_remove_folder(root_model, file_bundle_factory):

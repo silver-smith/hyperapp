@@ -255,6 +255,39 @@ definitions:
       name: remove_d
       base: null
       fields: {}
+  save_page:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: save_page
+  save_page.d:
+    type: save_page_d
+    value: {}
+  save_page.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: save_page
+      ctx_params:
+      - piece
+      - value
+      service_params:
+      - wiki_pages
+  save_page.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: save_page.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: save_page.fn
+  save_page_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki_pages
+      name: save_page_d
+      base: null
+      fields: {}
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
@@ -322,6 +355,11 @@ definitions:
       service_params:
       - format
       - wiki_pages
+  wiki_pages-page_model-save_page.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.wiki_pages:page_model
+      command: save_page.model-command
   wiki_pages-page_model.model:
     type: legacy_type.model:model
     value:

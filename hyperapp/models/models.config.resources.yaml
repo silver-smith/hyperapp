@@ -7,9 +7,7 @@ import:
 - legacy_type.column:column_k
 - legacy_type.command:canned_arg_command_d
 - legacy_type.config_item_list:model
-- legacy_type.crud:layout_k
 - legacy_type.data_service:config_item
-- legacy_type.line_edit:edit_view
 - legacy_type.model_list:model
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
@@ -53,6 +51,7 @@ import:
 - models.wiki_pages:open_parent.d
 - models.wiki_pages:open_wiki_pages.d
 - models.wiki_pages:remove.d
+- models.wiki_pages:save_page.d
 definitions:
   bool-false:
     type: legacy_type.builtin:bool
@@ -306,18 +305,11 @@ definitions:
     value:
       key: models.wiki_pages:remove.d
       value: shortcut_Del
-  crud-layout_k-models.peer_list-add:
-    type: legacy_type.crud:layout_k
+  config_item-models.wiki_pages-save_page.d:
+    type: legacy_type.data_service:config_item
     value:
-      commit_command_d: models.peer_list:add.commit-d
-  crud-layout_k-models.ref_list-add_folder:
-    type: legacy_type.crud:layout_k
-    value:
-      commit_command_d: models.ref_list:add_folder.commit-d
-  crud-layout_k-models.wiki_pages-add_folder:
-    type: legacy_type.crud:layout_k
-    value:
-      commit_command_d: models.wiki_pages:add_folder.commit-d
+      key: models.wiki_pages:save_page.d
+      value: shortcut_Return
   model_1:
     type: legacy_type.config_item_list:model
     value:
@@ -426,3 +418,4 @@ definitions:
       - config_item-models.wiki_pages-remove.d
       - config_item-models.wiki_pages-new_page.d
       - config_item-models.config.config_item_list-remove.d
+      - config_item-models.wiki_pages-save_page.d

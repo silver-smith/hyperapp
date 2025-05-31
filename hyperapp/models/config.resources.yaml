@@ -97,6 +97,7 @@ import:
 - models.wiki_pages:wiki_pages-list_model-remove.command-cfg-item
 - models.wiki_pages:wiki_pages-list_model.feed-template
 - models.wiki_pages:wiki_pages-list_model.model-cfg-item
+- models.wiki_pages:wiki_pages-page_model-save_page.command-cfg-item
 - models.wiki_pages:wiki_pages-page_model.model-cfg-item
 - models.wiki_pages:wiki_pages.service
 definitions:
@@ -208,6 +209,7 @@ definitions:
       - models.wiki_pages:wiki_pages-list_model-open.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-open_parent.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-remove.command-cfg-item
+      - models.wiki_pages:wiki_pages-page_model-save_page.command-cfg-item
   model_reg:
     type: legacy_type.system:item_list_config
     value:
