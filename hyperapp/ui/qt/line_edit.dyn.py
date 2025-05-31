@@ -30,6 +30,13 @@ class LineInput:
         return self._view.get_value(widget)
 
 
+class LineEdit(QtWidgets.QLineEdit):
+
+    def value_changed(self, new_value):
+        if self.text() != new_value:
+            self.setText(new_value)
+
+
 class EditLineView(View):
 
     @classmethod
@@ -48,13 +55,17 @@ class EditLineView(View):
         return htypes.line_edit.edit_view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
-        w = QtWidgets.QLineEdit()
+        return self._construct_widget(state)
+
+    def _construct_widget(self, state, **kw):
+        w = LineEdit(**kw)
         if state:
             text = state.text
         else:
             text = self._adapter.get_view_value()
         w.setText(text)
         w.textEdited.connect(self._on_text_edited)
+        self._adapter.subscribe(w)
         return w
 
     def widget_state(self, widget):
@@ -93,9 +104,7 @@ class ViewLineView(EditLineView):
         return htypes.line_edit.readonly_view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
-        w = super().construct_widget(state, ctx)
-        w.setReadOnly(True)
-        return w
+        return self._construct_widget(state, readOnly=True)
 
 
 @mark.view_factory.model_t(htypes.builtin.string)
