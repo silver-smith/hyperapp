@@ -72,6 +72,10 @@ class ContextFn:
         kw = {
             **ctx.as_dict(),
             }
+        try:
+            kw['value'] = self._pick_ctx_value(ctx)
+        except KeyError:
+            pass
         if not {'widget', 'state'} & self._ctx_params_set:
             return kw
         try:
@@ -88,3 +92,12 @@ class ContextFn:
         if 'state' in self._ctx_params_set:
             kw['state'] = view.widget_state(widget)
         return kw
+
+    @staticmethod
+    def _pick_ctx_value(ctx):
+        try:
+            return ctx.value
+        except KeyError:
+            pass
+        input = ctx.input
+        return input.get_value()
