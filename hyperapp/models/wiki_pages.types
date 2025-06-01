@@ -7,7 +7,7 @@ list_model = record:
 
 item = record:
   id: string
-  name: string
+  title: string
 
 page_model = record:
   parent_id: string opt

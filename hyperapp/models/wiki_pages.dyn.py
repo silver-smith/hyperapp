@@ -48,14 +48,14 @@ class WikiPages:
                 continue
             yield htypes.wiki_pages.item(
                 id=folder.id,
-                name=folder.name,
+                title=folder.name,
                 )
         for page in self._pages.values():
             if page.parent_id != parent_id:
                 continue
             yield htypes.wiki_pages.item(
                 id=page.id,
-                name=page.title,
+                title=page.title,
                 )
 
     def get_folder(self, item_id):
