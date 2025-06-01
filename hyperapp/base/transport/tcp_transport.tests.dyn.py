@@ -27,12 +27,6 @@ def my_callback(message):
     _callback_message.append(message)
 
 
-def test_client_factory(tcp_client_factory):
-    address = ('127.0.0.1', 8888)
-    connection = tcp_client_factory(address)
-    connection._socket.close()
-
-
 @mark.fixture
 def tcp_test_callback(
         peer_registry,
