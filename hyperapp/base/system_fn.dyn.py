@@ -39,7 +39,7 @@ class ContextFn:
 
     def fn_kw(self, ctx, **kw):
         return {
-            'request': None,  # Can be overridden by actual request.
+            'request': None,  # Can be overridden by actual request from ctx or kw.
             **self._ctx_kw(ctx),
             **kw,
             'ctx': ctx,
