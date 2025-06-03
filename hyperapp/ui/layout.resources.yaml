@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enum_fn
 - legacy_type.command:model_command_enumerator
@@ -60,6 +61,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: add_view_command.fn
+      preserve_remote: false
   enum_layout_tree_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -216,7 +218,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_layout_tree.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_layout_tree.d
       properties:
@@ -249,6 +251,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: open_view_item_commands.fn
+      preserve_remote: false
   set_escape_shortcut:
     type: legacy_type.builtin:attribute
     value:
@@ -277,6 +280,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: set_escape_shortcut.fn
+      preserve_remote: false
   set_shortcut:
     type: legacy_type.builtin:attribute
     value:
@@ -305,6 +309,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: set_shortcut.fn
+      preserve_remote: false
   view_item_commands:
     type: legacy_type.builtin:attribute
     value:

@@ -213,6 +213,7 @@ class CrudOpenCommandCtr(ModuleCtr):
             d=mosaic.put(open_command_d),
             properties=properties,
             system_fn=mosaic.put(system_fn),
+            preserve_remote=False,
             )
         cfg_item = htypes.command.cfg_item(
             t=pyobj_creg.actor_to_ref(self._model_t),

@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
 - legacy_type.command:model_command_add_fn
@@ -21,7 +22,6 @@ import:
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:model
 - legacy_type.model:record_ui_t
-- legacy_type.model:remote_model
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
@@ -108,6 +108,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: new_page.fn
+      preserve_remote: true
   new_page_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -130,7 +131,6 @@ definitions:
       ctx_params:
       - piece
       - current_key
-      - request
       service_params:
       - wiki_pages
   open.model-command:
@@ -142,6 +142,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: open.fn
+      preserve_remote: true
   open_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -163,7 +164,6 @@ definitions:
       function: open_parent
       ctx_params:
       - piece
-      - request
       service_params:
       - wiki_pages
   open_parent.model-command:
@@ -175,6 +175,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_parent.fn
+      preserve_remote: true
   open_parent_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -197,7 +198,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_wiki_pages.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_wiki_pages.d
       properties:
@@ -248,6 +249,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: remove.fn
+      preserve_remote: false
   remove_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -281,6 +283,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: save_page.fn
+      preserve_remote: true
   save_page_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -389,7 +392,6 @@ definitions:
       file_name: wiki_pages.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        htypes.model.remote_model: legacy_type.model:remote_model
         htypes.wiki.wiki: legacy_type.wiki:wiki
         htypes.wiki_pages.folder: legacy_type.wiki_pages:folder
         htypes.wiki_pages.item: legacy_type.wiki_pages:item

@@ -23,6 +23,7 @@ universal_ui_command_template_ctr = record(untyped_command_ctr)
 ui_command_enumerator_template_ctr = record(typed_command_ctr)
 
 model_command_template_ctr = record(typed_command_ctr):
+  preserve_remote: bool
   command_fn_t: ref
 
 model_command_enumerator_template_ctr = record(typed_command_ctr)

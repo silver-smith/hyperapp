@@ -100,6 +100,7 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: config_item_list-model.open_move.command-fn
+      preserve_remote: false
   config_item_list-model.open_move.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -198,6 +199,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: open_config_item_list.fn
+      preserve_remote: false
   open_config_item_list_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -230,6 +232,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: open_config_key.fn
+      preserve_remote: false
   open_config_key_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -270,6 +273,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: remove.fn
+      preserve_remote: false
   remove_d:
     type: legacy_type.builtin:record_mt
     value:

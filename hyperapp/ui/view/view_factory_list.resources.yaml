@@ -9,7 +9,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:model_command
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command_fn
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
@@ -51,7 +51,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_view_factory_list.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_view_factory_list.d
       properties:

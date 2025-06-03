@@ -158,6 +158,7 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: run_command.fn
+      preserve_remote: false
   run_command_d:
     type: legacy_type.builtin:record_mt
     value:

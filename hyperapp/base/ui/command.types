@@ -18,7 +18,10 @@ fn_command = record:
 command_enumerator = record:
   system_fn: ref
 
-model_command = record(fn_command)
+model_command = record(fn_command):
+  preserve_remote: bool
+
+global_model_command = record(fn_command)
 ui_command = record(fn_command)
 ui_command_enumerator = record(command_enumerator)
 model_command_enumerator = record(command_enumerator)

@@ -114,6 +114,9 @@ class CommandTemplateCtr(Constructor):
         if name_to_res is not None:
             name_to_res[f'{self._fn_name}.d'] = d
             name_to_res[f'{self._fn_name}.fn'] = fn
+        return self._make_command_record(d, properties, fn)
+
+    def _make_command_record(self, d, properties, fn):
         return self._command_t(
             d=mosaic.put(d),
             properties=properties,
@@ -300,12 +303,14 @@ class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
             ctx_params=piece.ctx_params,
             service_params=piece.service_params,
             args=cls._args_dict(piece.args),
+            preserve_remote=piece.preserve_remote,
             t=pyobj_creg.invite(piece.t),
             command_fn_t=pyobj_creg.invite(piece.command_fn_t),
             )
 
-    def __init__(self, module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args, t, command_fn_t):
+    def __init__(self, module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args, preserve_remote, t, command_fn_t):
         super().__init__(module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args, t)
+        self._preserve_remote = preserve_remote
         self._command_fn_t = command_fn_t
 
     @property
@@ -318,11 +323,19 @@ class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             args=self._args_tuple,
+            preserve_remote=self._preserve_remote,
             t=pyobj_creg.actor_to_ref(self._t),
             command_fn_t=pyobj_creg.actor_to_ref(self._command_fn_t),
             )
 
-    _command_t = htypes.command.model_command
+    def _make_command_record(self, d, properties, fn):
+        return htypes.command.model_command(
+            d=mosaic.put(d),
+            properties=properties,
+            system_fn=mosaic.put(fn),
+            preserve_remote=self._preserve_remote,
+            )
+
     _enum_command_t = htypes.command.model_args_picker_command_enumerator
     _is_global = False
     _direct_command_resource_suffix = 'model-command'
@@ -346,7 +359,7 @@ class ModelCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 
 class GlobalModelCommandTemplateCtr(UntypedCommandTemplateCtr):
 
-    _command_t = htypes.command.model_command
+    _command_t = htypes.command.global_model_command
     _command_fn_t = htypes.command.model_command_fn
     _template_ctr_t = htypes.command_resource.global_model_command_template_ctr
     _is_global = True

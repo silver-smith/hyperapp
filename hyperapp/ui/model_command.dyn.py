@@ -255,9 +255,10 @@ class ModelCommandEnumFn(ModelCommandFnBase):
 
 class UnboundModelCommand(UnboundCommand):
 
-    def __init__(self, d, ctx_fn, properties):
+    def __init__(self, d, ctx_fn, properties, preserve_remote=False):
         super().__init__(d, ctx_fn)
         self._properties = properties
+        self._preserve_remote = preserve_remote
 
     @property
     def piece(self):
@@ -265,11 +266,16 @@ class UnboundModelCommand(UnboundCommand):
             d=mosaic.put(self._d),
             properties=self._properties,
             system_fn=mosaic.put(self._ctx_fn.piece),
+            preserve_remote=self._preserve_remote,
             )
 
     @property
     def properties(self):
         return self._properties
+
+    @property
+    def preserve_remote(self):
+        return self._preserve_remote
 
     def bind(self, ctx):
         return BoundModelCommand(self._d, self._ctx_fn, ctx, self._properties)
@@ -293,6 +299,7 @@ def model_command_from_piece(piece, system_fn_creg):
         d=web.summon(piece.d),
         ctx_fn=ctx_fn,
         properties=piece.properties,
+        preserve_remote=piece.preserve_remote,
         )
 
 

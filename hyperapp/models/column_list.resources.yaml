@@ -136,3 +136,4 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: toggle_visibility.fn
+      preserve_remote: false

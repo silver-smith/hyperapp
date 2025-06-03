@@ -145,39 +145,33 @@ def page_model(piece, wiki_pages):
         )
 
 
-@mark.command
-def open(piece, current_key, request, wiki_pages):
+@mark.command(preserve_remote=True)
+def open(piece, current_key, wiki_pages):
     try:
         folder = wiki_pages.get_folder(item_id=current_key)
     except KeyError:
-        return _open_page(wiki_pages, request, page_id=current_key)
+        return _open_page(wiki_pages, page_id=current_key)
     else:
-        return _open_folder(wiki_pages, request, folder)
+        return _open_folder(wiki_pages, folder)
 
 
-def _open_folder(wiki_pages, request, folder):
+def _open_folder(wiki_pages, folder):
     path = wiki_pages.get_folder_path(folder.id)
-    piece = htypes.wiki_pages.list_model(
+    return htypes.wiki_pages.list_model(
         parent_id=folder.id,
         folder_path=tuple(path),
         )
-    if request:
-        piece = htypes.model.remote_model(
-            model=mosaic.put(piece),
-            remote_peer=mosaic.put(request.receiver_identity.peer.piece),
-            )
-    return piece
 
 
-def _open_page(wiki_pages, request, page_id):
+def _open_page(wiki_pages, page_id):
     page = wiki_pages.get_page(page_id)
     return htypes.wiki_pages.page_model(
         parent_id=page.parent_id,
         id=page.id)
 
 
-@mark.command
-def open_parent(piece, request, wiki_pages):
+@mark.command(preserve_remote=True)
+def open_parent(piece, wiki_pages):
     if not piece.parent_id:
         return
     folder = wiki_pages.get_folder(piece.parent_id)
@@ -185,11 +179,6 @@ def open_parent(piece, request, wiki_pages):
         parent_id=folder.parent_id,
         folder_path=piece.folder_path[:-1],
         )
-    if request:
-        piece = htypes.model.remote_model(
-            model=mosaic.put(piece),
-            remote_peer=mosaic.put(request.receiver_identity.peer.piece),
-            )
     return (piece, folder.id)
 
 
@@ -201,7 +190,7 @@ def add_folder(piece, name, wiki_pages):
     return folder_id
 
 
-@mark.command
+@mark.command(preserve_remote=True)
 def new_page(piece, wiki_pages):
     return htypes.wiki_pages.page_model(
         parent_id=piece.parent_id,
@@ -209,7 +198,7 @@ def new_page(piece, wiki_pages):
         )
 
 
-@mark.command
+@mark.command(preserve_remote=True)
 def save_page(piece, value, wiki_pages):
     page_id = wiki_pages.save_page(piece.parent_id, piece.id, value.title, value.wiki)
     path = wiki_pages.get_folder_path(piece.parent_id)

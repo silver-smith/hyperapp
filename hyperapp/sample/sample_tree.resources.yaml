@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.feed:feed_template
@@ -48,6 +49,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: append_tree_item.fn
+      preserve_remote: false
   append_tree_item_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -109,6 +111,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: insert_tree_item.fn
+      preserve_remote: false
   insert_tree_item_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -131,7 +134,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_sample_fn_tree.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_sample_fn_tree.d
       properties:
@@ -173,6 +176,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: remove_tree_item.fn
+      preserve_remote: false
   remove_tree_item_d:
     type: legacy_type.builtin:record_mt
     value:

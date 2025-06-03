@@ -75,6 +75,7 @@ def lcs():
         d=mosaic.put(htypes.ui_model_command_tests.sample_model_command_3_d()),
         properties=htypes.command.properties(False, False, False),
         system_fn=mosaic.put(fn_3),
+        preserve_remote=False,
         )
     command_4 = htypes.command.custom_ui_command(
         ui_command_d=mosaic.put(htypes.ui_model_command_tests.sample_command_4_d()),

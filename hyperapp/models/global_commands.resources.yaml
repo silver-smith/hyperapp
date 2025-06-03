@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.command_list_model:item
@@ -148,7 +149,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_global_commands.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_global_commands.d
       properties:
@@ -191,6 +192,7 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: run_command.fn
+      preserve_remote: false
   run_command_d:
     type: legacy_type.builtin:record_mt
     value:

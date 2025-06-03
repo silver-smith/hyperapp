@@ -14,6 +14,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
@@ -142,7 +143,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_peer_list.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_peer_list.d
       properties:
@@ -276,6 +277,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: remove.fn
+      preserve_remote: false
   remove_d:
     type: legacy_type.builtin:record_mt
     value:

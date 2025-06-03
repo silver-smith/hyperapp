@@ -152,8 +152,9 @@ class UiCommandEnumeratorProbe(CommandProbe):
 
 class ModelCommandProbe(CommandProbe):
 
-    def __init__(self, system_probe, ctr_collector, module_name, args, fn, command_fn_t, t=None):
+    def __init__(self, system_probe, ctr_collector, module_name, args, preserve_remote, fn, command_fn_t, t=None):
         super().__init__(system_probe, ctr_collector, module_name, args, fn, t)
+        self._preserve_remote = preserve_remote
         self._command_fn_t = command_fn_t
 
     def _add_constructor(self, params):
@@ -163,6 +164,7 @@ class ModelCommandProbe(CommandProbe):
             t = self._deduce_piece_t(params, ['piece', 'model'])
         ctr = ModelCommandTemplateCtr(
             **self._common_ctr_kw(params),
+            preserve_remote=self._preserve_remote,
             service_name='model_command_reg',
             enum_service_name='model_command_enumerator_reg',
             t=t,
@@ -249,15 +251,16 @@ class UiCommandEnumeratorDecorator(TypedCommandDecorator):
 
 class ModelCommandDecorator(TypedCommandDecorator):
 
-    def __init__(self, system, ctr_collector, module_name, args, command_fn_t, t=None):
+    def __init__(self, system, ctr_collector, module_name, args, preserve_remote, command_fn_t, t=None):
         super().__init__(system, ctr_collector, module_name, args, t)
+        self._preserve_remote = preserve_remote
         self._command_fn_t = command_fn_t
 
     def __call__(self, fn):
         check_not_classmethod(fn)
         check_is_function(fn)
         return ModelCommandProbe(
-            self._system, self._ctr_collector, self._module_name, self._args, fn, self._command_fn_t, self._t)
+            self._system, self._ctr_collector, self._module_name, self._args, self._preserve_remote, fn, self._command_fn_t, self._t)
 
 
 class ModelCommandEnumeratorDecorator(TypedCommandDecorator):
@@ -325,27 +328,30 @@ class UiCommandEnumeratorMarker(CommandMarker):
 
 class ModelCommandMarker(CommandMarker):
 
-    def __call__(self, fn_or_t=None, *, args=None):
-        return self._make_decorator_or_probe(fn_or_t, args, command_fn_t=htypes.command.model_command_fn)
+    def __call__(self, fn_or_t=None, *, args=None, preserve_remote=False):
+        return self._make_decorator_or_probe(
+            fn_or_t, args, preserve_remote, command_fn_t=htypes.command.model_command_fn)
 
     def add(self, fn_or_t=None, *, args=None):
-        return self._make_decorator_or_probe(fn_or_t, args, command_fn_t=htypes.command.model_command_add_fn)
+        return self._make_decorator_or_probe(
+            fn_or_t, args, preserve_remote=False, command_fn_t=htypes.command.model_command_add_fn)
 
     def remove(self, fn_or_t=None, *, args=None):
-        return self._make_decorator_or_probe(fn_or_t, args, command_fn_t=htypes.command.model_command_remove_fn)
+        return self._make_decorator_or_probe(
+            fn_or_t, args, preserve_remote=False, command_fn_t=htypes.command.model_command_remove_fn)
 
-    def _make_decorator_or_probe(self, fn_or_t, args, command_fn_t):
+    def _make_decorator_or_probe(self, fn_or_t, args, preserve_remote, command_fn_t):
         if fn_or_t is None:
             return ModelCommandDecorator(
-                self._system, self._ctr_collector, self._module_name, args, command_fn_t=command_fn_t)
+                self._system, self._ctr_collector, self._module_name, args, preserve_remote, command_fn_t=command_fn_t)
         if isinstance(fn_or_t, Type):
             # Type-specialized variant (@mark.command(my_type)).
             return ModelCommandDecorator(
-                self._system, self._ctr_collector, self._module_name, args, command_fn_t=command_fn_t, t=fn_or_t)
+                self._system, self._ctr_collector, self._module_name, args, preserve_remote, command_fn_t=command_fn_t, t=fn_or_t)
         # Not type-specialized variant  (@mark.command).
         check_is_function(fn_or_t)
         return ModelCommandProbe(
-            self._system, self._ctr_collector, self._module_name, args, fn=fn_or_t, command_fn_t=command_fn_t)
+            self._system, self._ctr_collector, self._module_name, args, preserve_remote, fn=fn_or_t, command_fn_t=command_fn_t)
 
 
 class ModelCommandEnumeratorMarker(CommandMarker):

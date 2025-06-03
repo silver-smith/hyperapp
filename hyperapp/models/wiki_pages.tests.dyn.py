@@ -99,22 +99,13 @@ def test_new_page_model():
 
 def test_open_folder_locally(root_model, folder_2_model):
     current_key = folder_2_model.parent_id
-    piece = wiki_pages.open(root_model, current_key, request=None)
+    piece = wiki_pages.open(root_model, current_key)
     assert piece == folder_2_model
-
-
-def test_open_folder_remotely(generate_rsa_identity, root_model, folder_2_model):
-    identity = generate_rsa_identity(fast=True)
-    request = Mock(receiver_identity=identity)
-    current_key = folder_2_model.parent_id
-    piece = wiki_pages.open(root_model, current_key, request)
-    assert isinstance(piece, htypes.model.remote_model)
-    assert web.summon(piece.model) == folder_2_model
 
 
 def test_open_page_locally(root_model):
     page_id = 'page_1'
-    piece = wiki_pages.open(root_model, current_key=page_id, request=None)
+    piece = wiki_pages.open(root_model, current_key=page_id)
     assert piece == htypes.wiki_pages.page_model(
         parent_id=None,
         id=page_id,
@@ -122,17 +113,8 @@ def test_open_page_locally(root_model):
 
 
 def test_open_parent_locally(root_model, folder_2_model):
-    piece, key = wiki_pages.open_parent(folder_2_model, request=None)
+    piece, key = wiki_pages.open_parent(folder_2_model)
     assert piece == root_model
-    assert key == folder_2_model.parent_id
-
-
-def test_open_parent_remotelly(generate_rsa_identity, root_model, folder_2_model):
-    identity = generate_rsa_identity(fast=True)
-    request = Mock(receiver_identity=identity)
-    piece, key = wiki_pages.open_parent(folder_2_model, request)
-    assert isinstance(piece, htypes.model.remote_model)
-    assert web.summon(piece.model) == root_model
     assert key == folder_2_model.parent_id
 
 

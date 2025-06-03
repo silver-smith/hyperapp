@@ -14,18 +14,20 @@ log = logging.getLogger(__name__)
 
 class UnboundRemoteCommand(UnboundModelCommand):
 
-    def __init__(self, d, ctx_fn, properties, remote_peer):
-        super().__init__(d, ctx_fn, properties)
+    def __init__(self, d, ctx_fn, properties, preserve_remote, remote_peer):
+        super().__init__(d, ctx_fn, properties, preserve_remote)
         self._remote_peer = remote_peer
 
     def bind(self, ctx):
-        return BoundRemoteCommand(self._d, self._ctx_fn, ctx, self._properties, self._remote_peer)
+        return BoundRemoteCommand(
+            self._d, self._ctx_fn, ctx, self._properties, self._preserve_remote, self._remote_peer)
 
 
 class BoundRemoteCommand(BoundModelCommand):
 
-    def __init__(self, d, ctx_fn, ctx, properties, remote_peer):
+    def __init__(self, d, ctx_fn, ctx, properties, preserve_remote, remote_peer):
         super().__init__(d, ctx_fn, ctx, properties)
+        self._preserve_remote = preserve_remote
         self._remote_peer = remote_peer
 
     async def _run(self):
@@ -50,7 +52,7 @@ class BoundRemoteCommand(BoundModelCommand):
 
 @mark.service
 def remote_command_from_model_command(remote_peer, command):
-    return UnboundRemoteCommand(command.d, command.fn, command.properties, remote_peer)
+    return UnboundRemoteCommand(command.d, command.fn, command.properties, command.preserve_remote, remote_peer)
 
 
 @mark.command_enum

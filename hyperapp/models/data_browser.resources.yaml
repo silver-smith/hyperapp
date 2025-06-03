@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.data_browser:browse_current_model_d
@@ -47,7 +48,7 @@ definitions:
       - piece
       service_params: []
   browse_current_model.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: browse_current_model.d
       properties:
@@ -256,6 +257,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: list_open.fn
+      preserve_remote: false
   record_open:
     type: legacy_type.builtin:attribute
     value:
@@ -281,6 +283,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: record_open.fn
+      preserve_remote: false
   ref_list_open:
     type: legacy_type.builtin:attribute
     value:
@@ -306,3 +309,4 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: ref_list_open.fn
+      preserve_remote: false

@@ -46,6 +46,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: lcs_dirs_items.fn
+      preserve_remote: false
   lcs_dirs_view:
     type: legacy_type.builtin:attribute
     value:
@@ -123,6 +124,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: lcs_open_dirs.fn
+      preserve_remote: false
   lcs_view-view-lcs_open_dirs.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

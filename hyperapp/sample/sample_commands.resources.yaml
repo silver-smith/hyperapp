@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.sample_commands:system_info_item
@@ -41,6 +42,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: details.fn
+      preserve_remote: false
   details_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -63,7 +65,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_sample_static_list.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_sample_static_list.d
       properties:
@@ -93,7 +95,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_sample_static_text.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_sample_static_text.d
       properties:
@@ -123,7 +125,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_sample_wiki_text.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_sample_wiki_text.d
       properties:
@@ -185,6 +187,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: sample_tree_info.fn
+      preserve_remote: false
   sample_tree_info_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -208,7 +211,7 @@ definitions:
       - model_state
       service_params: []
   show_state.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: show_state.d
       properties:
@@ -238,7 +241,7 @@ definitions:
       ctx_params: []
       service_params: []
   system_info.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: system_info.d
       properties:

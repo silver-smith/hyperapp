@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.model:model
@@ -41,6 +42,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: apply.fn
+      preserve_remote: false
   apply_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -63,7 +65,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_sample_fn_record.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_sample_fn_record.d
       properties:

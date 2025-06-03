@@ -6,6 +6,7 @@ import:
 - legacy_type.command:arg_t
 - legacy_type.command:args_picker_command_fn
 - legacy_type.command:cfg_item
+- legacy_type.command:global_model_command
 - legacy_type.command:properties
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
@@ -45,6 +46,7 @@ definitions:
         htypes.command.properties: legacy_type.command:properties
         htypes.command.model_args_picker_command_enumerator: legacy_type.command:model_args_picker_command_enumerator
         htypes.command.model_command: legacy_type.command:model_command
+        htypes.command.global_model_command: legacy_type.command:global_model_command
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
         htypes.command.model_command_enum_fn: legacy_type.command:model_command_enum_fn
         htypes.command.model_command_enumerator: legacy_type.command:model_command_enumerator

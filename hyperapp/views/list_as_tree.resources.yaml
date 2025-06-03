@@ -316,6 +316,7 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: toggle_open_command.fn
+      preserve_remote: false
   toggle_open_command_d:
     type: legacy_type.builtin:record_mt
     value:

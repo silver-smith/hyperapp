@@ -47,6 +47,7 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: sample_list-sample_list.edit.command-fn
+      preserve_remote: false
   sample_list-sample_list.edit.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

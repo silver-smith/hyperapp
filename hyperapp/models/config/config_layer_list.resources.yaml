@@ -7,7 +7,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:model_command
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command_fn
 - legacy_type.config_layer_list:item
 - legacy_type.config_layer_list:layer
@@ -114,7 +114,7 @@ definitions:
       ctx_params: []
       service_params: []
   open_config_layer_list.global-model-command:
-    type: legacy_type.command:model_command
+    type: legacy_type.command:global_model_command
     value:
       d: open_config_layer_list.d
       properties:

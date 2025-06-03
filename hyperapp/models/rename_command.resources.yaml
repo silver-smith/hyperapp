@@ -55,6 +55,7 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: model_commands-model.open_rename.command-fn
+      preserve_remote: false
   model_commands-model.open_rename.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

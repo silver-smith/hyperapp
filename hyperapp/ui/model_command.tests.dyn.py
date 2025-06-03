@@ -180,6 +180,7 @@ def test_model_command_from_piece(sample_command_fn):
         d=mosaic.put(d),
         properties=htypes.command.properties(False, False, False),
         system_fn=mosaic.put(sample_command_fn),
+        preserve_remote=False,
         )
     command = model_command.model_command_from_piece(piece)
     assert isinstance(command, model_command.UnboundModelCommand)

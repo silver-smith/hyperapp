@@ -62,6 +62,7 @@ definitions:
         uses_state: false
         remotable: false
       system_fn: add_identity_command.fn
+      preserve_remote: false
   command_creg-identity_command-identity_command.actor-template:
     type: legacy_type.system:actor_template
     value:

@@ -87,6 +87,7 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: global_commands-model.edit.command-fn
+      preserve_remote: false
   global_commands-model.edit.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -150,6 +151,7 @@ definitions:
         uses_state: true
         remotable: false
       system_fn: model_commands-model.edit.command-fn
+      preserve_remote: false
   model_commands-model.edit.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -215,3 +217,4 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: set_shortcut.fn
+      preserve_remote: false
