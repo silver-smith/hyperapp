@@ -1,3 +1,5 @@
+# Store model servant for model command operations - to get key info and make diff item.
+
 import logging
 
 from .code.mark import mark
