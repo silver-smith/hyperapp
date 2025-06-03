@@ -1,5 +1,7 @@
 import logging
 
+from hyperapp.boot.htypes import TRecord
+
 from . import htypes
 from .services import (
     deduce_t,
@@ -31,10 +33,12 @@ class BoundRemoteCommand(BoundModelCommand):
         self._remote_peer = remote_peer
 
     async def _run(self):
+        ctx = self._ctx
+        is_remote = False
         try:
             model = self._ctx.model
         except KeyError:
-            ctx = self._ctx
+            pass
         else:
             if isinstance(model, htypes.model.remote_model):
                 real_model = web.summon(model.model)
@@ -42,12 +46,25 @@ class BoundRemoteCommand(BoundModelCommand):
                     model=real_model,
                     piece=real_model,
                     )
-            else:
-                ctx = self._ctx
+                is_remote = True
         log.info("Run remote command: %r", self)
         result = await self._ctx_fn.call(ctx, remote_peer=self._remote_peer)
         log.info("Run remote command %r result: [%s] %r", self, type(result), result)
-        return result
+        assert isinstance(result, htypes.command.command_result), result
+        if not is_remote:
+            return result
+        result_model, result_model_t = web.summon_with_t(result.model)
+        if not isinstance(result_model_t, TRecord):
+            return result
+        result_remote_model = htypes.model.remote_model(
+            model=mosaic.put(result_model),
+            remote_peer=model.remote_peer,
+            )
+        return htypes.command.command_result(
+            model=mosaic.put(result_remote_model),
+            key=result.key,
+            diff=result.diff,
+            )
 
 
 @mark.service

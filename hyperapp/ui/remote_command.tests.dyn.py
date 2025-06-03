@@ -1,6 +1,7 @@
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code.mark import mark
 from .code.context import Context
@@ -12,7 +13,11 @@ from .tested.code import remote_command
 @mark.fixture
 def rpc_system_call_factory(receiver_peer, sender_identity, fn):
     def call(**kw):
-        return "remote-sample-result"
+        return htypes.command.command_result(
+            model=mosaic.put('remote-sample-result'),
+            key=None,
+            diff=None,
+            )
     return call
 
 
@@ -59,7 +64,7 @@ async def test_remote_command_from_model_command(
         )
     bound_command = command.bind(ctx)
     result = await bound_command.run()
-    assert result == "remote-sample-result", result
+    assert web.summon(result.model) == 'remote-sample-result', result
 
 
 def test_enum(generate_rsa_identity, remote_model):
