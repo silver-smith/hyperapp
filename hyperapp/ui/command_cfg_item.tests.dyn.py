@@ -42,24 +42,23 @@ def test_typed(cfg_item_piece):
 
 
 @mark.fixture.obj
-def model_command():
+def global_model_command():
     d = htypes.command_cfg_item_tests.sample_command_d()
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
         )
-    return htypes.command.model_command(
+    return htypes.command.global_model_command(
         d=mosaic.put(d),
         properties=htypes.command.properties(False, False, False),
         system_fn=mosaic.put(system_fn),
-        preserve_remote=False,
         )
 
 
-def test_untyped_model_command(model_command):
-    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(model_command)
-    assert cfg_item.piece == model_command
+def test_untyped_model_command(global_model_command):
+    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(global_model_command)
+    assert cfg_item.piece == global_model_command
 
 
 @mark.fixture.obj

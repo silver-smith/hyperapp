@@ -187,6 +187,18 @@ def test_model_command_from_piece(sample_command_fn):
     assert command.piece == piece
 
 
+def test_global_model_command_from_piece(sample_command_fn):
+    d = htypes.model_command_tests.sample_command_d()
+    piece = htypes.command.global_model_command(
+        d=mosaic.put(d),
+        properties=htypes.command.properties(False, False, False),
+        system_fn=mosaic.put(sample_command_fn),
+        )
+    command = model_command.global_model_command_from_piece(piece)
+    assert isinstance(command, model_command.UnboundGlobalModelCommand)
+    assert command.piece == piece
+
+
 def test_model_command_enumerator_from_piece(sample_command_fn):
     piece = htypes.command.model_command_enumerator(
         system_fn=mosaic.put(sample_command_fn),

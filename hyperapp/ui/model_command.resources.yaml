@@ -11,6 +11,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:command_result
+- legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_add_fn
 - legacy_type.command:model_command_enum_fn
@@ -68,6 +69,13 @@ definitions:
     value:
       object: ModelCommandRemoveFn
       attr_name: from_piece
+  command_creg-command-global_model_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:global_model_command
+      function: global_model_command_from_piece
+      service_params:
+      - system_fn_creg
   command_creg-command-model_command.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -100,6 +108,11 @@ definitions:
       free_params:
       - model_t
       - ctx
+  global_model_command_from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_command.module
+      attr_name: global_model_command_from_piece
   global_model_command_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -133,6 +146,7 @@ definitions:
         code.mark: base.mark:mark.module
         code.system_fn: base.system_fn:system_fn.module
         htypes.command.command_result: legacy_type.command:command_result
+        htypes.command.global_model_command: legacy_type.command:global_model_command
         htypes.command.model_command: legacy_type.command:model_command
         htypes.command.model_command_add_fn: legacy_type.command:model_command_add_fn
         htypes.command.model_command_enum_fn: legacy_type.command:model_command_enum_fn
