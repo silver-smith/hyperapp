@@ -87,7 +87,7 @@ class WikiPages:
         if name in self._folder_has_names[parent_id]:
             log.warning("Folder with name %r already exists", name)
             return None
-        folder = htypes.wiki_pages.folder(
+        folder = htypes.wiki_pages.folder_rec(
             id=str(uuid.uuid4()),
             parent_id=parent_id,
             name=name,
@@ -104,7 +104,7 @@ class WikiPages:
             return None
         if not page_id:
             page_id = str(uuid.uuid4())
-        page = htypes.wiki_pages.page(
+        page = htypes.wiki_pages.page_rec(
             id=page_id,
             parent_id=parent_id,
             title=title,
@@ -134,7 +134,7 @@ def page_list_model(piece, format, wiki_pages):
 def page_model(piece, wiki_pages):
     if piece.id:
         return wiki_pages.get_page(piece.id)
-    return htypes.wiki_pages.page(
+    return htypes.wiki_pages.page_rec(
         id=str(uuid.uuid4()),
         parent_id=piece.parent_id,
         title="New wiki page",

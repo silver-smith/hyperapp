@@ -25,19 +25,19 @@ def file_bundle_factory():
     ref_1_piece = htypes.wiki_pages_tests.sample_model()
     storage = htypes.wiki_pages.storage(
         folders=(
-            htypes.wiki_pages.folder(
+            htypes.wiki_pages.folder_rec(
                 id='folder_1',
                 parent_id=None,
                 name="Folder 1",
                 ),
-            htypes.wiki_pages.folder(
+            htypes.wiki_pages.folder_rec(
                 id='folder_2',
                 parent_id=None,
                 name="Folder 2",
                 ),
             ),
         pages=(
-            htypes.wiki_pages.page(
+            htypes.wiki_pages.page_rec(
                 id='page_1',
                 parent_id=None,
                 title="Page 1",
@@ -81,7 +81,7 @@ def test_existing_page_model():
         id='page_1',
         )
     page = wiki_pages.page_model(model)
-    assert isinstance(page, htypes.wiki_pages.page)
+    assert isinstance(page, htypes.wiki_pages.page_rec)
     assert page.parent_id == model.parent_id
     assert page.id == model.id
 
@@ -92,7 +92,7 @@ def test_new_page_model():
         id=None,
         )
     page = wiki_pages.page_model(model)
-    assert isinstance(page, htypes.wiki_pages.page)
+    assert isinstance(page, htypes.wiki_pages.page_rec)
     assert page.parent_id == model.parent_id
     assert page.id
 
@@ -136,7 +136,7 @@ def test_save_new_page(folder_2_model):
         id=None,
         )
     ref_1_piece = htypes.wiki_pages_tests.sample_model()
-    page = htypes.wiki_pages.page(
+    page = htypes.wiki_pages.page_rec(
         id='',
         parent_id=piece.parent_id,
         title="New page",

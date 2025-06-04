@@ -14,17 +14,17 @@ page_model = record:
   id: string opt
 
 
-folder = record:
+folder_rec = record:
   id: string
   parent_id: string opt
   name: string
 
-page = record:
+page_rec = record:
   id: string
   parent_id: string opt
   title: string
   wiki: wiki
 
 storage = record:
-  folders: folder list
-  pages: page list
+  folders: folder_rec list
+  pages: page_rec list
