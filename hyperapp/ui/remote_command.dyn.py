@@ -50,8 +50,10 @@ class BoundRemoteCommand(BoundModelCommand):
         log.info("Run remote command: %r", self)
         result = await self._ctx_fn.call(ctx, remote_peer=self._remote_peer)
         log.info("Run remote command %r result: [%s] %r", self, type(result), result)
+        if result is None:
+            return None
         assert isinstance(result, htypes.command.command_result), result
-        if not is_remote:
+        if not is_remote or result.model is None:
             return result
         result_model, result_model_t = web.summon_with_t(result.model)
         if not isinstance(result_model_t, TRecord):
