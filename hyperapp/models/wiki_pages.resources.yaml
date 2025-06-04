@@ -30,6 +30,7 @@ import:
 - legacy_type.wiki_pages:folder_rec
 - legacy_type.wiki_pages:item
 - legacy_type.wiki_pages:list_model
+- legacy_type.wiki_pages:page
 - legacy_type.wiki_pages:page_model
 - legacy_type.wiki_pages:page_rec
 - legacy_type.wiki_pages:storage
@@ -376,7 +377,7 @@ definitions:
   wiki_pages-page_model.record-ui-t:
     type: legacy_type.model:record_ui_t
     value:
-      record_t: legacy_type.wiki_pages:page_rec
+      record_t: legacy_type.wiki_pages:page
   wiki_pages-page_model.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -396,6 +397,7 @@ definitions:
         htypes.wiki_pages.folder_rec: legacy_type.wiki_pages:folder_rec
         htypes.wiki_pages.item: legacy_type.wiki_pages:item
         htypes.wiki_pages.list_model: legacy_type.wiki_pages:list_model
+        htypes.wiki_pages.page: legacy_type.wiki_pages:page
         htypes.wiki_pages.page_model: legacy_type.wiki_pages:page_model
         htypes.wiki_pages.page_rec: legacy_type.wiki_pages:page_rec
         htypes.wiki_pages.storage: legacy_type.wiki_pages:storage

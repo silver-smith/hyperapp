@@ -133,10 +133,12 @@ def page_list_model(piece, format, wiki_pages):
 @mark.model
 def page_model(piece, wiki_pages):
     if piece.id:
-        return wiki_pages.get_page(piece.id)
-    return htypes.wiki_pages.page_rec(
-        id=str(uuid.uuid4()),
-        parent_id=piece.parent_id,
+        rec = wiki_pages.get_page(piece.id)
+        return htypes.wiki_pages.page(
+            title=rec.title,
+            wiki=rec.wiki,
+            )
+    return htypes.wiki_pages.page(
         title="New wiki page",
         wiki=htypes.wiki.wiki(
             text="",

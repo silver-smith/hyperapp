@@ -81,9 +81,7 @@ def test_existing_page_model():
         id='page_1',
         )
     page = wiki_pages.page_model(model)
-    assert isinstance(page, htypes.wiki_pages.page_rec)
-    assert page.parent_id == model.parent_id
-    assert page.id == model.id
+    assert isinstance(page, htypes.wiki_pages.page)
 
 
 def test_new_page_model():
@@ -92,9 +90,7 @@ def test_new_page_model():
         id=None,
         )
     page = wiki_pages.page_model(model)
-    assert isinstance(page, htypes.wiki_pages.page_rec)
-    assert page.parent_id == model.parent_id
-    assert page.id
+    assert isinstance(page, htypes.wiki_pages.page)
 
 
 def test_open_folder_locally(root_model, folder_2_model):
@@ -136,9 +132,7 @@ def test_save_new_page(folder_2_model):
         id=None,
         )
     ref_1_piece = htypes.wiki_pages_tests.sample_model()
-    page = htypes.wiki_pages.page_rec(
-        id='',
-        parent_id=piece.parent_id,
+    page = htypes.wiki_pages.page(
         title="New page",
         wiki=htypes.wiki.wiki(
             text="New page text",
