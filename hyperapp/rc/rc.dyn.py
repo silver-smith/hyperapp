@@ -194,7 +194,7 @@ class RcRunner:
             )
 
     def _write(self, path, text):
-        if self._options.write:
+        if self._options.write and not self._failures:
             rc_log.info("Write: %s", path)
             path.write_text(text)
 
