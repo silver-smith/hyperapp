@@ -16,10 +16,6 @@ class RecordAdapter:
         self._record_t = record_t
         self._subscribers = weakref.WeakSet()
 
-    @property
-    def model(self):
-        return self._model
-
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
 
