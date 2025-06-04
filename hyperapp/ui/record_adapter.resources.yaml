@@ -3,8 +3,10 @@
 import:
 - base.mark:mark.module
 - builtins:pyobj_creg.service
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.model:remote_model
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.record_adapter:static_record_adapter
 - legacy_type.system:actor_template
@@ -36,7 +38,9 @@ definitions:
       file_name: record_adapter.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        htypes.model.remote_model: legacy_type.model:remote_model
         services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
   ui_adapter_creg-record_adapter-fn_record_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -44,6 +48,8 @@ definitions:
       function: FnRecordAdapter.from_piece
       service_params:
       - system_fn_creg
+      - peer_registry
+      - rpc_system_call_factory
       - feed_factory
   ui_adapter_creg-record_adapter-static_record_adapter.actor-template:
     type: legacy_type.system:actor_template

@@ -1,8 +1,10 @@
 import logging
 import weakref
 
+from . import htypes
 from .services import (
     pyobj_creg,
+    web,
     )
 from .code.mark import mark
 
@@ -11,8 +13,7 @@ log = logging.getLogger(__name__)
 
 class RecordAdapter:
 
-    def __init__(self, model, record_t):
-        self._model = model
+    def __init__(self, record_t):
         self._record_t = record_t
         self._subscribers = weakref.WeakSet()
 
@@ -41,7 +42,8 @@ class StaticRecordAdapter(RecordAdapter):
         return cls(model, record_t)
 
     def __init__(self, model, record_t):
-        super().__init__(model, record_t)
+        super().__init__(record_t)
+        self._model = model
 
     def get_value(self):
         return self._model
@@ -80,7 +82,7 @@ class FnRecordAdapterBase(RecordAdapter):
         return cls._model_to_value.setdefault(model, EditValue(record_t))
 
     def __init__(self, feed_factory, model, record_t, ctx, value):
-        super().__init__(model, record_t)
+        super().__init__(record_t)
         self._ctx = ctx
         self._value = value
         try:
@@ -109,26 +111,49 @@ class FnRecordAdapter(FnRecordAdapterBase):
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, peer_registry, rpc_system_call_factory, feed_factory):
         record_t = pyobj_creg.invite(piece.record_t)
         fn = system_fn_creg.invite(piece.system_fn)
         value = cls._get_edit_value(model, record_t)
-        return cls(feed_factory, model, record_t, ctx, value, fn)
+        remote_peer, real_model = cls._resolve_model(peer_registry, model)
+        return cls(rpc_system_call_factory, feed_factory, model, real_model, record_t, remote_peer, ctx, value, fn)
+
+    @staticmethod
+    def _resolve_model(peer_registry, model):
+        if isinstance(model, htypes.model.remote_model):
+            remote_peer = peer_registry.invite(model.remote_peer)
+            real_model = web.summon(model.model)
+        else:
+            remote_peer = None
+            real_model = model
+        return (remote_peer, real_model)
 
     @classmethod
     def _get_edit_value(cls, model, record_t):
         return cls._model_to_value.setdefault(model, EditValue(record_t))
 
-    def __init__(self, feed_factory, model, record_t, ctx, value, ctx_fn):
+    def __init__(self, rpc_system_call_factory, feed_factory, model, real_model, record_t, remote_peer, ctx, value, ctx_fn):
         super().__init__(feed_factory, model, record_t, ctx, value)
+        self._rpc_system_call_factory = rpc_system_call_factory
+        self._real_model = real_model
+        self._remote_peer = remote_peer
         self._ctx_fn = ctx_fn
 
     def _get_value(self):
         additional_kw = {
-            'model': self._model,
-            'piece': self._model,
+            'model': self._real_model,
+            'piece': self._real_model,
             }
         return self._call_fn(**additional_kw)
 
     def _call_fn(self, **kw):
-        return self._ctx_fn.call(self._ctx, **kw)
+        if self._remote_peer:
+            rpc_call = self._rpc_system_call_factory(
+                receiver_peer=self._remote_peer,
+                sender_identity=self._ctx.identity,
+                fn=self._ctx_fn,
+                )
+            call_kw = self._ctx_fn.call_kw(self._ctx, **kw)
+            return rpc_call(**call_kw)
+        else:
+            return self._ctx_fn.call(self._ctx, **kw)
