@@ -1,4 +1,5 @@
 import inspect
+import logging
 
 from hyperapp.boot.htypes import TList, TRecord
 from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
@@ -16,6 +17,8 @@ from .code.marker_utils import (
     )
 from .code.model_ctr import ModelCtr
 from .code.feed_ctr import ListFeedCtr, IndexTreeFeedCtr
+
+log = logging.getLogger(__name__)
 
 
 class ModelProbe:
@@ -51,6 +54,9 @@ class ModelProbe:
 
     def _add_constructors(self, result, params, model_t):
         result_t = self._deduce_t(result, f"{self._fn}: Returned not a deducible data type: {result!r}")
+        if isinstance(result_t, TList) and not result:
+            log.warning("%s: Returned empty list, unable to deduce item type; skipping", self._fn)
+            return
         tree_params = {'parent'}
         if self._key_field:
             tree_params |= {'current_path'}
