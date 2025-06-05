@@ -118,7 +118,7 @@ class TabsView(View):
     def tabs(self):
         return self._tabs
 
-    def insert_tab(self, ctx, widget, idx, label, tab_view, tab_state):
+    def insert_tab(self, ctx, widget, idx, label, tab_view, tab_state=None):
         w = tab_view.construct_widget(tab_state, ctx)
         new_tab = self._Tab(tab_view, label)
         self._tabs.insert(idx, new_tab)
@@ -184,3 +184,29 @@ def wrap_in_tabs(inner):
                 ),
             ),
         )
+
+
+# Wrappers are not supported.
+@mark.ui_command(args=['view_factory'])
+async def add_element(view, widget, view_factory, ctx, view_reg, view_factory_reg):
+    k = web.summon(view_factory.k)
+    factory = view_factory_reg[k]
+    elt_piece = await factory.call(ctx)
+    elt_view = view_reg.animate(elt_piece, ctx)
+    idx = view.tab_count
+    view.insert_tab(ctx, widget, idx, "New tab", elt_view)
+
+
+# Wrappers are not supported.
+@mark.ui_command(args=['view_factory'])
+async def insert_element(view, widget, element_idx, view_factory, ctx, view_reg, view_factory_reg):
+    k = web.summon(view_factory.k)
+    factory = view_factory_reg[k]
+    elt_piece = await factory.call(ctx)
+    elt_view = view_reg.animate(elt_piece, ctx)
+    view.insert_tab(ctx, widget, element_idx, "New tab", elt_view)
+
+
+@mark.ui_command
+def remove_element(view, widget, element_idx):
+    view.close_tab(widget, element_idx)

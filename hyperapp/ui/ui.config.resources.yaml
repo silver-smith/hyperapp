@@ -4,7 +4,6 @@ import:
 - legacy_type.builtin:bool
 - legacy_type.builtin:string
 - legacy_type.column:column_k
-- legacy_type.crud:layout_k
 - legacy_type.data_service:config_item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
@@ -27,6 +26,10 @@ import:
 - ui.qt.box_layout:unwrap.d
 - ui.qt.label:set_label_text.commit-d
 - ui.qt.label:set_label_text.open-d
+- ui.qt.tabs:add_element.commit-d
+- ui.qt.tabs:insert_element.commit-d
+- ui.qt.tabs:insert_element.open-d
+- ui.qt.tabs:remove_element.d
 - ui.qt.tabs:unwrap.d
 - ui.qt.window_commands:duplicate_window.d
 - ui.qt.window_commands:quit.d
@@ -172,6 +175,26 @@ definitions:
     value:
       key: ui.qt.label:set_label_text.open-d
       value: shortcut_Space
+  config_item-ui.qt.tabs-add_element.commit-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.tabs:add_element.commit-d
+      value: shortcut_Return
+  config_item-ui.qt.tabs-insert_element.commit-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.tabs:insert_element.commit-d
+      value: shortcut_Return
+  config_item-ui.qt.tabs-insert_element.open-d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.tabs:insert_element.open-d
+      value: shortcut_Ins
+  config_item-ui.qt.tabs-remove_element.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: ui.qt.tabs:remove_element.d
+      value: shortcut_Del
   config_item-ui.qt.tabs-unwrap.d:
     type: legacy_type.data_service:config_item
     value:
@@ -212,10 +235,6 @@ definitions:
     value:
       key: ui.view.wrap_view:wrap_view.open-d
       value: shortcut_W
-  crud-layout_k-ui.qt.label-set_label_text:
-    type: legacy_type.crud:layout_k
-    value:
-      commit_command_d: ui.qt.label:set_label_text.commit-d
   shortcut_Alt_M:
     type: legacy_type.builtin:string
     value: Alt+M
@@ -303,3 +322,7 @@ definitions:
       - config_item-ui.arg_mark-add_mark.d
       - config_item-ui.arg_mark-remove_mark.d
       - config_item-ui.qt.tabs-unwrap.d
+      - config_item-ui.qt.tabs-insert_element.open-d
+      - config_item-ui.qt.tabs-add_element.commit-d
+      - config_item-ui.qt.tabs-insert_element.commit-d
+      - config_item-ui.qt.tabs-remove_element.d

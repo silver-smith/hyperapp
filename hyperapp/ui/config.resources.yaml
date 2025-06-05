@@ -110,7 +110,10 @@ import:
 - ui.qt.list:list-view.view-template
 - ui.qt.menu_bar:menu_bar-view.view-template
 - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
+- ui.qt.tabs:tabs-view-add_element.command-cfg-item
+- ui.qt.tabs:tabs-view-insert_element.command-cfg-item
 - ui.qt.tabs:tabs-view-open_tab_list.command-cfg-item
+- ui.qt.tabs:tabs-view-remove_element.command-cfg-item
 - ui.qt.tabs:tabs-view-unwrap.command-cfg-item
 - ui.qt.tabs:tabs-view.view-template
 - ui.qt.tabs:wrap_in_tabs.view-factory-template
@@ -423,6 +426,7 @@ definitions:
       - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
       - ui.qt.box_layout:box_layout-view-add_element.command-cfg-item
       - ui.qt.label:label-view-set_label_text.command-cfg-item
+      - ui.qt.tabs:tabs-view-add_element.command-cfg-item
   universal_ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -434,11 +438,13 @@ definitions:
     value:
       items:
       - ui.qt.box_layout:box_layout-view-insert_element.command-cfg-item
+      - ui.qt.tabs:tabs-view-insert_element.command-cfg-item
   view_element_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - ui.qt.box_layout:box_layout-view-remove_element.command-cfg-item
+      - ui.qt.tabs:tabs-view-remove_element.command-cfg-item
   view_factory_reg:
     type: legacy_type.system:item_list_config
     value:
