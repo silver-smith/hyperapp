@@ -99,10 +99,11 @@ class RcRunner:
         self._report_traces()
         for name, target_set in full_target_set:
             self._report_deps(name, target_set)
+        all_completed = self._all_completed(full_target_set)
         rc_log.info("Diffs:\n")
         name_to_output_stats = {}
         for name, target_set in full_target_set:
-            with_output, changed_count = self._collect_output(target_set)
+            with_output, changed_count = self._collect_output(all_completed, target_set)
             name_to_output_stats[name] = with_output, changed_count
         self._report_stats(full_target_set, name_to_output_stats)
 
@@ -149,6 +150,12 @@ class RcRunner:
                     ", ".join(dep.name for dep in target.deps),
                     )
 
+    def _all_completed(self, full_target_set):
+        return all(
+            target_set.completed_count == target_set.count
+            for name, target_set in full_target_set
+            )
+
     def _report_stats(self, full_target_set, name_to_output_stats):
         total_count = 0
         total_completed_count = 0
@@ -194,11 +201,11 @@ class RcRunner:
             )
 
     def _write(self, path, text):
-        if self._options.write and not self._failures:
+        if self._options.write:
             rc_log.info("Write: %s", path)
             path.write_text(text)
 
-    def _collect_output(self, target_set):
+    def _collect_output(self, all_completed, target_set):
         total = 0
         changed = 0
         for target in target_set:
@@ -224,7 +231,8 @@ class RcRunner:
                         rc_log.info("%s: Diff %d lines\n%s", resource_path, line_count, diffs)
                     else:
                         rc_log.info("%s: Diff %d lines", resource_path, line_count)
-                    self._write(path, text)
+                    if all_completed and not self._failures:
+                        self._write(path, text)
                     changed += 1
             else:
                 if self._options.show_diffs:
