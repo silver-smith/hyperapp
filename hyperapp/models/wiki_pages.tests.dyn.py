@@ -164,6 +164,15 @@ def test_save_new_page(folder_2_model):
     assert page_id
 
 
+def test_open_ref_list(folder_2_model):
+    piece = htypes.wiki_pages.page_model(
+        parent_id=folder_2_model.parent_id,
+        id=None,
+        )
+    model = wiki_pages.open_ref_list(piece)
+    assert isinstance(model, htypes.wiki_pages.ref_list_model)
+
+
 def test_remove_folder(root_model, file_bundle_factory):
     result = wiki_pages.remove(root_model, 'folder_1')
     assert result is True

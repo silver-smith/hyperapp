@@ -55,6 +55,7 @@ import:
 - models.wiki_pages:new_page.d
 - models.wiki_pages:open.d
 - models.wiki_pages:open_parent.d
+- models.wiki_pages:open_ref_list.d
 - models.wiki_pages:open_wiki_pages.d
 - models.wiki_pages:remove.d
 - models.wiki_pages:save_page.d
@@ -318,6 +319,11 @@ definitions:
     value:
       key: models.wiki_pages:open_parent.d
       value: shortcut_Backspace
+  config_item-models.wiki_pages-open_ref_list.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.wiki_pages:open_ref_list.d
+      value: shortcut_Ctrl_R
   config_item-models.wiki_pages-open_wiki_pages.d:
     type: legacy_type.data_service:config_item
     value:
@@ -392,6 +398,9 @@ definitions:
   shortcut_Ctrl_Alt_W:
     type: legacy_type.builtin:string
     value: Ctrl+Alt+W
+  shortcut_Ctrl_R:
+    type: legacy_type.builtin:string
+    value: Ctrl+R
   shortcut_Del:
     type: legacy_type.builtin:string
     value: Del
@@ -461,6 +470,7 @@ definitions:
       - config_item-models.wiki_pages-new_page.d
       - config_item-models.config.config_item_list-remove.d
       - config_item-models.wiki_pages-save_page.d
+      - config_item-models.wiki_pages-open_ref_list.d
   value_adapter_1:
     type: legacy_type.value_adapter:value_adapter
     value:

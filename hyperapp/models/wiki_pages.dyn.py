@@ -219,6 +219,14 @@ def save_page(piece, value, wiki_pages):
     return (model, page_id)
 
 
+@mark.command(preserve_remote=True)
+def open_ref_list(piece):
+    return htypes.wiki_pages.ref_list_model(
+        parent_id=piece.parent_id,
+        page_id=piece.id,
+        )
+
+
 @mark.command.remove
 def remove(piece, current_id, wiki_pages):
     wiki_pages.remove(current_id)
