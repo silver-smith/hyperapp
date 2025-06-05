@@ -132,8 +132,8 @@ def page_list_model(piece, format, wiki_pages):
 
 @mark.model
 def page_model(piece, wiki_pages):
-    if piece.id:
-        rec = wiki_pages.get_page(piece.id)
+    if piece.page_id:
+        rec = wiki_pages.get_page(piece.page_id)
         return htypes.wiki_pages.page(
             title=rec.title,
             wiki=rec.wiki,
@@ -174,10 +174,10 @@ def _open_folder(wiki_pages, folder):
 
 
 def _open_page(wiki_pages, page_id):
-    page = wiki_pages.get_page(page_id)
+    rec = wiki_pages.get_page(page_id)
     return htypes.wiki_pages.page_model(
-        parent_id=page.parent_id,
-        id=page.id,
+        parent_id=rec.parent_id,
+        page_id=rec.id,
         )
 
 
@@ -205,13 +205,13 @@ def add_folder(piece, name, wiki_pages):
 def new_page(piece, wiki_pages):
     return htypes.wiki_pages.page_model(
         parent_id=piece.parent_id,
-        id=None,
+        page_id=None,
         )
 
 
 @mark.command(preserve_remote=True)
 def save_page(piece, value, wiki_pages):
-    page_id = wiki_pages.save_page(piece.parent_id, piece.id, value.title, value.wiki)
+    page_id = wiki_pages.save_page(piece.parent_id, piece.page_id, value.title, value.wiki)
     path = wiki_pages.get_folder_path(piece.parent_id)
     model = htypes.wiki_pages.list_model(
         parent_id=piece.parent_id,
@@ -224,7 +224,7 @@ def save_page(piece, value, wiki_pages):
 def open_ref_list(piece):
     return htypes.wiki_pages.ref_list_model(
         parent_id=piece.parent_id,
-        page_id=piece.id,
+        page_id=piece.page_id,
         )
 
 
@@ -249,8 +249,8 @@ def format_page_list_model(piece):
 
 @mark.actor.formatter_creg
 def format_page_model(piece, wiki_pages):
-    if piece.id:
-        rec = wiki_pages.get_page(piece.id)
+    if piece.page_id:
+        rec = wiki_pages.get_page(piece.page_id)
         return f"Wiki page: {rec.title}"
     else:
         return "Wiki page: New page"

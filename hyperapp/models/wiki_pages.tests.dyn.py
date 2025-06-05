@@ -78,7 +78,7 @@ def test_root_list_model(root_model):
 def test_existing_page_model():
     model = htypes.wiki_pages.page_model(
         parent_id=None,
-        id='page_1',
+        page_id='page_1',
         )
     page = wiki_pages.page_model(model)
     assert isinstance(page, htypes.wiki_pages.page)
@@ -87,7 +87,7 @@ def test_existing_page_model():
 def test_new_page_model():
     model = htypes.wiki_pages.page_model(
         parent_id='folder_1',
-        id=None,
+        page_id=None,
         )
     page = wiki_pages.page_model(model)
     assert isinstance(page, htypes.wiki_pages.page)
@@ -122,7 +122,7 @@ def test_open_page_locally(root_model):
     piece = wiki_pages.open(root_model, current_key=page_id)
     assert piece == htypes.wiki_pages.page_model(
         parent_id=None,
-        id=page_id,
+        page_id=page_id,
         )
 
 
@@ -141,13 +141,13 @@ def test_add_root_folder(root_model, file_bundle_factory):
 def test_new_page(folder_2_model):
     piece = wiki_pages.new_page(folder_2_model)
     assert piece.parent_id == folder_2_model.parent_id
-    assert piece.id is None
+    assert piece.page_id is None
 
 
 def test_save_new_page(folder_2_model):
     piece = htypes.wiki_pages.page_model(
         parent_id=folder_2_model.parent_id,
-        id=None,
+        page_id=None,
         )
     ref_1_piece = htypes.wiki_pages_tests.sample_model()
     page = htypes.wiki_pages.page(
@@ -167,7 +167,7 @@ def test_save_new_page(folder_2_model):
 def test_open_ref_list(folder_2_model):
     piece = htypes.wiki_pages.page_model(
         parent_id=folder_2_model.parent_id,
-        id=None,
+        page_id=None,
         )
     model = wiki_pages.open_ref_list(piece)
     assert isinstance(model, htypes.wiki_pages.ref_list_model)
@@ -187,7 +187,7 @@ def test_page_list_model_formatter(folder_2_model):
 def test_existing_page_model_formatter():
     piece = htypes.wiki_pages.page_model(
         parent_id=None,
-        id='page_1',
+        page_id='page_1',
         )
     text = wiki_pages.format_page_model(piece)
     assert text == "Wiki page: Page 1"
@@ -196,7 +196,7 @@ def test_existing_page_model_formatter():
 def test_new_page_model_formatter():
     piece = htypes.wiki_pages.page_model(
         parent_id=None,
-        id=None,
+        page_id=None,
         )
     text = wiki_pages.format_page_model(piece)
     assert text == "Wiki page: New page"
