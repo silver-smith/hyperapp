@@ -89,6 +89,8 @@ import:
 - models.show_current_context:show_current_context-model.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 - models.wiki_pages:formatter_creg-wiki_pages-list_model.actor-template
+- models.wiki_pages:formatter_creg-wiki_pages-page_model.actor-template
+- models.wiki_pages:formatter_creg-wiki_pages-ref_list_model.actor-template
 - models.wiki_pages:open_wiki_pages.global-model-command
 - models.wiki_pages:wiki_pages-list_model-add_folder.command-cfg-item
 - models.wiki_pages:wiki_pages-list_model-new_page.command-cfg-item
@@ -160,6 +162,8 @@ definitions:
       - models.ref_list:formatter_creg-ref_list-model.actor-template
       - models.show_current_context:formatter_creg-show_current_context-model.actor-template
       - models.wiki_pages:formatter_creg-wiki_pages-list_model.actor-template
+      - models.wiki_pages:formatter_creg-wiki_pages-page_model.actor-template
+      - models.wiki_pages:formatter_creg-wiki_pages-ref_list_model.actor-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:

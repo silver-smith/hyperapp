@@ -76,17 +76,41 @@ definitions:
       name: add_folder_d
       base: null
       fields: {}
-  format_model:
+  format_page_list_model:
     type: legacy_type.builtin:attribute
     value:
       object: wiki_pages.module
-      attr_name: format_model
+      attr_name: format_page_list_model
+  format_page_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: format_page_model
+  format_ref_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_pages.module
+      attr_name: format_ref_list_model
   formatter_creg-wiki_pages-list_model.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.wiki_pages:list_model
-      function: format_model
+      function: format_page_list_model
       service_params: []
+  formatter_creg-wiki_pages-page_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.wiki_pages:page_model
+      function: format_page_model
+      service_params:
+      - wiki_pages
+  formatter_creg-wiki_pages-ref_list_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.wiki_pages:ref_list_model
+      function: format_ref_list_model
+      service_params:
+      - wiki_pages
   new_page:
     type: legacy_type.builtin:attribute
     value:

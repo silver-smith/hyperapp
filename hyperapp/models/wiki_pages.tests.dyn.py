@@ -179,6 +179,42 @@ def test_remove_folder(root_model, file_bundle_factory):
     file_bundle_factory.save_piece.assert_called_once()
 
 
-def test_formatter(folder_2_model):
-    text = wiki_pages.format_model(folder_2_model)
+def test_page_list_model_formatter(folder_2_model):
+    text = wiki_pages.format_page_list_model(folder_2_model)
     assert text == "Wiki Pages: /Folder 2/"
+
+
+def test_existing_page_model_formatter():
+    piece = htypes.wiki_pages.page_model(
+        parent_id=None,
+        id='page_1',
+        )
+    text = wiki_pages.format_page_model(piece)
+    assert text == "Wiki page: Page 1"
+
+
+def test_new_page_model_formatter():
+    piece = htypes.wiki_pages.page_model(
+        parent_id=None,
+        id=None,
+        )
+    text = wiki_pages.format_page_model(piece)
+    assert text == "Wiki page: New page"
+
+
+def test_existing_ref_list_model_formatter():
+    piece = htypes.wiki_pages.ref_list_model(
+        parent_id=None,
+        page_id='page_1',
+        )
+    text = wiki_pages.format_ref_list_model(piece)
+    assert text == "Wiki page refs: Page 1"
+
+
+def test_new_ref_list_model_formatter():
+    piece = htypes.wiki_pages.ref_list_model(
+        parent_id=None,
+        page_id=None,
+        )
+    text = wiki_pages.format_ref_list_model(piece)
+    assert text == "Wiki page refs: New page"

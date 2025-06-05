@@ -177,7 +177,8 @@ def _open_page(wiki_pages, page_id):
     page = wiki_pages.get_page(page_id)
     return htypes.wiki_pages.page_model(
         parent_id=page.parent_id,
-        id=page.id)
+        id=page.id,
+        )
 
 
 @mark.command(preserve_remote=True)
@@ -239,8 +240,26 @@ def open_wiki_pages():
 
 
 @mark.actor.formatter_creg
-def format_model(piece):
+def format_page_list_model(piece):
     path = "/"
     for name in piece.folder_path:
         path += name + "/"
     return f"Wiki Pages: {path}"
+
+
+@mark.actor.formatter_creg
+def format_page_model(piece, wiki_pages):
+    if piece.id:
+        rec = wiki_pages.get_page(piece.id)
+        return f"Wiki page: {rec.title}"
+    else:
+        return "Wiki page: New page"
+
+
+@mark.actor.formatter_creg
+def format_ref_list_model(piece, wiki_pages):
+    if piece.page_id:
+        rec = wiki_pages.get_page(piece.page_id)
+        return f"Wiki page refs: {rec.title}"
+    else:
+        return "Wiki page refs: New page"
