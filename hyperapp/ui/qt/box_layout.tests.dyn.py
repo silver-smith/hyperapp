@@ -100,7 +100,7 @@ def view(view_reg, piece, ctx, ctl_hook):
 
 @mark.fixture
 def widget(view, state, ctx):
-    return  view.construct_widget(state, ctx)
+    return view.construct_widget(state, ctx)
 
 
 async def test_add_element(qapp, ctx, ctl_hook, view, widget, view_factory):
