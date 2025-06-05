@@ -9,6 +9,7 @@ item = record:
   id: string
   title: string
 
+
 page_model = record:
   parent_id: string opt
   id: string opt
@@ -16,6 +17,11 @@ page_model = record:
 page = record:
   title: string
   wiki: wiki
+
+
+ref_list_model = record:
+  parent_id: string opt
+  page_id: string opt
 
 
 folder_rec = record:

@@ -93,6 +93,24 @@ def test_new_page_model():
     assert isinstance(page, htypes.wiki_pages.page)
 
 
+def test_existing_ref_list_model():
+    model = htypes.wiki_pages.ref_list_model(
+        parent_id=None,
+        page_id='page_1',
+        )
+    ref_list = wiki_pages.ref_list_model(model)
+    assert len(ref_list) == 1
+
+
+def test_new_ref_list_model():
+    model = htypes.wiki_pages.ref_list_model(
+        parent_id=None,
+        page_id=None,
+        )
+    ref_list = wiki_pages.ref_list_model(model)
+    assert len(ref_list) == 0
+
+
 def test_open_folder_locally(root_model, folder_2_model):
     current_key = folder_2_model.parent_id
     piece = wiki_pages.open(root_model, current_key)

@@ -147,6 +147,14 @@ def page_model(piece, wiki_pages):
         )
 
 
+@mark.model
+def ref_list_model(piece, wiki_pages):
+    if piece.page_id:
+        rec = wiki_pages.get_page(piece.page_id)
+        return rec.wiki.refs
+    return []
+
+
 @mark.command(preserve_remote=True)
 def open(piece, current_key, wiki_pages):
     try:

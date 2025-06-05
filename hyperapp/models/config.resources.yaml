@@ -99,6 +99,8 @@ import:
 - models.wiki_pages:wiki_pages-list_model.model-cfg-item
 - models.wiki_pages:wiki_pages-page_model-save_page.command-cfg-item
 - models.wiki_pages:wiki_pages-page_model.model-cfg-item
+- models.wiki_pages:wiki_pages-ref_list_model.feed-template
+- models.wiki_pages:wiki_pages-ref_list_model.model-cfg-item
 - models.wiki_pages:wiki_pages.service
 definitions:
   command_creg:
@@ -141,6 +143,7 @@ definitions:
       - models.ref_list:ref_list-model.feed-template
       - models.show_current_context:show_current_context-model.feed-template
       - models.wiki_pages:wiki_pages-list_model.feed-template
+      - models.wiki_pages:wiki_pages-ref_list_model.feed-template
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -231,6 +234,7 @@ definitions:
       - models.show_current_context:show_current_context-model.model-cfg-item
       - models.wiki_pages:wiki_pages-list_model.model-cfg-item
       - models.wiki_pages:wiki_pages-page_model.model-cfg-item
+      - models.wiki_pages:wiki_pages-ref_list_model.model-cfg-item
   selector_reg:
     type: legacy_type.system:item_list_config
     value:
