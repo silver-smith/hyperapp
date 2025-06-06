@@ -3,6 +3,7 @@ import:
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:index_tree_ui_t
+- legacy_type.model:static_list_ui_t
 - legacy_type.model:key_tree_ui_t
 - legacy_type.model:record_ui_t
 - legacy_type.system:item_list_config
@@ -10,6 +11,7 @@ import:
 - ui.qt.form:form_view_factory.k
 - ui.qt.list:index_list_ui_type_layout.k
 - ui.qt.list:key_list_ui_type_layout.k
+- ui.qt.list:static_list_ui_type_layout.k
 - ui.qt.tree:index_tree_ui_type_layout.k
 - ui.qt.tree:key_tree_ui_type_layout.k
 
@@ -27,6 +29,7 @@ definitions:
       items:
       - config_item-index_list.factory-config-item
       - config_item-key_list.factory-config-item
+      - config_item-static_list.factory-config-item
       - config_item-index_tree.factory-config-item
       - config_item-key_tree.factory-config-item
       - config_item-form.factory-config-item
@@ -42,6 +45,12 @@ definitions:
     value:
       t: legacy_type.model:key_list_ui_t
       value: ui.qt.list:key_list_ui_type_layout.k
+
+  config_item-static_list.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model:static_list_ui_t
+      value: ui.qt.list:static_list_ui_type_layout.k
 
   config_item-index_tree.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
