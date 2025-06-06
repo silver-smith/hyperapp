@@ -33,8 +33,16 @@ def sample_list_model_fn(rpc_system_call_factory):
 
 
 @mark.fixture
-def adapter_piece():
-    return htypes.list_adapter.static_list_adapter()
+def accessor():
+    return htypes.accessor.model_accessor()
+
+
+@mark.fixture
+def adapter_piece(accessor):
+    return htypes.list_adapter.static_list_adapter(
+        item_t=pyobj_creg.actor_to_ref(htypes.list_tests.item),
+        accessor=mosaic.put(accessor),
+        )
 
 
 @mark.fixture
@@ -75,9 +83,9 @@ def test_key_list_ui_type_layout(sample_list_model_fn):
     assert isinstance(layout, htypes.list.view)
 
 
-def test_static_list_ui_type_layout():
+def test_static_list_ui_type_layout(accessor):
     piece = htypes.model.static_list_ui_t(
         item_t=pyobj_creg.actor_to_ref(htypes.list_tests.item),
         )
-    layout = list.static_list_ui_type_layout(piece)
+    layout = list.static_list_ui_type_layout(piece, accessor)
     assert isinstance(layout, htypes.list.view)

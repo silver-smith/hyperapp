@@ -1,5 +1,7 @@
 
-static_list_adapter = record
+static_list_adapter = record:
+  item_t: ref
+  accessor: ref
 
 index_fn_list_adapter = record:
   item_t: ref

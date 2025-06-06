@@ -2,7 +2,7 @@
 
 import:
 - base.mark:mark.module
-- builtins:deduce_t.service
+- builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.list_adapter:static_list_adapter
@@ -28,10 +28,11 @@ definitions:
         code.list_adapter: ui.qt.list_adapter:list_adapter.module
         code.mark: base.mark:mark.module
         htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
-        services.deduce_t: builtins:deduce_t.service
+        services.pyobj_creg: builtins:pyobj_creg.service
   ui_adapter_creg-list_adapter-static_list_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.list_adapter:static_list_adapter
       function: StaticListAdapter.from_piece
-      service_params: []
+      service_params:
+      - accessor_creg

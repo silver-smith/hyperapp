@@ -199,6 +199,9 @@ def key_list_ui_type_layout(piece, system_fn):
 
 
 @mark.view_factory.ui_t
-def static_list_ui_type_layout(piece):
-    adapter = htypes.list_adapter.static_list_adapter()
+def static_list_ui_type_layout(piece, accessor):
+    adapter = htypes.list_adapter.static_list_adapter(
+        item_t=piece.item_t,
+        accessor=mosaic.put(accessor),
+        )
     return htypes.list.view(mosaic.put(adapter))

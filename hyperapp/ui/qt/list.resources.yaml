@@ -146,6 +146,7 @@ definitions:
       function: static_list_ui_type_layout
       ctx_params:
       - piece
+      - accessor
       service_params: []
   static_list_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template
