@@ -18,6 +18,7 @@ def test_apply():
     item = htypes.sample_record.item(
         id=12345,
         title="Sample title",
+        values=(),
         )
     result = sample_record.apply(piece, item)
     assert type(result) is str

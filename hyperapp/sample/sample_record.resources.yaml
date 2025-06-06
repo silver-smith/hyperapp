@@ -15,6 +15,7 @@ import:
 - legacy_type.sample_record:item
 - legacy_type.sample_record:open_sample_fn_record_d
 - legacy_type.sample_record:sample_record
+- legacy_type.sample_record:sub_item
 - legacy_type.system_fn:ctx_fn
 definitions:
   apply:
@@ -113,3 +114,4 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.sample_record.item: legacy_type.sample_record:item
         htypes.sample_record.sample_record: legacy_type.sample_record:sample_record
+        htypes.sample_record.sub_item: legacy_type.sample_record:sub_item

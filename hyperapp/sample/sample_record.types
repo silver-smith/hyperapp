@@ -1,7 +1,12 @@
 open_sample_fn_record_d = record
 
+sub_item = record:
+  value: int
+  desc: string
+
 item = record:
   id: int
   title: string
+  values: sub_item list
 
 sample_record = record
