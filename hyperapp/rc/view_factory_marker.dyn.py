@@ -60,10 +60,6 @@ class ViewFactoryProbe(ProbeBase):
             raise RuntimeError(
                 "First parameter for ui_t view factory expected to be a 'piece':"
                 f" {self.real_fn!r}: {params.ctx_names!r}")
-        if 'system_fn' not in params.ctx_names:
-            raise RuntimeError(
-                "'system_fn' parameter is expected for ui_t view factory:"
-                f" {self.real_fn!r}: {params.ctx_names!r}")
         return deduce_t(params.values['piece'])
 
     def _add_constructor(self, result, params, model_t, ui_t_t):
