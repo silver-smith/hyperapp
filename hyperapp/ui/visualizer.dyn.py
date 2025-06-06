@@ -14,11 +14,10 @@ from .code.mark import mark
 log = logging.getLogger(__name__)
 
 
-def _primitive_value_layout(t):
-    if isinstance(t, TList):
-        adapter = htypes.list_adapter.static_list_adapter()
-        return htypes.list.view(mosaic.put(adapter))
-    raise KeyError(t)
+def _static_list_ui_t(list_t):
+    return htypes.model.static_list_ui_t(
+        item_t=pyobj_creg.actor_to_ref(list_t.element_t),
+        )
 
 
 @mark.service
@@ -32,10 +31,6 @@ async def visualizer(
         return model_layout_reg[layout_k]
     except KeyError:
         pass
-    try:
-        return _primitive_value_layout(model_t)
-    except KeyError:
-        pass
     all_properties = {**(properties or {}), **kw}
     try:
         factory = default_model_factory(model_t, all_properties)
@@ -46,7 +41,11 @@ async def visualizer(
     try:
         ui_t, system_fn = visualizer_reg(model_t)
     except KeyError:
-        raise RuntimeError(f"No view is known for model: {model_t!r}")
+        if isinstance(model_t, TList):
+            ui_t = _static_list_ui_t(model_t)
+            system_fn = None
+        else:
+            raise RuntimeError(f"No view is known for model: {model_t!r}")
     factory = default_ui_factory(ui_t)
     return await factory.call_ui_t(ctx, ui_t, system_fn, accessor=accessor)
 

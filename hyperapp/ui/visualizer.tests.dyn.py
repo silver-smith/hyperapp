@@ -29,13 +29,13 @@ async def test_int(visualizer, sample_int_view, ctx):
     assert view == sample_int_view
 
 
-async def test_list(visualizer, ctx):
+async def test_static_list(visualizer, ctx):
     value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
     view = await visualizer(ctx, deduce_t(value), accessor=None, properties=None)
-    assert isinstance(view, htypes.list.view)
+    assert view == htypes.visualizer_tests.sample_view()
 
 
 def sample_fn():
@@ -65,6 +65,7 @@ def model_reg_config():
 def default_ui_factory_config():
     return {
         htypes.model.index_list_ui_t: htypes.visualizer_tests.sample_k(),
+        htypes.model.static_list_ui_t: htypes.visualizer_tests.sample_k(),
         }
 
 

@@ -61,14 +61,17 @@ class ViewFactory(ViewFactoryBase):
         result = self._system_fn.call(fn_ctx, accessor=accessor)
         return await self._await_if_coro(result)
 
-    async def call_ui_t(self, ctx, ui_t, system_fn, accessor=None):
+    async def call_ui_t(self, ctx, ui_t, system_fn=None, accessor=None):
         assert self._ui_t_t is not None
         if accessor is None:
             accessor = htypes.accessor.model_accessor()
         fn_ctx = ctx.clone_with(
             piece=ui_t,
-            system_fn=system_fn,
             )
+        if system_fn:
+            fn_ctx = fn_ctx.clone_with(
+                system_fn=system_fn,
+                )
         result = self._system_fn.call(fn_ctx, accessor=accessor)
         return await self._await_if_coro(result)
 
