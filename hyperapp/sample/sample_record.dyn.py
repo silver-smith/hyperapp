@@ -4,7 +4,10 @@ from .code.mark import mark
 
 @mark.model
 def sample_record(piece):
-    return htypes.sample_record.item(123, "Sample title")
+    return htypes.sample_record.item(
+        id=123,
+        title="Sample title",
+        )
 
 
 @mark.global_command

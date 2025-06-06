@@ -15,6 +15,9 @@ def test_open():
 
 def test_apply():
     piece = htypes.sample_record.sample_record()
-    item = htypes.sample_record.item(12345, "Sample title")
+    item = htypes.sample_record.item(
+        id=12345,
+        title="Sample title",
+        )
     result = sample_record.apply(piece, item)
     assert type(result) is str
