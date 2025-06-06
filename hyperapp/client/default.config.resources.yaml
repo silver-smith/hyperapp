@@ -17,7 +17,6 @@ import:
 - legacy_type.line_edit:readonly_view
 - legacy_type.list:view
 - legacy_type.list_adapter:index_fn_list_adapter
-- legacy_type.list_adapter:static_list_adapter
 - legacy_type.list_as_tree_adapter:adapter
 - legacy_type.peer_list:item
 - legacy_type.peer_list:model
@@ -35,17 +34,6 @@ import:
 - models.peer_list:run_command.commit-fn
 - sample.sample_commands:system_info.d
 definitions:
-  box_layout_view_1:
-    type: legacy_type.box_layout:view
-    value:
-      direction: TopToBottom
-      elements:
-      - view: list_view_1
-        focusable: true
-        stretch: 1
-      - view: details_view_1
-        focusable: false
-        stretch: 0
   box_layout_view_2:
     type: legacy_type.box_layout:view
     value:
@@ -83,21 +71,10 @@ definitions:
     value:
       key: data_browser.record_view-model_layout_k
       value: box_layout_view_2
-  config_item-peer_list.model-model_layout_k:
-    type: legacy_type.data_service:config_item
-    value:
-      key: peer_list.model-model_layout_k
-      value: box_layout_view_1
   data_browser.record_view-model_layout_k:
     type: legacy_type.ui:model_layout_k
     value:
       model_t: legacy_type.data_browser:record_view
-  details_view_1:
-    type: legacy_type.details:view
-    value:
-      command: model_command_1
-      details_model: item-list_1
-      details_view: list_view_2
   index_fn_list_adapter_1:
     type: legacy_type.list_adapter:index_fn_list_adapter
     value:
@@ -130,14 +107,6 @@ definitions:
       layers:
         legacy_type.data_browser:ref_list_view: models.data_browser:ref_list_open.model-command
         legacy_type.data_browser:list_view: models.data_browser:list_open.model-command
-  list_view_1:
-    type: legacy_type.list:view
-    value:
-      adapter: index_fn_list_adapter_1
-  list_view_2:
-    type: legacy_type.list:view
-    value:
-      adapter: static_list_adapter_1
   model_command_1:
     type: legacy_type.command:model_command
     value:
@@ -152,7 +121,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - config_item-peer_list.model-model_layout_k
       - config_item-data_browser.record_view-model_layout_k
   peer_list.model-model_layout_k:
     type: legacy_type.ui:model_layout_k
@@ -165,9 +133,6 @@ definitions:
     type: legacy_type.builtin:list_mt
     value:
       element: legacy_type.sample_list:item
-  static_list_adapter_1:
-    type: legacy_type.list_adapter:static_list_adapter
-    value: {}
   tree_view_1:
     type: legacy_type.tree:view
     value:
