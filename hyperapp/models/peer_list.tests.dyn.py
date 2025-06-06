@@ -6,6 +6,7 @@ from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.mark import mark
 from .code.context import Context
@@ -122,7 +123,11 @@ def global_model_command_reg_config(rpc_system_call_factory, command_d):
 @mark.fixture
 def rpc_system_call_factory(receiver_peer, sender_identity, fn):
     def call(**kw):
-        return "Sample result"
+        return htypes.command.command_result(
+            model=mosaic.put("Sample result"),
+            key=None,
+            diff=None,
+            )
     return call
 
 
@@ -143,7 +148,7 @@ async def test_run_global_command(ctx, piece, current_item, command_d):
         d=mosaic.put(command_d),
         )
     result = await peer_list.run_command(piece, current_item, command, ctx)
-    assert result == "Sample result"
+    assert web.summon(result.model) == "Sample result"
 
 
 async def test_open_model(ctx, piece, current_item, command_d):
