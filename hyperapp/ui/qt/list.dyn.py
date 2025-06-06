@@ -196,3 +196,9 @@ def key_list_ui_type_layout(piece, system_fn):
         system_fn=mosaic.put(system_fn.piece),
         )
     return htypes.list.view(mosaic.put(adapter))
+
+
+@mark.view_factory.ui_t
+def static_list_ui_type_layout(piece):
+    adapter = htypes.list_adapter.static_list_adapter()
+    return htypes.list.view(mosaic.put(adapter))

@@ -108,6 +108,7 @@ import:
 - ui.qt.list:index_list_ui_type_layout.view-factory-template
 - ui.qt.list:key_list_ui_type_layout.view-factory-template
 - ui.qt.list:list-view.view-template
+- ui.qt.list:static_list_ui_type_layout.view-factory-template
 - ui.qt.menu_bar:menu_bar-view.view-template
 - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
 - ui.qt.tabs:tabs-view-add_element.command-cfg-item
@@ -456,6 +457,7 @@ definitions:
       - ui.qt.line_edit:line_view.view-factory-template
       - ui.qt.list:index_list_ui_type_layout.view-factory-template
       - ui.qt.list:key_list_ui_type_layout.view-factory-template
+      - ui.qt.list:static_list_ui_type_layout.view-factory-template
       - ui.qt.tabs:wrap_in_tabs.view-factory-template
       - ui.qt.text:text_edit.view-factory-template
       - ui.qt.text:text_view.view-factory-template

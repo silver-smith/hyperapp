@@ -12,8 +12,10 @@ import:
 - legacy_type.list:view
 - legacy_type.list_adapter:index_fn_list_adapter
 - legacy_type.list_adapter:key_fn_list_adapter
+- legacy_type.list_adapter:static_list_adapter
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:key_list_ui_t
+- legacy_type.model:static_list_ui_t
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:template
 - ui.view.view:view.module
@@ -128,4 +130,40 @@ definitions:
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.index_fn_list_adapter: legacy_type.list_adapter:index_fn_list_adapter
         htypes.list_adapter.key_fn_list_adapter: legacy_type.list_adapter:key_fn_list_adapter
+        htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
         services.mosaic: builtins:mosaic.service
+  static_list_ui_type_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list.module
+      attr_name: static_list_ui_type_layout
+  static_list_ui_type_layout.k:
+    type: static_list_ui_type_layout_k
+    value: {}
+  static_list_ui_type_layout.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: static_list_ui_type_layout
+      ctx_params:
+      - piece
+      service_params: []
+  static_list_ui_type_layout.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: static_list_ui_type_layout.k
+      model_t_list: null
+      ui_t_t: legacy_type.model:static_list_ui_t
+      view_t: legacy_type.list:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: static_list_ui_type_layout.system-fn
+  static_list_ui_type_layout_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: list
+      name: static_list_ui_type_layout_k
+      base: null
+      fields: {}

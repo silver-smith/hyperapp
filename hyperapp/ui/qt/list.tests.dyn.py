@@ -73,3 +73,11 @@ def test_key_list_ui_type_layout(sample_list_model_fn):
         )
     layout = list.key_list_ui_type_layout(piece, sample_list_model_fn)
     assert isinstance(layout, htypes.list.view)
+
+
+def test_static_list_ui_type_layout():
+    piece = htypes.model.static_list_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.list_tests.item),
+        )
+    layout = list.static_list_ui_type_layout(piece)
+    assert isinstance(layout, htypes.list.view)
