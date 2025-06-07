@@ -79,6 +79,7 @@ def test_existing_page_model():
     model = htypes.wiki_pages.page_model(
         parent_id=None,
         page_id='page_1',
+        title="Sample title",
         )
     page = wiki_pages.page_model(model)
     assert isinstance(page, htypes.wiki_pages.page)
@@ -88,6 +89,7 @@ def test_new_page_model():
     model = htypes.wiki_pages.page_model(
         parent_id='folder_1',
         page_id=None,
+        title="Sample title",
         )
     page = wiki_pages.page_model(model)
     assert isinstance(page, htypes.wiki_pages.page)
@@ -123,6 +125,7 @@ def test_open_page_locally(root_model):
     assert piece == htypes.wiki_pages.page_model(
         parent_id=None,
         page_id=page_id,
+        title="Page 1",
         )
 
 
@@ -148,6 +151,7 @@ def test_save_new_page(folder_2_model):
     piece = htypes.wiki_pages.page_model(
         parent_id=folder_2_model.parent_id,
         page_id=None,
+        title="Sample page",
         )
     ref_1_piece = htypes.wiki_pages_tests.sample_model()
     page = htypes.wiki_pages.page(
@@ -168,6 +172,7 @@ def test_open_ref_list(folder_2_model):
     piece = htypes.wiki_pages.page_model(
         parent_id=folder_2_model.parent_id,
         page_id=None,
+        title="Sample page",
         )
     model = wiki_pages.open_ref_list(piece)
     assert isinstance(model, htypes.wiki_pages.ref_list_model)
@@ -188,18 +193,20 @@ def test_existing_page_model_formatter():
     piece = htypes.wiki_pages.page_model(
         parent_id=None,
         page_id='page_1',
+        title="Sample page",
         )
     text = wiki_pages.format_page_model(piece)
-    assert text == "Wiki page: Page 1"
+    assert text == "Wiki page: Sample page"
 
 
 def test_new_page_model_formatter():
     piece = htypes.wiki_pages.page_model(
         parent_id=None,
         page_id=None,
+        title="Sample page",
         )
     text = wiki_pages.format_page_model(piece)
-    assert text == "Wiki page: New page"
+    assert text == "Wiki page: Sample page"
 
 
 def test_existing_ref_list_model_formatter():

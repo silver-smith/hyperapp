@@ -102,8 +102,7 @@ definitions:
     value:
       t: legacy_type.wiki_pages:page_model
       function: format_page_model
-      service_params:
-      - wiki_pages
+      service_params: []
   formatter_creg-wiki_pages-ref_list_model.actor-template:
     type: legacy_type.system:actor_template
     value:

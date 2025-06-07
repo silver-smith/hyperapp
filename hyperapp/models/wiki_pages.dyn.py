@@ -139,7 +139,7 @@ def page_model(piece, wiki_pages):
             wiki=rec.wiki,
             )
     return htypes.wiki_pages.page(
-        title="New wiki page",
+        title=piece.title,
         wiki=htypes.wiki.wiki(
             text="",
             refs=(),
@@ -178,6 +178,7 @@ def _open_page(wiki_pages, page_id):
     return htypes.wiki_pages.page_model(
         parent_id=rec.parent_id,
         page_id=rec.id,
+        title=rec.title,
         )
 
 
@@ -206,6 +207,7 @@ def new_page(piece, wiki_pages):
     return htypes.wiki_pages.page_model(
         parent_id=piece.parent_id,
         page_id=None,
+        title="New wiki page",
         )
 
 
@@ -248,12 +250,8 @@ def format_page_list_model(piece):
 
 
 @mark.actor.formatter_creg
-def format_page_model(piece, wiki_pages):
-    if piece.page_id:
-        rec = wiki_pages.get_page(piece.page_id)
-        return f"Wiki page: {rec.title}"
-    else:
-        return "Wiki page: New page"
+def format_page_model(piece):
+    return f"Wiki page: {piece.title}"
 
 
 @mark.actor.formatter_creg

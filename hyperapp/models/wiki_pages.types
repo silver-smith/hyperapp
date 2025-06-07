@@ -13,6 +13,7 @@ item = record:
 page_model = record:
   parent_id: string opt
   page_id: string opt
+  title: string
 
 page = record:
   title: string
