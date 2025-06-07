@@ -1,0 +1,84 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.list:view
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+- legacy_type.view_factory:template
+- legacy_type.wiki:ref_list_adapter
+- legacy_type.wiki:ref_list_item
+- legacy_type.wiki:wiki
+definitions:
+  WikiRefListAdapter:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_refs.module
+      attr_name: WikiRefListAdapter
+  WikiRefListAdapter.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: WikiRefListAdapter
+      attr_name: from_piece
+  ui_adapter_creg-wiki-ref_list_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.wiki:ref_list_adapter
+      function: WikiRefListAdapter.from_piece
+      service_params:
+      - format
+      - accessor_creg
+  wiki_refs:
+    type: legacy_type.builtin:attribute
+    value:
+      object: wiki_refs.module
+      attr_name: wiki_refs
+  wiki_refs.k:
+    type: wiki_refs_k
+    value: {}
+  wiki_refs.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: wiki_refs
+      file_name: wiki_refs.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.list.view: legacy_type.list:view
+        htypes.wiki.ref_list_adapter: legacy_type.wiki:ref_list_adapter
+        htypes.wiki.ref_list_item: legacy_type.wiki:ref_list_item
+        htypes.wiki.wiki: legacy_type.wiki:wiki
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+  wiki_refs.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: wiki_refs
+      ctx_params:
+      - accessor
+      service_params: []
+  wiki_refs.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: wiki_refs.k
+      model_t_list:
+      - legacy_type.wiki:wiki
+      ui_t_t: null
+      view_t: legacy_type.list:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: wiki_refs.system-fn
+  wiki_refs_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: wiki_refs
+      name: wiki_refs_k
+      base: null
+      fields: {}

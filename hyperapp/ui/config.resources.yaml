@@ -133,6 +133,8 @@ import:
 - ui.qt.wiki:wiki_text_edit.view-factory-template
 - ui.qt.wiki:wiki_text_view.view-factory-template
 - ui.qt.wiki:wiki_view.view-factory-template
+- ui.qt.wiki_refs:ui_adapter_creg-wiki-ref_list_adapter.actor-template
+- ui.qt.wiki_refs:wiki_refs.view-factory-template
 - ui.qt.window:window-view.view-template
 - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
 - ui.qt.window_commands:window-view-quit.command-cfg-item
@@ -417,6 +419,7 @@ definitions:
       - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
       - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template
       - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
+      - ui.qt.wiki_refs:ui_adapter_creg-wiki-ref_list_adapter.actor-template
       - ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-template
       - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template
       - ui.value_adapter:ui_adapter_creg-value_adapter-value_adapter.actor-template
@@ -467,6 +470,7 @@ definitions:
       - ui.qt.wiki:wiki_text_edit.view-factory-template
       - ui.qt.wiki:wiki_text_view.view-factory-template
       - ui.qt.wiki:wiki_view.view-factory-template
+      - ui.qt.wiki_refs:wiki_refs.view-factory-template
   view_reg:
     type: legacy_type.system:item_list_config
     value:
