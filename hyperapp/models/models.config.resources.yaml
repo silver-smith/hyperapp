@@ -2,6 +2,7 @@
 
 import:
 - legacy_type.accessor:model_accessor
+- legacy_type.accessor:record_field_accessor
 - legacy_type.box_layout:view
 - legacy_type.builtin:bool
 - legacy_type.builtin:ref
@@ -11,12 +12,22 @@ import:
 - legacy_type.config_item_list:model
 - legacy_type.crud:layout_k
 - legacy_type.data_service:config_item
+- legacy_type.form:view
+- legacy_type.label:view
 - legacy_type.line_edit:edit_view
+- legacy_type.list:view
 - legacy_type.model_list:model
+- legacy_type.record_adapter:fn_record_adapter
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- legacy_type.text:edit_view
 - legacy_type.type_convertor:noop_convertor
+- legacy_type.ui:model_layout_k
 - legacy_type.value_adapter:value_adapter
+- legacy_type.wiki:ref_list_adapter
+- legacy_type.wiki:wiki_to_string_convertor
+- legacy_type.wiki_pages:page
+- legacy_type.wiki_pages:page_model
 - models.column_list:open_column_list.d
 - models.column_list:toggle_visibility.d
 - models.command_list_model:set_shortcut.d
@@ -59,6 +70,7 @@ import:
 - models.wiki_pages:open_wiki_pages.d
 - models.wiki_pages:remove.d
 - models.wiki_pages:save_page.d
+- models.wiki_pages:wiki_pages-page_model.system-fn
 definitions:
   bool-false:
     type: legacy_type.builtin:bool
@@ -68,7 +80,7 @@ definitions:
     value:
       direction: TopToBottom
       elements:
-      - view: line_edit-value_adapter_1
+      - view: line_edit-value_adapter_3
         focusable: true
         stretch: 1
       - view: null
@@ -339,14 +351,68 @@ definitions:
     value:
       key: models.wiki_pages:save_page.d
       value: shortcut_Return
+  config_item-wiki_pages.page_model-model_layout_k:
+    type: legacy_type.data_service:config_item
+    value:
+      key: wiki_pages.page_model-model_layout_k
+      value: form_view_1
   crud-layout_k-models.wiki_pages-add_folder:
     type: legacy_type.crud:layout_k
     value:
       commit_command_d: models.wiki_pages:add_folder.commit-d
+  edit_view_1:
+    type: legacy_type.text:edit_view
+    value:
+      adapter: value_adapter_2
+  fn_record_adapter_1:
+    type: legacy_type.record_adapter:fn_record_adapter
+    value:
+      record_t: legacy_type.wiki_pages:page
+      system_fn: models.wiki_pages:wiki_pages-page_model.system-fn
+  form_view_1:
+    type: legacy_type.form:view
+    value:
+      direction: TopToBottom
+      elements:
+      - view: label_view_2
+        focusable: false
+        stretch: 0
+      - view: line_edit-value_adapter_1
+        focusable: true
+        stretch: 0
+      - view: label_view_1
+        focusable: false
+        stretch: 0
+      - view: edit_view_1
+        focusable: true
+        stretch: 0
+      - view: list_view_1
+        focusable: false
+        stretch: 0
+      - view: null
+        focusable: false
+        stretch: 1
+      adapter: fn_record_adapter_1
+  label_view_1:
+    type: legacy_type.label:view
+    value:
+      text: wiki
+  label_view_2:
+    type: legacy_type.label:view
+    value:
+      text: title
   line_edit-value_adapter_1:
     type: legacy_type.line_edit:edit_view
     value:
       adapter: value_adapter_1
+  line_edit-value_adapter_3:
+    type: legacy_type.line_edit:edit_view
+    value:
+      adapter: value_adapter_3
+  list_view_1:
+    type: legacy_type.list:view
+    value:
+      adapter: ref_list_adapter_1
   model_1:
     type: legacy_type.config_item_list:model
     value:
@@ -359,12 +425,27 @@ definitions:
     value:
       items:
       - config_item-crud-layout_k-models.wiki_pages-add_folder
+      - config_item-wiki_pages.page_model-model_layout_k
   noop_convertor_1:
     type: legacy_type.type_convertor:noop_convertor
     value: {}
+  record_field_accessor_1:
+    type: legacy_type.accessor:record_field_accessor
+    value:
+      record_adapter: fn_record_adapter_1
+      field_name: wiki
+  record_field_accessor_2:
+    type: legacy_type.accessor:record_field_accessor
+    value:
+      record_adapter: fn_record_adapter_1
+      field_name: title
   ref_1:
     type: legacy_type.builtin:ref
     value: model_1
+  ref_list_adapter_1:
+    type: legacy_type.wiki:ref_list_adapter
+    value:
+      accessor: record_field_accessor_1
   shortcut_Alt_B:
     type: legacy_type.builtin:string
     value: Alt+B
@@ -474,5 +555,22 @@ definitions:
   value_adapter_1:
     type: legacy_type.value_adapter:value_adapter
     value:
+      accessor: record_field_accessor_2
+      convertor: noop_convertor_1
+  value_adapter_2:
+    type: legacy_type.value_adapter:value_adapter
+    value:
+      accessor: record_field_accessor_1
+      convertor: wiki_to_string_convertor
+  value_adapter_3:
+    type: legacy_type.value_adapter:value_adapter
+    value:
       accessor: model_accessor_1
       convertor: noop_convertor_1
+  wiki_pages.page_model-model_layout_k:
+    type: legacy_type.ui:model_layout_k
+    value:
+      model_t: legacy_type.wiki_pages:page_model
+  wiki_to_string_convertor:
+    type: legacy_type.wiki:wiki_to_string_convertor
+    value: {}
