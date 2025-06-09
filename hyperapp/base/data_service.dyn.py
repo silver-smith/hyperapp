@@ -4,14 +4,12 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.mark import mark
 from .code.config_ctl import ConfigCtl, item_pieces_to_data
 
 
 class DataServiceConfigCtl(ConfigCtl):
 
     @classmethod
-    @mark.actor.config_ctl_creg
     def from_piece(cls, piece):
         return cls()
 
@@ -59,7 +57,6 @@ class DataServiceConfigCtl(ConfigCtl):
 class TypeKeyDataServiceConfigCtl(DataServiceConfigCtl):
 
     @classmethod
-    @mark.actor.config_ctl_creg
     def from_piece(cls, piece):
         return cls()
 
@@ -90,7 +87,7 @@ class DataServiceConfig:
     def get(self, key, default=None):
         config = self._system.get_config_template(self._service_name)
         return config.get(key, default)
-        
+
     def __getitem__(self, key):
         config = self._system.get_config_template(self._service_name)
         return config[key]
@@ -103,7 +100,6 @@ class DataServiceConfig:
         self._system.update_service_config(self._service_name, config)
 
 
-@mark.actor.resource_name_creg
 def config_item_name(piece, gen):
     key = web.summon(piece.key)
     key_name = gen.assigned_name(key)

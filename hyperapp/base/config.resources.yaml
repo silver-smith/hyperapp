@@ -2,6 +2,9 @@
 
 import:
 - base.bundler:bundler.service
+- base.data_service:config_ctl_creg-data_service-config_ctl.actor-template
+- base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
+- base.data_service:resource_name_creg-data_service-config_item.actor-template
 - base.data_to_pyobj:data_to_pyobj.service
 - base.data_to_pyobj:data_to_pyobj_ref.service
 - base.file_bundle:file_bundle_factory.service
@@ -83,6 +86,7 @@ definitions:
     value:
       services:
         cfg_item_creg: cfg_item_creg
+        config_ctl_creg: config_ctl_creg
         identity_registry: identity_registry
         parcel_registry: parcel_registry
         peer_registry: peer_registry
@@ -93,6 +97,12 @@ definitions:
         signature_registry: signature_registry
         system: system
         system_fn_creg: system_fn_creg
+  config_ctl_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.data_service:config_ctl_creg-data_service-config_ctl.actor-template
+      - base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
   identity_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -112,6 +122,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - base.data_service:resource_name_creg-data_service-config_item.actor-template
       - base.system.builtin_resource_name:resource_name_creg-builtin-bool.actor-template
       - base.system.builtin_resource_name:resource_name_creg-builtin-call.actor-template
       - base.system.builtin_resource_name:resource_name_creg-builtin-record_mt.actor-template
