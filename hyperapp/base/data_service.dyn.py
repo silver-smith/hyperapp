@@ -88,12 +88,19 @@ class DataServiceConfig:
         config = self._system.get_config_template(self._service_name)
         return config.get(key, default)
 
+    def __contains__(self, key):
+        config = self._system.get_config_template(self._service_name)
+        return key in config
+
     def __getitem__(self, key):
         config = self._system.get_config_template(self._service_name)
         return config[key]
 
     def __setitem__(self, key, value):
         self._target_layer.set(self._service_name, key, value)
+
+    def __delitem__(self, key):
+        self._target_layer.remove(self._service_name, key)
 
     # Used with config fixtures.
     def update(self, config):
