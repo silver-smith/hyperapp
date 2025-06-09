@@ -1,6 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.assoc_key:assoc_key.service
+- base.assoc_key:assoc_key_creg.service
 - base.bundler:bundler.service
 - base.data_service:config_ctl_creg-data_service-config_ctl.actor-template
 - base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
@@ -155,6 +157,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - base.assoc_key:assoc_key.service
+      - base.assoc_key:assoc_key_creg.service
       - base.bundler:bundler.service
       - base.data_to_pyobj:data_to_pyobj.service
       - base.data_to_pyobj:data_to_pyobj_ref.service

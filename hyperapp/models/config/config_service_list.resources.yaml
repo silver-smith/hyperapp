@@ -2,17 +2,22 @@
 
 import:
 - base.mark:mark.module
+- common.list_diff:list_diff.module
+- legacy_type.assoc_key:key_base_association
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:cfg_item
 - legacy_type.command:global_model_command
+- legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.config_service_list:item
 - legacy_type.config_service_list:model
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
-- legacy_type.model:index_list_ui_t
+- legacy_type.model:key_list_ui_t
 - legacy_type.model:model
 - legacy_type.system_fn:ctx_fn
 definitions:
@@ -21,6 +26,11 @@ definitions:
     value:
       object: config_service_list.module
       attr_name: config_service_list
+  config_service_list-model-toggle_assoc.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_service_list:model
+      command: toggle_assoc.model-command
   config_service_list-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -30,14 +40,16 @@ definitions:
     type: legacy_type.feed:list_feed_type
     value:
       item_t: legacy_type.config_service_list:item
-  config_service_list-model.index-list-ui-t:
-    type: legacy_type.model:index_list_ui_t
+  config_service_list-model.key-list-ui-t:
+    type: legacy_type.model:key_list_ui_t
     value:
       item_t: legacy_type.config_service_list:item
+      key_field: service_name
+      key_field_t: legacy_type.builtin:string
   config_service_list-model.model:
     type: legacy_type.model:model
     value:
-      ui_t: config_service_list-model.index-list-ui-t
+      ui_t: config_service_list-model.key-list-ui-t
       system_fn: config_service_list-model.system-fn
   config_service_list-model.model-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -51,6 +63,8 @@ definitions:
       ctx_params:
       - piece
       service_params:
+      - format
+      - assoc_key
       - system
   config_service_list.module:
     type: legacy_type.builtin:python_module
@@ -58,7 +72,9 @@ definitions:
       module_name: config_service_list
       file_name: config_service_list.dyn.py
       import_list:
+        code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
+        htypes.assoc_key.key_base_association: legacy_type.assoc_key:key_base_association
         htypes.config_service_list.item: legacy_type.config_service_list:item
         htypes.config_service_list.model: legacy_type.config_service_list:model
   open_config_service_list:
@@ -89,5 +105,42 @@ definitions:
     value:
       module_name: config_service_list
       name: open_config_service_list_d
+      base: null
+      fields: {}
+  toggle_assoc:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_service_list.module
+      attr_name: toggle_assoc
+  toggle_assoc.d:
+    type: toggle_assoc_d
+    value: {}
+  toggle_assoc.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: toggle_assoc
+      ctx_params:
+      - piece
+      - current_key
+      service_params:
+      - feed_factory
+      - format
+      - assoc_key
+      - system
+  toggle_assoc.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: toggle_assoc.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: toggle_assoc.fn
+      preserve_remote: false
+  toggle_assoc_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: config_service_list
+      name: toggle_assoc_d
       base: null
       fields: {}

@@ -1,5 +1,8 @@
+from unittest.mock import Mock, MagicMock
+
 from . import htypes
 from .code.mark import mark
+from .fixtures import feed_fixtures
 from .tested.code import config_service_list
 
 
@@ -17,3 +20,19 @@ def test_service_list_model(piece):
 def test_open():
     model = config_service_list.open_config_service_list()
     assert isinstance(model, htypes.config_service_list.model)
+
+
+@mark.fixture.obj
+def assoc_key():
+    reg = MagicMock()
+    reg.get.return_value = None
+    return reg
+
+
+async def test_toggle_assoc(assoc_key, piece):
+    current_key = 'assoc_key'
+    await config_service_list.toggle_assoc(piece, current_key)
+    assoc_key.__setitem__.assert_called_once()
+    assoc_key.__contains__.return_value = True
+    await config_service_list.toggle_assoc(piece, current_key)
+    assoc_key.__delitem__.assert_called_once()

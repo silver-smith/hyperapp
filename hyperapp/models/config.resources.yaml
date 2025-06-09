@@ -22,6 +22,7 @@ import:
 - models.config.config_layer_list:config_layer_list-model.feed-template
 - models.config.config_layer_list:config_layer_list-model.model-cfg-item
 - models.config.config_layer_list:open_config_layer_list.global-model-command
+- models.config.config_service_list:config_service_list-model-toggle_assoc.command-cfg-item
 - models.config.config_service_list:config_service_list-model.feed-template
 - models.config.config_service_list:config_service_list-model.model-cfg-item
 - models.config.config_service_list:open_config_service_list.global-model-command
@@ -201,6 +202,7 @@ definitions:
       - models.config.config_item_list:config_item_list-model-remove.command-cfg-item
       - models.config.config_item_list:config_item_list-model.open_move.command-cfg-item
       - models.config.config_item_list:config_service_list-model-open_config_item_list.command-cfg-item
+      - models.config.config_service_list:config_service_list-model-toggle_assoc.command-cfg-item
       - models.data_browser:data_browser-list_view-list_open.command-cfg-item
       - models.data_browser:data_browser-record_view-record_open.command-cfg-item
       - models.data_browser:data_browser-ref_list_view-ref_list_open.command-cfg-item

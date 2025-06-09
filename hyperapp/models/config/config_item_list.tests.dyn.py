@@ -21,6 +21,7 @@ def test_open():
     current_item = htypes.config_service_list.item(
         service_name='sample_service',
         item_count=0,  # Unused.
+        assoc='',  # Unused
         )
     model = config_item_list.open_config_item_list(piece, current_item)
     assert isinstance(model, htypes.config_item_list.model)

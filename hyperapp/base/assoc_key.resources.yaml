@@ -1,0 +1,55 @@
+import:
+- builtins:code_registry_ctr.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.data_service:config_ctl
+- legacy_type.system:service_template
+- base.system.system:dict_config_ctl
+
+definitions:
+
+  assoc_key.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: assoc_key
+      file_name: assoc_key.dyn.py
+      import_list:
+        services.code_registry_ctr: builtins:code_registry_ctr.service
+
+  assoc_key:
+    type: legacy_type.builtin:attribute
+    value:
+      object: assoc_key.module
+      attr_name: assoc_key
+
+  data_service-config_ctl.ctl:
+    type: legacy_type.data_service:config_ctl
+    value: {}
+
+  assoc_key.service:
+    type: legacy_type.system:service_template
+    value:
+      name: assoc_key
+      ctl: data_service-config_ctl.ctl
+      function: assoc_key
+      free_params: []
+      service_params:
+      - assoc_key_creg
+      - system
+      want_config: true
+
+  assoc_key_creg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: assoc_key.module
+      attr_name: assoc_key_creg
+
+  assoc_key_creg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: assoc_key_creg
+      ctl: base.system.system:dict_config_ctl
+      function: assoc_key_creg
+      free_params: []
+      service_params: []
+      want_config: true
