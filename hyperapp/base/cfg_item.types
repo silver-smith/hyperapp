@@ -5,3 +5,6 @@ typed_cfg_item = record:
 typed_fn_cfg_item = record:
   t: ref
   system_fn: ref
+
+fn_cfg_item = record:
+  system_fn: ref

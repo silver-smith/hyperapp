@@ -1,0 +1,38 @@
+import:
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.cfg_item:fn_cfg_item
+- legacy_type.system:actor_template
+
+definitions:
+
+  fn_cfg_item.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: fn_cfg_item
+      file_name: fn_cfg_item.dyn.py
+      import_list:
+        htypes.cfg_item.fn_cfg_item: legacy_type.cfg_item:fn_cfg_item
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+
+  FnCfgItem:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fn_cfg_item.module
+      attr_name: FnCfgItem
+
+  FnCfgItem.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FnCfgItem
+      attr_name: from_piece
+
+  cfg_item_creg-cfg_item-fn_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.cfg_item:fn_cfg_item
+      function: FnCfgItem.from_piece
+      service_params: []

@@ -10,6 +10,7 @@ import:
 - base.data_to_pyobj:data_to_pyobj.service
 - base.data_to_pyobj:data_to_pyobj_ref.service
 - base.file_bundle:file_bundle_factory.service
+- base.fn_cfg_item:cfg_item_creg-cfg_item-fn_cfg_item.actor-template
 - base.mark:marker_ctl.service
 - base.partial_ref:partial_ref.service
 - base.ref_picker:pick_refs.service
@@ -80,6 +81,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - base.fn_cfg_item:cfg_item_creg-cfg_item-fn_cfg_item.actor-template
       - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-template
       - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_cfg_item.actor-template
       - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-template
