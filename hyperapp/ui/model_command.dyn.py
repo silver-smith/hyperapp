@@ -14,7 +14,8 @@ from .code.system_fn import ContextFn
 from .code.list_diff import IndexListDiff, KeyListDiff
 from .code.command import UnboundCommand, BoundCommand
 from .code.command_enumerator import UnboundCommandEnumerator
-from .code.list_config_ctl import DictListConfigCtl, FlatListConfigCtl
+from .code.config_ctl import FlatListConfigCtl
+from .code.list_config_ctl import DictListConfigCtl
 
 log = logging.getLogger(__name__)
 

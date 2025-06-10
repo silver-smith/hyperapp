@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.system.config_ctl:config_ctl.module
 - base.system_fn:system_fn.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
@@ -13,9 +14,9 @@ import:
 - legacy_type.command:ui_command_enum_fn
 - legacy_type.command:ui_command_enumerator
 - legacy_type.list_config_ctl:dict_list_config_ctl
-- legacy_type.list_config_ctl:flat_list_config_ctl
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
+- legacy_type.system:flat_list_config_ctl
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_enumerator:command_enumerator.module
@@ -94,11 +95,11 @@ definitions:
   list_config_ctl-dict_list_config_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
     value: {}
-  list_config_ctl-flat_list_config_ctl.ctl:
-    type: legacy_type.list_config_ctl:flat_list_config_ctl
-    value: {}
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
+    value: {}
+  system-flat_list_config_ctl.ctl:
+    type: legacy_type.system:flat_list_config_ctl
     value: {}
   system_fn_creg-command-ui_command_enum_fn.actor-template:
     type: legacy_type.system:actor_template
@@ -117,6 +118,7 @@ definitions:
         code.command: ui.command:command.module
         code.command_enumerator: ui.command_enumerator:command_enumerator.module
         code.command_groups: ui.command_groups:command_groups.module
+        code.config_ctl: base.system.config_ctl:config_ctl.module
         code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
         code.mark: base.mark:mark.module
         code.system_fn: base.system_fn:system_fn.module
@@ -161,7 +163,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: universal_ui_command_enumerator_reg
-      ctl: list_config_ctl-flat_list_config_ctl.ctl
+      ctl: system-flat_list_config_ctl.ctl
       function: universal_ui_command_enumerator_reg
       service_params: []
       want_config: true
@@ -175,7 +177,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: universal_ui_command_reg
-      ctl: list_config_ctl-flat_list_config_ctl.ctl
+      ctl: system-flat_list_config_ctl.ctl
       function: universal_ui_command_reg
       service_params: []
       want_config: true

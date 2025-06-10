@@ -15,7 +15,8 @@ from .code.system_fn import ContextFn
 from .code.command import UnboundCommand, BoundCommand, CommandKind
 from .code.command_enumerator import UnboundCommandEnumerator
 from .code.command_groups import default_command_groups
-from .code.list_config_ctl import DictListConfigCtl, FlatListConfigCtl
+from .code.config_ctl import FlatListConfigCtl
+from .code.list_config_ctl import DictListConfigCtl
 from .code.ui_model_command import wrap_model_command_to_ui_command
 
 log = logging.getLogger(__name__)

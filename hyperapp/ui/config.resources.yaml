@@ -57,7 +57,6 @@ import:
 - ui.layout:layout-model.model-cfg-item
 - ui.layout:open_layout_tree.global-model-command
 - ui.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template
-- ui.list_config_ctl:config_ctl_creg-list_config_ctl-flat_list_config_ctl.actor-template
 - ui.local_server:local_server_peer.service
 - ui.local_server:local_server_peer_path.service
 - ui.model_command:command_creg-command-global_model_command.actor-template
@@ -259,7 +258,6 @@ definitions:
     value:
       items:
       - ui.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template
-      - ui.list_config_ctl:config_ctl_creg-list_config_ctl-flat_list_config_ctl.actor-template
   convertor_creg:
     type: legacy_type.system:item_list_config
     value:

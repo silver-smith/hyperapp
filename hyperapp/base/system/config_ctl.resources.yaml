@@ -3,6 +3,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:python_module
 - legacy_type.system:dict_config_ctl
+- legacy_type.system:flat_list_config_ctl
 - legacy_type.system:item_list_config
 - legacy_type.system:service_config
 - legacy_type.system:system_config
@@ -16,8 +17,29 @@ definitions:
       file_name: config_ctl.dyn.py
       import_list:
         htypes.system.dict_config_ctl: legacy_type.system:dict_config_ctl
+        htypes.system.flat_list_config_ctl: legacy_type.system:flat_list_config_ctl
         htypes.system.item_list_config: legacy_type.system:item_list_config
         htypes.system.service_config: legacy_type.system:service_config
         htypes.system.system_config: legacy_type.system:system_config
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+
+  # FlatListConfigCtl:
+  #   type: legacy_type.builtin:attribute
+  #   value:
+  #     object: config_ctl.module
+  #     attr_name: FlatListConfigCtl
+
+  # FlatListConfigCtl.from_piece:
+  #   type: legacy_type.builtin:attribute
+  #   value:
+  #     object: FlatListConfigCtl
+  #     attr_name: from_piece
+
+  # config_ctl_creg-system-flat_list_config_ctl.actor-template:
+  #   type: legacy_type.system:actor_template
+  #   value:
+  #     t: legacy_type.system:flat_list_config_ctl
+  #     function: FlatListConfigCtl.from_piece
+  #     service_params:
+  #     - cfg_item_creg

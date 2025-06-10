@@ -11,6 +11,7 @@ item_list_config = record:
 
 
 dict_config_ctl = record
+flat_list_config_ctl = record
 
 
 service_template_base = record:

@@ -3,7 +3,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.list_config_ctl import DictListConfigCtl, FlatListConfigCtl
+from .code.list_config_ctl import DictListConfigCtl
 
 
 def _properties_match(factory_prop_list, wanted_props):

@@ -165,6 +165,37 @@ class DictConfigCtl(MultiItemConfigCtl):
         config_template[item.key] = item
 
 
+class FlatListConfigCtl(MultiItemConfigCtl):
+
+    @classmethod
+    def from_piece(cls, piece, cfg_item_creg):
+        return cls(cfg_item_creg)
+
+    @property
+    def piece(self):
+        return htypes.system.flat_list_config_ctl()
+
+    def _config_to_items(self, config):
+        return config
+
+    def empty_config_template(self):
+        return []
+
+    def _update_config(self, config_template, item):
+        config_template.append(item)
+
+    def merge(self, dest, src):
+        dest.extend(src)
+        return dest
+
+    def resolve(self, system, service_name, config_template):
+        config = []  # command list.
+        for item in config_template:
+            value = item.resolve(system, service_name)
+            config.append(value)
+        return config
+
+
 def service_pieces_to_config(service_to_config_piece):
     return htypes.system.system_config(tuple(
         htypes.system.service_config(

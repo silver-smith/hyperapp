@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.system.config_ctl:config_ctl.module
 - base.system_fn:system_fn.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
@@ -20,10 +21,10 @@ import:
 - legacy_type.command:model_command_remove_fn
 - legacy_type.diff:model_diff
 - legacy_type.list_config_ctl:dict_list_config_ctl
-- legacy_type.list_config_ctl:flat_list_config_ctl
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
+- legacy_type.system:flat_list_config_ctl
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_enumerator:command_enumerator.module
@@ -122,16 +123,13 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: global_model_command_reg
-      ctl: list_config_ctl-flat_list_config_ctl.ctl
+      ctl: system-flat_list_config_ctl.ctl
       function: global_model_command_reg
       service_params: []
       want_config: true
       free_params: []
   list_config_ctl-dict_list_config_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
-    value: {}
-  list_config_ctl-flat_list_config_ctl.ctl:
-    type: legacy_type.list_config_ctl:flat_list_config_ctl
     value: {}
   model_command.module:
     type: legacy_type.builtin:python_module
@@ -141,6 +139,7 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.command_enumerator: ui.command_enumerator:command_enumerator.module
+        code.config_ctl: base.system.config_ctl:config_ctl.module
         code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
         code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
@@ -200,6 +199,9 @@ definitions:
       - model_t
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
+    value: {}
+  system-flat_list_config_ctl.ctl:
+    type: legacy_type.system:flat_list_config_ctl
     value: {}
   system_fn_creg-command-model_command_add_fn.actor-template:
     type: legacy_type.system:actor_template

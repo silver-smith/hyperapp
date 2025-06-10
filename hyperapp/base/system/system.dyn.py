@@ -12,7 +12,7 @@ from .services import (
     code_registry_ctr,
     pyobj_creg,
     )
-from .code.config_ctl import DictConfigCtl, service_pieces_to_config
+from .code.config_ctl import DictConfigCtl, FlatListConfigCtl, service_pieces_to_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
 
 log = logging.getLogger(__name__)
@@ -207,7 +207,9 @@ class System:
         # cfg_item_creg is used by DictConfigCtl.
         self._cfg_item_creg = cached_code_registry_ctr('cfg_item_creg', self._make_cfg_item_creg_config())
         config_ctl_creg_config[htypes.system.dict_config_ctl] = partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
+        config_ctl_creg_config[htypes.system.flat_list_config_ctl] = partial(FlatListConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
         self._dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
+        self._flat_list_config_ctl = FlatListConfigCtl(self._cfg_item_creg)
         self._config_ctl = self._make_config_ctl({
             'system': self._dict_config_ctl,
             'config_ctl_creg': self._dict_config_ctl,
