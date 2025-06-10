@@ -44,6 +44,7 @@ import:
 - rc.import_recorder:import_recorder_reg.service
 - rc.import_record_cfg_item:import_resource-import_resource.actor-template
 - rc.import_resource:import_resource-import_resource.actor-template
+- rc.init_hook_ctr:cfg_item-fn_cfg_item.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-template
 - rc.fixture_ctr:fixture_resource-fixture_obj_ctr.actor-template
@@ -143,6 +144,7 @@ definitions:
       - rc.service_ctr:system-service_template.actor-template
       - rc.service_ctr:system-finalizer_gen_service_template.actor-template
       - rc.actor_ctr:system-actor_template.actor-template
+      - rc.init_hook_ctr:cfg_item-fn_cfg_item.actor-template
       - rc.marker_ctr:marker-marker_template.actor-template
 
   marker_registry:
