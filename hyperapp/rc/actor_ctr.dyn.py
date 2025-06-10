@@ -83,7 +83,7 @@ class ActorTemplateCtrBase(Constructor):
 class CoreActorTemplateCtr(ActorTemplateCtrBase):
 
     @classmethod
-    def from_template_piece(cls, piece, service_name):
+    def from_template_piece(cls, piece, service_name, var_name):
         return cls(
             service_name=service_name,
             t=pyobj_creg.invite(piece.t),

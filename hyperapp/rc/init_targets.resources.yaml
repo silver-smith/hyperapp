@@ -1,4 +1,5 @@
 import:
+- base.system.config_ctl:config_ctl.module
 - base.system.system:dict_config_ctl
 - builtins:code_registry_ctr.service
 - builtins:hyperapp_dir.service
@@ -25,6 +26,7 @@ definitions:
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.hyperapp_dir: builtins:hyperapp_dir.service
         code.cfg_item_req: rc.cfg_item_req:cfg_item_req.module
+        code.config_ctl: base.system.config_ctl:config_ctl.module
         code.config_resource_target: rc.config_resource_target:config_resource_target.module
         code.import_target: rc.import_target:import_target.module
         code.marker_req: rc.marker_req:marker_req.module

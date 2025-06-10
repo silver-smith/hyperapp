@@ -15,6 +15,7 @@ from .code.import_target import (
     ImportTarget,
     )
 from .code.config_resource_target import ConfigResourceTarget
+from .code.config_ctl import MultiItemConfigCtl, DictConfigCtl
 from .code.cfg_item_req import CfgItemReq
 from .code.service_req import ServiceReq
 from .code.marker_req import MarkerReq
@@ -25,26 +26,37 @@ def ctr_from_template_creg(config):
 
 
 def add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templates, target_set, project):
+
+    def add_item(service_name, value, key=None, req=None):
+        item_piece = ctl.item_piece(value)  # Expecting only MultiItemConfigCtl ctl instances.
+        module_name, var_name = project.reverse_resolve(item_piece)
+        ctr = ctr_from_template_creg.animate(item_piece, service_name, var_name)
+        if key is None:
+            key = ctr.key
+        resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
+        assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
+        _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
+
     for service_name, config in base_config_templates.items():
         ctl = config_ctl[service_name]
-        for key, value in config.items():
-            if service_name == 'system':
-                req = ServiceReq(key)
-            elif isinstance(key, Type):
-                req = CfgItemReq(service_name, key)
-            elif service_name == 'marker_registry':
-                req = MarkerReq(key)
-            else:
-                req = None
-            if type(key) is not str:
-                assert isinstance(key, Type)
-                key = f'{key.module_name}-{key.name}'
-            item_piece = ctl.item_piece(value)  # Expecting only MultiItemConfigCtl ctl instances.
-            ctr = ctr_from_template_creg.animate(item_piece, service_name)
-            module_name, var_name = project.reverse_resolve(item_piece)
-            resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
-            assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
-            _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
+        assert isinstance(ctl, MultiItemConfigCtl)  # require item_piece.
+        if isinstance(ctl, DictConfigCtl):
+            for key, value in config.items():
+                if service_name == 'system':
+                    req = ServiceReq(key)
+                elif isinstance(key, Type):
+                    req = CfgItemReq(service_name, key)
+                elif service_name == 'marker_registry':
+                    req = MarkerReq(key)
+                else:
+                    req = None
+                if type(key) is not str:
+                    assert isinstance(key, Type)
+                    key = f'{key.module_name}-{key.name}'
+                add_item(service_name, value, key, req)
+        else:
+            for value in config:
+                add_item(service_name, value)
 
 
 def create_python_modules(rc_config, root_dir, cache, cached_count, target_set, prefix, path_to_text, target_project, all_imports_known_tgt):
