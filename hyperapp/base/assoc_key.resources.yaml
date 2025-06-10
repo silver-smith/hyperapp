@@ -2,8 +2,10 @@ import:
 - builtins:code_registry_ctr.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:fn_cfg_item
 - legacy_type.data_service:config_ctl
 - legacy_type.system:service_template
+- legacy_type.system_fn:ctx_fn
 - base.system.system:dict_config_ctl
 
 definitions:
@@ -53,3 +55,23 @@ definitions:
       free_params: []
       service_params: []
       want_config: true
+
+  init_assoc_key:
+    type: legacy_type.builtin:attribute
+    value:
+      object: assoc_key.module
+      attr_name: init_assoc_key
+
+  init_assoc_key.fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: init_assoc_key
+      ctx_params: []
+      service_params:
+      - assoc_key
+      - system
+
+  init_assoc_key.hook:
+    type: legacy_type.cfg_item:fn_cfg_item
+    value:
+      system_fn: init_assoc_key.fn
