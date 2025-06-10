@@ -104,9 +104,7 @@ class BoundUiModelCommand(BoundCommandBase):
         try:
             result = await self._model_command.run()
         except Exception as x:
-            log.exception("Error running command %r", self._model_command)
-            model, model_ctx, view_piece = await self._error_view(x, self._ctx)
-            await self._open_view(navigator_w, model, model_ctx, view_piece)
+            await self._handle_error(navigator_w, x)
             return
         if result is None:
             return None
@@ -116,6 +114,11 @@ class BoundUiModelCommand(BoundCommandBase):
         if result.diff:
             await self._process_diff(result.diff)
         await self._open(navigator_w, model, key)
+
+    async def _handle_error(self, navigator_widget, exception):
+        log.exception("Error running command %r", self._model_command)
+        model, model_ctx, view_piece = await self._error_view(exception, self._ctx)
+        await self._open_view(navigator_widget, model, model_ctx, view_piece)
 
     async def _process_diff(self, model_diff_ref):
         model_diff = web.summon(model_diff_ref)
@@ -131,7 +134,11 @@ class BoundUiModelCommand(BoundCommandBase):
             log.info("Model command %r: Set current key: %r", self.name, key)
             self._navigator_rec.view.set_current_key(navigator_w, key)
             return
-        view_piece = await self._visualizer(self._ctx, real_model_t(model))
+        try:
+            view_piece = await self._visualizer(self._ctx, real_model_t(model))
+        except Exception as x:
+            await self._handle_error(navigator_w, x)
+            return
         model_ctx = self._ctx.pop().clone_with(model=model)
         await self._open_view(navigator_w, model, model_ctx, view_piece, key)
 
