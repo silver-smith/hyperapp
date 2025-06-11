@@ -149,12 +149,6 @@ class DictConfigCtl(MultiItemConfigCtl):
     def resolve(self, system, service_name, config_template):
         return self._lazy_config(system, service_name, config_template)
 
-    def _resolve(self, system, service_name, config_template):
-        config = {}
-        for key, item in config_template.items():
-            config[key] = self.resolve_item(system, service_name, item)
-        return config
-
     def resolve_item(self, system, service_name, item):
         return item.resolve(system, service_name)
 
