@@ -26,10 +26,13 @@ def main():
 
         name_to_project = load_projects_from_file(HYPERAPP_DIR / 'projects.yaml', project_filter)
 
-        module_piece = name_to_project['base']['base.system.system', 'system.module']
-        module = pyobj_creg.animate(module_piece)
+        system_module_piece = name_to_project['base']['base.system.system', 'system.module']
+        system_module = pyobj_creg.animate(system_module_piece)
 
-        module.run_projects(name_to_project.values(), root_service, name_to_project, sys.argv[3:])
+        system = system_module.System()
+        system.load_projects(name_to_project.values())
+        system['init_hook'].run_hooks()
+        system.run(root_service, name_to_project, sys.argv[3:])
 
     finally:
         log.info("Stopping.")

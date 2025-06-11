@@ -12,9 +12,8 @@ from .services import (
     code_registry_ctr,
     pyobj_creg,
     )
-from .code.config_ctl import DictConfigCtl, FlatListConfigCtl, service_pieces_to_config
+from .code.config_ctl import DictConfigCtl, service_pieces_to_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
-from .code.context import Context
 
 log = logging.getLogger(__name__)
 
@@ -200,7 +199,6 @@ class System:
         self._name_to_service = {}
         self._resolve_stack = {}  # service name -> requester
         self._finalizers = {}  # service name -> fn
-        self._init_hooks = []  # System fn list
         self._init()
 
     def _init(self):
@@ -209,9 +207,7 @@ class System:
         # cfg_item_creg is used by DictConfigCtl.
         self._cfg_item_creg = cached_code_registry_ctr('cfg_item_creg', self._make_cfg_item_creg_config())
         config_ctl_creg_config[htypes.system.dict_config_ctl] = partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
-        config_ctl_creg_config[htypes.system.flat_list_config_ctl] = partial(FlatListConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
         self._dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
-        self._flat_list_config_ctl = FlatListConfigCtl(self._cfg_item_creg)
         self._config_ctl = self._make_config_ctl({
             'system': self._dict_config_ctl,
             'config_ctl_creg': self._dict_config_ctl,
@@ -223,7 +219,6 @@ class System:
         self.add_core_service('config_ctl', self._config_ctl)
         self.add_core_service('get_layer_config_templates', self.get_layer_config_templates)
         self.add_core_service('get_system_config_piece', self.get_config_piece)
-        self.add_core_service('init_hook', self._init_hooks, ctl=self._flat_list_config_ctl)
         self.add_core_service('system', self)
 
     def _make_config_ctl_creg_config(self):
@@ -247,9 +242,9 @@ class System:
     def service_names(self):
         return {*self._name_to_template, *self._name_to_service}
 
-    def add_core_service(self, name, service, ctl=None):
+    def add_core_service(self, name, service):
         self._name_to_service[name] = service
-        self._config_ctl[name] = ctl or self._dict_config_ctl
+        self._config_ctl[name] = self._dict_config_ctl
 
     def add_config_hook(self, hook):
         self._config_hooks.append(hook)
@@ -276,6 +271,11 @@ class System:
     def load_config(self, config_piece):
         layer = StaticConfigLayer(self, self['config_ctl'], config_piece)
         self.load_config_layer('full', layer)
+
+    def load_projects(self, projects):
+        for project in projects:
+            layer = ProjectConfigLayer(self, self['config_ctl'], project)
+            self.load_config_layer(project.name, layer)
 
     def load_config_layer(self, layer_name, layer):
         # layer.config is expected to be ordered with service_config_order.
@@ -345,7 +345,6 @@ class System:
         return self._config_templates.get('system', {})
 
     def run(self, root_name, *args, **kw):
-        self.run_init_hooks()
         service = self.resolve_service(root_name)
         log.info("%s: run root service %s: %s", self._system_name, root_name, service)
         try:
@@ -353,11 +352,6 @@ class System:
         finally:
             self.close()
             log.info("%s: stopped", self._system_name)
-
-    def run_init_hooks(self):
-        ctx = Context()
-        for fn in self._init_hooks:
-            fn.call(ctx)
 
     def _run_service(self, service, args, kw):
         return service(*args, **kw)
@@ -421,17 +415,3 @@ class System:
 
     def _raise_missing_service(self, service_name):
         raise UnknownServiceError(service_name)
-
-
-def run_config(config, root_name, *args, **kw):
-    system = System()
-    system.load_config(config)
-    system.run(root_name, *args, **kw)
-
-
-def run_projects(projects, root_name, *args, **kw):
-    system = System()
-    for project in projects:
-        layer = ProjectConfigLayer(system, system['config_ctl'], project)
-        system.load_config_layer(project.name, layer)
-    system.run(root_name, *args, **kw)

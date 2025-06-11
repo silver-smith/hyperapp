@@ -8,7 +8,6 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:flat_list_config_ctl
 - legacy_type.system:service_template
-- base.context:context.module
 - base.system.config_ctl:config_ctl.module
 - base.system.config_layer:config_layer.module
 
@@ -30,7 +29,6 @@ definitions:
         services.pyobj_creg: builtins:pyobj_creg.service
         code.config_ctl: base.system.config_ctl:config_ctl.module
         code.config_layer: base.system.config_layer:config_layer.module
-        code.context: base.context:context.module
 
   dict_config_ctl:
     type: legacy_type.system:dict_config_ctl

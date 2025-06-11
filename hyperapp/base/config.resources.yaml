@@ -47,7 +47,9 @@ import:
 - base.system.builtin_resource_name:resource_name_creg-builtin-call.actor-template
 - base.system.builtin_resource_name:resource_name_creg-builtin-record_mt.actor-template
 - base.system.builtin_resource_name:resource_name_creg-builtin-string.actor-template
+- base.system.config_ctl:config_ctl_creg-system-flat_list_config_ctl.actor-template
 - base.system.config_layer:resource_name_creg.service
+- base.system.init_hook:init_hook.service
 - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-template
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
@@ -109,6 +111,7 @@ definitions:
       items:
       - base.data_service:config_ctl_creg-data_service-config_ctl.actor-template
       - base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
+      - base.system.config_ctl:config_ctl_creg-system-flat_list_config_ctl.actor-template
   identity_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -198,6 +201,7 @@ definitions:
       - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
       - base.subprocess.subprocess_transport:subprocess_transport.service
       - base.system.config_layer:resource_name_creg.service
+      - base.system.init_hook:init_hook.service
       - base.system.system_stop:stop_signal.service
       - base.system.system_stop:system_failed.service
       - base.system_fn_creg:system_fn_creg.service
