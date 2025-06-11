@@ -16,7 +16,7 @@ class DictListConfigCtl(DictConfigCtl):
 
     def _config_to_items(self, config):
         items = []
-        for key, values in config.items():
+        for values in config.values():
             items += values
         return items
 
