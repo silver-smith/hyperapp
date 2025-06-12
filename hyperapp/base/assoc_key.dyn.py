@@ -31,7 +31,12 @@ class AssociationKeyRegistry:
 
     # System config hook method
     def config_item_set(self, service_name, cfg_item):
-        assert 0, (service_name, cfg_item)
+        try:
+            assoc_key_piece = self._config[service_name]
+        except KeyError:
+            return
+        assoc_key = self._assoc_key_creg.animate(assoc_key_piece)
+        assert 0, (service_name, cfg_item, assoc_key)
 
     # System config hook method
     def config_item_removed(self, service_name, cfg_item):

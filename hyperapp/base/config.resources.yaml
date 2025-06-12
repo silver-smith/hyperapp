@@ -2,6 +2,7 @@
 
 import:
 - base.assoc_key:assoc_key.service
+- base.assoc_key:assoc_key_creg-assoc_key-key_base_association.actor-template
 - base.assoc_key:assoc_key_creg.service
 - base.assoc_key:init_assoc_key.hook
 - base.bundler:bundler.service
@@ -80,6 +81,11 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
+  assoc_key_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - base.assoc_key:assoc_key_creg-assoc_key-key_base_association.actor-template
   cfg_item_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -92,6 +98,7 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
+        assoc_key_creg: assoc_key_creg
         cfg_item_creg: cfg_item_creg
         config_ctl_creg: config_ctl_creg
         identity_registry: identity_registry
