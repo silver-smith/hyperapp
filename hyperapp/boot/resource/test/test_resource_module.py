@@ -9,7 +9,6 @@ from hyperapp.boot.htypes import Type, TList, TRecord, record_mt, list_mt
 from hyperapp.boot.htypes.attribute import attribute_t
 from hyperapp.boot.htypes.partial import partial_param_t, partial_t
 from hyperapp.boot.htypes.builtin_service import builtin_service_t
-from hyperapp.boot.association_registry import Association
 from hyperapp.boot import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
