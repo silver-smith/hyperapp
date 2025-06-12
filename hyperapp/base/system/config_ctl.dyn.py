@@ -11,6 +11,8 @@ from .services import (
 
 class ConfigCtl(metaclass=ABCMeta):
 
+    is_multi_item = False
+
     @abstractmethod
     def from_data(self, piece):
         pass
@@ -34,6 +36,8 @@ class ConfigCtl(metaclass=ABCMeta):
 
 class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
 
+    is_multi_item = True
+
     def __init__(self, cfg_item_creg=None):
         self._cfg_item_creg = cfg_item_creg
 
@@ -44,14 +48,19 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
             self._update_config(config_template, item)
         return config_template
 
-    def to_data(self, config):
-        return self._item_pieces_to_data([
-            self.item_piece(value)
-            for value in self._config_to_items(config)
-            ])
+    def to_data(self, config_template):
+        item_pieces = self.config_to_item_pieces(config_template)
+        return self._item_pieces_to_data(item_pieces)
 
-    def _config_to_items(self, config):
-        return config.values()
+    def config_to_item_pieces(self, config_template):
+        return [
+            self.item_piece(value)
+            for value in self._config_to_items(config_template)
+            ]
+
+    @staticmethod
+    def _config_to_items(config_template):
+        return config_template.values()
 
     @abstractmethod
     def _update_config(self, config_template, item):
@@ -169,8 +178,9 @@ class FlatListConfigCtl(MultiItemConfigCtl):
     def piece(self):
         return htypes.system.flat_list_config_ctl()
 
-    def _config_to_items(self, config):
-        return config
+    @staticmethod
+    def _config_to_items(config_template):
+        return config_template
 
     def empty_config_template(self):
         return []

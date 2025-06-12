@@ -199,6 +199,7 @@ class System:
         self._name_to_service = {}
         self._resolve_stack = {}  # service name -> requester
         self._finalizers = {}  # service name -> fn
+        self._config_hooks = []
         self._init()
 
     def _init(self):
@@ -213,7 +214,6 @@ class System:
             'config_ctl_creg': self._dict_config_ctl,
             'cfg_item_creg': self._dict_config_ctl,
             })
-        self._config_hooks = []
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
         self.add_core_service('config_ctl_creg', self._config_ctl_creg)
         self.add_core_service('config_ctl', self._config_ctl)
@@ -248,6 +248,7 @@ class System:
 
     def add_config_hook(self, hook):
         self._config_hooks.append(hook)
+        self._call_config_hooks([hook])
 
     def update_service_config(self, service_name, config):
         try:
@@ -275,13 +276,29 @@ class System:
     def load_projects(self, projects):
         for project in projects:
             layer = ProjectConfigLayer(self, self['config_ctl'], project)
-            self.load_config_layer(project.name, layer)
+            self._load_config_layer(project.name, layer)
+        self.invalidate_config_cache()
+        self._call_config_hooks(self._config_hooks)
 
     def load_config_layer(self, layer_name, layer):
+        self._load_config_layer(layer_name, layer)
+        self.invalidate_config_cache()
+        self._call_config_hooks(self._config_hooks)
+
+    def _load_config_layer(self, layer_name, layer):
         # layer.config is expected to be ordered with service_config_order.
         log.debug("Load config layer: %r; services: %s", layer_name, list(layer.config))
         self._name_to_layer[layer_name] = layer
-        self.invalidate_config_cache()
+
+    def _call_config_hooks(self, hook_list):
+        for service_name, config_template in self._config_templates.items():
+            ctl = self._config_ctl[service_name]
+            if not ctl.is_multi_item:
+                continue  # No hooks for non-multi-item configs.
+            item_list = ctl.config_to_item_pieces(config_template)
+            for cfg_item in item_list:
+                for hook in hook_list:
+                    hook.config_item_set(service_name, cfg_item)
 
     def service_config_order(self, service_name):
         order = {

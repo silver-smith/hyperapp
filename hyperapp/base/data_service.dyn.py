@@ -9,6 +9,8 @@ from .code.config_ctl import ConfigCtl, item_pieces_to_data
 
 class DataServiceConfigCtl(ConfigCtl):
 
+    is_multi_item = True
+
     @classmethod
     def from_piece(cls, piece):
         return cls()
@@ -26,10 +28,10 @@ class DataServiceConfigCtl(ConfigCtl):
             self._update_config(config_template, key, value)
         return config_template
 
-    def to_data(self, config):
+    def to_data(self, config_template):
         return item_pieces_to_data([
             self._item_piece(key, value)
-            for key, value in config.items()
+            for key, value in config_template.items()
             ])
 
     def empty_config_template(self):
@@ -41,6 +43,12 @@ class DataServiceConfigCtl(ConfigCtl):
 
     def resolve(self, system, service_name, config_template):
         return DataServiceConfig(system, system.default_layer, service_name)
+
+    def config_to_item_pieces(self, config_template):
+        return [
+            self._item_piece(key, value)
+            for key, value in config_template.items()
+            ]
 
     @staticmethod
     def _update_config(config_template, key, value):

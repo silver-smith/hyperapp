@@ -14,9 +14,10 @@ class DictListConfigCtl(DictConfigCtl):
     def piece(self):
         return htypes.list_config_ctl.dict_list_config_ctl()
 
-    def _config_to_items(self, config):
+    @staticmethod
+    def _config_to_items(config_template):
         items = []
-        for values in config.values():
+        for values in config_template.values():
             items += values
         return items
 
