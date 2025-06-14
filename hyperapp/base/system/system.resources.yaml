@@ -11,6 +11,7 @@ import:
 - base.system.actor_template:actor_template.module
 - base.system.config_ctl:config_ctl.module
 - base.system.config_layer:config_layer.module
+- base.system.service_template:service_template.module
 
 definitions:
 
@@ -31,6 +32,7 @@ definitions:
         code.config_ctl: base.system.config_ctl:config_ctl.module
         code.config_layer: base.system.config_layer:config_layer.module
         code.actor_template: base.system.actor_template:actor_template.module
+        code.service_template: base.system.service_template:service_template.module
 
   dict_config_ctl:
     type: legacy_type.system:dict_config_ctl
