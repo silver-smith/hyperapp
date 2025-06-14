@@ -3,11 +3,7 @@ import:
 - builtins:code_registry_ctr.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
-- legacy_type.system:actor_template
-- legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:dict_config_ctl
-- legacy_type.system:flat_list_config_ctl
-- legacy_type.system:service_template
 - base.system.actor_template:actor_template.module
 - base.system.config_ctl:config_ctl.module
 - base.system.config_layer:config_layer.module
@@ -21,11 +17,7 @@ definitions:
       module_name: system
       file_name: system.dyn.py
       import_list:
-        htypes.system.actor_template: legacy_type.system:actor_template
-        htypes.system.service_template: legacy_type.system:service_template
-        htypes.system.finalizer_gen_service_template: legacy_type.system:finalizer_gen_service_template
         htypes.system.dict_config_ctl: legacy_type.system:dict_config_ctl
-        htypes.system.flat_list_config_ctl: legacy_type.system:flat_list_config_ctl
         services.cached_code_registry_ctr: builtins:cached_code_registry_ctr.service
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -36,8 +28,4 @@ definitions:
 
   dict_config_ctl:
     type: legacy_type.system:dict_config_ctl
-    value: {}
-
-  flat_list_config_ctl:
-    type: legacy_type.system:flat_list_config_ctl
     value: {}

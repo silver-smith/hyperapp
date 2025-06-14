@@ -73,11 +73,6 @@ class TypeKeyDataServiceConfigCtl(DataServiceConfigCtl):
         return htypes.data_service.type_key_config_ctl()
 
     @staticmethod
-    def _update_config(config_template, key, value):
-        t = pyobj_creg.animate(key)
-        config_template[t] = value
-
-    @staticmethod
     def _item_piece(key, value):
         return htypes.data_service.config_item(
             key=pyobj_creg.actor_to_ref(key),

@@ -7,8 +7,8 @@ class DictListConfigCtl(DictConfigCtl):
 
     @classmethod
     @mark.actor.config_ctl_creg
-    def from_piece(cls, piece, cfg_item_creg):
-        return cls(cfg_item_creg)
+    def from_piece(cls, piece, cfg_item_creg, cfg_value_creg):
+        return cls(cfg_item_creg, cfg_value_creg)
 
     @property
     def piece(self):
@@ -26,11 +26,11 @@ class DictListConfigCtl(DictConfigCtl):
             dest.setdefault(key, []).extend(value_list)
         return dest
 
-    def _update_config(self, config_template, item):
-        config_template.setdefault(item.key, []).append(item)
+    def _update_config(self, config_template, key, item):
+        config_template.setdefault(key, []).append(item)
 
-    def resolve_item(self, system, service_name, item):
+    def resolve_item(self, system, service_name, key, item):
         return [
-            item_template.resolve(system, service_name)
+            self._cfg_value_creg.animate(item, key, system, service_name)
             for item_template in item
             ]

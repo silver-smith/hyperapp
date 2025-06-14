@@ -38,14 +38,15 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
 
     is_multi_item = True
 
-    def __init__(self, cfg_item_creg=None):
+    def __init__(self, cfg_item_creg=None, cfg_value_creg=None):
         self._cfg_item_creg = cfg_item_creg
+        self._cfg_value_creg = cfg_value_creg
 
     def from_data(self, piece):
         config_template = self.empty_config_template()
         for item_ref in piece.items:
-            item = self._cfg_item_creg.invite(item_ref)
-            self._update_config(config_template, item)
+            key, item = self._cfg_item_creg.invite(item_ref)
+            self._update_config(config_template, key, item)
         return config_template
 
     def to_data(self, config_template):
@@ -63,11 +64,11 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
         return config_template.values()
 
     @abstractmethod
-    def _update_config(self, config_template, item):
+    def _update_config(self, config_template, key, item):
         pass
 
-    def item_piece(self, item):
-        return self._cfg_item_creg.actor_to_piece(item)
+    def item_piece(self, key, item):
+        return self._cfg_item_creg.actor_to_piece((key, item))
 
     def _item_pieces_to_data(self, item_list):
         return item_pieces_to_data(item_list)
@@ -127,7 +128,7 @@ class LazyDictConfig:
 
     def _resolve_template(self, key, value_template):
         try:
-            value = self._ctl.resolve_item(self._system, self._service_name, value_template)
+            value = self._ctl.resolve_item(self._system, self._service_name, key, value_template)
         except ConfigItemMissingError:
             raise
         except KeyError as x:
@@ -141,8 +142,8 @@ class LazyDictConfig:
 class DictConfigCtl(MultiItemConfigCtl):
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg):
-        return cls(cfg_item_creg)
+    def from_piece(cls, piece, cfg_item_creg, cfg_value_creg):
+        return cls(cfg_item_creg, cfg_value_creg)
 
     @property
     def piece(self):
@@ -158,21 +159,21 @@ class DictConfigCtl(MultiItemConfigCtl):
     def resolve(self, system, service_name, config_template):
         return self._lazy_config(system, service_name, config_template)
 
-    def resolve_item(self, system, service_name, item):
-        return item.resolve(system, service_name)
+    def resolve_item(self, system, service_name, key, item):
+        return self._cfg_value_creg.animate(item, key, system, service_name)
 
     def empty_config_template(self):
         return {}
 
-    def _update_config(self, config_template, item):
-        config_template[item.key] = item
+    def _update_config(self, config_template, key, item):
+        config_template[key] = item
 
 
 class FlatListConfigCtl(MultiItemConfigCtl):
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg):
-        return cls(cfg_item_creg)
+    def from_piece(cls, piece, cfg_item_creg, cfg_value_creg):
+        return cls(cfg_item_creg, cfg_value_creg)
 
     @property
     def piece(self):
@@ -185,7 +186,8 @@ class FlatListConfigCtl(MultiItemConfigCtl):
     def empty_config_template(self):
         return []
 
-    def _update_config(self, config_template, item):
+    def _update_config(self, config_template, key, item):
+        assert key is None
         config_template.append(item)
 
     def merge(self, dest, src):
@@ -194,8 +196,9 @@ class FlatListConfigCtl(MultiItemConfigCtl):
 
     def resolve(self, system, service_name, config_template):
         config = []  # command list.
+        key = None
         for item in config_template:
-            value = item.resolve(system, service_name)
+            value = self._cfg_value_creg.animate(item, key, system, service_name)
             config.append(value)
         return config
 

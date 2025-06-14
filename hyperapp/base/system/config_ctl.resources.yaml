@@ -45,3 +45,4 @@ definitions:
       function: FlatListConfigCtl.from_piece
       service_params:
       - cfg_item_creg
+      - cfg_value_creg

@@ -10,8 +10,8 @@ from .services import (
     )
 from .code.config_ctl import DictConfigCtl, service_pieces_to_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
-from .code.service_template import ServiceTemplate, FinalizerGenServiceTemplate
-from .code.actor_template import ActorTemplate
+from .code.service_template import service_template_cfg_item_config, service_template_cfg_value_config
+from .code.actor_template import actor_template_cfg_item_config, actor_template_cfg_value_config
 
 log = logging.getLogger(__name__)
 
@@ -43,11 +43,12 @@ class System:
     def _init(self):
         config_ctl_creg_config = self._make_config_ctl_creg_config()
         self._config_ctl_creg = code_registry_ctr('config_ctl_creg', config_ctl_creg_config)
-        # cfg_item_creg is used by DictConfigCtl.
+        # cfg_item_creg and cfg_value_creg are used by DictConfigCtl.
         self._cfg_item_creg = cached_code_registry_ctr('cfg_item_creg', self._make_cfg_item_creg_config())
-        self._cfg_value_creg = cached_code_registry_ctr('cfg_value_creg', self._make_cfg_value_creg_config())
-        config_ctl_creg_config[htypes.system.dict_config_ctl] = partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
-        self._dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
+        self._cfg_value_creg = code_registry_ctr('cfg_value_creg', self._make_cfg_value_creg_config())
+        config_ctl_creg_config[htypes.system.dict_config_ctl] = partial(
+            DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg, cfg_value_creg=self._cfg_value_creg)
+        self._dict_config_ctl = DictConfigCtl(self._cfg_item_creg, self._cfg_value_creg)
         self._config_ctl = self._make_config_ctl({
             'system': self._dict_config_ctl,
             'config_ctl_creg': self._dict_config_ctl,
@@ -70,13 +71,15 @@ class System:
 
     def _make_cfg_item_creg_config(self):
         return {
-            htypes.system.service_template: ServiceTemplate.from_piece,
-            htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplate.from_piece,
-            htypes.system.actor_template: ActorTemplate.from_piece,
+            **service_template_cfg_item_config(),
+            **actor_template_cfg_item_config(),
             }
 
     def _make_cfg_value_creg_config(self):
-        return {}
+        return {
+            **service_template_cfg_value_config(),
+            **actor_template_cfg_value_config(),
+            }
 
     @property
     def name_to_layer(self):
@@ -103,15 +106,15 @@ class System:
             self._config_templates[service_name]= dest
         dest.update(config)
 
-    def update_service_own_config(self, service_name, config):
+    def update_service_own_config(self, service_name, config_template):
         service = self._name_to_service[service_name]
-        for key, template in config.items():
-            value = template.resolve(self, service_name)
+        for key, item in config_template.items():
+            value = self._cfg_value_creg.animate(item, key, self, service_name)
             service.update_config({key: value})
 
-    def update_config_ctl(self, config):
-        for service_name, template in config.items():
-            self._config_ctl[service_name] = self._config_ctl_creg.invite(template.ctl_ref)
+    def update_config_ctl(self, system_config):
+        for service_name, item in system_config.items():
+            self._config_ctl[service_name] = self._config_ctl_creg.invite(item.ctl)
 
     def load_config(self, config_piece):
         layer = StaticConfigLayer(self, self['config_ctl'], config_piece)
@@ -147,6 +150,7 @@ class System:
     def service_config_order(self, service_name):
         order = {
             'cfg_item_creg': 1,
+            'cfg_value_creg': 1,
             'config_ctl_creg': 2,
             'system': 3,
             }
@@ -240,7 +244,7 @@ class System:
             self._raise_service_loop(name, requester)
         self._resolve_stack[name] = requester
         try:
-            service = template.resolve(self, name)
+            service = self._cfg_value_creg.animate(template, name, self, 'system')
         finally:
             self._resolve_stack.popitem()
         self._name_to_service[name] = service
