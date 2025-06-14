@@ -1,10 +1,7 @@
 import inspect
 import logging
 from collections import defaultdict
-from dataclasses import dataclass
 from functools import partial
-
-from hyperapp.boot.htypes import Type
 
 from . import htypes
 from .services import (
@@ -14,6 +11,7 @@ from .services import (
     )
 from .code.config_ctl import DictConfigCtl, service_pieces_to_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
+from .code.actor_template import ActorTemplate
 
 log = logging.getLogger(__name__)
 
@@ -27,15 +25,6 @@ class UnknownServiceError(Exception):
     def __init__(self, service_name):
         super().__init__(f"Unknown service: {service_name!r}")
         self.service_name = service_name
-
-
-@dataclass
-class ActorRequester:
-
-    actor_t: Type
-
-    def __str__(self):
-        return f"Actor {self.actor_t.full_name}"
 
 
 class ServiceTemplateBase:
@@ -150,43 +139,6 @@ class FinalizerGenServiceTemplate(ServiceTemplateBase):
             pass
         else:
             raise RuntimeError(f"Generator function {self._fn!r} should have only one 'yield' statement")
-
-
-class ActorTemplate:
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            t=pyobj_creg.invite(piece.t),
-            fn=pyobj_creg.invite(piece.function),
-            service_params=piece.service_params,
-            )
-
-    def __init__(self, t, fn, service_params):
-        self.t = t
-        self._fn = fn
-        self._service_params = service_params
-
-    def __repr__(self):
-        return f"<ActorTemplate {self._fn}({self._service_params})>"
-
-    @property
-    def piece(self):
-        return htypes.system.actor_template(
-            t=pyobj_creg.actor_to_ref(self.t),
-            function=pyobj_creg.actor_to_ref(self._fn),
-            service_params=tuple(self._service_params),
-            )
-
-    @property
-    def key(self):
-        return self.t
-
-    def resolve(self, system, service_name):
-        return self._resolve_services(self._fn, system)
-
-    def _resolve_services(self, fn, system):
-        return system.bind_services(fn, self._service_params, requester=ActorRequester(self.t))
 
 
 class System:

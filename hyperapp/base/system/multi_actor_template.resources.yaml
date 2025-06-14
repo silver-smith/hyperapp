@@ -1,5 +1,5 @@
 import:
-- base.system.system:system.module
+- base.system.actor_template:actor_template.module
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -20,7 +20,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-        code.system: base.system.system:system.module
+        code.actor_template: base.system.actor_template:actor_template.module
 
   MultiActorTemplate:
     type: legacy_type.builtin:attribute
