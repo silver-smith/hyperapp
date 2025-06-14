@@ -1,4 +1,5 @@
 import threading
+from collections.abc import Hashable
 
 from hyperapp.boot.code_registry import CodeRegistry
 
@@ -28,16 +29,18 @@ class CachedCodeRegistry(CodeRegistry):
         actor = super()._animate(t, piece, args, kw)
         with self._lock:
             assert piece not in self._cache  # Ensure it is not yet added.
-            self._cache[piece] = actor
-            self._reverse_cache[id(actor)] = piece
-            self._actor_keep.append(actor)
-            return actor
+            self._add_to_cache(piece, actor)
+        return actor
 
     def actor_to_piece(self, actor, reconstruct=True):
+        if isinstance(actor, Hashable):
+            key = actor
+        else:
+            key = id(actor)
         try:
-            return self._reverse_cache[id(actor)]
+            return self._reverse_cache[key]
         except KeyError as x:
-            raise KeyError(f"{self._service_name}: Missing actor id={x} for: {actor!r}") from x
+            raise KeyError(f"{self._service_name}: Missing actor {x} for: {actor!r}") from x
 
     def actor_to_piece_opt(self, actor, reconstruct=True):
         if actor is None:
@@ -55,6 +58,12 @@ class CachedCodeRegistry(CodeRegistry):
 
     def add_to_cache(self, piece, actor):
         with self._lock:
-            self._cache[piece] = actor
+            self._add_to_cache(piece, actor)
+
+    def _add_to_cache(self, piece, actor):
+        self._cache[piece] = actor
+        if isinstance(actor, Hashable):
+            self._reverse_cache[actor] = piece
+        else:
             self._reverse_cache[id(actor)] = piece
             self._actor_keep.append(actor)
