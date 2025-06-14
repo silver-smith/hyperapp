@@ -55,7 +55,8 @@ import:
 - rc.fixture_probe:fixture_resource-fixture_probe_template.actor-template
 - rc.job_cache:job_cache.service
 - rc.marker_ctr:marker-marker_template.actor-template
-- rc.marker_registry:marker-marker_template.actor-template
+- rc.marker_registry:cfg_item_creg-marker-marker_template.actor-template
+- rc.marker_registry:cfg_value_creg-marker-marker_template.actor-template
 - rc.marker_registry:marker_registry.service
 - rc.marker_req:marker_req-marker_req.actor-template
 - rc.model_ctr:model_resource-model_ctr.actor-template
@@ -128,7 +129,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.marker_registry:marker-marker_template.actor-template
+      - rc.marker_registry:cfg_item_creg-marker-marker_template.actor-template
       - rc.actor_probe:actor_resource-actor_probe_template.actor-template
       - rc.ctr_collector:ctr_collector-mark_module_cfg_item.actor-template
       - rc.ctr_collector:ctr_collector-ignore_module_cfg_item.actor-template
@@ -136,6 +137,12 @@ definitions:
       - rc.fixture_probe:fixture_resource-fixture_probe_template.actor-template
       - rc.import_record_cfg_item:import_resource-import_resource.actor-template
       - rc.service_probe_resource:service_resource-service_probe_template.actor-template
+
+  cfg_value_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.marker_registry:cfg_value_creg-marker-marker_template.actor-template
 
   ctr_from_template_creg:
     type: legacy_type.system:item_list_config
@@ -258,6 +265,7 @@ definitions:
       services:
         system: system
         cfg_item_creg: cfg_item_creg
+        cfg_value_creg: cfg_value_creg
         ctr_from_template_creg: ctr_from_template_creg
         marker_registry: marker_registry
         rpc_target_creg: rpc_target_creg

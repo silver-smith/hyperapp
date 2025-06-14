@@ -17,23 +17,30 @@ definitions:
       import_list:
         services.pyobj_creg: builtins:pyobj_creg.service
 
-  MarkerTemplate:
+  resolve_marker_cfg_item:
     type: legacy_type.builtin:attribute
     value:
       object: marker_registry.module
-      attr_name: MarkerTemplate
+      attr_name: resolve_marker_cfg_item
 
-  MarkerTemplate.from_piece:
+  resolve_marker_cfg_value:
     type: legacy_type.builtin:attribute
     value:
-      object: MarkerTemplate
-      attr_name: from_piece
+      object: marker_registry.module
+      attr_name: resolve_marker_cfg_value
 
-  marker-marker_template.actor-template:
+  cfg_item_creg-marker-marker_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.marker:marker_template
-      function: MarkerTemplate.from_piece
+      function: resolve_marker_cfg_item
+      service_params: []
+
+  cfg_value_creg-marker-marker_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.marker:marker_template
+      function: resolve_marker_cfg_value
       service_params: []
 
   marker_registry:

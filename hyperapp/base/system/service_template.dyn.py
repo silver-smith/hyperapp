@@ -13,7 +13,7 @@ def resolve_service_cfg_item(piece):
 
 def _resolve_service_args(system, piece):
     if piece.want_config:
-        config_args = [system.resolve_config(piece.service_name)]
+        config_args = [system.resolve_config(piece.name)]
     else:
         config_args = []
     service_args = [
@@ -32,7 +32,7 @@ def resolve_service_cfg_value(piece, key, system, service_name):
         return fn(*service_args)
 
 
-def _finalize(self, fn, gen):
+def _finalize(fn, gen):
     try:
         next(gen)
     except StopIteration:
@@ -48,7 +48,7 @@ def resolve_finalizer_gen_service_cfg_value(piece, key, system, service_name):
     service_args = _resolve_service_args(system, piece)
     gen = fn(*service_args)
     service = next(gen)
-    system.add_finalizer(piece.service_name, partial(_finalize, fn, gen))
+    system.add_finalizer(piece.name, partial(_finalize, fn, gen))
     return service
 
 

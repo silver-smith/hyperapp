@@ -55,13 +55,13 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
 
     def config_to_item_pieces(self, config_template):
         return [
-            self.item_piece(value)
-            for value in self._config_to_items(config_template)
+            self.item_piece(key, item)
+            for key, item in self._config_to_items(config_template)
             ]
 
     @staticmethod
     def _config_to_items(config_template):
-        return config_template.values()
+        return config_template.items()
 
     @abstractmethod
     def _update_config(self, config_template, key, item):
@@ -181,7 +181,7 @@ class FlatListConfigCtl(MultiItemConfigCtl):
 
     @staticmethod
     def _config_to_items(config_template):
-        return config_template
+        return [(None, item) for item in config_template]
 
     def empty_config_template(self):
         return []

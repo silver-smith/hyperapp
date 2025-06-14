@@ -3,34 +3,17 @@ from functools import partial
 from .services import pyobj_creg
 
 
-class MarkerTemplate:
+def resolve_marker_cfg_item(piece):
+    return (piece.name, piece)
 
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            name=piece.name,
-            fn=pyobj_creg.invite(piece.function),
-            service_params=piece.service_params,
-            )
 
-    def __init__(self, name, fn, service_params):
-        self.name = name
-        self._fn = fn
-        self._service_params = service_params
-
-    @property
-    def key(self):
-        return self.name
-
-    def __repr__(self):
-        return f"<MarkerTemplate {self.name}: {self._fn} {self._service_params}>"
-
-    def resolve(self, system, service_name):
-        kw = {
-            name: system.resolve_service(name)
-            for name in self._service_params
-            }
-        return Marker(self._fn, kw)
+def resolve_marker_cfg_value(piece, key, system, service_name):
+    fn = pyobj_creg.invite(piece.function)
+    kw = {
+        name: system.resolve_service(name)
+        for name in piece.service_params
+        }
+    return Marker(fn, kw)
 
 
 class Marker:
