@@ -45,14 +45,17 @@ class System:
         self._config_ctl_creg = code_registry_ctr('config_ctl_creg', config_ctl_creg_config)
         # cfg_item_creg is used by DictConfigCtl.
         self._cfg_item_creg = cached_code_registry_ctr('cfg_item_creg', self._make_cfg_item_creg_config())
+        self._cfg_value_creg = cached_code_registry_ctr('cfg_value_creg', self._make_cfg_value_creg_config())
         config_ctl_creg_config[htypes.system.dict_config_ctl] = partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
         self._dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
         self._config_ctl = self._make_config_ctl({
             'system': self._dict_config_ctl,
             'config_ctl_creg': self._dict_config_ctl,
             'cfg_item_creg': self._dict_config_ctl,
+            'cfg_value_creg': self._dict_config_ctl,
             })
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
+        self.add_core_service('cfg_value_creg', self._cfg_value_creg)
         self.add_core_service('config_ctl_creg', self._config_ctl_creg)
         self.add_core_service('config_ctl', self._config_ctl)
         self.add_core_service('get_layer_config_templates', self.get_layer_config_templates)
@@ -71,6 +74,9 @@ class System:
             htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplate.from_piece,
             htypes.system.actor_template: ActorTemplate.from_piece,
             }
+
+    def _make_cfg_value_creg_config(self):
+        return {}
 
     @property
     def name_to_layer(self):

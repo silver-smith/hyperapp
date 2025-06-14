@@ -276,6 +276,10 @@ class SystemProbe(System):
         config = super()._make_cfg_item_creg_config()
         return self._make_config_probe('cfg_item_creg', config)
 
+    def _make_cfg_value_creg_config(self):
+        config = super()._make_cfg_value_creg_config()
+        return self._make_config_probe('cfg_value_creg', config)
+
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_fixtures[service_name] += fixture_list
 
