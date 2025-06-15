@@ -79,6 +79,8 @@ import:
 - base.transport.transport:transport.service
 - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_cfg_item.actor-template
 - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-template
+- base.typed_cfg_item:cfg_value_creg-cfg_item-typed_cfg_item.actor-template
+- base.typed_cfg_item:cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-template
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -100,6 +102,8 @@ definitions:
     value:
       items:
       - base.fn_cfg_item:cfg_value_creg-cfg_item-fn_cfg_item.actor-template
+      - base.typed_cfg_item:cfg_value_creg-cfg_item-typed_cfg_item.actor-template
+      - base.typed_cfg_item:cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-template
   config:
     type: legacy_type.system:system_config
     value:

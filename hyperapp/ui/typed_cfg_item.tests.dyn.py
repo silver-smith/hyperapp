@@ -8,10 +8,6 @@ from .code.system_fn import ContextFn
 from .tested.code import typed_cfg_item
 
 
-def _sample_fn(view, state, sample_service):
-    return f'sample-fn: {state}, {sample_service}'
-
-
 @mark.fixture.obj
 def value():
     return htypes.typed_cfg_item_tests.value()
@@ -25,14 +21,8 @@ def piece(value):
         )
 
 
-def test_construct(piece):
-    cfg_item = typed_cfg_item.TypedCfgItem.from_piece(piece)
-    assert cfg_item.piece == piece
-
-
 def test_resolve(system, value, piece):
-    cfg_item = typed_cfg_item.TypedCfgItem.from_piece(piece)
-    resolved_value = cfg_item.resolve(system, '<unused-service-name>')
+    resolved_value = typed_cfg_item.resolve_typed_cfg_value(piece, '<unused-key>', system, '<unused-service-name>')
     assert resolved_value == value
 
 
@@ -58,12 +48,6 @@ def fn_piece():
         )
 
 
-def test_fn_construct(fn_piece):
-    cfg_item = typed_cfg_item.TypedFnCfgItem.from_piece(fn_piece)
-    assert cfg_item.piece == fn_piece
-
-
 def test_fn_resolve(system, fn_piece):
-    cfg_item = typed_cfg_item.TypedFnCfgItem.from_piece(fn_piece)
-    fn = cfg_item.resolve(system, '<unused-service-name>')
+    fn = typed_cfg_item.resolve_typed_fn_cfg_value(fn_piece, '<unused-key>', system, '<unused-service-name>')
     assert isinstance(fn, ContextFn)

@@ -1,5 +1,4 @@
 import:
-- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -16,46 +15,51 @@ definitions:
       module_name: typed_cfg_item
       file_name: typed_cfg_item.dyn.py
       import_list:
-        htypes.cfg_item.typed_cfg_item: legacy_type.cfg_item:typed_cfg_item
-        htypes.cfg_item.typed_fn_cfg_item: legacy_type.cfg_item:typed_fn_cfg_item
-        services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
 
-  TypedCfgItem:
+  resolve_typed_cfg_item:
     type: legacy_type.builtin:attribute
     value:
       object: typed_cfg_item.module
-      attr_name: TypedCfgItem
-
-  TypedCfgItem.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: TypedCfgItem
-      attr_name: from_piece
+      attr_name: resolve_typed_cfg_item
 
   cfg_item_creg-cfg_item-typed_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.cfg_item:typed_cfg_item
-      function: TypedCfgItem.from_piece
+      function: resolve_typed_cfg_item
       service_params: []
-
-  TypedFnCfgItem:
-    type: legacy_type.builtin:attribute
-    value:
-      object: typed_cfg_item.module
-      attr_name: TypedFnCfgItem
-
-  TypedFnCfgItem.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: TypedFnCfgItem
-      attr_name: from_piece
 
   cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.cfg_item:typed_fn_cfg_item
-      function: TypedFnCfgItem.from_piece
+      function: resolve_typed_cfg_item
+      service_params: []
+
+  resolve_typed_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: typed_cfg_item.module
+      attr_name: resolve_typed_cfg_value
+
+  cfg_value_creg-cfg_item-typed_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.cfg_item:typed_cfg_item
+      function: resolve_typed_cfg_value
+      service_params: []
+
+  resolve_typed_fn_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: typed_cfg_item.module
+      attr_name: resolve_typed_fn_cfg_value
+
+  cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.cfg_item:typed_fn_cfg_item
+      function: resolve_typed_fn_cfg_value
       service_params: []
