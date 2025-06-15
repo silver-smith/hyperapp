@@ -136,12 +136,12 @@ class SystemJob:
             for resource in resource_set:
                 for service_name, item_list in resource.system_config_items.items():
                     for item_piece in item_list:
-                        item = cfg_item_creg.animate(item_piece)
-                        result[(service_name, item.key)] = req
+                        key, item = cfg_item_creg.animate(item_piece)
+                        result[(service_name, key)] = req
                 for service_name, item_list in resource.system_config_items_override.items():
                     for item_piece in item_list:
-                        item = cfg_item_creg.animate(item_piece)
-                        result[(service_name, item.key)] = req
+                        key, item = cfg_item_creg.animate(item_piece)
+                        result[(service_name, key)] = req
         return result
 
     def _resource_group(self, resource):

@@ -21,40 +21,48 @@ definitions:
         services.web: builtins:web.service
         code.system_probe: rc.system_probe:system_probe.module
 
-  FixtureObjTemplate:
+  resolve_fixture_cfg_item:
     type: legacy_type.builtin:attribute
     value:
       object: fixture_probe.module
-      attr_name: FixtureObjTemplate
+      attr_name: resolve_fixture_cfg_item
 
-  FixtureObjTemplate.from_piece:
+  resolve_fixture_obj_cfg_value:
     type: legacy_type.builtin:attribute
     value:
-      object: FixtureObjTemplate
-      attr_name: from_piece
+      object: fixture_probe.module
+      attr_name: resolve_fixture_obj_cfg_value
 
-  fixture_resource-fixture_obj_template.actor-template:
+  resolve_fixture_probe_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fixture_probe.module
+      attr_name: resolve_fixture_probe_cfg_value
+
+  cfg_item_creg-fixture_resource-fixture_obj_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.fixture_resource:fixture_obj_template
-      function: FixtureObjTemplate.from_piece
+      function: resolve_fixture_cfg_item
       service_params: []
 
-  FixtureProbeTemplate:
-    type: legacy_type.builtin:attribute
-    value:
-      object: fixture_probe.module
-      attr_name: FixtureProbeTemplate
-
-  FixtureProbeTemplate.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: FixtureProbeTemplate
-      attr_name: from_piece
-
-  fixture_resource-fixture_probe_template.actor-template:
+  cfg_item_creg-fixture_resource-fixture_probe_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.fixture_resource:fixture_probe_template
-      function: FixtureProbeTemplate.from_piece
+      function: resolve_fixture_cfg_item
+      service_params: []
+
+  cfg_value_creg-fixture_resource-fixture_obj_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.fixture_resource:fixture_obj_template
+      function: resolve_fixture_obj_cfg_value
+      service_params: []
+
+  cfg_value_creg-fixture_resource-fixture_probe_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.fixture_resource:fixture_probe_template
+      function: resolve_fixture_probe_cfg_value
       service_params: []

@@ -47,7 +47,7 @@ class CtrCollector:
 
 
 def resolve_mark_module_cfg_item(piece):
-    return web.summon(piece.module)
+    return (web.summon(piece.module), piece)
 
 
 def resolve_mark_module_cfg_value(piece, key, system, service_name):

@@ -17,50 +17,19 @@ class FixtureProbe(Probe):
         return f"<FixtureProbe {self._fn} {self._params} {self._ctl_ref}>"
 
 
-class FixtureTemplateBase:
 
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            service_name=piece.service_name,
-            ctl_ref=piece.ctl,
-            fn_piece=web.summon(piece.function),
-            params=piece.params,
-            )
-
-    def __init__(self, service_name, ctl_ref, fn_piece, params):
-        self._service_name = service_name
-        self._ctl_ref = ctl_ref
-        self._fn = fn_piece
-        self._params = params
-
-    @property
-    def key(self):
-        return self._service_name
-
-    @property
-    def ctl_ref(self):
-        return self._ctl_ref
+def resolve_fixture_cfg_item(piece):
+    return (piece.service_name, piece)
 
 
-class FixtureObjTemplate(FixtureTemplateBase):
-
-    def __repr__(self):
-        return f"<FixtureObjTemplate {self._fn} {self._params}>"
-
-    def resolve(self, system, service_name):
-        fn = pyobj_creg.animate(self._fn)
-        probe = FixtureProbe(system, service_name, self._ctl_ref, fn, self._params)
-        return probe.apply_obj()
+def resolve_fixture_obj_cfg_value(piece, key, system, service_name):
+    fn = pyobj_creg.invite(piece.function)
+    probe = FixtureProbe(system, piece.service_name, piece.ctl, fn, piece.params)
+    return probe.apply_obj()
 
 
-class FixtureProbeTemplate(FixtureTemplateBase):
-
-    def __repr__(self):
-        return f"<FixtureProbeTemplate {self._fn} {self._params}>"
-
-    def resolve(self, system, service_name):
-        fn = pyobj_creg.animate(self._fn)
-        probe = FixtureProbe(system, service_name, self._ctl_ref, fn, self._params)
-        probe.apply_if_no_params()
-        return probe
+def resolve_fixture_probe_cfg_value(piece, key, system, service_name):
+    fn = pyobj_creg.invite(piece.function)
+    probe = FixtureProbe(system, piece.service_name, piece.ctl, fn, piece.params)
+    probe.apply_if_no_params()
+    return probe
