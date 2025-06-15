@@ -54,30 +54,15 @@ class ActorProbe(ActorProbeBase):
         self._ctr_collector.add_constructor(ctr)
 
 
-class ActorProbeTemplate:
+def resolve_actor_probe_cfg_item(piece):
+    t = pyobj_creg.invite(piece.t)
+    return (t, piece)
 
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            t=pyobj_creg.invite(piece.t),
-            fn_piece=web.summon(piece.function),
-            )
 
-    def __init__(self, t, fn_piece):
-        self._t = t
-        self._fn = fn_piece
-
-    def __repr__(self):
-        return f"<ActorProbeTemplate {self._t}: {self._fn}>"
-
-    @property
-    def key(self):
-        return self._t
-
-    def resolve(self, system, service_name):
-        fn = pyobj_creg.animate(self._fn)
-        assert (
-            isinstance(fn, ActorProbe)
-            or hasattr(fn, '__self__') and isinstance(fn.__func__, ActorProbe)
-            ) , repr(fn)
-        return fn
+def resolve_actor_probe_cfg_value(piece, key, system, service_name):
+    fn = pyobj_creg.animate(piece.function)
+    assert (
+        isinstance(fn, ActorProbe)
+        or hasattr(fn, '__self__') and isinstance(fn.__func__, ActorProbe)
+        ) , repr(fn)
+    return fn

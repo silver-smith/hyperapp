@@ -25,21 +25,28 @@ definitions:
         code.probe: rc.probe:probe.module
         code.marker_utils: rc.marker_utils:marker_utils.module
 
-  ActorProbeTemplate:
+  resolve_actor_probe_cfg_item:
     type: legacy_type.builtin:attribute
     value:
       object: actor_probe.module
-      attr_name: ActorProbeTemplate
+      attr_name: resolve_actor_probe_cfg_item
 
-  ActorProbeTemplate.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ActorProbeTemplate
-      attr_name: from_piece
-
-  actor_resource-actor_probe_template.actor-template:
+  cfg_item_creg-actor_resource-actor_probe_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.actor_resource:actor_probe_template
-      function: ActorProbeTemplate.from_piece
+      function: resolve_actor_probe_cfg_item
+      service_params: []
+
+  resolve_actor_probe_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: actor_probe.module
+      attr_name: resolve_actor_probe_cfg_value
+
+  cfg_value_creg-actor_resource-actor_probe_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.actor_resource:actor_probe_template
+      function: resolve_actor_probe_cfg_value
       service_params: []

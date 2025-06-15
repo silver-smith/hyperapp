@@ -7,7 +7,8 @@ import:
 - rc.actor_ctr:actor_resource-actor_template_ctr.actor-template
 - rc.actor_ctr:system-actor_template.actor-template
 - rc.actor_marker:actor.marker-template
-- rc.actor_probe:actor_resource-actor_probe_template.actor-template
+- rc.actor_probe:cfg_item_creg-actor_resource-actor_probe_template.actor-template
+- rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-template
 - rc.builtin_service_target:builtin_service-builtin_service_req.actor-template
 - rc.cfg_item_req:actor_resource-cfg_item_req.actor-template
 - rc.crud_ctr:crud_ctr-commit_ctr.actor-template
@@ -135,8 +136,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - rc.actor_probe:cfg_item_creg-actor_resource-actor_probe_template.actor-template
       - rc.marker_registry:cfg_item_creg-marker-marker_template.actor-template
-      - rc.actor_probe:actor_resource-actor_probe_template.actor-template
       - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-template
       - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-template
       - rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_obj_template.actor-template
@@ -148,6 +149,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-template
       - rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-template
       - rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-template
       - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-template
