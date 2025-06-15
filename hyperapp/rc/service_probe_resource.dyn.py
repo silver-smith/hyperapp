@@ -44,42 +44,16 @@ class ServiceProbe(Probe):
         self._system.add_constructor(ctr)
 
 
-class ServiceProbeTemplate:
+def resolve_service_probe_cfg_item(piece):
+    return (piece.service_name, piece)
 
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            attr_name=piece.attr_name,
-            service_name=piece.service_name,
-            ctl_ref=piece.ctl,
-            fn_piece=web.summon(piece.function),
-            params=piece.params,
-            )
 
-    def __init__(self, attr_name, service_name, ctl_ref, fn_piece, params):
-        self._attr_name = attr_name
-        self._service_name = service_name
-        self._ctl_ref = ctl_ref
-        self._fn = fn_piece
-        self._params = params
-
-    def __repr__(self):
-        return f"<ServiceProbeTemplate {self._attr_name} {self._fn} {self._params}>"
-
-    @property
-    def ctl_ref(self):
-        return self._ctl_ref
-
-    @property
-    def key(self):
-        return self._service_name
-
-    def resolve(self, system, service_name):
-        config_ctl = system.resolve_service('config_ctl')
-        fn = pyobj_creg.animate(self._fn)
-        probe = ServiceProbe(system, config_ctl, self._attr_name, service_name, self._ctl_ref, fn, self._params)
-        probe.apply_if_no_params()
-        return probe
+def resolve_service_probe_cfg_value(piece, key, system, service_name):
+    config_ctl = system.resolve_service('config_ctl')
+    fn = pyobj_creg.invite(piece.function)
+    probe = ServiceProbe(system, config_ctl, piece.attr_name, piece.service_name, piece.ctl, fn, piece.params)
+    probe.apply_if_no_params()
+    return probe
 
 
 class ServiceProbeCtr(ModuleCtr):

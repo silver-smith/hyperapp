@@ -35,23 +35,30 @@ definitions:
         code.service_req: rc.service_req:service_req.module
         code.system_probe: rc.system_probe:system_probe.module
 
-  ServiceProbeTemplate:
+  resolve_service_probe_cfg_item:
     type: legacy_type.builtin:attribute
     value:
       object: service_probe_resource.module
-      attr_name: ServiceProbeTemplate
+      attr_name: resolve_service_probe_cfg_item
 
-  ServiceProbeTemplate.from_piece:
+  resolve_service_probe_cfg_value:
     type: legacy_type.builtin:attribute
     value:
-      object: ServiceProbeTemplate
-      attr_name: from_piece
+      object: service_probe_resource.module
+      attr_name: resolve_service_probe_cfg_value
 
-  service_resource-service_probe_template.actor-template:
+  cfg_item_creg-service_resource-service_probe_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:service_probe_template
-      function: ServiceProbeTemplate.from_piece
+      function: resolve_service_probe_cfg_item
+      service_params: []
+
+  cfg_value_creg-service_resource-service_probe_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.service_resource:service_probe_template
+      function: resolve_service_probe_cfg_value
       service_params: []
 
   ServiceProbeCtr:
