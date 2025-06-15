@@ -27,16 +27,16 @@ def ctr_from_template_creg(config):
 
 def add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templates, target_set, project):
 
-    def add_item(service_name, value, key=None, req=None):
+    def add_item(service_name, item, key=None, rc_key=None, req=None):
         assert ctl.is_multi_item  # Expecting only MultiItemConfigCtl ctl instances.
-        item_piece = ctl.item_piece(value)
+        item_piece = ctl.item_piece(key, item)
         module_name, var_name = project.reverse_resolve(item_piece)
         ctr = ctr_from_template_creg.animate(item_piece, service_name, var_name)
-        if key is None:
-            key = ctr.key
+        if rc_key is None:
+            rc_key = ctr.key
         resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
         assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
-        _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
+        _ = target_set.factory.config_items(service_name, rc_key, req, provider=resource_tgt, ctr=ctr)
 
     for service_name, config in base_config_templates.items():
         ctl = config_ctl[service_name]
@@ -51,10 +51,12 @@ def add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templa
                     req = MarkerReq(key)
                 else:
                     req = None
-                if type(key) is not str:
+                if type(key) is str:
+                    rc_key = key
+                else:
                     assert isinstance(key, Type)
-                    key = f'{key.module_name}-{key.name}'
-                add_item(service_name, value, key, req)
+                    rc_key = f'{key.module_name}-{key.name}'
+                add_item(service_name, value, key, rc_key, req)
         else:
             for value in config:
                 add_item(service_name, value)
