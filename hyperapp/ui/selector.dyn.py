@@ -1,6 +1,5 @@
 from .services import (
     pyobj_creg,
-    web,
     )
 from .code.mark import mark
 
@@ -13,35 +12,20 @@ class Selector:
         self.pick_fn = pick_fn
 
 
-class SelectorTemplate:
+@mark.actor.cfg_item_creg
+def resolve_selector_cfg_item(piece):
+    value_t = pyobj_creg.invite(piece.value_t)
+    return (value_t, piece)
 
-    @classmethod
-    @mark.actor.cfg_item_creg
-    def from_piece(cls, piece):
-        return cls(
-            value_t=pyobj_creg.invite(piece.value_t),
-            model_t=pyobj_creg.invite(piece.model_t),
-            get_fn=web.summon(piece.get_fn),
-            pick_fn=web.summon(piece.pick_fn),
-            )
 
-    def __init__(self, value_t, model_t, get_fn, pick_fn):
-        self._value_t = value_t
-        self._model_t = model_t
-        self._get_fn = get_fn
-        self._pick_fn = pick_fn
-
-    @property
-    def key(self):
-        return self._value_t
-
-    def resolve(self, system, service_name):
-        system_fn_creg = system.resolve_service('system_fn_creg')
-        return Selector(
-            model_t=self._model_t,
-            get_fn=system_fn_creg.animate(self._get_fn),
-            pick_fn=system_fn_creg.animate(self._pick_fn),
-            )
+@mark.actor.cfg_value_creg
+def resolve_selector_cfg_value(piece, key, system, service_name):
+    system_fn_creg = system.resolve_service('system_fn_creg')
+    return Selector(
+        model_t=pyobj_creg.invite(piece.model_t),
+        get_fn=system_fn_creg.invite(piece.get_fn),
+        pick_fn=system_fn_creg.invite(piece.pick_fn),
+        )
 
 
 class SelectorRegistry:

@@ -27,6 +27,6 @@ def template_piece():
 
 
 def test_template(system, template_piece):
-    template = selector_module.SelectorTemplate.from_piece(template_piece)
-    selector = template.resolve(system, "<unused service name>")
+    key = selector_module.resolve_selector_cfg_item(template_piece)
+    selector = selector_module.resolve_selector_cfg_value(template_piece, key, system, "<unused service name>")
     assert isinstance(selector, selector_module.Selector)
