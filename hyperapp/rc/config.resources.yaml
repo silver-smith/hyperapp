@@ -13,8 +13,10 @@ import:
 - rc.crud_ctr:crud_ctr-commit_ctr.actor-template
 - rc.crud_ctr:crud_ctr-init_ctr.actor-template
 - rc.crud_marker:crud.marker-template
-- rc.ctr_collector:ctr_collector-ignore_module_cfg_item.actor-template
-- rc.ctr_collector:ctr_collector-mark_module_cfg_item.actor-template
+- rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-template
+- rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-template
+- rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-template
+- rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector.service
 - rc.command_ctr:command_resource-global_model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource-model_command_template_ctr.actor-template
@@ -132,8 +134,8 @@ definitions:
       items:
       - rc.marker_registry:cfg_item_creg-marker-marker_template.actor-template
       - rc.actor_probe:actor_resource-actor_probe_template.actor-template
-      - rc.ctr_collector:ctr_collector-mark_module_cfg_item.actor-template
-      - rc.ctr_collector:ctr_collector-ignore_module_cfg_item.actor-template
+      - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-template
+      - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-template
       - rc.fixture_probe:fixture_resource-fixture_obj_template.actor-template
       - rc.fixture_probe:fixture_resource-fixture_probe_template.actor-template
       - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-template
@@ -143,6 +145,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-template
+      - rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-template
       - rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-template
       - rc.marker_registry:cfg_value_creg-marker-marker_template.actor-template
 

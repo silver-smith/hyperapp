@@ -46,43 +46,16 @@ class CtrCollector:
         return self._constructors
 
 
-class CfgItemBase:
-
-    def __init__(self, module_piece):
-        self._module_piece = module_piece
-
-    @property
-    def key(self):
-        return self._module_piece
+def resolve_mark_module_cfg_item(piece):
+    return web.summon(piece.module)
 
 
-class MarkModuleCfgItem(CfgItemBase):
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            module_piece=web.summon(piece.module),
-            module_name=piece.name,
-            )
-
-    def __init__(self, module_piece, module_name):
-        super().__init__(module_piece)
-        self._module_name = module_name
-
-    def resolve(self, system, service_name):
-        return CtrCollector.Action.Mark(self._module_name)
+def resolve_mark_module_cfg_value(piece, key, system, service_name):
+    return CtrCollector.Action.Mark(piece.name)
 
 
-class IgnoreModuleCfgItem(CfgItemBase):
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            module_piece=web.summon(piece.module),
-            )
-
-    def resolve(self, system, service_name):
-        return CtrCollector.Action.Ignore
+def resolve_ignore_module_cfg_value(piece, key, system, service_name):
+    return CtrCollector.Action.Ignore
 
 
 def ctr_collector(config, marker_ctl):

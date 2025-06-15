@@ -37,40 +37,48 @@ definitions:
       - marker_ctl
       want_config: true
 
-  MarkModuleCfgItem:
+  resolve_mark_module_cfg_item:
     type: legacy_type.builtin:attribute
     value:
       object: ctr_collector.module
-      attr_name: MarkModuleCfgItem
+      attr_name: resolve_mark_module_cfg_item
 
-  MarkModuleCfgItem.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: MarkModuleCfgItem
-      attr_name: from_piece
-
-  ctr_collector-mark_module_cfg_item.actor-template:
+  cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.ctr_collector:mark_module_cfg_item
-      function: MarkModuleCfgItem.from_piece
+      function: resolve_mark_module_cfg_item
       service_params: []
 
-  IgnoreModuleCfgItem:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ctr_collector.module
-      attr_name: IgnoreModuleCfgItem
-
-  IgnoreModuleCfgItem.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: IgnoreModuleCfgItem
-      attr_name: from_piece
-
-  ctr_collector-ignore_module_cfg_item.actor-template:
+  cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.ctr_collector:ignore_module_cfg_item
-      function: IgnoreModuleCfgItem.from_piece
+      function: resolve_mark_module_cfg_item
+      service_params: []
+
+  resolve_mark_module_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ctr_collector.module
+      attr_name: resolve_mark_module_cfg_value
+
+  cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.ctr_collector:mark_module_cfg_item
+      function: resolve_mark_module_cfg_value
+      service_params: []
+
+  resolve_ignore_module_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ctr_collector.module
+      attr_name: resolve_ignore_module_cfg_value
+
+  cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.ctr_collector:ignore_module_cfg_item
+      function: resolve_ignore_module_cfg_value
       service_params: []
