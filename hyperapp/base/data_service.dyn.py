@@ -23,8 +23,7 @@ class DataServiceConfigCtl(ConfigCtl):
         config_template = self.empty_config_template()
         for item_ref in piece.items:
             item = web.summon(item_ref)
-            key = web.summon(item.key)
-            value = web.summon(item.value)
+            key, value = self._item_to_kv(item)
             self._update_config(config_template, key, value)
         return config_template
 
@@ -51,6 +50,12 @@ class DataServiceConfigCtl(ConfigCtl):
             ]
 
     @staticmethod
+    def _item_to_kv(item):
+        key = web.summon(item.key)
+        value = web.summon(item.value)
+        return (key, value)
+
+    @staticmethod
     def _update_config(config_template, key, value):
         config_template[key] = value
 
@@ -71,6 +76,12 @@ class TypeKeyDataServiceConfigCtl(DataServiceConfigCtl):
     @property
     def piece(self):
         return htypes.data_service.type_key_config_ctl()
+
+    @staticmethod
+    def _item_to_kv(item):
+        key = pyobj_creg.invite(item.key)
+        value = web.summon(item.value)
+        return (key, value)
 
     @staticmethod
     def _item_piece(key, value):
