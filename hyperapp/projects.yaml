@@ -4,7 +4,7 @@ rc:
 common:
   imports: [base]
 ui:
-  imports: [base, common]
+  imports: [base, common, rc]
 models:
   imports: [base, common, ui]
 lcs:
