@@ -11,6 +11,9 @@ from .code.utils import iter_types
 rc_log = logging.getLogger('rc')
 
 
+TEST_JOB_RETRY_LIMIT = 20
+
+
 def _resolve_requirements(target_factory, requirements):
     req_to_target = {}
     for req in requirements:
@@ -320,6 +323,8 @@ class TestTarget(Target):
     def create_next_job_target(self, req_to_target):
         assert isinstance(self._current_job_target, TestJobTarget)
         current_idx = self._current_job_target._idx
+        if current_idx >= TEST_JOB_RETRY_LIMIT:
+            raise RuntimeError(f"Test job {self.name} retry limit, {TEST_JOB_RETRY_LIMIT} is reached")
         # Do not lose requirements from previous iterations.
         full_req_to_target = {
             **self._req_to_target,
