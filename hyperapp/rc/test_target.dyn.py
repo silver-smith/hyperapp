@@ -299,6 +299,7 @@ class TestTarget(Target):
             idx=idx,
             )
         self._current_job_target = target
+        self._req_to_target = req_to_target
         self._target_set.add(target)
 
     def _create_cached_target(self, entry):
