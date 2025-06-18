@@ -59,6 +59,8 @@ class CfgItemReq(Requirement):
     def desc(self):
         if isinstance(self._actor, htypes.builtin.record_mt):
             actor = f'{self._actor.module_name}-{self._actor.name}'
+        elif isinstance(self._actor, htypes.builtin.builtin_mt):
+            actor = self._actor.name
         else:
             actor = self._actor
         return f"{self._service_name}:{actor} actor"
@@ -90,5 +92,7 @@ class CfgItemReq(Requirement):
     def _key_name(self):
         if isinstance(self._actor, htypes.builtin.record_mt):
             return f'{self._actor.module_name}-{self._actor.name}'
+        elif isinstance(self._actor, htypes.builtin.builtin_mt):
+            return self._actor.name
         else:
             return str(self._actor)
