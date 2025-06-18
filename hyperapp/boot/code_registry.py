@@ -42,7 +42,7 @@ class CodeRegistry:
         try:
             fn = self._config[t]
         except KeyError:
-            raise ConfigKeyError(self._service_name, t, f"{self._service_name} actor is missing for: {t}")
+            raise ConfigKeyError(self._service_name, t)
         _log.debug('Producing %s actor for %s of type %s using %s(%s, %s)',
                    self._service_name, piece, t, fn, args, kw)
         result = self._call(fn, piece, args, kw)

@@ -1,6 +1,6 @@
 class ConfigKeyError(KeyError):
 
-    def __init__(self, service_name, key, message=None):
+    def __init__(self, service_name, key):
         super().__init__(key)
         self.service_name = service_name
         self.key = key

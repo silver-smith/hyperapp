@@ -39,8 +39,7 @@ class RouteTable:
         try:
             route_piece = association_reg[peer_piece]
         except KeyError:
-            raise ConfigKeyError(
-                self._service_name, peer_piece, f"{self._service_name}: No routes to {peer_piece}")
+            raise ConfigKeyError(self._service_name, peer_piece)
         route = self._route_registry.animate(route_piece)
         self._peer2route[peer_ref].add(route)
         return set([route])
