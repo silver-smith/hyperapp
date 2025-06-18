@@ -1,4 +1,4 @@
-class ConfigItemMissingError(KeyError):
+class ConfigKeyError(KeyError):
 
     def __init__(self, service_name, key, message=None):
         super().__init__(key)
@@ -6,4 +6,4 @@ class ConfigItemMissingError(KeyError):
         self.key = key
 
     def __str__(self):
-        return f"ConfigItemMissingError for {self.service_name}: {self.key!r}"
+        return f"ConfigKeyError for {self.service_name}: {self.key!r}"

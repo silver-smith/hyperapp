@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 
-from hyperapp.boot.config_item_missing import ConfigItemMissingError
+from hyperapp.boot.config_key_error import ConfigKeyError
 from hyperapp.boot.association_registry import Association
 
 from .services import (
@@ -39,7 +39,7 @@ class RouteTable:
         try:
             route_piece = association_reg[peer_piece]
         except KeyError:
-            raise ConfigItemMissingError(
+            raise ConfigKeyError(
                 self._service_name, peer_piece, f"{self._service_name}: No routes to {peer_piece}")
         route = self._route_registry.animate(route_piece)
         self._peer2route[peer_ref].add(route)

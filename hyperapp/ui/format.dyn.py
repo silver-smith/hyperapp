@@ -1,5 +1,5 @@
 from hyperapp.boot.htypes import Type
-from hyperapp.boot.config_item_missing import ConfigItemMissingError
+from hyperapp.boot.config_key_error import ConfigKeyError
 
 from .code.mark import mark
 
@@ -10,7 +10,7 @@ def format(formatter_creg, piece):
         return str(piece)
     try:
         return formatter_creg.animate(piece)
-    except ConfigItemMissingError as x:
+    except ConfigKeyError as x:
         if x.service_name != 'formatter_creg':
             raise
     return str(piece)

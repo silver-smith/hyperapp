@@ -4,7 +4,7 @@ from collections import defaultdict
 from functools import cached_property
 
 from hyperapp.boot.util import flatten, merge_dicts
-from hyperapp.boot.config_item_missing import ConfigItemMissingError
+from hyperapp.boot.config_key_error import ConfigKeyError
 
 from . import htypes
 from .services import (
@@ -169,11 +169,11 @@ def _catch_errors(fn, *args, **kw):
         return fn(*args, **kw)
     except UnknownServiceError as x:
         raise htypes.rc_job.unknown_service_error(x.service_name) from x
-    except ConfigItemMissingError as x:
+    except ConfigKeyError as x:
         # Assume we get only type-keyed errors.
         # If not, we may add special checks for primitive types like str.
         t_ref = pyobj_creg.actor_to_ref(x.key)
-        raise htypes.rc_job.config_item_missing_error(x.service_name, t_ref) from x
+        raise htypes.rc_job.config_key_error_error(x.service_name, t_ref) from x
     except Exception as x:
         raise RuntimeError(f"In test servant {fn}: {x}") from x
 

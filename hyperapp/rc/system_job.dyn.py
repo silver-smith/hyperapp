@@ -4,7 +4,7 @@ from collections import defaultdict
 from itertools import groupby
 
 from hyperapp.boot.htypes import HException
-from hyperapp.boot.config_item_missing import ConfigItemMissingError
+from hyperapp.boot.config_key_error import ConfigKeyError
 from hyperapp.boot.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
@@ -250,7 +250,7 @@ class SystemJob:
             if isinstance(x, htypes.rc_job.unknown_service_error):
                 req = ServiceReq(x.service_name)
                 self.incomplete_error(module_name, error_msg, missing_reqs={req})
-            if isinstance(x, htypes.rc_job.config_item_missing_error):
+            if isinstance(x, htypes.rc_job.config_key_error_error):
                 key = pyobj_creg.invite(x.t)
                 req = CfgItemReq(x.service_name, key, self._tested_modules)
                 self.incomplete_error(module_name, error_msg, missing_reqs={req})
@@ -261,7 +261,7 @@ class SystemJob:
             req = ServiceReq(x.service_name)
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(module_name, error_msg, missing_reqs={req})
-        except ConfigItemMissingError as x:
+        except ConfigKeyError as x:
             req = CfgItemReq(x.service_name, x.key, self._tested_modules)
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(module_name, error_msg, missing_reqs={req})

@@ -2,7 +2,7 @@ import logging
 
 from .htypes import ref_t
 from .htypes.deduce_value_type import deduce_value_type_with_list
-from .config_item_missing import ConfigItemMissingError
+from .config_key_error import ConfigKeyError
 
 _log = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class CodeRegistry:
         try:
             fn = self._config[t]
         except KeyError:
-            raise ConfigItemMissingError(self._service_name, t, f"{self._service_name} actor is missing for: {t}")
+            raise ConfigKeyError(self._service_name, t, f"{self._service_name} actor is missing for: {t}")
         _log.debug('Producing %s actor for %s of type %s using %s(%s, %s)',
                    self._service_name, piece, t, fn, args, kw)
         result = self._call(fn, piece, args, kw)

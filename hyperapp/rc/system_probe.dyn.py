@@ -6,7 +6,7 @@ from collections import defaultdict
 from enum import Enum
 from functools import partial
 
-from hyperapp.boot.config_item_missing import ConfigItemMissingError
+from hyperapp.boot.config_key_error import ConfigKeyError
 
 from .services import (
     pyobj_creg,
@@ -75,7 +75,7 @@ class ConfigProbe:
         except KeyError:
             if isinstance(key, Probe):
                 key = key.apply_obj()
-            raise ConfigItemMissingError(self._service_name, key)
+            raise ConfigKeyError(self._service_name, key)
         self._used_keys.add((self._service_name, key))
         return value
 
