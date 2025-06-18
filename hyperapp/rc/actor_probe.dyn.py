@@ -60,7 +60,7 @@ def resolve_actor_probe_cfg_item(piece):
 
 
 def resolve_actor_probe_cfg_value(piece, key, system, service_name):
-    fn = pyobj_creg.animate(piece.function)
+    fn = pyobj_creg.invite(piece.function)
     assert (
         isinstance(fn, ActorProbe)
         or hasattr(fn, '__self__') and isinstance(fn.__func__, ActorProbe)
