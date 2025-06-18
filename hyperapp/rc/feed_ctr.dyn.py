@@ -42,7 +42,7 @@ class FeedCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        req = CfgItemReq('feed_factory', self._model_t)
+        req = CfgItemReq.from_actor('feed_factory', self._model_t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             'feed_factory', self._type_name, req, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)

@@ -41,7 +41,7 @@ class MultiActorTemplateCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        req = CfgItemReq(self._service_name, self._t)
+        req = CfgItemReq.from_actor(self._service_name, self._t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             self._service_name, self._resource_name, req,
             provider=resource_tgt,

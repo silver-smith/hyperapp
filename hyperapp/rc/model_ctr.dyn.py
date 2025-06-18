@@ -42,7 +42,7 @@ class ModelCtr(ModuleCtr):
 
     def update_resource_targets(self, resource_tgt, target_set):
         service_name = 'model_reg'
-        req = CfgItemReq(service_name, self._model_t)
+        req = CfgItemReq.from_actor(service_name, self._model_t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             service_name, self._resource_name, req, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)

@@ -124,7 +124,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
     def update_targets(self, target_set):
         resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
         # Ready target may already have provider set, but when marker is non-typed it have not.
-        req = CfgItemReq(self._service_name, self._t)
+        req = CfgItemReq.from_actor(self._service_name, self._t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
             self._service_name, self._type_name, req,
             provider=resource_tgt,

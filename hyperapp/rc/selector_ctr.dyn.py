@@ -136,7 +136,7 @@ class SelectorCtr(Constructor):
         self._pick_resolved_tgt = target_set.factory.config_item_resolved(
             _ACTION_SERVICE_NAME, _action_resource_name(self._type_name, 'pick'))
         service_name = 'selector_reg'
-        req = CfgItemReq(service_name, self._value_t)
+        req = CfgItemReq.from_actor(service_name, self._value_t)
         _, resolved_tgt, _ = target_set.factory.config_items(
             service_name, self._type_name, req, provider=resource_tgt, ctr=self)
         resolved_tgt.add_dep(self._get_resolved_tgt)

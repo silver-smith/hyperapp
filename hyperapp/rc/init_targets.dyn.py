@@ -46,7 +46,7 @@ def add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templa
                 if service_name == 'system':
                     req = ServiceReq(key)
                 elif isinstance(key, Type):
-                    req = CfgItemReq(service_name, key)
+                    req = CfgItemReq.from_actor(service_name, key)
                 elif service_name == 'marker_registry':
                     req = MarkerReq(key)
                 else:
