@@ -4,7 +4,6 @@ from collections import defaultdict
 from functools import cached_property
 
 from hyperapp.boot.util import flatten, merge_dicts
-from hyperapp.boot.config_key_error import ConfigKeyError
 
 from . import htypes
 from .services import (
@@ -24,7 +23,7 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError, ImportRecorder
 from .code.config_layer import StaticConfigLayer
 from .code.system import UnknownServiceError
-from .code.system_probe import SystemProbe
+from .code.system_probe import ConfigProbeKeyError, SystemProbe
 from .code.system_job import Result, SystemJob, SystemJobResult
 
 log  = logging.getLogger(__name__)
@@ -169,7 +168,7 @@ def _catch_errors(fn, *args, **kw):
         return fn(*args, **kw)
     except UnknownServiceError as x:
         raise htypes.rc_job.unknown_service_error(x.service_name) from x
-    except ConfigKeyError as x:
+    except ConfigProbeKeyError as x:
         # Assume we get only type-keyed errors.
         # If not, we may add special checks for primitive types like str.
         t_ref = pyobj_creg.actor_to_ref(x.key)

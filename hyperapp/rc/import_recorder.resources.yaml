@@ -8,6 +8,7 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.system:service_template
 - base.system.system:dict_config_ctl
+- rc.system_probe:system_probe.module
 
 definitions:
 
@@ -20,6 +21,7 @@ definitions:
         htypes.import_recorder.config_ctl: legacy_type.import_recorder:config_ctl
         htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
         services.pyobj_creg: builtins:pyobj_creg.service
+        code.system_probe: rc.system_probe:system_probe.module
 
   import_recorder_reg:
     type: legacy_type.builtin:attribute
