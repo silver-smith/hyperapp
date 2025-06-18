@@ -97,9 +97,11 @@ class RcRunner:
             if not self._run_target_set_jobs(name, full_target_set, target_set):
                 break
         self._report_traces()
+        all_completed = self._all_completed(full_target_set)
+        if not all_completed:
+            rc_log.info("\n")
         for name, target_set in full_target_set:
             self._report_deps(name, target_set)
-        all_completed = self._all_completed(full_target_set)
         rc_log.info("Diffs:\n")
         name_to_output_stats = {}
         for name, target_set in full_target_set:
