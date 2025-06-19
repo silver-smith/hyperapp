@@ -1,6 +1,7 @@
 import logging
 
 from hyperapp.boot.htypes import TList
+from hyperapp.boot.config_key_error import ConfigItemMissingError
 
 from . import htypes
 from .services import (
@@ -29,18 +30,18 @@ async def visualizer(
         )
     try:
         return model_layout_reg[layout_k]
-    except KeyError:
+    except ConfigItemMissingError:
         pass
     all_properties = {**(properties or {}), **kw}
     try:
         factory = default_model_factory(model_t, all_properties)
-    except KeyError:
+    except ConfigItemMissingError:
         pass
     else:
         return await factory.call(ctx, model_t=model_t, accessor=accessor)
     try:
         ui_t, system_fn = visualizer_reg(model_t)
-    except KeyError:
+    except ConfigItemMissingError:
         if isinstance(model_t, TList):
             ui_t = _static_list_ui_t(model_t)
             system_fn = None
