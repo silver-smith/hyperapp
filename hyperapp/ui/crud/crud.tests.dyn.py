@@ -2,6 +2,8 @@ import logging
 import weakref
 from unittest.mock import AsyncMock, MagicMock, Mock
 
+from hyperapp.boot.config_key_error import ConfigKeyError
+
 from . import htypes
 from .services import (
     mosaic,
@@ -15,6 +17,7 @@ from .code.model_command import ModelCommandFn
 from .code.selector import Selector
 from .fixtures import qapp_fixtures
 from .fixtures import error_view_fixtures
+from .fixtures import feed_fixtures
 from .fixtures import visualizer_fixtures
 from .tested.code import crud
 
@@ -163,7 +166,7 @@ def model_layout_reg(format, commit_command_layout_k):
             return htypes.label.view("Sample label")
         if layout_k == k(htypes.crud_tests.sample_selector_model):
             return htypes.crud_tests.selector_view()
-        raise KeyError(layout_k)
+        raise ConfigKeyError('model_layout_reg', layout_k)
     reg = MagicMock()
     reg.__getitem__ = getitem
     return reg
