@@ -321,7 +321,7 @@ class TargetFactory:
             pass
         if service_name == 'system':
             service_cfg_item_complete_tgt = None
-        elif service_name in {'config_ctl_creg', 'cfg_item_creg'}:
+        elif service_name in {'config_ctl_creg', 'cfg_item_creg', 'cfg_value_creg'}:
             # Builtin services do not have matching targets. They are ready by definition.
             service_cfg_item_complete_tgt = None
         else:

@@ -27,7 +27,7 @@ class ConfigItemResourceBase(Resource):
 
     @property
     def is_system_resource(self):
-        return self._service_name in {'config_ctl_creg', 'cfg_item_creg'}
+        return self._service_name in {'config_ctl_creg', 'cfg_item_creg', 'cfg_value_creg'}
 
     @property
     def is_service_resource(self):
