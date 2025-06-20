@@ -60,7 +60,7 @@ class CfgItemReq(Requirement):
         if isinstance(self._actor, htypes.builtin.record_mt):
             actor = f'{self._actor.module_name}-{self._actor.name}'
         elif isinstance(self._actor, htypes.builtin.builtin_mt):
-            actor = self._actor.name
+            actor = f'builtin-{self._actor.name}'
         else:
             actor = self._actor
         return f"{self._service_name}:{actor} actor"
@@ -93,6 +93,6 @@ class CfgItemReq(Requirement):
         if isinstance(self._actor, htypes.builtin.record_mt):
             return f'{self._actor.module_name}-{self._actor.name}'
         elif isinstance(self._actor, htypes.builtin.builtin_mt):
-            return self._actor.name
+            return f'builtin-{self._actor.name}'
         else:
             return str(self._actor)
