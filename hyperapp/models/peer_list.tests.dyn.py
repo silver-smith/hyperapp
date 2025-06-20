@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, Mock, patch
 
 from hyperapp.boot.htypes.packet_coders import packet_coders
+from hyperapp.boot import dict_coders  # register codec
 
 from . import htypes
 from .services import (
