@@ -9,6 +9,7 @@ from .services import (
 from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
+from .fixtures import feed_fixtures
 from .tested.code import tree_as_list
 
 log = logging.getLogger(__name__)
