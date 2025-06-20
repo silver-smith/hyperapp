@@ -8,21 +8,17 @@ import:
 - legacy_type.feed:feed_template
 - legacy_type.system:actor_template
 definitions:
-  FeedTypeTemplate:
-    type: legacy_type.builtin:attribute
-    value:
-      object: feed_type_template.module
-      attr_name: FeedTypeTemplate
-  FeedTypeTemplate.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: FeedTypeTemplate
-      attr_name: from_piece
   cfg_item_creg-feed-feed_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.feed:feed_template
-      function: FeedTypeTemplate.from_piece
+      function: resolve_feed_type_cfg_item
+      service_params: []
+  cfg_value_creg-feed-feed_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.feed:feed_template
+      function: resolve_feed_type_cfg_value
       service_params: []
   feed_type_template.module:
     type: legacy_type.builtin:python_module
@@ -31,5 +27,14 @@ definitions:
       file_name: feed_type_template.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        htypes.feed.feed_template: legacy_type.feed:feed_template
         services.pyobj_creg: builtins:pyobj_creg.service
+  resolve_feed_type_cfg_item:
+    type: legacy_type.builtin:attribute
+    value:
+      object: feed_type_template.module
+      attr_name: resolve_feed_type_cfg_item
+  resolve_feed_type_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: feed_type_template.module
+      attr_name: resolve_feed_type_cfg_value

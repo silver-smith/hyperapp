@@ -43,6 +43,7 @@ import:
 - ui.feed:feed_type_creg-feed-list_feed_type.actor-template
 - ui.feed_creg:feed_type_creg.service
 - ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-template
+- ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-template
 - ui.format:format.service
 - ui.formatter_creg:formatter_creg.service
 - ui.layout:formatter_creg-layout-model.actor-template
@@ -145,6 +146,7 @@ import:
 - ui.remote_command:remote_command_from_model_command.service
 - ui.remote_model:formatter_creg-model-remote_model.actor-template
 - ui.selector:cfg_item_creg-selector-template.actor-template
+- ui.selector:cfg_value_creg-selector-template.actor-template
 - ui.selector:selector_reg.service
 - ui.shortcut_reg:shortcut_reg.service
 - ui.tab_groups:tabs-view-move_tab_to_new_group.command-cfg-item
@@ -212,6 +214,12 @@ definitions:
       - ui.selector:cfg_item_creg-selector-template.actor-template
       - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-template
       - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-template
+  cfg_value_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-template
+      - ui.selector:cfg_value_creg-selector-template.actor-template
   command_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -229,6 +237,7 @@ definitions:
       services:
         accessor_creg: accessor_creg
         cfg_item_creg: cfg_item_creg
+        cfg_value_creg: cfg_value_creg
         command_creg: command_creg
         config_ctl_creg: config_ctl_creg
         convertor_creg: convertor_creg
