@@ -4,6 +4,9 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.model_command import UnboundGlobalModelCommand
+from .code.ui_command import UnboundUiCommand
+from .code.args_picker_command_enum import UnboundArgsPickerCommandEnumerator
 from .tested.code import command_cfg_item
 
 
@@ -36,9 +39,12 @@ def cfg_item_piece():
         )
 
 
-def test_typed(cfg_item_piece):
-    cfg_item = command_cfg_item.TypedCommandCfgItem.from_piece(cfg_item_piece)
-    assert cfg_item.piece == cfg_item_piece
+def test_typed(system, cfg_item_piece):
+    key, piece = command_cfg_item.resolve_typed_command_cfg_item(cfg_item_piece)
+    assert key is htypes.command_cfg_item_tests.view
+    assert piece == cfg_item_piece
+    command = command_cfg_item.resolve_typed_command_cfg_value(cfg_item_piece, key, system, '<unused-service-name>')
+    assert isinstance(command, UnboundUiCommand)
 
 
 @mark.fixture.obj
@@ -56,9 +62,12 @@ def global_model_command():
         )
 
 
-def test_untyped_model_command(global_model_command):
-    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(global_model_command)
-    assert cfg_item.piece == global_model_command
+def test_untyped_model_command(system, global_model_command):
+    key, piece = command_cfg_item.resolve_untyped_command_cfg_item(global_model_command)
+    assert key is None
+    assert piece == global_model_command
+    command = command_cfg_item.resolve_untyped_command_cfg_value(global_model_command, key, system, '<unused-service-name>')
+    assert isinstance(command, UnboundGlobalModelCommand)
 
 
 @mark.fixture.obj
@@ -76,9 +85,12 @@ def ui_command():
         )
 
 
-def test_untyped_ui_command(ui_command):
-    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(ui_command)
-    assert cfg_item.piece == ui_command
+def test_untyped_ui_command(system, ui_command):
+    key, piece = command_cfg_item.resolve_untyped_command_cfg_item(ui_command)
+    assert key is None
+    assert piece == ui_command
+    command = command_cfg_item.resolve_untyped_command_cfg_value(ui_command, key, system, '<unused-service-name>')
+    assert isinstance(command, UnboundUiCommand)
 
 
 @mark.fixture
@@ -99,13 +111,19 @@ def args_picker_enum(enum_t):
         )
 
 
-def test_untyped_model_command_enum(args_picker_enum):
+def test_untyped_model_command_enum(system, args_picker_enum):
     enum = args_picker_enum(htypes.command.model_args_picker_command_enumerator)
-    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(enum)
-    assert cfg_item.piece == enum
+    key, piece = command_cfg_item.resolve_untyped_command_cfg_item(enum)
+    assert key is None
+    assert piece == enum
+    command = command_cfg_item.resolve_untyped_command_cfg_value(enum, key, system, '<unused-service-name>')
+    assert isinstance(command, UnboundArgsPickerCommandEnumerator)
 
 
-def test_untyped_ui_command_enum(args_picker_enum):
+def test_untyped_ui_command_enum(system, args_picker_enum):
     enum = args_picker_enum(htypes.command.ui_args_picker_command_enumerator)
-    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(enum)
-    assert cfg_item.piece == enum
+    key, piece = command_cfg_item.resolve_untyped_command_cfg_item(enum)
+    assert key is None
+    assert piece == enum
+    command = command_cfg_item.resolve_untyped_command_cfg_value(enum, key, system, '<unused-service-name>')
+    assert isinstance(command, UnboundArgsPickerCommandEnumerator)

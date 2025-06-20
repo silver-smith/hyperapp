@@ -12,55 +12,65 @@ import:
 - legacy_type.command:ui_command
 - legacy_type.system:actor_template
 definitions:
-  TypedCommandCfgItem:
-    type: legacy_type.builtin:attribute
-    value:
-      object: command_cfg_item.module
-      attr_name: TypedCommandCfgItem
-  TypedCommandCfgItem.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: TypedCommandCfgItem
-      attr_name: from_piece
-  UntypedCommandCfgItem:
-    type: legacy_type.builtin:attribute
-    value:
-      object: command_cfg_item.module
-      attr_name: UntypedCommandCfgItem
-  UntypedCommandCfgItem.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: UntypedCommandCfgItem
-      attr_name: from_piece
   cfg_item_creg-command-cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:cfg_item
-      function: TypedCommandCfgItem.from_piece
+      function: resolve_typed_command_cfg_item
       service_params: []
   cfg_item_creg-command-global_model_command.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:global_model_command
-      function: UntypedCommandCfgItem.from_piece
+      function: resolve_untyped_command_cfg_item
       service_params: []
   cfg_item_creg-command-model_args_picker_command_enumerator.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:model_args_picker_command_enumerator
-      function: UntypedCommandCfgItem.from_piece
+      function: resolve_untyped_command_cfg_item
       service_params: []
   cfg_item_creg-command-ui_args_picker_command_enumerator.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:ui_args_picker_command_enumerator
-      function: UntypedCommandCfgItem.from_piece
+      function: resolve_untyped_command_cfg_item
       service_params: []
   cfg_item_creg-command-ui_command.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.command:ui_command
-      function: UntypedCommandCfgItem.from_piece
+      function: resolve_untyped_command_cfg_item
+      service_params: []
+  cfg_value_creg-command-cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:cfg_item
+      function: resolve_typed_command_cfg_value
+      service_params: []
+  cfg_value_creg-command-global_model_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:global_model_command
+      function: resolve_untyped_command_cfg_value
+      service_params: []
+  cfg_value_creg-command-model_args_picker_command_enumerator.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:model_args_picker_command_enumerator
+      function: resolve_untyped_command_cfg_value
+      service_params: []
+  cfg_value_creg-command-ui_args_picker_command_enumerator.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:ui_args_picker_command_enumerator
+      function: resolve_untyped_command_cfg_value
+      service_params: []
+  cfg_value_creg-command-ui_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:ui_command
+      function: resolve_untyped_command_cfg_value
       service_params: []
   command_cfg_item.module:
     type: legacy_type.builtin:python_module
@@ -69,5 +79,24 @@ definitions:
       file_name: command_cfg_item.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        htypes.command.cfg_item: legacy_type.command:cfg_item
         services.pyobj_creg: builtins:pyobj_creg.service
+  resolve_typed_command_cfg_item:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_cfg_item.module
+      attr_name: resolve_typed_command_cfg_item
+  resolve_typed_command_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_cfg_item.module
+      attr_name: resolve_typed_command_cfg_value
+  resolve_untyped_command_cfg_item:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_cfg_item.module
+      attr_name: resolve_untyped_command_cfg_item
+  resolve_untyped_command_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_cfg_item.module
+      attr_name: resolve_untyped_command_cfg_value
