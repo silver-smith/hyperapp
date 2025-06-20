@@ -46,12 +46,14 @@ def multi_template_piece(sample_fn):
 
 
 def test_template(system, template_piece):
-    template = view_factory_cfg_item.ViewFactoryTemplate.from_piece(template_piece)
-    factory = template.resolve(system, "<unused service name>")
+    key, piece = view_factory_cfg_item.resolve_view_factory_cfg_item(template_piece)
+    assert key == htypes.view_factory_cfg_item_tests.sample_k()
+    factory = view_factory_cfg_item.resolve_view_factory_cfg_value(template_piece, key, system, '<unused-service-name>')
     assert isinstance(factory, ViewFactory)
 
 
 def test_multi_template(system, multi_template_piece):
-    template = view_factory_cfg_item.ViewFactoryMultiTemplate.from_piece(multi_template_piece)
-    factory = template.resolve(system, "<unused service name>")
+    key, piece = view_factory_cfg_item.resolve_view_factory_cfg_item(multi_template_piece)
+    assert key == htypes.view_factory_cfg_item_tests.sample_k()
+    factory = view_factory_cfg_item.resolve_view_multi_factory_cfg_value(multi_template_piece, key, system, '<unused-service-name>')
     assert isinstance(factory, ViewMultiFactory)
