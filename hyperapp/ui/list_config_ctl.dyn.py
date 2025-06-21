@@ -17,8 +17,9 @@ class DictListConfigCtl(DictConfigCtl):
     @staticmethod
     def _config_to_items(config_template):
         items = []
-        for values in config_template.values():
-            items += values
+        for key, value_list in config_template.items():
+            for value in value_list:
+                items.append((key, value))
         return items
 
     def merge(self, dest, src):
