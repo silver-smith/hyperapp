@@ -1,9 +1,10 @@
+from hyperapp.boot.config_key_error import ConfigKeyError
+
 from . import htypes
 from .services import (
     mosaic,
     )
 from .code.python_src import PythonModuleSrc
-from .code.system_probe import ConfigProbeKeyError
 
 
 class CacheEntry:
@@ -90,5 +91,5 @@ class JobCache:
                 entry = CacheEntry.from_piece(
                     entry_piece, self._rc_requirement_creg, self._rc_resource_creg, self._rc_job_result_creg)
                 self._target_to_entry[entry.target_name] = entry
-            except ConfigProbeKeyError:
+            except ConfigKeyError:
                 pass  # Happens when type changes.

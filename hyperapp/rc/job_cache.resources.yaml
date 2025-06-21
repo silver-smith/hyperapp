@@ -8,7 +8,6 @@ import:
 - legacy_type.job_cache:entry
 - legacy_type.system:service_template
 - rc.python_src:python_src.module
-- rc.system_probe:system_probe.module
 
 definitions:
 
@@ -23,7 +22,6 @@ definitions:
         htypes.job_cache.entry: legacy_type.job_cache:entry
         services.mosaic: builtins:mosaic.service
         code.python_src: rc.python_src:python_src.module
-        code.system_probe: rc.system_probe:system_probe.module
 
   JobCache:
     type: legacy_type.builtin:attribute

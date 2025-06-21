@@ -2,7 +2,7 @@ import itertools
 from functools import cached_property
 
 from hyperapp.boot.htypes import TPrimitive, TList, TRecord, tString
-from hyperapp.boot.config_key_error import ConfigItemMissingError
+from hyperapp.boot.config_key_error import ConfigKeyError
 from hyperapp.boot.project import RESOURCE_EXT
 
 from . import htypes
@@ -203,7 +203,7 @@ class ResourceNameGenerator:
     def make_stem_and_index_requirement(self, piece, t):
         try:
             stem = self._resource_name_creg.animate(piece, self)
-        except ConfigItemMissingError:
+        except ConfigKeyError:
             pass
         else:
             if stem:

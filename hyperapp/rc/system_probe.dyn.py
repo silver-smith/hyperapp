@@ -6,7 +6,7 @@ from collections import defaultdict
 from enum import Enum
 from functools import partial
 
-from hyperapp.boot.config_key_error import ConfigItemMissingError
+from hyperapp.boot.config_key_error import ConfigKeyError
 
 from .services import (
     pyobj_creg,
@@ -16,13 +16,6 @@ from .code.probe import ProbeBase
 from .code.marker_utils import split_service_params
 
 log = logging.getLogger(__name__)
-
-
-class ConfigProbeKeyError(ConfigItemMissingError):
-
-    def __init__(self, service_name, key):
-        message = f"{self.__class__.__name__} for {service_name}: {key!r}"
-        super().__init__(service_name, key)
 
 
 def have_running_loop():
@@ -82,7 +75,7 @@ class ConfigProbe:
         except KeyError:
             if isinstance(key, Probe):
                 key = key.apply_obj()
-            raise ConfigProbeKeyError(self._service_name, key)
+            raise ConfigKeyError(self._service_name, key)
         self._used_keys.add((self._service_name, key))
         return value
 

@@ -9,7 +9,6 @@ from . import htypes
 from .services import (
     pyobj_creg,
     )
-from .code.system_probe import ConfigProbeKeyError
 
 
 class IncompleteImportedObjectError(Exception):
@@ -37,14 +36,14 @@ class _ImportsCollector:
     def _resolve_resource(self, resource_path):
         try:
             return self._config[self._module_name, resource_path]
-        except ConfigProbeKeyError:
+        except KeyError:
             pass
         return self._config['', resource_path]
 
     def _get_resource(self, resource_path):
         try:
             resource = self._resolve_resource(resource_path)
-        except ConfigProbeKeyError:
+        except KeyError:
             self._missing_imports.add(resource_path)
             return RecorderObject(self._module_name, resource_path, self._config, self._missing_imports, self._used_imports)
         self._used_imports.add(resource_path)

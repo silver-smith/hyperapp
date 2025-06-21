@@ -4,7 +4,6 @@ import weakref
 from functools import cached_property
 
 from hyperapp.boot.htypes import TPrimitive
-from hyperapp.boot.config_key_error import ConfigItemMissingError
 
 from . import htypes
 from .services import (
@@ -250,7 +249,7 @@ class Crud:
             ):
         try:
             selector = self._selector_reg[value_t]
-        except ConfigItemMissingError:
+        except KeyError:
             get_fn = None
             pick_fn = None
         else:
@@ -271,7 +270,7 @@ class Crud:
             layout_k = self.layout_k(commit_command_d)
             try:
                 base_view_piece = self._model_layout_reg[layout_k]
-            except ConfigItemMissingError:
+            except KeyError:
                 if isinstance(value_t, TPrimitive):
                     base_view_piece = await self._primitive_view(ctx, value_t)
                 else:

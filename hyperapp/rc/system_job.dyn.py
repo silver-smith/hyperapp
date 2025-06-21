@@ -4,6 +4,7 @@ from collections import defaultdict
 from itertools import groupby
 
 from hyperapp.boot.htypes import HException
+from hyperapp.boot.config_key_error import ConfigKeyError
 from hyperapp.boot.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
@@ -22,7 +23,7 @@ from .code.config_item_resource import ConfigItemResource
 from .code.cfg_item_req import CfgItemReq
 from .code.service_req import ServiceReq
 from .code.service_ctr import ServiceTemplateCtr
-from .code.system_probe import ConfigProbeKeyError, SystemProbe
+from .code.system_probe import SystemProbe
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
 
@@ -260,7 +261,7 @@ class SystemJob:
             req = ServiceReq(x.service_name)
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(module_name, error_msg, missing_reqs={req})
-        except ConfigProbeKeyError as x:
+        except ConfigKeyError as x:
             req = CfgItemReq.from_actor(x.service_name, x.key, self._tested_modules)
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(module_name, error_msg, missing_reqs={req})

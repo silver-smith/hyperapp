@@ -1,7 +1,5 @@
 import inspect
 
-from hyperapp.boot.config_key_error import ConfigItemMissingError
-
 from . import htypes
 from .services import (
     mosaic,
@@ -181,7 +179,7 @@ class ViewFactoryReg:
                 model_t = real_model_t(model)
             try:
                 ui_t, system_fn = self._visualizer_reg(model_t)
-            except ConfigItemMissingError:
+            except KeyError:
                 ui_t = None
                 system_fn = None
         item_list = []
