@@ -1,4 +1,5 @@
 from .services import (
+    association_reg,
     code_registry_ctr,
     )
 
@@ -30,13 +31,15 @@ class AssociationKeyRegistry:
         return self._config.get(key)
 
     # System config hook method
-    def config_item_set(self, service_name, cfg_item):
+    def config_item_set(self, service_name, kv):
         try:
             assoc_key_piece = self._config[service_name]
         except KeyError:
             return
         assoc_key = self._assoc_key_creg.animate(assoc_key_piece)
-        assert 0, (service_name, cfg_item, assoc_key)
+        key, cfg_item = kv
+        bases = assoc_key.bases(key, cfg_item)
+        association_reg.set_association(bases, service_name, cfg_item)
 
     # System config hook method
     def config_item_removed(self, service_name, cfg_item):
@@ -57,5 +60,6 @@ class KeyBaseAssociation:
     def from_piece(cls, piece):
         return cls()
 
-    def __init__(self):
-        pass
+    @staticmethod
+    def bases(key, cfg_item):
+        return [key]

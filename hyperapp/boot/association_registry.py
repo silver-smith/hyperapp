@@ -1,126 +1,70 @@
 import logging
 from collections import defaultdict
-from contextlib import contextmanager
-from dataclasses import dataclass
-from typing import Any
 
 from hyperapp.boot.htypes.association import association_t
 
 log = logging.getLogger(__name__)
 
 
-@dataclass
 class Association:
-    bases: list[Any]
-    key: Any
-    value: Any
 
     @classmethod
     def from_piece(cls, piece, web):
-        key = tuple(web.summon(ref) for ref in piece.key)
-        if len(piece.key) == 1:
-            [key] = key
         return cls(
-            bases=tuple(web.summon(ref) for ref in piece.bases),
-            key=key,
-            value=web.summon(piece.value),
+            bases=[web.summon(base) for base in piece.bases],
+            service_name=piece.service_name,
+            cfg_item=web.summon(piece.cfg_item),
             )
 
-    def __init__(self, bases, key, value):
+    def __init__(self, bases, service_name, cfg_item):
         self.bases = bases
-        if type(key) is list:
-            self.key = tuple(key)
-        else:
-            self.key = key
-        self.value = value
+        self.service_name = service_name
+        self.cfg_item = cfg_item
+
+    @property
+    def cfg_item_key(self):
+        return (self.service_name, self.cfg_item)
 
     def to_piece(self, mosaic):
-        if type(self.key) is tuple:
-            key = self.key
-        else:
-            key = [self.key]
         return association_t(
             bases=tuple(mosaic.put(piece) for piece in self.bases),
-            key=tuple(mosaic.put(piece) for piece in key),
-            value=mosaic.put(self.value),
+            service_name=self.service_name,
+            cfg_item=mosaic.put(self.cfg_item),
             )
-
-    def __hash__(self):
-        return hash(self.key)
 
 
 class AssociationRegistry:
 
     def __init__(self):
-        self._key_to_values = defaultdict(list)
-        self._key_to_ass = defaultdict(list)
-        self._base_to_ass = defaultdict(list)
+        self._by_base = defaultdict(list)
+        self._by_cfg_item_key = {}
 
-    @contextmanager
-    def associations_registered(self, ass_list, override):
-        added, overridden = self.register_association_list(ass_list, override)
+    def set_list(self, ass_list):
+        for ass in ass_list:
+            self.set(ass)
+
+    def set_association(self, bases, service_name, cfg_item):
+        ass = Association(bases, service_name, cfg_item)
+        self.set(ass)
+
+    def set(self, ass):
         try:
-            yield
-        finally:
-            self.remove_associations(added)
-            self.register_association_list(overridden)
-
-    def register_association_list(self, ass_list, override=False):
-        added_list = []
-        overridden_list = []
-        for ass in ass_list:
-            log.debug("Register association: %r", ass)
-            is_registered, overridden = self.register_association(ass, override)
-            if is_registered:
-                added_list.append(ass)
-                overridden_list += overridden
-        return (added_list, overridden_list)
-    
-    def register_association(self, ass, override=False):
-        if ass.value in self._key_to_values.get(ass.key, []):
-            return (False, [])  # Already registered.
-        if override:
-            overridden = self._key_to_ass[ass.key]
-            self.remove_associations(overridden)
+            ass = self._by_cfg_item_key[ass.cfg_item_key]
+        except KeyError:
+            pass
         else:
-            overridden = []
-        self._key_to_values[ass.key].append(ass.value)
-        self._key_to_ass[ass.key].append(ass)
+            self.remove(ass)
+        self._by_cfg_item_key[ass.cfg_item_key] = ass
         for base in ass.bases:
-            self._base_to_ass[base].append(ass)
-        return (True, overridden)
+            self._by_base[base].append(ass)
 
-    def remove_associations(self, ass_list):
-        for ass in ass_list:
+    def remove(self, ass):
+        del self._by_cfg_item_key[ass.cfg_item_key]
+        for base in ass.bases:
             try:
-                self._key_to_values.get(ass.key, []).remove(ass.value)
-            except ValueError:
+                self._by_base[base].remove(ass)
+            except (KeyError, ValueError):
                 pass
-            else:
-                self._key_to_ass[ass.key].remove(ass)
-                for base in ass.bases:
-                    self._base_to_ass[base].remove(ass)
-
-    def __contains__(self, key):
-        return key in self._key_to_values
-
-    def __getitem__(self, key):
-        value_list = self.get_all(key)
-        if len(value_list) == 0:
-            raise KeyError(key)
-        if len(value_list) == 1:
-            return value_list[0]
-        value = value_list[0]
-        log.warning(
-            f"Picking random single value %r for key %r while multiple values are registered: %r",
-            value, key, value_list)
-        return value
-
-    def __setitem__(self, key, value):
-        self._key_to_values[key] = [value]
-
-    def get_all(self, key):
-        return self._key_to_values.get(key, [])
         
     def base_to_ass_list(self, base):
-        return self._base_to_ass.get(base, [])
+        return self._by_base.get(base, [])

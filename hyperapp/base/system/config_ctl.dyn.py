@@ -48,17 +48,17 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
         return config_template
 
     def to_data(self, config_template):
-        item_pieces = self.config_to_item_pieces(config_template)
+        item_pieces = self._config_to_item_pieces(config_template)
         return self._item_pieces_to_data(item_pieces)
 
-    def config_to_item_pieces(self, config_template):
+    def _config_to_item_pieces(self, config_template):
         return [
             self.item_piece(key, item)
-            for key, item in self._config_to_items(config_template)
+            for key, item in self.config_to_items(config_template)
             ]
 
     @staticmethod
-    def _config_to_items(config_template):
+    def config_to_items(config_template):
         return config_template.items()
 
     @abstractmethod
@@ -176,7 +176,7 @@ class FlatListConfigCtl(MultiItemConfigCtl):
         return htypes.system.flat_list_config_ctl()
 
     @staticmethod
-    def _config_to_items(config_template):
+    def config_to_items(config_template):
         return [(None, item) for item in config_template]
 
     def empty_config_template(self):

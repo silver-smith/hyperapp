@@ -142,10 +142,10 @@ class System:
             ctl = self._config_ctl[service_name]
             if not ctl.is_multi_item:
                 continue  # No hooks for non-multi-item configs.
-            item_list = ctl.config_to_item_pieces(config_template)
-            for cfg_item in item_list:
+            item_list = ctl.config_to_items(config_template)
+            for kv in item_list:
                 for hook in hook_list:
-                    hook.config_item_set(service_name, cfg_item)
+                    hook.config_item_set(service_name, kv)
 
     def service_config_order(self, service_name):
         order = {

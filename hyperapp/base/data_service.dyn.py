@@ -43,11 +43,8 @@ class DataServiceConfigCtl(ConfigCtl):
     def resolve(self, system, service_name, config_template):
         return DataServiceConfig(system, system.default_layer, service_name)
 
-    def config_to_item_pieces(self, config_template):
-        return [
-            self._item_piece(key, value)
-            for key, value in config_template.items()
-            ]
+    def config_to_items(self, config_template):
+        return config_template.items()
 
     @staticmethod
     def _item_to_kv(item):

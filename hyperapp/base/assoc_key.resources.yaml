@@ -1,4 +1,5 @@
 import:
+- builtins:association_reg.service
 - builtins:code_registry_ctr.service
 - legacy_type.assoc_key:key_base_association
 - legacy_type.builtin:attribute
@@ -18,6 +19,7 @@ definitions:
       module_name: assoc_key
       file_name: assoc_key.dyn.py
       import_list:
+        services.association_reg: builtins:association_reg.service
         services.code_registry_ctr: builtins:code_registry_ctr.service
 
   assoc_key:

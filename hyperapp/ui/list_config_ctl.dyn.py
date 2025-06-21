@@ -15,7 +15,7 @@ class DictListConfigCtl(DictConfigCtl):
         return htypes.list_config_ctl.dict_list_config_ctl()
 
     @staticmethod
-    def _config_to_items(config_template):
+    def config_to_items(config_template):
         items = []
         for key, value_list in config_template.items():
             for value in value_list:
