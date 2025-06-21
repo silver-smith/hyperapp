@@ -62,7 +62,6 @@ import:
 - ui.layout:layout-model.feed-template
 - ui.layout:layout-model.model-cfg-item
 - ui.layout:open_layout_tree.global-model-command
-- ui.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template
 - ui.local_server:local_server_peer.service
 - ui.local_server:local_server_peer_path.service
 - ui.model_command:command_creg-command-global_model_command.actor-template
@@ -253,7 +252,6 @@ definitions:
         cfg_item_creg: cfg_item_creg
         cfg_value_creg: cfg_value_creg
         command_creg: command_creg
-        config_ctl_creg: config_ctl_creg
         convertor_creg: convertor_creg
         editor_default_reg: editor_default_reg
         feed_factory: feed_factory
@@ -276,11 +274,6 @@ definitions:
         view_reg: view_reg
         view_ui_command_reg: view_ui_command_reg
         view_ui_model_command_reg: view_ui_model_command_reg
-  config_ctl_creg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - ui.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template
   convertor_creg:
     type: legacy_type.system:item_list_config
     value:

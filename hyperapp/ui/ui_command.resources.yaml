@@ -3,6 +3,7 @@
 import:
 - base.mark:mark.module
 - base.system.config_ctl:config_ctl.module
+- base.system.list_config_ctl:list_config_ctl.module
 - base.system_fn:system_fn.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
@@ -21,7 +22,6 @@ import:
 - ui.command:command.module
 - ui.command_enumerator:command_enumerator.module
 - ui.command_groups:command_groups.module
-- ui.list_config_ctl:list_config_ctl.module
 - ui.ui_model_command:ui_model_command.module
 definitions:
   UiCommandEnumFn:
@@ -119,7 +119,7 @@ definitions:
         code.command_enumerator: ui.command_enumerator:command_enumerator.module
         code.command_groups: ui.command_groups:command_groups.module
         code.config_ctl: base.system.config_ctl:config_ctl.module
-        code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
+        code.list_config_ctl: base.system.list_config_ctl:list_config_ctl.module
         code.mark: base.mark:mark.module
         code.system_fn: base.system_fn:system_fn.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module

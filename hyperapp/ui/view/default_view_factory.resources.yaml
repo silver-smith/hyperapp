@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.system.list_config_ctl:list_config_ctl.module
 - builtins:deduce_t.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -9,7 +10,6 @@ import:
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
-- ui.list_config_ctl:list_config_ctl.module
 definitions:
   default_model_factory:
     type: legacy_type.builtin:attribute
@@ -50,7 +50,7 @@ definitions:
       module_name: default_view_factory
       file_name: default_view_factory.dyn.py
       import_list:
-        code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
+        code.list_config_ctl: base.system.list_config_ctl:list_config_ctl.module
         code.mark: base.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
         services.web: builtins:web.service

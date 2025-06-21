@@ -3,6 +3,7 @@
 import:
 - base.mark:mark.module
 - base.system.config_ctl:config_ctl.module
+- base.system.list_config_ctl:list_config_ctl.module
 - base.system_fn:system_fn.module
 - builtins:deduce_t.service
 - builtins:mosaic.service
@@ -28,7 +29,6 @@ import:
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_enumerator:command_enumerator.module
-- ui.list_config_ctl:list_config_ctl.module
 definitions:
   ModelCommandAddFn:
     type: legacy_type.builtin:attribute
@@ -140,7 +140,7 @@ definitions:
         code.command: ui.command:command.module
         code.command_enumerator: ui.command_enumerator:command_enumerator.module
         code.config_ctl: base.system.config_ctl:config_ctl.module
-        code.list_config_ctl: ui.list_config_ctl:list_config_ctl.module
+        code.list_config_ctl: base.system.list_config_ctl:list_config_ctl.module
         code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         code.system_fn: base.system_fn:system_fn.module

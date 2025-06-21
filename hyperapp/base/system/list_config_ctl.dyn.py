@@ -1,12 +1,10 @@
 from . import htypes
-from .code.mark import mark
 from .code.config_ctl import MultiItemConfigCtl, DictConfigCtl
 
 
 class DictListConfigCtl(DictConfigCtl):
 
     @classmethod
-    @mark.actor.config_ctl_creg
     def from_piece(cls, piece, cfg_item_creg, cfg_value_creg):
         return cls(cfg_item_creg, cfg_value_creg)
 
