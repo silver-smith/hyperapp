@@ -31,6 +31,6 @@ class DictListConfigCtl(DictConfigCtl):
 
     def resolve_item(self, system, service_name, key, item):
         return [
-            self._cfg_value_creg.animate(item, key, system, service_name)
-            for item_template in item
+            self._cfg_value_creg.animate(elt, key, system, service_name)
+            for elt in item
             ]
