@@ -138,7 +138,6 @@ class System:
         self._name_to_layer[layer_name] = layer
 
     def _call_config_hooks(self, hook_list):
-        return  # TODO
         for service_name, config_template in self._config_templates.items():
             ctl = self._config_ctl[service_name]
             if not ctl.is_multi_item:
