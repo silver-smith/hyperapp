@@ -11,6 +11,7 @@ from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.config_ctl import (
     item_pieces_to_data,
@@ -251,8 +252,8 @@ class SystemJob:
                 req = ServiceReq(x.service_name)
                 self.incomplete_error(module_name, error_msg, missing_reqs={req})
             if isinstance(x, htypes.rc_job.config_key_error):
-                key = pyobj_creg.invite(x.t)
-                req = CfgItemReq.from_actor(x.service_name, key, self._tested_modules)
+                key = web.summon(x.key)
+                req = CfgItemReq(x.service_name, key, self._tested_modules)
                 self.incomplete_error(module_name, error_msg, missing_reqs={req})
             self._raise_error(x)
         except PythonModuleResourceImportError as x:

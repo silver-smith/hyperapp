@@ -7,4 +7,4 @@ unknown_service_error = exception:
 
 config_key_error = exception:
   service_name: string
-  t: ref  # Assume we get only type-keyed errors.
+  key: ref  # Meta record for type-keyed errors.
