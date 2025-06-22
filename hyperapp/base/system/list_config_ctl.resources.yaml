@@ -38,3 +38,7 @@ definitions:
       service_params:
       - cfg_item_creg
       - cfg_value_creg
+
+  dict_list_config_ctl:
+    type: legacy_type.list_config_ctl:dict_list_config_ctl
+    value: {}
