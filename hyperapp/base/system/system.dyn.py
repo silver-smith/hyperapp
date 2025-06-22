@@ -38,6 +38,7 @@ class System:
         self._resolve_stack = {}  # service name -> requester
         self._finalizers = {}  # service name -> fn
         self._config_hooks = []
+        self._default_layer_name = None
         self._init()
 
     def _init(self):
@@ -156,8 +157,13 @@ class System:
             }
         return order.get(service_name, 10)
 
+    def set_default_layer(self, layer_name):
+        self._default_layer_name = layer_name
+
     @property
     def default_layer(self):
+        if self._default_layer_name:
+            return self._name_to_layer[self._default_layer_name]
         return list(self._name_to_layer.values())[-1]
 
     def get_layer_config_templates(self, layer_name):
