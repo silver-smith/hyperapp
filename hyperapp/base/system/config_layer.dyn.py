@@ -65,7 +65,7 @@ class StaticConfigLayer(ConfigLayer):
         return self._data_to_config(self._config_piece)
 
     def set(self, service_name, key, value):
-        raise NotImplementedError()
+        raise NotImplementedError(f"{self.__class__.__name__}.set")
 
 
 class ProjectConfigLayer(ConfigLayer):
