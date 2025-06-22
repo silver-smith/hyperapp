@@ -78,3 +78,7 @@ definitions:
       t: legacy_type.data_service:config_item
       function: config_item_name
       service_params: []
+
+  data_service-config_ctl.ctl:
+    type: legacy_type.data_service:config_ctl
+    value: {}
