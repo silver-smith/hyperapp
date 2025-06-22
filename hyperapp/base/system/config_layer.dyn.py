@@ -67,6 +67,9 @@ class StaticConfigLayer(ConfigLayer):
     def set(self, service_name, key, value):
         raise NotImplementedError(f"{self.__class__.__name__}.set")
 
+    def remove(self, service_name, key):
+        raise NotImplementedError(f"{self.__class__.__name__}.remove")
+
 
 class ProjectConfigLayer(ConfigLayer):
 
