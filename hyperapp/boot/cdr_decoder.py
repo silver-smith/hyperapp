@@ -40,7 +40,7 @@ class DecodeBuffer:
             path_str = ".".join(path)
             raise DecodeError(
                 f"{path_str}: Unexpected EOF while reading {size} bytes."
-                f" Total size is {len(self._data)}"
+                f" Total size is {len(self._buf)}"
                 )
         data = self._buf[ofs:next_ofs]
         self._ofs = next_ofs
