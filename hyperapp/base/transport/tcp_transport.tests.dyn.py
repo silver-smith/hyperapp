@@ -53,7 +53,7 @@ def test_tcp_call(
         endpoint_registry,
         rpc_endpoint,
         subprocess_rpc_server_running,
-        tcp_server_factory
+        tcp_server_factory,
         ):
     log.info("Test TCP call")
 
