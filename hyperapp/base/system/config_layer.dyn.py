@@ -67,6 +67,9 @@ class StaticConfigLayer(ConfigLayer):
     def set(self, service_name, key, value):
         raise NotImplementedError(f"{self.__class__.__name__}.set")
 
+    def add(self, service_name, key, value):
+        raise NotImplementedError(f"{self.__class__.__name__}.add")
+
     def remove(self, service_name, key):
         raise NotImplementedError(f"{self.__class__.__name__}.remove")
 
@@ -100,14 +103,29 @@ class ProjectConfigLayer(ConfigLayer):
         return self._data_to_config(config_piece)
 
     def set(self, service_name, key, value):
-        try:
-            service_config = self.config[service_name]
-        except KeyError:
-            service_config = self._config_ctl[service_name].empty_config_template()
-            self.config[service_name] = service_config
+        service_config = self._service_config(service_name)
         service_config[key] = value
         self._save()
         self._system.invalidate_config_cache()
+
+    def add(self, service_name, key, value):
+        service_config = self._service_config(service_name)
+        try:
+            value_set = service_config[key]
+        except KeyError:
+            value_set = set()
+            service_config[key] = value_set
+        value_set.add(value)
+        self._save()
+        self._system.invalidate_config_cache()
+
+    def _service_config(self, service_name):
+        try:
+            return self.config[service_name]
+        except KeyError:
+            service_config = self._config_ctl[service_name].empty_config_template()
+            self.config[service_name] = service_config
+            return service_config
 
     def remove(self, service_name, key):
         try:

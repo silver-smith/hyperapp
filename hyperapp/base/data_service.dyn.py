@@ -110,6 +110,9 @@ class DataServiceConfig:
     def __setitem__(self, key, value):
         self._target_layer.set(self._service_name, key, value)
 
+    def add(self, key, value):
+        self._target_layer.add(self._service_name, key, value)
+
     def __delitem__(self, key):
         self._target_layer.remove(self._service_name, key)
 
