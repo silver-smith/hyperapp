@@ -116,7 +116,7 @@ class System:
         for service_name, item in system_config.items():
             self._config_ctl[service_name] = self._config_ctl_creg.invite(item.ctl)
 
-    def load_config(self, config_piece):
+    def load_static_config(self, config_piece):
         layer = StaticConfigLayer(self, self['config_ctl'], config_piece)
         self.load_config_layer('full', layer)
 

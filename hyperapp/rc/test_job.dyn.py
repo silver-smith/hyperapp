@@ -198,7 +198,7 @@ def rpc_service_wrapper(system, _real_service_name, **kw):
 
 def test_subprocess_rpc_main(connection, received_refs, system_config_piece, root_name, **kw):
     system = SystemProbe()
-    system.load_config(system_config_piece)
+    system.load_static_config(system_config_piece)
     ImportRecorder.configure_pyobj_creg(system)
     _ = system.resolve_service('marker_registry')  # Init markers.
     system.run(root_name, connection, received_refs, **kw)

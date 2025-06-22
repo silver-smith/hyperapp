@@ -177,7 +177,7 @@ class SystemJob:
         system = SystemProbe()
         resources_config = self._compose_resources_config(system, resources)
         config = merge_system_config_pieces(self._rc_config, resources_config)
-        system.load_config(config)
+        system.load_static_config(config)
         self._configure_system(system, resources)
         system.migrate_globals()
         _ = system.resolve_service('marker_registry')  # Init markers.

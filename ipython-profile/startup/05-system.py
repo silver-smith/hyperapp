@@ -60,7 +60,7 @@ def setup_system():
 
     system = module.System()
     ipython_atexit(system.close)
-    system.load_config(config)
+    system.load_static_config(config)
 
     for service_name in system.service_names:
         service = system.resolve_service(service_name)
