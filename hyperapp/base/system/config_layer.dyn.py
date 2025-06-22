@@ -15,14 +15,20 @@ from .services import (
     )
 
 
-# class SimpleConfigLayer:
+class PhonyConfigLayer:
 
-#     def __init__(self, config):
-#         self._config = config
+    @property
+    def config(self):
+        return {}
 
-#     @property
-#     def config(self):
-#         return self._config
+    def set(self, service_name, key, value):
+        pass
+
+    def add(self, service_name, key, value):
+        pass
+
+    def remove(self, service_name, key):
+        pass
 
 
 class ConfigLayer:

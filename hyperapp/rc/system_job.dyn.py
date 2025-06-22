@@ -20,6 +20,7 @@ from .code.config_ctl import (
     )
 from .code.import_recorder import IncompleteImportedObjectError, ImportRecorder
 from .code.system import UnknownServiceError
+from .code.config_layer import PhonyConfigLayer
 from .code.config_item_resource import ConfigItemResource
 from .code.cfg_item_req import CfgItemReq
 from .code.service_req import ServiceReq
@@ -179,6 +180,8 @@ class SystemJob:
         resources_config = self._compose_resources_config(system, resources)
         config = merge_system_config_pieces(self._rc_config, resources_config)
         system.load_static_config(config)
+        system.load_config_layer('phony', PhonyConfigLayer())
+        system.set_default_layer('phony')
         self._configure_system(system, resources)
         system.migrate_globals()
         _ = system.resolve_service('marker_registry')  # Init markers.
