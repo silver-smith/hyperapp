@@ -250,7 +250,7 @@ class SystemJob:
             if isinstance(x, htypes.rc_job.unknown_service_error):
                 req = ServiceReq(x.service_name)
                 self.incomplete_error(module_name, error_msg, missing_reqs={req})
-            if isinstance(x, htypes.rc_job.config_key_error_error):
+            if isinstance(x, htypes.rc_job.config_key_error):
                 key = pyobj_creg.invite(x.t)
                 req = CfgItemReq.from_actor(x.service_name, key, self._tested_modules)
                 self.incomplete_error(module_name, error_msg, missing_reqs={req})
