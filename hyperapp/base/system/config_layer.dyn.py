@@ -1,4 +1,5 @@
 import itertools
+from collections import defaultdict
 from functools import cached_property
 
 from hyperapp.boot.htypes import TPrimitive, TList, TRecord, tString
@@ -15,20 +16,24 @@ from .services import (
     )
 
 
-class PhonyConfigLayer:
+class MemoryConfigLayer:
+
+    def __init__(self, system):
+        self._system = system
+        self._config = defaultdict(dict)
 
     @property
     def config(self):
-        return {}
+        return dict(self._config)
 
     def set(self, service_name, key, value):
-        pass
+        self._config[service_name][key] = value
 
     def add(self, service_name, key, value):
-        pass
+        raise NotImplementedError(f"{self.__class__.__name__}.add")
 
     def remove(self, service_name, key):
-        pass
+        del self._config[service_name][key]
 
 
 class ConfigLayer:
