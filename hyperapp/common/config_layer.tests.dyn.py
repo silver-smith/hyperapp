@@ -91,6 +91,7 @@ def test_persistence(layer_factory, key, value):
 
 def test_invalidation(system, layer, sample_service, key, value):
     system.load_config_layer('config-layer-test', layer)
+    system.set_default_layer('config-layer-test')
     assert sample_service.get(key) is None
     sample_service[key] = value
     assert sample_service[key] == value
