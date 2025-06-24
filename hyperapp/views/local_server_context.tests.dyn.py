@@ -10,7 +10,7 @@ from .fixtures import qapp_fixtures
 from .tested.code import local_server_context
 
 
-@mark.service
+@mark.fixture
 def local_server_peer():
     return None
 
