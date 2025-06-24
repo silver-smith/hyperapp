@@ -1,0 +1,34 @@
+import:
+- legacy_type.assoc_key:key_base_association
+- legacy_type.builtin:string
+- legacy_type.data_service:config_item
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+
+definitions:
+
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        assoc_key: assoc_key.config
+
+  assoc_key.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-route_table
+
+  config_item-route_table:
+    type: legacy_type.data_service:config_item
+    value:
+      key: string-route_table
+      value: key_base_association
+
+  string-route_table:
+    type: legacy_type.builtin:string
+    value: route_table
+
+  key_base_association:
+    type: legacy_type.assoc_key:key_base_association
+    value: {}
