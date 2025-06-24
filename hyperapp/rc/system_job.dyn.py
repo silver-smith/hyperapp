@@ -3,7 +3,7 @@ import traceback
 from collections import defaultdict
 from itertools import groupby
 
-from hyperapp.boot.htypes import HException
+from hyperapp.boot.htypes import Type, HException
 from hyperapp.boot.config_key_error import ConfigKeyError
 from hyperapp.boot.resource.python_module import PythonModuleResourceImportError
 
@@ -257,6 +257,8 @@ class SystemJob:
             if isinstance(x, htypes.rc_job.config_key_error):
                 key = web.summon(x.key)
                 req = CfgItemReq(x.service_name, key, self._tested_modules)
+                if not req.is_type_error:
+                    self._raise_error(x)  # Do not treat data registry miss as incomplete jobs.
                 self.incomplete_error(module_name, error_msg, missing_reqs={req})
             self._raise_error(x)
         except PythonModuleResourceImportError as x:
@@ -266,6 +268,8 @@ class SystemJob:
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(module_name, error_msg, missing_reqs={req})
         except ConfigKeyError as x:
+            if not isinstance(x.key, Type):
+                self._raise_error(x)  # Do not treat data registry miss as incomplete jobs.
             req = CfgItemReq.from_actor(x.service_name, x.key, self._tested_modules)
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(module_name, error_msg, missing_reqs={req})

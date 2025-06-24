@@ -55,6 +55,10 @@ class CfgItemReq(Requirement):
             tested_modules=self._tested_modules,
             )
 
+    @property
+    def is_type_error(self):
+        return isinstance(self._actor, (htypes.builtin.record_mt, htypes.builtin.builtin_mt))
+
     @cached_property
     def desc(self):
         if isinstance(self._actor, htypes.builtin.record_mt):

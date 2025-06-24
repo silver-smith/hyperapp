@@ -174,7 +174,8 @@ def _catch_errors(fn, *args, **kw):
         if isinstance(x.key, Type):
             key_ref = pyobj_creg.actor_to_ref(x.key)
         else:
-            key_ref = mosaic.put(x.key)
+            raise  # Do not treat data registry miss as incomplete jobs.
+            # key_ref = mosaic.put(x.key)
         raise htypes.rc_job.config_key_error(x.service_name, key_ref) from x
     except Exception as x:
         raise RuntimeError(f"In test servant {fn}: {x}") from x
