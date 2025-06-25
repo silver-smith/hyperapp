@@ -20,7 +20,10 @@ class Transport:
         log.debug("Routes to %s for %s: %s", receiver_peer_ref, parcel, route_list)
         if not route_list:
             raise RuntimeError(f"No route for peer {receiver_peer_ref}")
-        route, *_ = [route for route in route_list if route.available]
+        available_route_list = [route for route in route_list if route.available]
+        if not available_route_list:
+            raise RuntimeError(f"No available route for peer {receiver_peer_ref}")
+        route, *_ = available_route_list
         log.debug("Send parcel %s by route %s (all routes: %s)", parcel, route, route_list)
         route.send(parcel)
 
