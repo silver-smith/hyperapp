@@ -27,7 +27,7 @@ def load_texts(root_dir):
     return path_to_text
 
 
-def _config_project_name(path):
+def config_project_name(path):
     name = path.split('/')[-1]
     if not name.endswith(RESOURCE_EXT):
         return None
@@ -46,7 +46,7 @@ def separate_configs(path_to_text):
     project_path_to_text = {}
     config_path_to_text = {}
     for path, text in path_to_text.items():
-        if _config_project_name(path):
+        if config_project_name(path):
             config_path_to_text[path] = text
         else:
             project_path_to_text[path] = text
@@ -156,6 +156,17 @@ def load_projects_file(path):
     return name_to_rec
 
 
+def _load_config_projects(project_factory, project, config_path_to_text):
+    name_to_project = {}
+    for path, text in config_path_to_text.items():
+        config_name = config_project_name(path)
+        project_name = f'{project.name}.{config_name}'
+        config_project = project_factory(project.path / path, project_name, imports={project})
+        config_project.load({path: text})
+        name_to_project[project_name] = config_project
+    return name_to_project
+
+
 def load_projects_from_file(project_factory, path, filter):
     name_to_rec = load_projects_file(path)
     root_dir = path.parent
@@ -173,11 +184,6 @@ def load_projects_from_file(project_factory, path, filter):
         project = project_factory(project_dir, rec.name, imports)
         project.load(project_path_to_text)
         name_to_project[rec.name] = project
-        for path, text in config_path_to_text.items():
-            config_name = _config_project_name(path)
-            project_name = f'{rec.name}.{config_name}'
-            config_project = project_factory(project_dir / path, project_name, imports={project})
-            config_project.load({path: text})
-            name_to_project[project_name] = config_project
+        name_to_project.update(_load_config_projects(project_factory, project, config_path_to_text))
             
     return name_to_project

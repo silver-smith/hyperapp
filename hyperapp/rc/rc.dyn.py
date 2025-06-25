@@ -6,7 +6,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hyperapp.boot.htypes import HException
-from hyperapp.boot.project import load_texts, load_projects_file
+from hyperapp.boot.project import (
+    config_project_name,
+    load_projects_file,
+    load_texts,
+    separate_configs,
+    )
 
 from . import htypes
 from .services import (
@@ -283,8 +288,7 @@ def _parse_args(sys_argv):
 
 def build_target_sets(
         base_config_templates, config_ctl, ctr_from_template_creg,
-        rc_config, job_cache, cached_count, only_target_projects, name_to_project):
-    base_project = name_to_project['base']
+        rc_config, job_cache, cached_count, only_target_projects, base_project):
 
     name_to_target_rec = load_projects_file(hyperapp_dir / 'projects.yaml')
     name_to_target_rec = {
@@ -324,17 +328,35 @@ def build_target_sets(
     return full_target_set
 
 
+def _load_base_configs(get_layer_config_templates, base_project):
+    config_templates = {}
+    path_to_text = load_texts(base_project.path)
+    _, config_path_to_text = separate_configs(path_to_text)
+    for path, text in config_path_to_text.items():
+        config_name = config_project_name(path)
+        project_name = f'{base_project.name}.{config_name}'
+        config = get_layer_config_templates(project_name)
+        config_templates.update(config)
+    return config_templates
+
+
 def compile_resources(
         system, get_layer_config_templates, config_ctl, ctr_from_template_creg, rc_job_result_creg,
         job_cache, name_to_project, pool, only_target_projects, targets, options):
-    rc_config = system.config_to_data(get_layer_config_templates('rc'))
+
+    base_project = name_to_project['base']
+    rc_config = system.config_to_data({
+        **get_layer_config_templates('rc'),
+        **_load_base_configs(get_layer_config_templates, base_project),
+        })
     base_config_templates = get_layer_config_templates('base')
+
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
     cached_count = Counter()
 
     full_target_set = build_target_sets(
         base_config_templates, config_ctl, ctr_from_template_creg,
-        rc_config, job_cache, cached_count, only_target_projects, name_to_project)
+        rc_config, job_cache, cached_count, only_target_projects, base_project)
     if options.check:
         full_target_set.check_statuses()
 
