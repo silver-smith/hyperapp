@@ -28,7 +28,10 @@ class ConfigItemReadyTarget(Target):
     @property
     def deps(self):
         if self._provider_resource_tgt:
-            return {self._import_tgt}
+            if self._import_tgt:
+                return {self._import_tgt}
+            else:
+                return set()  # Manual provider resource.
         else:
             return {self._all_imports_known_tgt}
 
