@@ -17,6 +17,7 @@ from .code.import_target import (
 from .code.config_resource_target import ConfigResourceTarget
 from .code.config_ctl import MultiItemConfigCtl, DictConfigCtl
 from .code.cfg_item_req import CfgItemReq
+from .code.init_hook_req import InitHookReq
 from .code.service_req import ServiceReq
 from .code.marker_req import MarkerReq
 
@@ -34,6 +35,8 @@ def add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templa
         ctr = ctr_from_template_creg.animate(item_piece, service_name, var_name)
         if rc_key is None:
             rc_key = ctr.key
+        if not req and service_name == 'init_hook':
+            req = InitHookReq(ctr.key)
         resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
         assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
         _ = target_set.factory.config_items(service_name, rc_key, req, provider=resource_tgt, ctr=ctr)
