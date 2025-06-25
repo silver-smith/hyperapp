@@ -183,6 +183,7 @@ class SystemJob:
         system.load_config_layer('memory', MemoryConfigLayer(system))
         system.set_default_layer('memory')
         self._configure_system(system, resources)
+        system['init_hook'].run_hooks()
         system.migrate_globals()
         _ = system.resolve_service('marker_registry')  # Init markers.
         return system
