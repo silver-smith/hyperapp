@@ -28,12 +28,14 @@ class MemoryConfigLayer:
 
     def set(self, service_name, key, value):
         self._config[service_name][key] = value
+        self._system.config_item_was_set(service_name, key)
 
     def add(self, service_name, key, value):
         raise NotImplementedError(f"{self.__class__.__name__}.add")
 
     def remove(self, service_name, key):
         del self._config[service_name][key]
+        self._system.config_item_was_removed(service_name, key)
 
 
 class ConfigLayer:
@@ -117,7 +119,7 @@ class ProjectConfigLayer(ConfigLayer):
         service_config = self._service_config(service_name)
         service_config[key] = value
         self._save()
-        self._system.invalidate_config_cache()
+        self._system.config_item_was_set(service_name, key)
 
     def add(self, service_name, key, value):
         service_config = self._service_config(service_name)
@@ -128,7 +130,7 @@ class ProjectConfigLayer(ConfigLayer):
             service_config[key] = value_set
         value_set.add(value)
         self._save()
-        self._system.invalidate_config_cache()
+        self._system.config_item_was_set(service_name, key)
 
     def _service_config(self, service_name):
         try:
@@ -145,7 +147,7 @@ class ProjectConfigLayer(ConfigLayer):
             return
         del service_config[key]
         self._save()
-        self._system.invalidate_config_cache()
+        self._system.config_item_was_removed(service_name, key)
 
     def _save(self):
         # We should remove not only old values from mapping,

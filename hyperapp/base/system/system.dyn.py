@@ -138,6 +138,26 @@ class System:
         log.debug("Load config layer: %r; services: %s", layer_name, list(layer.config))
         self._name_to_layer[layer_name] = layer
 
+    def config_item_was_set(self, service_name, key):
+        self.invalidate_config_cache()
+        self._call_config_hooks_for_key(service_name, key, lambda hook: hook.config_item_set)
+
+    def _call_config_hooks_for_key(self, service_name, key, hook_method):
+        ctl = self._config_ctl[service_name]
+        if not ctl.is_multi_item:
+            return  # No hooks for non-multi-item configs.
+        config_template = self._config_templates[service_name]
+        item_list = ctl.config_to_items(config_template)
+        for kv in item_list:
+            if kv[0] != key:
+                continue
+            for hook in self._config_hooks:
+                hook_method(hook)(service_name, kv)
+
+    def config_item_was_removed(self, service_name, key):
+        self.invalidate_config_cache()
+        self._call_config_hooks_for_key(service_name, key, lambda hook: hook.config_item_removed)
+
     def _call_config_hooks(self, hook_list):
         for service_name, config_template in self._config_templates.items():
             ctl = self._config_ctl[service_name]
