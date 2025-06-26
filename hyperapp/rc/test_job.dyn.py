@@ -312,7 +312,7 @@ class TestJob(SystemJob):
             cfg_item_creg = system['cfg_item_creg']
             key_to_req = self._make_key_to_req_map(cfg_item_creg)
             ctr_collector = system['ctr_collector']
-            recorder = self._init_recorder(system, recorder_piece)
+            recorder = pyobj_creg.animate(recorder_piece)
             ctr_collector.ignore_module(module_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
             root_fixture_config = self._root_fixture_config_layer(system, cfg_item_creg, module_piece, module)
