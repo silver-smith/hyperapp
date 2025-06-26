@@ -146,7 +146,10 @@ class System:
         ctl = self._config_ctl[service_name]
         if not ctl.is_multi_item:
             return  # No hooks for non-multi-item configs.
-        config_template = self._config_templates[service_name]
+        try:
+            config_template = self._config_templates[service_name]
+        except KeyError:
+            return
         item_list = ctl.config_to_items(config_template)
         for kv in item_list:
             if kv[0] != key:
