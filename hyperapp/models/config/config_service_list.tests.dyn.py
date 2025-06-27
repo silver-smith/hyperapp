@@ -2,6 +2,7 @@ from unittest.mock import Mock, MagicMock
 
 from . import htypes
 from .code.mark import mark
+from .code.data_service import DataServiceConfigCtl
 from .fixtures import feed_fixtures
 from .tested.code import config_service_list
 
@@ -22,7 +23,7 @@ def test_open():
     assert isinstance(model, htypes.config_service_list.model)
 
 
-@mark.fixture.obj
+@mark.fixture.obj(ctl=DataServiceConfigCtl())
 def assoc_key():
     reg = MagicMock()
     reg.get.return_value = None
