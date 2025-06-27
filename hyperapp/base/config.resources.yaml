@@ -64,8 +64,8 @@ import:
 - base.transport.identity:parcel_registry.service
 - base.transport.identity:peer_registry.service
 - base.transport.identity:signature_registry.service
-- base.transport.route_table:route_table.service
 - base.transport.route_registry:route_registry.service
+- base.transport.route_table:route_table.service
 - base.transport.rsa_identity:generate_rsa_identity.service
 - base.transport.rsa_identity:identity_registry-rsa_identity-rsa_identity.actor-template
 - base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-template
