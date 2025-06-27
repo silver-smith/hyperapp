@@ -19,7 +19,8 @@ class ActorRequester:
 
 def resolve_actor_cfg_item(piece):
     t = pyobj_creg.invite(piece.t)
-    return (t, piece)
+    template = web.summon(piece.value)
+    return (t, template)
 
 
 def resolve_actor_cfg_value(piece, key, system, service_name):

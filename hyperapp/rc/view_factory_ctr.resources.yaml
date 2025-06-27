@@ -3,6 +3,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.view_factory:template
@@ -41,12 +42,17 @@ definitions:
       object: ViewFactoryTemplateSingleModelCtr
       attr_name: from_piece
 
-  view_factory_ctr-single_model_ctr.actor-template:
+  ViewFactoryTemplateSingleModelCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.view_factory_ctr:single_model_ctr
       function: ViewFactoryTemplateSingleModelCtr.from_piece
       service_params: []
+
+  view_factory_ctr-single_model_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.view_factory_ctr:single_model_ctr
+      value: ViewFactoryTemplateSingleModelCtr.from_piece.actor-template
 
   ViewFactoryTemplateMultiModelCtr:
     type: legacy_type.builtin:attribute
@@ -60,9 +66,14 @@ definitions:
       object: ViewFactoryTemplateMultiModelCtr
       attr_name: from_piece
 
-  view_factory_ctr-multi_model_ctr.actor-template:
+  ViewFactoryTemplateMultiModelCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.view_factory_ctr:multi_model_ctr
       function: ViewFactoryTemplateMultiModelCtr.from_piece
       service_params: []
+
+  view_factory_ctr-multi_model_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.view_factory_ctr:multi_model_ctr
+      value: ViewFactoryTemplateMultiModelCtr.from_piece.actor-template

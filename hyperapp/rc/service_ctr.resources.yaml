@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.service_resource:finalizer_gen_service_template_ctr
 - legacy_type.service_resource:service_template_ctr
 - legacy_type.system:actor_template
@@ -47,19 +48,29 @@ definitions:
       object: CoreServiceTemplateCtr
       attr_name: from_template_piece
 
-  system-service_template.actor-template:
+  CoreServiceTemplateCtr.from_template_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.system:service_template
       function: CoreServiceTemplateCtr.from_template_piece
       service_params: []
 
-  system-finalizer_gen_service_template.actor-template:
+  system-service_template.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.system:service_template
+      value: CoreServiceTemplateCtr.from_template_piece.actor-template
+
+  CoreServiceTemplateCtr.from_template_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.system:finalizer_gen_service_template
       function: CoreServiceTemplateCtr.from_template_piece
       service_params: []
+
+  system-finalizer_gen_service_template.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.system:finalizer_gen_service_template
+      value: CoreServiceTemplateCtr.from_template_piece.actor-template
 
   ServiceTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -73,13 +84,18 @@ definitions:
       object: ServiceTemplateCtr
       attr_name: from_piece
 
-  service_resource-service_template_ctr.actor-template:
+  ServiceTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.service_resource:service_template_ctr
       function: ServiceTemplateCtr.from_piece
       service_params:
       - config_ctl
+
+  service_resource-service_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.service_resource:service_template_ctr
+      value: ServiceTemplateCtr.from_piece.actor-template
 
   FinalizerGenServiceTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -93,10 +109,15 @@ definitions:
       object: FinalizerGenServiceTemplateCtr
       attr_name: from_piece
 
-  service_resource-finalizer_gen_service_template_ctr.actor-template:
+  FinalizerGenServiceTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.service_resource:finalizer_gen_service_template_ctr
       function: FinalizerGenServiceTemplateCtr.from_piece
       service_params:
       - config_ctl
+
+  service_resource-finalizer_gen_service_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.service_resource:finalizer_gen_service_template_ctr
+      value: FinalizerGenServiceTemplateCtr.from_piece.actor-template

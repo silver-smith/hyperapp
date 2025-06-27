@@ -45,12 +45,17 @@ definitions:
       object: FixtureObjCtr
       attr_name: from_piece
 
-  fixture_resource-fixture_obj_ctr.actor-template:
+  FixtureObjCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.fixture_resource:fixture_obj_ctr
       function: FixtureObjCtr.from_piece
       service_params: []
+
+  fixture_resource-fixture_obj_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.fixture_resource:fixture_obj_ctr
+      value: FixtureObjCtr.from_piece.actor-template
 
   FixtureProbeCtr:
     type: legacy_type.builtin:attribute
@@ -64,12 +69,17 @@ definitions:
       object: FixtureProbeCtr
       attr_name: from_piece
 
-  fixture_resource-fixture_probe_ctr.actor-template:
+  FixtureProbeCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.fixture_resource:fixture_probe_ctr
       function: FixtureProbeCtr.from_piece
       service_params: []
+
+  fixture_resource-fixture_probe_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.fixture_resource:fixture_probe_ctr
+      value: FixtureProbeCtr.from_piece.actor-template
 
   ConfigFixtureCtr:
     type: legacy_type.builtin:attribute
@@ -83,9 +93,14 @@ definitions:
       object: ConfigFixtureCtr
       attr_name: from_piece
 
-  fixture_resource-config_fixture_ctr.actor-template:
+  ConfigFixtureCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.fixture_resource:config_fixture_ctr
       function: ConfigFixtureCtr.from_piece
       service_params: []
+
+  fixture_resource-config_fixture_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.fixture_resource:config_fixture_ctr
+      value: ConfigFixtureCtr.from_piece.actor-template

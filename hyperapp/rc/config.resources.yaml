@@ -3,29 +3,29 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 
-- rc.actor_ctr:actor_resource-actor_probe_ctr.actor-template
-- rc.actor_ctr:actor_resource-actor_template_ctr.actor-template
-- rc.actor_ctr:system-actor_template.actor-template
+- rc.actor_ctr:actor_resource-actor_probe_ctr.actor-cfg-item
+- rc.actor_ctr:actor_resource-actor_template_ctr.actor-cfg-item
+- rc.actor_ctr:system-actor_template.actor-cfg-item
 - rc.actor_marker:actor.marker-template
-- rc.actor_probe:cfg_item_creg-actor_resource-actor_probe_template.actor-template
-- rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-template
-- rc.builtin_service_target:builtin_service-builtin_service_req.actor-template
-- rc.cfg_item_req:actor_resource-cfg_item_req.actor-template
-- rc.crud_ctr:crud_ctr-commit_ctr.actor-template
-- rc.crud_ctr:crud_ctr-init_ctr.actor-template
+- rc.actor_probe:cfg_item_creg-actor_resource-actor_probe_template.actor-cfg-item
+- rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-cfg-item
+- rc.builtin_service_target:builtin_service-builtin_service_req.actor-cfg-item
+- rc.cfg_item_req:actor_resource-cfg_item_req.actor-cfg-item
+- rc.crud_ctr:crud_ctr-commit_ctr.actor-cfg-item
+- rc.crud_ctr:crud_ctr-init_ctr.actor-cfg-item
 - rc.crud_marker:crud.marker-template
-- rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-template
-- rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-template
-- rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-template
-- rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-template
+- rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
+- rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
+- rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
+- rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
 - rc.ctr_collector:ctr_collector.service
-- rc.command_ctr:command_resource-global_model_command_template_ctr.actor-template
-- rc.command_ctr:command_resource-model_command_template_ctr.actor-template
-- rc.command_ctr:command_resource-model_command_enumerator_template_ctr.actor-template
-- rc.command_ctr:command_resource-ui_command_enumerator_template_ctr.actor-template
-- rc.command_ctr:command_resource-ui_command_template_ctr.actor-template
-- rc.command_ctr:command_resource-ui_model_command_template_ctr.actor-template
-- rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-template
+- rc.command_ctr:command_resource-global_model_command_template_ctr.actor-cfg-item
+- rc.command_ctr:command_resource-model_command_template_ctr.actor-cfg-item
+- rc.command_ctr:command_resource-model_command_enumerator_template_ctr.actor-cfg-item
+- rc.command_ctr:command_resource-ui_command_enumerator_template_ctr.actor-cfg-item
+- rc.command_ctr:command_resource-ui_command_template_ctr.actor-cfg-item
+- rc.command_ctr:command_resource-ui_model_command_template_ctr.actor-cfg-item
+- rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-cfg-item
 - rc.command_marker:command.marker-template
 - rc.command_marker:command_enum.marker-template
 - rc.command_marker:global_command.marker-template
@@ -34,45 +34,45 @@ import:
 - rc.command_marker:ui_command_enum.marker-template
 - rc.command_marker:ui_model_command.marker-template
 - rc.config_fixture_marker:config_fixture.marker-template
-- rc.config_item_resource:config_item_resource-config_item_resource.actor-template
-- rc.config_item_resource:config_item_resource-config_item_resource_override.actor-template
-- rc.editor_ctr:editor_ctr-default_ctr.actor-template
+- rc.config_item_resource:config_item_resource-config_item_resource.actor-cfg-item
+- rc.config_item_resource:config_item_resource-config_item_resource_override.actor-cfg-item
+- rc.editor_ctr:editor_ctr-default_ctr.actor-cfg-item
 - rc.editor_marker:editor.marker-template
-- rc.feed_ctr:feed-list_feed_ctr.actor-template
-- rc.feed_ctr:feed-index_tree_feed_ctr.actor-template
-- rc.import_job:import_job-failed_result.actor-template
-- rc.import_job:import_job-incomplete_result.actor-template
-- rc.import_job:import_job-job.actor-template
-- rc.import_job:import_job-succeeded_result.actor-template
+- rc.feed_ctr:feed-list_feed_ctr.actor-cfg-item
+- rc.feed_ctr:feed-index_tree_feed_ctr.actor-cfg-item
+- rc.import_job:import_job-failed_result.actor-cfg-item
+- rc.import_job:import_job-incomplete_result.actor-cfg-item
+- rc.import_job:import_job-job.actor-cfg-item
+- rc.import_job:import_job-succeeded_result.actor-cfg-item
 - rc.import_recorder:import_recorder_reg.service
-- rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-template
-- rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-template
-- rc.import_resource:import_resource-import_resource.actor-template
-- rc.init_hook_ctr:cfg_item-fn_cfg_item.actor-template
-- rc.init_hook_req:init_hook_req-init_hook_req.actor-template
+- rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
+- rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-cfg-item
+- rc.import_resource:import_resource-import_resource.actor-cfg-item
+- rc.init_hook_ctr:cfg_item-fn_cfg_item.actor-cfg-item
+- rc.init_hook_req:init_hook_req-init_hook_req.actor-cfg-item
 - rc.init_targets:ctr_from_template_creg.service
-- rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-template
-- rc.fixture_ctr:fixture_resource-fixture_obj_ctr.actor-template
-- rc.fixture_ctr:fixture_resource-fixture_probe_ctr.actor-template
+- rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-cfg-item
+- rc.fixture_ctr:fixture_resource-fixture_obj_ctr.actor-cfg-item
+- rc.fixture_ctr:fixture_resource-fixture_probe_ctr.actor-cfg-item
 - rc.fixture_marker:fixture.marker-template
-- rc.fixture_resource:fixture_resource-config_fixture_resource.actor-template
-- rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_obj_template.actor-template
-- rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_probe_template.actor-template
-- rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-template
-- rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_probe_template.actor-template
+- rc.fixture_resource:fixture_resource-config_fixture_resource.actor-cfg-item
+- rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_obj_template.actor-cfg-item
+- rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_probe_template.actor-cfg-item
+- rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-cfg-item
+- rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_probe_template.actor-cfg-item
 - rc.job_cache:job_cache.service
-- rc.marker_ctr:marker-marker_template.actor-template
-- rc.marker_registry:cfg_item_creg-marker-marker_template.actor-template
-- rc.marker_registry:cfg_value_creg-marker-marker_template.actor-template
+- rc.marker_ctr:marker-marker_template.actor-cfg-item
+- rc.marker_registry:cfg_item_creg-marker-marker_template.actor-cfg-item
+- rc.marker_registry:cfg_value_creg-marker-marker_template.actor-cfg-item
 - rc.marker_registry:marker_registry.service
-- rc.marker_req:marker_req-marker_req.actor-template
-- rc.model_ctr:model_resource-model_ctr.actor-template
+- rc.marker_req:marker_req-marker_req.actor-cfg-item
+- rc.model_ctr:model_resource-model_ctr.actor-cfg-item
 - rc.model_marker:model.marker-template
-- rc.multi_actor_ctr:actor_resource-multi_actor_template_ctr.actor-template
+- rc.multi_actor_ctr:actor_resource-multi_actor_template_ctr.actor-cfg-item
 - rc.multi_actor_marker:multi_actor.marker-template
 - rc.rc_constructor_creg:rc_constructor_creg.service
 - rc.rc_job:rc_job_submit_factory.service
-- rc.rc_job:rc_job-job_target.actor-template
+- rc.rc_job:rc_job-job_target.actor-cfg-item
 - rc.rc_job_creg:rc_job_creg.service
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc:compile_resources.service
@@ -80,34 +80,34 @@ import:
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.process_pool:process_pool_running.service
-- rc.python_module_resource_target:python_module_resource_target-import_python_module_req.actor-template
-- rc.python_module_resource_target:python_module_resource_target-python_module_req.actor-template
-- rc.selector_ctr:selector_ctr-get_ctr.actor-template
-- rc.selector_ctr:selector_ctr-pick_ctr.actor-template
+- rc.python_module_resource_target:python_module_resource_target-import_python_module_req.actor-cfg-item
+- rc.python_module_resource_target:python_module_resource_target-python_module_req.actor-cfg-item
+- rc.selector_ctr:selector_ctr-get_ctr.actor-cfg-item
+- rc.selector_ctr:selector_ctr-pick_ctr.actor-cfg-item
 - rc.selector_marker:selector.marker-template
-- rc.service_ctr:service_resource-finalizer_gen_service_template_ctr.actor-template
-- rc.service_ctr:service_resource-service_template_ctr.actor-template
-- rc.service_ctr:system-finalizer_gen_service_template.actor-template
-- rc.service_ctr:system-service_template.actor-template
-- rc.service_probe_resource:service_resource-service_probe_ctr.actor-template
+- rc.service_ctr:service_resource-finalizer_gen_service_template_ctr.actor-cfg-item
+- rc.service_ctr:service_resource-service_template_ctr.actor-cfg-item
+- rc.service_ctr:system-finalizer_gen_service_template.actor-cfg-item
+- rc.service_ctr:system-service_template.actor-cfg-item
+- rc.service_probe_resource:service_resource-service_probe_ctr.actor-cfg-item
 - rc.service_marker:service.marker-template
-- rc.service_probe_resource:cfg_item_creg-service_resource-service_probe_template.actor-template
-- rc.service_probe_resource:cfg_value_creg-service_resource-service_probe_template.actor-template
-- rc.service_req:service_resource-service_req.actor-template
-- rc.test_job:test_job-failed_result.actor-template
-- rc.test_job:test_job-incomplete_result.actor-template
-- rc.test_job:test_job-succeeded_result.actor-template
-- rc.test_job:test_job-job.actor-template
+- rc.service_probe_resource:cfg_item_creg-service_resource-service_probe_template.actor-cfg-item
+- rc.service_probe_resource:cfg_value_creg-service_resource-service_probe_template.actor-cfg-item
+- rc.service_req:service_resource-service_req.actor-cfg-item
+- rc.test_job:test_job-failed_result.actor-cfg-item
+- rc.test_job:test_job-incomplete_result.actor-cfg-item
+- rc.test_job:test_job-succeeded_result.actor-cfg-item
+- rc.test_job:test_job-job.actor-cfg-item
 - rc.test_job:test_job_rpc_service_wrapper.service
-- rc.test_module_resources_req:test_module_resources_req-test_module_resources_req.actor-template
-- rc.test_requirement:test_target-fixtures_module_req.actor-template
-- rc.test_requirement:test_target-recorder_resource.actor-template
-- rc.test_requirement:test_target-tested_code_req.actor-template
-- rc.test_requirement:test_target-tested_code_resource.actor-template
-- rc.type_req:type_resource-type_req.actor-template
-- rc.view_ctr:view_ctr-template_ctr.actor-template
-- rc.view_factory_ctr:view_factory_ctr-multi_model_ctr.actor-template
-- rc.view_factory_ctr:view_factory_ctr-single_model_ctr.actor-template
+- rc.test_module_resources_req:test_module_resources_req-test_module_resources_req.actor-cfg-item
+- rc.test_requirement:test_target-fixtures_module_req.actor-cfg-item
+- rc.test_requirement:test_target-recorder_resource.actor-cfg-item
+- rc.test_requirement:test_target-tested_code_req.actor-cfg-item
+- rc.test_requirement:test_target-tested_code_resource.actor-cfg-item
+- rc.type_req:type_resource-type_req.actor-cfg-item
+- rc.view_ctr:view_ctr-template_ctr.actor-cfg-item
+- rc.view_factory_ctr:view_factory_ctr-multi_model_ctr.actor-cfg-item
+- rc.view_factory_ctr:view_factory_ctr-single_model_ctr.actor-cfg-item
 - rc.view_factory_marker:view_factory.marker-template
 - rc.view_marker:view.marker-template
 
@@ -137,37 +137,37 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.actor_probe:cfg_item_creg-actor_resource-actor_probe_template.actor-template
-      - rc.marker_registry:cfg_item_creg-marker-marker_template.actor-template
-      - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-template
-      - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-template
-      - rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_obj_template.actor-template
-      - rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_probe_template.actor-template
-      - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-template
-      - rc.service_probe_resource:cfg_item_creg-service_resource-service_probe_template.actor-template
+      - rc.actor_probe:cfg_item_creg-actor_resource-actor_probe_template.actor-cfg-item
+      - rc.marker_registry:cfg_item_creg-marker-marker_template.actor-cfg-item
+      - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
+      - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
+      - rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_obj_template.actor-cfg-item
+      - rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_probe_template.actor-cfg-item
+      - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
+      - rc.service_probe_resource:cfg_item_creg-service_resource-service_probe_template.actor-cfg-item
 
   cfg_value_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-template
-      - rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-template
-      - rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-template
-      - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-template
-      - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_probe_template.actor-template
-      - rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-template
-      - rc.marker_registry:cfg_value_creg-marker-marker_template.actor-template
-      - rc.service_probe_resource:cfg_value_creg-service_resource-service_probe_template.actor-template
+      - rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-cfg-item
+      - rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
+      - rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
+      - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-cfg-item
+      - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_probe_template.actor-cfg-item
+      - rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-cfg-item
+      - rc.marker_registry:cfg_value_creg-marker-marker_template.actor-cfg-item
+      - rc.service_probe_resource:cfg_value_creg-service_resource-service_probe_template.actor-cfg-item
 
   ctr_from_template_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.service_ctr:system-service_template.actor-template
-      - rc.service_ctr:system-finalizer_gen_service_template.actor-template
-      - rc.actor_ctr:system-actor_template.actor-template
-      - rc.init_hook_ctr:cfg_item-fn_cfg_item.actor-template
-      - rc.marker_ctr:marker-marker_template.actor-template
+      - rc.service_ctr:system-service_template.actor-cfg-item
+      - rc.service_ctr:system-finalizer_gen_service_template.actor-cfg-item
+      - rc.actor_ctr:system-actor_template.actor-cfg-item
+      - rc.init_hook_ctr:cfg_item-fn_cfg_item.actor-cfg-item
+      - rc.marker_ctr:marker-marker_template.actor-cfg-item
 
   marker_registry:
     type: legacy_type.system:item_list_config
@@ -196,84 +196,84 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.rc_job:rc_job-job_target.actor-template
+      - rc.rc_job:rc_job-job_target.actor-cfg-item
 
   rc_constructor_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.actor_ctr:actor_resource-actor_probe_ctr.actor-template
-      - rc.actor_ctr:actor_resource-actor_template_ctr.actor-template
-      - rc.command_ctr:command_resource-global_model_command_template_ctr.actor-template
-      - rc.command_ctr:command_resource-model_command_template_ctr.actor-template
-      - rc.command_ctr:command_resource-model_command_enumerator_template_ctr.actor-template
-      - rc.command_ctr:command_resource-ui_command_enumerator_template_ctr.actor-template
-      - rc.command_ctr:command_resource-ui_command_template_ctr.actor-template
-      - rc.command_ctr:command_resource-ui_model_command_template_ctr.actor-template
-      - rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-template
-      - rc.crud_ctr:crud_ctr-commit_ctr.actor-template
-      - rc.crud_ctr:crud_ctr-init_ctr.actor-template
-      - rc.editor_ctr:editor_ctr-default_ctr.actor-template
-      - rc.feed_ctr:feed-list_feed_ctr.actor-template
-      - rc.feed_ctr:feed-index_tree_feed_ctr.actor-template
-      - rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-template
-      - rc.fixture_ctr:fixture_resource-fixture_obj_ctr.actor-template
-      - rc.fixture_ctr:fixture_resource-fixture_probe_ctr.actor-template
-      - rc.model_ctr:model_resource-model_ctr.actor-template
-      - rc.multi_actor_ctr:actor_resource-multi_actor_template_ctr.actor-template
-      - rc.selector_ctr:selector_ctr-get_ctr.actor-template
-      - rc.selector_ctr:selector_ctr-pick_ctr.actor-template
-      - rc.service_ctr:service_resource-finalizer_gen_service_template_ctr.actor-template
-      - rc.service_ctr:service_resource-service_template_ctr.actor-template
-      - rc.service_probe_resource:service_resource-service_probe_ctr.actor-template
-      - rc.view_ctr:view_ctr-template_ctr.actor-template
-      - rc.view_factory_ctr:view_factory_ctr-multi_model_ctr.actor-template
-      - rc.view_factory_ctr:view_factory_ctr-single_model_ctr.actor-template
+      - rc.actor_ctr:actor_resource-actor_probe_ctr.actor-cfg-item
+      - rc.actor_ctr:actor_resource-actor_template_ctr.actor-cfg-item
+      - rc.command_ctr:command_resource-global_model_command_template_ctr.actor-cfg-item
+      - rc.command_ctr:command_resource-model_command_template_ctr.actor-cfg-item
+      - rc.command_ctr:command_resource-model_command_enumerator_template_ctr.actor-cfg-item
+      - rc.command_ctr:command_resource-ui_command_enumerator_template_ctr.actor-cfg-item
+      - rc.command_ctr:command_resource-ui_command_template_ctr.actor-cfg-item
+      - rc.command_ctr:command_resource-ui_model_command_template_ctr.actor-cfg-item
+      - rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-cfg-item
+      - rc.crud_ctr:crud_ctr-commit_ctr.actor-cfg-item
+      - rc.crud_ctr:crud_ctr-init_ctr.actor-cfg-item
+      - rc.editor_ctr:editor_ctr-default_ctr.actor-cfg-item
+      - rc.feed_ctr:feed-list_feed_ctr.actor-cfg-item
+      - rc.feed_ctr:feed-index_tree_feed_ctr.actor-cfg-item
+      - rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-cfg-item
+      - rc.fixture_ctr:fixture_resource-fixture_obj_ctr.actor-cfg-item
+      - rc.fixture_ctr:fixture_resource-fixture_probe_ctr.actor-cfg-item
+      - rc.model_ctr:model_resource-model_ctr.actor-cfg-item
+      - rc.multi_actor_ctr:actor_resource-multi_actor_template_ctr.actor-cfg-item
+      - rc.selector_ctr:selector_ctr-get_ctr.actor-cfg-item
+      - rc.selector_ctr:selector_ctr-pick_ctr.actor-cfg-item
+      - rc.service_ctr:service_resource-finalizer_gen_service_template_ctr.actor-cfg-item
+      - rc.service_ctr:service_resource-service_template_ctr.actor-cfg-item
+      - rc.service_probe_resource:service_resource-service_probe_ctr.actor-cfg-item
+      - rc.view_ctr:view_ctr-template_ctr.actor-cfg-item
+      - rc.view_factory_ctr:view_factory_ctr-multi_model_ctr.actor-cfg-item
+      - rc.view_factory_ctr:view_factory_ctr-single_model_ctr.actor-cfg-item
 
   rc_job_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.import_job:import_job-job.actor-template
-      - rc.test_job:test_job-job.actor-template
+      - rc.import_job:import_job-job.actor-cfg-item
+      - rc.test_job:test_job-job.actor-cfg-item
 
   rc_job_result_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.import_job:import_job-succeeded_result.actor-template
-      - rc.import_job:import_job-incomplete_result.actor-template
-      - rc.import_job:import_job-failed_result.actor-template
-      - rc.test_job:test_job-succeeded_result.actor-template
-      - rc.test_job:test_job-incomplete_result.actor-template
-      - rc.test_job:test_job-failed_result.actor-template
+      - rc.import_job:import_job-succeeded_result.actor-cfg-item
+      - rc.import_job:import_job-incomplete_result.actor-cfg-item
+      - rc.import_job:import_job-failed_result.actor-cfg-item
+      - rc.test_job:test_job-succeeded_result.actor-cfg-item
+      - rc.test_job:test_job-incomplete_result.actor-cfg-item
+      - rc.test_job:test_job-failed_result.actor-cfg-item
 
   rc_requirement_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.builtin_service_target:builtin_service-builtin_service_req.actor-template
-      - rc.cfg_item_req:actor_resource-cfg_item_req.actor-template
-      - rc.init_hook_req:init_hook_req-init_hook_req.actor-template
-      - rc.marker_req:marker_req-marker_req.actor-template
-      - rc.python_module_resource_target:python_module_resource_target-import_python_module_req.actor-template
-      - rc.python_module_resource_target:python_module_resource_target-python_module_req.actor-template
-      - rc.service_req:service_resource-service_req.actor-template
-      - rc.test_module_resources_req:test_module_resources_req-test_module_resources_req.actor-template
-      - rc.test_requirement:test_target-tested_code_req.actor-template
-      - rc.test_requirement:test_target-fixtures_module_req.actor-template
-      - rc.type_req:type_resource-type_req.actor-template
+      - rc.builtin_service_target:builtin_service-builtin_service_req.actor-cfg-item
+      - rc.cfg_item_req:actor_resource-cfg_item_req.actor-cfg-item
+      - rc.init_hook_req:init_hook_req-init_hook_req.actor-cfg-item
+      - rc.marker_req:marker_req-marker_req.actor-cfg-item
+      - rc.python_module_resource_target:python_module_resource_target-import_python_module_req.actor-cfg-item
+      - rc.python_module_resource_target:python_module_resource_target-python_module_req.actor-cfg-item
+      - rc.service_req:service_resource-service_req.actor-cfg-item
+      - rc.test_module_resources_req:test_module_resources_req-test_module_resources_req.actor-cfg-item
+      - rc.test_requirement:test_target-tested_code_req.actor-cfg-item
+      - rc.test_requirement:test_target-fixtures_module_req.actor-cfg-item
+      - rc.type_req:type_resource-type_req.actor-cfg-item
 
   rc_resource_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.import_resource:import_resource-import_resource.actor-template
-      - rc.fixture_resource:fixture_resource-config_fixture_resource.actor-template
-      - rc.config_item_resource:config_item_resource-config_item_resource.actor-template
-      - rc.config_item_resource:config_item_resource-config_item_resource_override.actor-template
-      - rc.test_requirement:test_target-tested_code_resource.actor-template
-      - rc.test_requirement:test_target-recorder_resource.actor-template
+      - rc.import_resource:import_resource-import_resource.actor-cfg-item
+      - rc.fixture_resource:fixture_resource-config_fixture_resource.actor-cfg-item
+      - rc.config_item_resource:config_item_resource-config_item_resource.actor-cfg-item
+      - rc.config_item_resource:config_item_resource-config_item_resource_override.actor-cfg-item
+      - rc.test_requirement:test_target-tested_code_resource.actor-cfg-item
+      - rc.test_requirement:test_target-recorder_resource.actor-cfg-item
 
   config:
     type: legacy_type.system:system_config

@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.data_service:config_ctl
 - legacy_type.data_service:config_item
 - legacy_type.data_service:type_key_config_ctl
@@ -40,12 +41,17 @@ definitions:
       object: DataServiceConfigCtl
       attr_name: from_piece
 
-  config_ctl_creg-data_service-config_ctl.actor-template:
+  DataServiceConfigCtl.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.data_service:config_ctl
       function: DataServiceConfigCtl.from_piece
       service_params: []
+
+  config_ctl_creg-data_service-config_ctl.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.data_service:config_ctl
+      value: DataServiceConfigCtl.from_piece.actor-template
 
   TypeKeyDataServiceConfigCtl:
     type: legacy_type.builtin:attribute
@@ -59,12 +65,17 @@ definitions:
       object: TypeKeyDataServiceConfigCtl
       attr_name: from_piece
 
-  config_ctl_creg-data_service-type_key_config_ctl.actor-template:
+  TypeKeyDataServiceConfigCtl.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.data_service:type_key_config_ctl
       function: TypeKeyDataServiceConfigCtl.from_piece
       service_params: []
+
+  config_ctl_creg-data_service-type_key_config_ctl.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.data_service:type_key_config_ctl
+      value: TypeKeyDataServiceConfigCtl.from_piece.actor-template
 
   config_item_name:
     type: legacy_type.builtin:attribute
@@ -72,12 +83,17 @@ definitions:
       object: data_service.module
       attr_name: config_item_name
 
-  resource_name_creg-data_service-config_item.actor-template:
+  config_item_name.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.data_service:config_item
       function: config_item_name
       service_params: []
+
+  resource_name_creg-data_service-config_item.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.data_service:config_item
+      value: config_item_name.actor-template
 
   data_service-config_ctl.ctl:
     type: legacy_type.data_service:config_ctl

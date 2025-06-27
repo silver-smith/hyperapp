@@ -2,6 +2,7 @@ import:
 - builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
 - legacy_type.system:service_template
 - legacy_type.rsa_identity:rsa_identity
@@ -36,12 +37,17 @@ definitions:
       object: RsaIdentity
       attr_name: from_piece
 
-  identity_registry-rsa_identity-rsa_identity.actor-template:
+  RsaIdentity.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rsa_identity:rsa_identity
       function: RsaIdentity.from_piece
       service_params: []
+
+  identity_registry-rsa_identity-rsa_identity.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rsa_identity:rsa_identity
+      value: RsaIdentity.from_piece.actor-template
 
   RsaIdentity.generate:
     type: legacy_type.builtin:attribute
@@ -72,12 +78,17 @@ definitions:
       object: RsaPeer
       attr_name: from_piece
 
-  peer_registry-rsa_identity-rsa_peer.actor-template:
+  RsaPeer.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rsa_identity:rsa_peer
       function: RsaPeer.from_piece
       service_params: []
+
+  peer_registry-rsa_identity-rsa_peer.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rsa_identity:rsa_peer
+      value: RsaPeer.from_piece.actor-template
 
   RsaSignature:
     type: legacy_type.builtin:attribute
@@ -91,12 +102,17 @@ definitions:
       object: RsaSignature
       attr_name: from_piece
 
-  signature_registry-rsa_identity-rsa_signature.actor-template:
+  RsaSignature.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rsa_identity:rsa_signature
       function: RsaSignature.from_piece
       service_params: []
+
+  signature_registry-rsa_identity-rsa_signature.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rsa_identity:rsa_signature
+      value: RsaSignature.from_piece.actor-template
 
   RsaParcel:
     type: legacy_type.builtin:attribute
@@ -110,10 +126,15 @@ definitions:
       object: RsaParcel
       attr_name: from_piece
 
-  parcel_registry-rsa_identity-rsa_parcel.actor-template:
+  RsaParcel.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rsa_identity:rsa_parcel
       function: RsaParcel.from_piece
       service_params:
       - signature_registry
+
+  parcel_registry-rsa_identity-rsa_parcel.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rsa_identity:rsa_parcel
+      value: RsaParcel.from_piece.actor-template

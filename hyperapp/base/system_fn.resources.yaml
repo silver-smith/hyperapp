@@ -4,6 +4,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 
@@ -31,11 +32,16 @@ definitions:
       object: ContextFn
       attr_name: from_piece
 
-  system_fn_creg-system_fn-ctx_fn.actor-template:
+  ContextFn.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.system_fn:ctx_fn
       function: ContextFn.from_piece
       service_params:
       - system
       - rpc_system_call_factory
+
+  system_fn_creg-system_fn-ctx_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.system_fn:ctx_fn
+      value: ContextFn.from_piece.actor-template

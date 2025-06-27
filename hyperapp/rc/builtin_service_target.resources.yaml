@@ -3,6 +3,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:builtin_service
 - legacy_type.builtin_service:builtin_service_req
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
 - rc.import_resource:import_resource.module
 - rc.rc_requirement:rc_requirement.module
@@ -34,9 +35,14 @@ definitions:
       object: BuiltinServiceReq
       attr_name: from_piece
 
-  builtin_service-builtin_service_req.actor-template:
+  BuiltinServiceReq.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.builtin_service:builtin_service_req
       function: BuiltinServiceReq.from_piece
       service_params: []
+
+  builtin_service-builtin_service_req.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin_service:builtin_service_req
+      value: BuiltinServiceReq.from_piece.actor-template

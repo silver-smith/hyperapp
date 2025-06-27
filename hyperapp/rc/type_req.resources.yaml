@@ -1,6 +1,7 @@
 import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.type_resource:type_req
 - legacy_type.system:actor_template
 - rc.rc_requirement:rc_requirement.module
@@ -28,9 +29,14 @@ definitions:
       object: TypeReq
       attr_name: from_piece
 
-  type_resource-type_req.actor-template:
+  TypeReq.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.type_resource:type_req
       function: TypeReq.from_piece
       service_params: []
+
+  type_resource-type_req.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.type_resource:type_req
+      value: TypeReq.from_piece.actor-template

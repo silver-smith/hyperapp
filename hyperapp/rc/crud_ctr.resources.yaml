@@ -3,6 +3,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
@@ -49,12 +50,17 @@ definitions:
       object: CrudInitTemplateCtr
       attr_name: from_piece
 
-  crud_ctr-init_ctr.actor-template:
+  CrudInitTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.crud_ctr:init_ctr
       function: CrudInitTemplateCtr.from_piece
       service_params: []
+
+  crud_ctr-init_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.crud_ctr:init_ctr
+      value: CrudInitTemplateCtr.from_piece.actor-template
 
   CrudCommitTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -68,9 +74,14 @@ definitions:
       object: CrudCommitTemplateCtr
       attr_name: from_piece
 
-  crud_ctr-commit_ctr.actor-template:
+  CrudCommitTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.crud_ctr:commit_ctr
       function: CrudCommitTemplateCtr.from_piece
       service_params: []
+
+  crud_ctr-commit_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.crud_ctr:commit_ctr
+      value: CrudCommitTemplateCtr.from_piece.actor-template

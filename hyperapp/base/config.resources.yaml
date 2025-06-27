@@ -2,18 +2,18 @@
 
 import:
 - base.assoc_key:assoc_key.service
-- base.assoc_key:assoc_key_creg-assoc_key-key_base_association.actor-template
+- base.assoc_key:assoc_key_creg-assoc_key-key_base_association.actor-cfg-item
 - base.assoc_key:assoc_key_creg.service
 - base.assoc_key:init_assoc_key.hook
 - base.bundler:bundler.service
-- base.data_service:config_ctl_creg-data_service-config_ctl.actor-template
-- base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
-- base.data_service:resource_name_creg-data_service-config_item.actor-template
+- base.data_service:config_ctl_creg-data_service-config_ctl.actor-cfg-item
+- base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-cfg-item
+- base.data_service:resource_name_creg-data_service-config_item.actor-cfg-item
 - base.data_to_pyobj:data_to_pyobj.service
 - base.data_to_pyobj:data_to_pyobj_ref.service
 - base.file_bundle:file_bundle_factory.service
-- base.fn_cfg_item:cfg_item_creg-cfg_item-fn_cfg_item.actor-template
-- base.fn_cfg_item:cfg_value_creg-cfg_item-fn_cfg_item.actor-template
+- base.fn_cfg_item:cfg_item_creg-cfg_item-fn_cfg_item.actor-cfg-item
+- base.fn_cfg_item:cfg_value_creg-cfg_item-fn_cfg_item.actor-cfg-item
 - base.mark:marker_ctl.service
 - base.partial_ref:partial_ref.service
 - base.ref_picker:pick_refs.service
@@ -31,32 +31,32 @@ import:
 - base.rpc.rpc_call:service_submit_factory.service
 - base.rpc.rpc_endpoint:cancel_rpc_request_futures.service
 - base.rpc.rpc_endpoint:rpc_endpoint.service
-- base.rpc.rpc_endpoint:rpc_message_creg-rpc-error_response.actor-template
-- base.rpc.rpc_endpoint:rpc_message_creg-rpc-request.actor-template
-- base.rpc.rpc_endpoint:rpc_message_creg-rpc-response.actor-template
+- base.rpc.rpc_endpoint:rpc_message_creg-rpc-error_response.actor-cfg-item
+- base.rpc.rpc_endpoint:rpc_message_creg-rpc-request.actor-cfg-item
+- base.rpc.rpc_endpoint:rpc_message_creg-rpc-response.actor-cfg-item
 - base.rpc.rpc_endpoint:rpc_message_creg.service
 - base.rpc.rpc_endpoint:rpc_request_futures.service
-- base.rpc.rpc_endpoint:rpc_target_creg-rpc-function_target.actor-template
-- base.rpc.rpc_endpoint:rpc_target_creg-rpc-service_target.actor-template
-- base.rpc.rpc_endpoint:rpc_target_creg-rpc-system_fn_target.actor-template
+- base.rpc.rpc_endpoint:rpc_target_creg-rpc-function_target.actor-cfg-item
+- base.rpc.rpc_endpoint:rpc_target_creg-rpc-service_target.actor-cfg-item
+- base.rpc.rpc_endpoint:rpc_target_creg-rpc-system_fn_target.actor-cfg-item
 - base.rpc.rpc_endpoint:rpc_target_creg.service
 - base.subprocess.subprocess:subprocess_running.service
 - base.subprocess.subprocess_rpc_server:subprocess_rpc_main.service
 - base.subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - base.subprocess.subprocess_transport:subprocess_transport.service
-- base.system.builtin_resource_name:resource_name_creg-builtin-bool.actor-template
-- base.system.builtin_resource_name:resource_name_creg-builtin-call.actor-template
-- base.system.builtin_resource_name:resource_name_creg-builtin-record_mt.actor-template
-- base.system.builtin_resource_name:resource_name_creg-builtin-string.actor-template
-- base.system.config_ctl:config_ctl_creg-system-flat_list_config_ctl.actor-template
+- base.system.builtin_resource_name:resource_name_creg-builtin-bool.actor-cfg-item
+- base.system.builtin_resource_name:resource_name_creg-builtin-call.actor-cfg-item
+- base.system.builtin_resource_name:resource_name_creg-builtin-record_mt.actor-cfg-item
+- base.system.builtin_resource_name:resource_name_creg-builtin-string.actor-cfg-item
+- base.system.config_ctl:config_ctl_creg-system-flat_list_config_ctl.actor-cfg-item
 - base.system.config_layer:resource_name_creg.service
 - base.system.init_hook:init_hook.service
-- base.system.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template
-- base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-template
+- base.system.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-cfg-item
+- base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-cfg-item
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
-- base.system_fn:system_fn_creg-system_fn-ctx_fn.actor-template
+- base.system_fn:system_fn_creg-system_fn-ctx_fn.actor-cfg-item
 - base.system_fn_creg:system_fn_creg.service
 - base.transport.endpoint:endpoint_registry.service
 - base.transport.endpoint:endpoint_thread_pool.service
@@ -67,21 +67,21 @@ import:
 - base.transport.route_registry:route_registry.service
 - base.transport.route_table:route_table.service
 - base.transport.rsa_identity:generate_rsa_identity.service
-- base.transport.rsa_identity:identity_registry-rsa_identity-rsa_identity.actor-template
-- base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-template
-- base.transport.rsa_identity:peer_registry-rsa_identity-rsa_peer.actor-template
-- base.transport.rsa_identity:signature_registry-rsa_identity-rsa_signature.actor-template
+- base.transport.rsa_identity:identity_registry-rsa_identity-rsa_identity.actor-cfg-item
+- base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-cfg-item
+- base.transport.rsa_identity:peer_registry-rsa_identity-rsa_peer.actor-cfg-item
+- base.transport.rsa_identity:signature_registry-rsa_identity-rsa_signature.actor-cfg-item
 - base.transport.tcp_transport:_address_to_tcp_client.service
 - base.transport.tcp_transport:_tcp_selector.service
 - base.transport.tcp_transport:_tcp_services.service
-- base.transport.tcp_transport:route_registry-tcp_transport-route.actor-template
+- base.transport.tcp_transport:route_registry-tcp_transport-route.actor-cfg-item
 - base.transport.tcp_transport:tcp_client_factory.service
 - base.transport.tcp_transport:tcp_server_factory.service
 - base.transport.transport:transport.service
-- base.typed_cfg_item:cfg_item_creg-cfg_item-typed_cfg_item.actor-template
-- base.typed_cfg_item:cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-template
-- base.typed_cfg_item:cfg_value_creg-cfg_item-typed_cfg_item.actor-template
-- base.typed_cfg_item:cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-template
+- base.typed_cfg_item:cfg_item_creg-cfg_item-typed_cfg_item.actor-cfg-item
+- base.typed_cfg_item:cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item
+- base.typed_cfg_item:cfg_value_creg-cfg_item-typed_cfg_item.actor-cfg-item
+- base.typed_cfg_item:cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -89,22 +89,22 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.assoc_key:assoc_key_creg-assoc_key-key_base_association.actor-template
+      - base.assoc_key:assoc_key_creg-assoc_key-key_base_association.actor-cfg-item
   cfg_item_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.fn_cfg_item:cfg_item_creg-cfg_item-fn_cfg_item.actor-template
-      - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-template
-      - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_cfg_item.actor-template
-      - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-template
+      - base.fn_cfg_item:cfg_item_creg-cfg_item-fn_cfg_item.actor-cfg-item
+      - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-cfg-item
+      - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_cfg_item.actor-cfg-item
+      - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item
   cfg_value_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.fn_cfg_item:cfg_value_creg-cfg_item-fn_cfg_item.actor-template
-      - base.typed_cfg_item:cfg_value_creg-cfg_item-typed_cfg_item.actor-template
-      - base.typed_cfg_item:cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-template
+      - base.fn_cfg_item:cfg_value_creg-cfg_item-fn_cfg_item.actor-cfg-item
+      - base.typed_cfg_item:cfg_value_creg-cfg_item-typed_cfg_item.actor-cfg-item
+      - base.typed_cfg_item:cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item
   config:
     type: legacy_type.system:system_config
     value:
@@ -128,15 +128,15 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.data_service:config_ctl_creg-data_service-config_ctl.actor-template
-      - base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-template
-      - base.system.config_ctl:config_ctl_creg-system-flat_list_config_ctl.actor-template
-      - base.system.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-template
+      - base.data_service:config_ctl_creg-data_service-config_ctl.actor-cfg-item
+      - base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-cfg-item
+      - base.system.config_ctl:config_ctl_creg-system-flat_list_config_ctl.actor-cfg-item
+      - base.system.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-cfg-item
   identity_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:identity_registry-rsa_identity-rsa_identity.actor-template
+      - base.transport.rsa_identity:identity_registry-rsa_identity-rsa_identity.actor-cfg-item
   init_hook:
     type: legacy_type.system:item_list_config
     value:
@@ -146,45 +146,45 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-template
+      - base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-cfg-item
   peer_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:peer_registry-rsa_identity-rsa_peer.actor-template
+      - base.transport.rsa_identity:peer_registry-rsa_identity-rsa_peer.actor-cfg-item
   resource_name_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.data_service:resource_name_creg-data_service-config_item.actor-template
-      - base.system.builtin_resource_name:resource_name_creg-builtin-bool.actor-template
-      - base.system.builtin_resource_name:resource_name_creg-builtin-call.actor-template
-      - base.system.builtin_resource_name:resource_name_creg-builtin-record_mt.actor-template
-      - base.system.builtin_resource_name:resource_name_creg-builtin-string.actor-template
+      - base.data_service:resource_name_creg-data_service-config_item.actor-cfg-item
+      - base.system.builtin_resource_name:resource_name_creg-builtin-bool.actor-cfg-item
+      - base.system.builtin_resource_name:resource_name_creg-builtin-call.actor-cfg-item
+      - base.system.builtin_resource_name:resource_name_creg-builtin-record_mt.actor-cfg-item
+      - base.system.builtin_resource_name:resource_name_creg-builtin-string.actor-cfg-item
   route_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.tcp_transport:route_registry-tcp_transport-route.actor-template
+      - base.transport.tcp_transport:route_registry-tcp_transport-route.actor-cfg-item
   rpc_message_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.rpc.rpc_endpoint:rpc_message_creg-rpc-error_response.actor-template
-      - base.rpc.rpc_endpoint:rpc_message_creg-rpc-request.actor-template
-      - base.rpc.rpc_endpoint:rpc_message_creg-rpc-response.actor-template
+      - base.rpc.rpc_endpoint:rpc_message_creg-rpc-error_response.actor-cfg-item
+      - base.rpc.rpc_endpoint:rpc_message_creg-rpc-request.actor-cfg-item
+      - base.rpc.rpc_endpoint:rpc_message_creg-rpc-response.actor-cfg-item
   rpc_target_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.rpc.rpc_endpoint:rpc_target_creg-rpc-function_target.actor-template
-      - base.rpc.rpc_endpoint:rpc_target_creg-rpc-service_target.actor-template
-      - base.rpc.rpc_endpoint:rpc_target_creg-rpc-system_fn_target.actor-template
+      - base.rpc.rpc_endpoint:rpc_target_creg-rpc-function_target.actor-cfg-item
+      - base.rpc.rpc_endpoint:rpc_target_creg-rpc-service_target.actor-cfg-item
+      - base.rpc.rpc_endpoint:rpc_target_creg-rpc-system_fn_target.actor-cfg-item
   signature_registry:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:signature_registry-rsa_identity-rsa_signature.actor-template
+      - base.transport.rsa_identity:signature_registry-rsa_identity-rsa_signature.actor-cfg-item
   system:
     type: legacy_type.system:item_list_config
     value:
@@ -244,4 +244,4 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.system_fn:system_fn_creg-system_fn-ctx_fn.actor-template
+      - base.system_fn:system_fn_creg-system_fn-ctx_fn.actor-cfg-item

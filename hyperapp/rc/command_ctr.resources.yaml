@@ -3,6 +3,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:arg_t
 - legacy_type.command:args_picker_command_fn
 - legacy_type.command:cfg_item
@@ -81,12 +82,17 @@ definitions:
       object: UiCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource-ui_command_template_ctr.actor-template:
+  UiCommandTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command_resource:ui_command_template_ctr
       function: UiCommandTemplateCtr.from_piece
       service_params: []
+
+  command_resource-ui_command_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.command_resource:ui_command_template_ctr
+      value: UiCommandTemplateCtr.from_piece.actor-template
 
   UiModelCommandTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -100,12 +106,17 @@ definitions:
       object: UiModelCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource-ui_model_command_template_ctr.actor-template:
+  UiModelCommandTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command_resource:ui_model_command_template_ctr
       function: UiModelCommandTemplateCtr.from_piece
       service_params: []
+
+  command_resource-ui_model_command_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.command_resource:ui_model_command_template_ctr
+      value: UiModelCommandTemplateCtr.from_piece.actor-template
 
   UniversalUiCommandTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -119,12 +130,17 @@ definitions:
       object: UniversalUiCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource-universal_ui_command_template_ctr.actor-template:
+  UniversalUiCommandTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command_resource:universal_ui_command_template_ctr
       function: UniversalUiCommandTemplateCtr.from_piece
       service_params: []
+
+  command_resource-universal_ui_command_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.command_resource:universal_ui_command_template_ctr
+      value: UniversalUiCommandTemplateCtr.from_piece.actor-template
 
   UiCommandEnumeratorTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -138,12 +154,17 @@ definitions:
       object: UiCommandEnumeratorTemplateCtr
       attr_name: from_piece
 
-  command_resource-ui_command_enumerator_template_ctr.actor-template:
+  UiCommandEnumeratorTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command_resource:ui_command_enumerator_template_ctr
       function: UiCommandEnumeratorTemplateCtr.from_piece
       service_params: []
+
+  command_resource-ui_command_enumerator_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.command_resource:ui_command_enumerator_template_ctr
+      value: UiCommandEnumeratorTemplateCtr.from_piece.actor-template
 
   ModelCommandTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -157,12 +178,17 @@ definitions:
       object: ModelCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource-model_command_template_ctr.actor-template:
+  ModelCommandTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command_resource:model_command_template_ctr
       function: ModelCommandTemplateCtr.from_piece
       service_params: []
+
+  command_resource-model_command_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.command_resource:model_command_template_ctr
+      value: ModelCommandTemplateCtr.from_piece.actor-template
 
   ModelCommandEnumeratorTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -176,12 +202,17 @@ definitions:
       object: ModelCommandEnumeratorTemplateCtr
       attr_name: from_piece
 
-  command_resource-model_command_enumerator_template_ctr.actor-template:
+  ModelCommandEnumeratorTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command_resource:model_command_enumerator_template_ctr
       function: ModelCommandEnumeratorTemplateCtr.from_piece
       service_params: []
+
+  command_resource-model_command_enumerator_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.command_resource:model_command_enumerator_template_ctr
+      value: ModelCommandEnumeratorTemplateCtr.from_piece.actor-template
 
   GlobalModelCommandTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -195,9 +226,14 @@ definitions:
       object: GlobalModelCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource-global_model_command_template_ctr.actor-template:
+  GlobalModelCommandTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command_resource:global_model_command_template_ctr
       function: GlobalModelCommandTemplateCtr.from_piece
       service_params: []
+
+  command_resource-global_model_command_template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.command_resource:global_model_command_template_ctr
+      value: GlobalModelCommandTemplateCtr.from_piece.actor-template

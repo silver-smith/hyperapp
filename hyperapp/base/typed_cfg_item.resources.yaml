@@ -24,19 +24,23 @@ definitions:
       object: typed_cfg_item.module
       attr_name: resolve_typed_cfg_item
 
-  cfg_item_creg-cfg_item-typed_cfg_item.actor-template:
+  resolve_typed_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.cfg_item:typed_cfg_item
       function: resolve_typed_cfg_item
       service_params: []
 
-  cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
+  cfg_item_creg-cfg_item-typed_cfg_item.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.cfg_item:typed_cfg_item
+      value: resolve_typed_cfg_item.actor-template
+
+  cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.cfg_item:typed_fn_cfg_item
-      function: resolve_typed_cfg_item
-      service_params: []
+      value: resolve_typed_cfg_item.actor-template
 
   resolve_typed_cfg_value:
     type: legacy_type.builtin:attribute
@@ -44,12 +48,17 @@ definitions:
       object: typed_cfg_item.module
       attr_name: resolve_typed_cfg_value
 
-  cfg_value_creg-cfg_item-typed_cfg_item.actor-template:
+  resolve_typed_cfg_value.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.cfg_item:typed_cfg_item
       function: resolve_typed_cfg_value
       service_params: []
+
+  cfg_value_creg-cfg_item-typed_cfg_item.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.cfg_item:typed_cfg_item
+      value: resolve_typed_cfg_value.actor-template
 
   resolve_typed_fn_cfg_value:
     type: legacy_type.builtin:attribute
@@ -57,9 +66,15 @@ definitions:
       object: typed_cfg_item.module
       attr_name: resolve_typed_fn_cfg_value
 
-  cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-template:
+  resolve_typed_fn_cfg_value.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.cfg_item:typed_fn_cfg_item
       function: resolve_typed_fn_cfg_value
       service_params: []
+
+  cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.cfg_item:typed_fn_cfg_item
+      value: resolve_typed_fn_cfg_value.actor-template

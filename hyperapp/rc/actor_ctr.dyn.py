@@ -142,13 +142,18 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
                 attr_name=name,
                 )
             if name_to_res is not None:
-                name_to_res['.'.join([*prefix, name])] = object
+                attr_name = '.'.join([*prefix, name])
+                name_to_res[attr_name] = object
             prefix.append(name)
         template = htypes.system.actor_template(
-            t=pyobj_creg.actor_to_ref(self._t),
             function=mosaic.put(object),
             service_params=tuple(self._service_params),
             )
+        cfg_item = htypes.cfg_item.typed_cfg_item(
+            t=pyobj_creg.actor_to_ref(self._t),
+            value=mosaic.put(template),
+            )
         if name_to_res is not None:
-            name_to_res[f'{self._resource_name}.actor-template'] = template
+            name_to_res[f'{attr_name}.actor-template'] = template
+            name_to_res[f'{self._resource_name}.cfg-item'] = cfg_item
         return template

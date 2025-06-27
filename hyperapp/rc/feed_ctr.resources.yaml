@@ -3,6 +3,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.feed:feed_template
 - legacy_type.feed:index_tree_feed_ctr
 - legacy_type.feed:index_tree_feed_type
@@ -42,12 +43,17 @@ definitions:
       object: ListFeedCtr
       attr_name: from_piece
 
-  feed-list_feed_ctr.actor-template:
+  ListFeedCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.feed:list_feed_ctr
       function: ListFeedCtr.from_piece
       service_params: []
+
+  feed-list_feed_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.feed:list_feed_ctr
+      value: ListFeedCtr.from_piece.actor-template
 
   IndexTreeFeedCtr:
     type: legacy_type.builtin:attribute
@@ -61,9 +67,14 @@ definitions:
       object: IndexTreeFeedCtr
       attr_name: from_piece
 
-  feed-index_tree_feed_ctr.actor-template:
+  IndexTreeFeedCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.feed:index_tree_feed_ctr
       function: IndexTreeFeedCtr.from_piece
       service_params: []
+
+  feed-index_tree_feed_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.feed:index_tree_feed_ctr
+      value: IndexTreeFeedCtr.from_piece.actor-template

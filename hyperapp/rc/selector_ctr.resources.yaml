@@ -3,6 +3,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:model_command_fn
 - legacy_type.selector:template
 - legacy_type.selector_ctr:get_ctr
@@ -43,12 +44,17 @@ definitions:
       object: SelectorGetTemplateCtr
       attr_name: from_piece
 
-  selector_ctr-get_ctr.actor-template:
+  SelectorGetTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.selector_ctr:get_ctr
       function: SelectorGetTemplateCtr.from_piece
       service_params: []
+
+  selector_ctr-get_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.selector_ctr:get_ctr
+      value: SelectorGetTemplateCtr.from_piece.actor-template
 
   SelectorPickTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -62,9 +68,14 @@ definitions:
       object: SelectorPickTemplateCtr
       attr_name: from_piece
 
-  selector_ctr-pick_ctr.actor-template:
+  SelectorPickTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.selector_ctr:pick_ctr
       function: SelectorPickTemplateCtr.from_piece
       service_params: []
+
+  selector_ctr-pick_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.selector_ctr:pick_ctr
+      value: SelectorPickTemplateCtr.from_piece.actor-template

@@ -37,9 +37,14 @@ definitions:
       object: EditorDefaultTemplateCtr
       attr_name: from_piece
 
-  editor_ctr-default_ctr.actor-template:
+  EditorDefaultTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.editor_ctr:default_ctr
       function: EditorDefaultTemplateCtr.from_piece
       service_params: []
+
+  editor_ctr-default_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.editor_ctr:default_ctr
+      value: EditorDefaultTemplateCtr.from_piece.actor-template

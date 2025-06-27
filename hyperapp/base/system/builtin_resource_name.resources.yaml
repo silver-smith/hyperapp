@@ -6,6 +6,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
 
 definitions:
@@ -24,12 +25,17 @@ definitions:
       object: builtin_resource_name.module
       attr_name: bool_name
 
-  resource_name_creg-builtin-bool.actor-template:
+  bool_name.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.builtin:bool
       function: bool_name
       service_params: []
+
+  resource_name_creg-builtin-bool.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:bool
+      value: bool_name.actor-template
 
   string_name:
     type: legacy_type.builtin:attribute
@@ -37,12 +43,17 @@ definitions:
       object: builtin_resource_name.module
       attr_name: string_name
 
-  resource_name_creg-builtin-string.actor-template:
+  string_name.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.builtin:string
       function: string_name
       service_params: []
+
+  resource_name_creg-builtin-string.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:string
+      value: string_name.actor-template
 
   record_mt_name:
     type: legacy_type.builtin:attribute
@@ -50,12 +61,17 @@ definitions:
       object: builtin_resource_name.module
       attr_name: record_mt_name
 
-  resource_name_creg-builtin-record_mt.actor-template:
+  record_mt_name.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.builtin:record_mt
       function: record_mt_name
       service_params: []
+
+  resource_name_creg-builtin-record_mt.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:record_mt
+      value: record_mt_name.actor-template
 
   call_name:
     type: legacy_type.builtin:attribute
@@ -63,9 +79,14 @@ definitions:
       object: builtin_resource_name.module
       attr_name: call_name
 
-  resource_name_creg-builtin-call.actor-template:
+  call_name.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.builtin:call
       function: call_name
       service_params: []
+
+  resource_name_creg-builtin-call.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:call
+      value: call_name.actor-template

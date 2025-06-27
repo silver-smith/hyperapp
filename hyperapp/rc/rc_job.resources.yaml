@@ -2,6 +2,7 @@ import:
 - builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.rc_job:job_target
 - legacy_type.system:actor_template
 - legacy_type.system:service_template
@@ -44,10 +45,15 @@ definitions:
       object: rc_job.module
       attr_name: run_job_target
 
-  rc_job-job_target.actor-template:
+  run_job_target.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rc_job:job_target
       function: run_job_target
       service_params:
       - rc_job_creg
+
+  rc_job-job_target.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rc_job:job_target
+      value: run_job_target.actor-template

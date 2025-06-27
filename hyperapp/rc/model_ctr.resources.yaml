@@ -43,9 +43,14 @@ definitions:
       object: ModelCtr
       attr_name: from_piece
 
-  model_resource-model_ctr.actor-template:
+  ModelCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.model_resource:model_ctr
       function: ModelCtr.from_piece
       service_params: []
+
+  model_resource-model_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model_resource:model_ctr
+      value: ModelCtr.from_piece.actor-template

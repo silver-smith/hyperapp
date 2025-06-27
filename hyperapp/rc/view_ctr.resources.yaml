@@ -3,6 +3,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.cfg_item:typed_fn_cfg_item
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
@@ -39,9 +40,14 @@ definitions:
       object: ViewTemplateCtr
       attr_name: from_piece
 
-  view_ctr-template_ctr.actor-template:
+  ViewTemplateCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.view_ctr:template_ctr
       function: ViewTemplateCtr.from_piece
       service_params: []
+
+  view_ctr-template_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.view_ctr:template_ctr
+      value: ViewTemplateCtr.from_piece.actor-template

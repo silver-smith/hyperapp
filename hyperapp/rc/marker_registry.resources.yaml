@@ -2,6 +2,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
@@ -29,19 +30,29 @@ definitions:
       object: marker_registry.module
       attr_name: resolve_marker_cfg_value
 
-  cfg_item_creg-marker-marker_template.actor-template:
+  resolve_marker_cfg_item.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.marker:marker_template
       function: resolve_marker_cfg_item
       service_params: []
 
-  cfg_value_creg-marker-marker_template.actor-template:
-    type: legacy_type.system:actor_template
+  cfg_item_creg-marker-marker_template.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.marker:marker_template
+      value: resolve_marker_cfg_item.actor-template
+
+  resolve_marker_cfg_value.actor-template:
+    type: legacy_type.system:actor_template
+    value:
       function: resolve_marker_cfg_value
       service_params: []
+
+  cfg_value_creg-marker-marker_template.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.marker:marker_template
+      value: resolve_marker_cfg_value.actor-template
 
   marker_registry:
     type: legacy_type.builtin:attribute

@@ -28,7 +28,6 @@ finalizer_gen_service_template = record(service_template_base)
 
 
 actor_template = record:
-  t: ref
   function: ref
   service_params: string list
 

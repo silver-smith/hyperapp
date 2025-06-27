@@ -5,6 +5,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.rpc:error_response
 - legacy_type.rpc:function_target
 - legacy_type.rpc:request
@@ -107,13 +108,18 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_response
 
-  rpc_message_creg-rpc-response.actor-template:
+  on_rpc_response.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rpc:response
       function: on_rpc_response
       service_params:
       - rpc_request_futures
+
+  rpc_message_creg-rpc-response.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:response
+      value: on_rpc_response.actor-template
 
   on_rpc_error_response:
     type: legacy_type.builtin:attribute
@@ -121,13 +127,18 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_error_response
 
-  rpc_message_creg-rpc-error_response.actor-template:
+  on_rpc_error_response.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rpc:error_response
       function: on_rpc_error_response
       service_params:
       - rpc_request_futures
+
+  rpc_message_creg-rpc-error_response.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:error_response
+      value: on_rpc_error_response.actor-template
 
   rpc_target_creg:
     type: legacy_type.builtin:attribute
@@ -151,10 +162,9 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_request
 
-  rpc_message_creg-rpc-request.actor-template:
+  on_rpc_request.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rpc:request
       function: on_rpc_request
       service_params:
       - system
@@ -162,18 +172,29 @@ definitions:
       - peer_registry
       - rpc_target_creg
 
+  rpc_message_creg-rpc-request.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:request
+      value: on_rpc_request.actor-template
+
   run_function_target:
     type: legacy_type.builtin:attribute
     value:
       object: rpc_endpoint.module
       attr_name: run_function_target
 
-  rpc_target_creg-rpc-function_target.actor-template:
+  run_function_target.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rpc:function_target
       function: run_function_target
       service_params: []
+
+  rpc_target_creg-rpc-function_target.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:function_target
+      value: run_function_target.actor-template
 
   run_system_fn_target:
     type: legacy_type.builtin:attribute
@@ -181,13 +202,18 @@ definitions:
       object: rpc_endpoint.module
       attr_name: run_system_fn_target
 
-  rpc_target_creg-rpc-system_fn_target.actor-template:
+  run_system_fn_target.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rpc:system_fn_target
       function: run_system_fn_target
       service_params:
       - system_fn_creg
+
+  rpc_target_creg-rpc-system_fn_target.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:system_fn_target
+      value: run_system_fn_target.actor-template
 
   run_service_target:
     type: legacy_type.builtin:attribute
@@ -195,10 +221,15 @@ definitions:
       object: rpc_endpoint.module
       attr_name: run_service_target
 
-  rpc_target_creg-rpc-service_target.actor-template:
+  run_service_target.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rpc:service_target
       function: run_service_target
       service_params:
       - system
+
+  rpc_target_creg-rpc-service_target.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:service_target
+      value: run_service_target.actor-template
