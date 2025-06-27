@@ -142,6 +142,10 @@ class System:
         self.invalidate_config_cache()
         self._call_config_hooks_for_key(service_name, key, lambda hook: hook.config_item_set)
 
+    def config_item_was_removed(self, service_name, key):
+        self.invalidate_config_cache()
+        self._call_config_hooks_for_key(service_name, key, lambda hook: hook.config_item_removed)
+
     def _call_config_hooks_for_key(self, service_name, key, hook_method):
         ctl = self._config_ctl[service_name]
         if not ctl.is_multi_item:
@@ -156,10 +160,6 @@ class System:
                 continue
             for hook in self._config_hooks:
                 hook_method(hook)(service_name, kv)
-
-    def config_item_was_removed(self, service_name, key):
-        self.invalidate_config_cache()
-        self._call_config_hooks_for_key(service_name, key, lambda hook: hook.config_item_removed)
 
     def _call_config_hooks(self, hook_list):
         for service_name, config_template in self._config_templates.items():
