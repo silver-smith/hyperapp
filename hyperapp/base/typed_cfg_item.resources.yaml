@@ -1,11 +1,8 @@
 import:
 - builtins:pyobj_creg.service
 - builtins:web.service
-- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.cfg_item:typed_fn_cfg_item
-- legacy_type.system:actor_template
 
 definitions:
 
@@ -18,40 +15,3 @@ definitions:
         htypes.cfg_item.typed_cfg_item: legacy_type.cfg_item:typed_cfg_item
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-
-  resolve_typed_cfg_item:
-    type: legacy_type.builtin:attribute
-    value:
-      object: typed_cfg_item.module
-      attr_name: resolve_typed_cfg_item
-
-  resolve_typed_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_typed_cfg_item
-      service_params: []
-
-  cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.cfg_item:typed_fn_cfg_item
-      value: resolve_typed_cfg_item.actor-template
-
-  resolve_typed_fn_cfg_value:
-    type: legacy_type.builtin:attribute
-    value:
-      object: typed_cfg_item.module
-      attr_name: resolve_typed_fn_cfg_value
-
-  resolve_typed_fn_cfg_value.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.cfg_item:typed_fn_cfg_item
-      function: resolve_typed_fn_cfg_value
-      service_params: []
-
-  cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.cfg_item:typed_fn_cfg_item
-      value: resolve_typed_fn_cfg_value.actor-template

@@ -10,7 +10,7 @@ from .services import (
     )
 from .code.config_ctl import DictConfigCtl, service_pieces_to_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
-from .code.typed_cfg_item import typed_cfg_item_config, typed_cfg_value_config
+from .code.typed_cfg_item import typed_cfg_item_config
 from .code.service_template import service_template_cfg_item_config, service_template_cfg_value_config
 from .code.actor_template import actor_template_cfg_item_config, actor_template_cfg_value_config
 
@@ -80,7 +80,6 @@ class System:
 
     def _make_cfg_value_creg_config(self):
         return {
-            **typed_cfg_value_config(),
             **service_template_cfg_value_config(),
             **actor_template_cfg_value_config(),
             }

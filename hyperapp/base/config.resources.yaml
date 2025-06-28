@@ -78,8 +78,6 @@ import:
 - base.transport.tcp_transport:tcp_client_factory.service
 - base.transport.tcp_transport:tcp_server_factory.service
 - base.transport.transport:transport.service
-- base.typed_cfg_item:cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item
-- base.typed_cfg_item:cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -94,13 +92,11 @@ definitions:
       items:
       - base.fn_cfg_item:cfg_item_creg-cfg_item-fn_cfg_item.actor-cfg-item
       - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-cfg-item
-      - base.typed_cfg_item:cfg_item_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item
   cfg_value_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - base.fn_cfg_item:cfg_value_creg-cfg_item-fn_cfg_item.actor-cfg-item
-      - base.typed_cfg_item:cfg_value_creg-cfg_item-typed_fn_cfg_item.actor-cfg-item
   config:
     type: legacy_type.system:system_config
     value:
