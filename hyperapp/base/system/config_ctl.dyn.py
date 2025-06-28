@@ -43,8 +43,8 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
     def from_data(self, piece):
         config_template = self.empty_config_template()
         for item_ref in piece.items:
-            key, item = self._cfg_item_creg.invite(item_ref)
-            self._update_config(config_template, key, item)
+            key, template = self._cfg_item_creg.invite(item_ref)
+            self._update_config(config_template, key, template)
         return config_template
 
     def to_data(self, config_template):
@@ -53,8 +53,8 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
 
     def _config_to_item_pieces(self, config_template):
         return [
-            self.item_piece(key, item)
-            for key, item in self.config_to_items(config_template)
+            self.item_piece(key, template)
+            for key, template in self.config_to_items(config_template)
             ]
 
     @staticmethod
@@ -62,11 +62,11 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
         return config_template.items()
 
     @abstractmethod
-    def _update_config(self, config_template, key, item):
+    def _update_config(self, config_template, key, template):
         pass
 
-    def item_piece(self, key, item):
-        return self._cfg_item_creg.actor_to_piece((key, item))
+    def item_piece(self, key, template):
+        return self._cfg_item_creg.actor_to_piece((key, template))
 
     def _item_pieces_to_data(self, item_list):
         return item_pieces_to_data(item_list)
@@ -155,14 +155,14 @@ class DictConfigCtl(MultiItemConfigCtl):
     def resolve(self, system, service_name, config_template):
         return self._lazy_config(system, service_name, config_template)
 
-    def resolve_item(self, system, service_name, key, item):
-        return self._cfg_value_creg.animate(item, key, system, service_name)
+    def resolve_item(self, system, service_name, key, template):
+        return self._cfg_value_creg.animate(template, key, system, service_name)
 
     def empty_config_template(self):
         return {}
 
-    def _update_config(self, config_template, key, item):
-        config_template[key] = item
+    def _update_config(self, config_template, key, template):
+        config_template[key] = template
 
 
 class FlatListConfigCtl(MultiItemConfigCtl):
@@ -177,14 +177,14 @@ class FlatListConfigCtl(MultiItemConfigCtl):
 
     @staticmethod
     def config_to_items(config_template):
-        return [(None, item) for item in config_template]
+        return [(None, template) for template in config_template]
 
     def empty_config_template(self):
         return []
 
-    def _update_config(self, config_template, key, item):
+    def _update_config(self, config_template, key, template):
         assert key is None
-        config_template.append(item)
+        config_template.append(template)
 
     def merge(self, dest, src):
         dest.extend(src)
@@ -193,8 +193,8 @@ class FlatListConfigCtl(MultiItemConfigCtl):
     def resolve(self, system, service_name, config_template):
         config = []  # command list.
         key = None
-        for item in config_template:
-            value = self._cfg_value_creg.animate(item, key, system, service_name)
+        for template in config_template:
+            value = self._cfg_value_creg.animate(template, key, system, service_name)
             config.append(value)
         return config
 
