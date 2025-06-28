@@ -12,6 +12,7 @@ def resolve_typed_cfg_item(piece):
 
 
 def resolve_typed_cfg_value(piece, key, system, service_name):
+    assert 0, (key, piece, service_name)  # TODO: Remove.
     return web.summon(piece.value)
 
 

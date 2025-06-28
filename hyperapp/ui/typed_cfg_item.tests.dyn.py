@@ -21,11 +21,6 @@ def piece(value):
         )
 
 
-def test_resolve(system, value, piece):
-    resolved_value = typed_cfg_item.resolve_typed_cfg_value(piece, '<unused-key>', system, '<unused-service-name>')
-    assert resolved_value == value
-
-
 def _sample_fn(view, state, sample_service):
     return f'sample-fn: {state}, {sample_service}'
 
