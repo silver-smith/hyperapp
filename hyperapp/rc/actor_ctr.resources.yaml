@@ -61,23 +61,23 @@ definitions:
       object: actor_ctr.module
       attr_name: CoreActorTemplateCtr
 
-  CoreActorTemplateCtr.from_template_piece:
+  CoreActorTemplateCtr.from_cfg_item_piece:
     type: legacy_type.builtin:attribute
     value:
       object: CoreActorTemplateCtr
-      attr_name: from_template_piece
+      attr_name: from_cfg_item_piece
 
-  CoreActorTemplateCtr.from_template_piece.actor-template:
+  CoreActorTemplateCtr.from_cfg_item_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      function: CoreActorTemplateCtr.from_template_piece
+      function: CoreActorTemplateCtr.from_cfg_item_piece
       service_params: []
 
-  system-actor_template.actor-cfg-item:
+  ctr_from_template_creg-cfg_item-typed_cfg_item.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
-      t: legacy_type.system:actor_template
-      value: CoreActorTemplateCtr.from_template_piece.actor-template
+      t: legacy_type.cfg_item:typed_cfg_item
+      value: CoreActorTemplateCtr.from_cfg_item_piece.actor-template
 
   ActorTemplateCtr:
     type: legacy_type.builtin:attribute

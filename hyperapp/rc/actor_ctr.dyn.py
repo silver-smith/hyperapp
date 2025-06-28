@@ -69,7 +69,7 @@ class ActorTemplateCtrBase(Constructor):
         self._t = t
 
     def get_component(self, name_to_res):
-        return name_to_res[f'{self._resource_name}.actor-template']
+        return name_to_res[f'{self._resource_name}.actor-cfg-item']
 
     @property
     def _type_name(self):
@@ -83,7 +83,7 @@ class ActorTemplateCtrBase(Constructor):
 class CoreActorTemplateCtr(ActorTemplateCtrBase):
 
     @classmethod
-    def from_template_piece(cls, piece, service_name, var_name):
+    def from_cfg_item_piece(cls, piece, service_name, var_name):
         return cls(
             service_name=service_name,
             t=pyobj_creg.invite(piece.t),
