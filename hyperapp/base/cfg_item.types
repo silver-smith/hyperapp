@@ -2,5 +2,5 @@ typed_cfg_item = record:
   t: ref
   value: ref
 
-fn_cfg_item = record:
+fn_value_template = record:
   system_fn: ref

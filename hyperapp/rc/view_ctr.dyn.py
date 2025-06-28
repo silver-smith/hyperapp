@@ -67,7 +67,7 @@ class ViewTemplateCtr(Constructor):
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
-        template = htypes.cfg_item.fn_cfg_item(
+        template = htypes.cfg_item.fn_value_template(
             system_fn=mosaic.put(system_fn),
             )
         cfg_item = htypes.cfg_item.typed_cfg_item(

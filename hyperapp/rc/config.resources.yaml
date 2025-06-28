@@ -48,7 +48,7 @@ import:
 - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
 - rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-cfg-item
 - rc.import_resource:import_resource-import_resource.actor-cfg-item
-- rc.init_hook_ctr:cfg_item-fn_cfg_item.actor-cfg-item
+- rc.init_hook_ctr:cfg_item-fn_value_template.actor-cfg-item
 - rc.init_hook_req:init_hook_req-init_hook_req.actor-cfg-item
 - rc.init_targets:ctr_from_template_creg.service
 - rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-cfg-item
@@ -166,7 +166,7 @@ definitions:
       - rc.service_ctr:system-service_template.actor-cfg-item
       - rc.service_ctr:system-finalizer_gen_service_template.actor-cfg-item
       - rc.actor_ctr:ctr_from_template_creg-cfg_item-typed_cfg_item.actor-cfg-item
-      - rc.init_hook_ctr:cfg_item-fn_cfg_item.actor-cfg-item
+      - rc.init_hook_ctr:cfg_item-fn_value_template.actor-cfg-item
       - rc.marker_ctr:marker-marker_template.actor-cfg-item
 
   marker_registry:
