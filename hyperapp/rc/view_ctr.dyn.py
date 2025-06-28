@@ -49,7 +49,7 @@ class ViewTemplateCtr(Constructor):
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def get_component(self, name_to_res):
-        return name_to_res[f'{self._type_name}.view-template']
+        return name_to_res[f'{self._type_name}.view-cfg-item']
 
     def make_component(self, types, python_module, name_to_res=None):
         object = python_module
@@ -67,14 +67,18 @@ class ViewTemplateCtr(Constructor):
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
-        template = htypes.cfg_item.typed_fn_cfg_item(
-            t=pyobj_creg.actor_to_ref(self._t),
+        template = htypes.cfg_item.fn_cfg_item(
             system_fn=mosaic.put(system_fn),
+            )
+        cfg_item = htypes.cfg_item.typed_cfg_item(
+            t=pyobj_creg.actor_to_ref(self._t),
+            value=mosaic.put(template),
             )
         if name_to_res is not None:
             name_to_res[f'{self._fn_name}.system-fn'] = system_fn
-            name_to_res[f'{self._type_name}.view-template'] = template
-        return template
+            name_to_res[f'{self._fn_name}.view-template'] = template
+            name_to_res[f'{self._type_name}.view-cfg-item'] = cfg_item
+        return cfg_item
 
     @property
     def ctx_params(self):
