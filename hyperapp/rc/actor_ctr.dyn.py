@@ -155,5 +155,5 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
             )
         if name_to_res is not None:
             name_to_res[f'{attr_name}.actor-template'] = template
-            name_to_res[f'{self._resource_name}.cfg-item'] = cfg_item
+            name_to_res[f'{self._resource_name}.actor-cfg-item'] = cfg_item
         return template
