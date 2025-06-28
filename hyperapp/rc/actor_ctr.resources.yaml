@@ -20,10 +20,11 @@ definitions:
       module_name: actor_ctr
       file_name: actor_ctr.dyn.py
       import_list:
-        htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.actor_resource.actor_probe_ctr: legacy_type.actor_resource:actor_probe_ctr
         htypes.actor_resource.actor_probe_template: legacy_type.actor_resource:actor_probe_template
         htypes.actor_resource.actor_template_ctr: legacy_type.actor_resource:actor_template_ctr
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.cfg_item.typed_cfg_item: legacy_type.cfg_item:typed_cfg_item
         htypes.system.actor_template: legacy_type.system:actor_template
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
