@@ -7,7 +7,8 @@ from .services import (
 
 def resolve_typed_cfg_item(piece):
     t = pyobj_creg.invite(piece.t)
-    return (t, piece)
+    value = web.summon(piece.value)
+    return (t, value)
 
 
 def resolve_typed_cfg_value(piece, key, system, service_name):
