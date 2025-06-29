@@ -1,16 +1,17 @@
 from . import htypes
+from .services import (
+    mosaic,
+    )
 from .code.config_ctl import MultiItemConfigCtl, DictConfigCtl
 
 
 class DictListConfigCtl(DictConfigCtl):
 
-    @classmethod
-    def from_piece(cls, piece, cfg_item_creg, cfg_value_creg):
-        return cls(cfg_item_creg, cfg_value_creg)
-
     @property
     def piece(self):
-        return htypes.list_config_ctl.dict_list_config_ctl()
+        return htypes.list_config_ctl.dict_list_config_ctl(
+            value_ctl=mosaic.put(self._value_ctl.piece),
+            )
 
     @staticmethod
     def config_to_items(config_template):
