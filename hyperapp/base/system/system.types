@@ -10,9 +10,13 @@ item_list_config = record:
   items: ref list
 
 
-dict_config_ctl = record
+dict_config_ctl = record:
+  value_ctl: ref
+
 flat_list_config_ctl = record
 
+actor_value_ctl = record
+data_value_ctl = record
 
 service_template_base = record:
   name: string

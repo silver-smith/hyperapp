@@ -6,7 +6,7 @@ import:
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
-- base.system.system:dict_config_ctl
+- base.system.system:actor_dict.config_ctl
 
 definitions:
 
@@ -64,7 +64,7 @@ definitions:
     type: legacy_type.system:finalizer_gen_service_template
     value:
       name: marker_registry
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: marker_registry
       free_params: []
       service_params:

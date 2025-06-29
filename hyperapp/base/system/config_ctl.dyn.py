@@ -1,10 +1,61 @@
 from abc import ABCMeta, abstractmethod
+from functools import partial
 
 from . import htypes
 from .services import (
     mosaic,
     web,
     )
+
+
+class ActorValueCtl:
+
+    @classmethod
+    def from_piece(cls, piece, cfg_value_creg):
+        return cls(cfg_value_creg)
+
+    def __init__(self, cfg_value_creg=None):
+        self._cfg_value_creg = cfg_value_creg
+
+    # def init(self, cfg_value_creg):
+    #     self._cfg_value_creg = cfg_value_creg
+
+    @property
+    def piece(self):
+        return htypes.system.actor_value_ctl()
+
+    def resolve(self, template, key, system, service_name):
+        return self._cfg_value_creg.animate(template, key, system, service_name)
+
+    def reverse(self, value):
+        return value.piece
+
+
+class DataValueCtl:
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls()
+
+    # def init(self, cfg_value_creg):
+    #     pass
+
+    @property
+    def piece(self):
+        return htypes.system.data_value_ctl()
+
+    def resolve(self, template, key, system, service_name):
+        return template
+
+    def reverse(self, value):
+        return value
+
+
+def config_value_ctl_creg_config(cfg_value_creg):
+    return {
+        htypes.system.actor_value_ctl: partial(ActorValueCtl.from_piece, cfg_value_creg=cfg_value_creg),
+        htypes.system.data_value_ctl: DataValueCtl.from_piece,
+        }
 
 
 class ConfigCtl(metaclass=ABCMeta):
@@ -126,7 +177,7 @@ class LazyDictConfig:
 
     def _resolve_template(self, key, value_template):
         try:
-            value = self._ctl.resolve_item(self._system, self._service_name, key, value_template)
+            value = self._ctl.resolve_value(self._system, self._service_name, key, value_template)
         except KeyError as x:
             # This is not a key error for the caller.
             raise RuntimeError(
@@ -138,12 +189,19 @@ class LazyDictConfig:
 class DictConfigCtl(MultiItemConfigCtl):
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg, cfg_value_creg):
-        return cls(cfg_item_creg, cfg_value_creg)
+    def from_piece(cls, piece, config_value_ctl_creg, cfg_item_creg, cfg_value_creg):
+        value_ctl = config_value_ctl_creg.invite(piece.value_ctl)
+        return cls(value_ctl, cfg_item_creg, cfg_value_creg)
+
+    def __init__(self, value_ctl=None, cfg_item_creg=None, cfg_value_creg=None):
+        super().__init__(cfg_item_creg, cfg_value_creg)
+        self._value_ctl = value_ctl or ActorValueCtl(cfg_value_creg)
 
     @property
     def piece(self):
-        return htypes.system.dict_config_ctl()
+        return htypes.system.dict_config_ctl(
+            value_ctl=mosaic.put(self._value_ctl.piece),
+            )
 
     def merge(self, dest, src):
         dest.update(src)
@@ -155,8 +213,8 @@ class DictConfigCtl(MultiItemConfigCtl):
     def resolve(self, system, service_name, config_template):
         return self._lazy_config(system, service_name, config_template)
 
-    def resolve_item(self, system, service_name, key, template):
-        return self._cfg_value_creg.animate(template, key, system, service_name)
+    def resolve_value(self, system, service_name, key, template):
+        return self._value_ctl.resolve(template, key, system, service_name)
 
     def empty_config_template(self):
         return {}

@@ -10,7 +10,7 @@ import:
 - legacy_type.rpc:service_target
 - legacy_type.rpc:system_fn_target
 - legacy_type.system:service_template
-- base.system.system:dict_config_ctl
+- base.system.system:actor_dict.config_ctl
 
 definitions:
 
@@ -39,7 +39,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_submit_target_factory
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: rpc_submit_target_factory
       free_params:
       - receiver_peer
@@ -59,7 +59,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_servant_wrapper
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: RpcServantWrapper
       free_params: []
       service_params: []
@@ -75,7 +75,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_system_servant_wrapper
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: RpcSystemServantWrapper
       free_params: []
       service_params: []
@@ -91,7 +91,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_service_wrapper
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: RpcServiceWrapper
       free_params: []
       service_params: []
@@ -107,7 +107,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_submit_factory
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: rpc_submit_factory
       free_params:
       - receiver_peer
@@ -128,7 +128,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_system_fn_submit_factory
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: rpc_system_fn_submit_factory
       free_params:
       - receiver_peer
@@ -149,7 +149,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: service_submit_factory
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: service_submit_factory
       free_params:
       - receiver_peer
@@ -170,7 +170,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_wait_for_future
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: rpc_wait_for_future
       free_params:
       - future
@@ -188,7 +188,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_call_factory
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: rpc_call_factory
       free_params:
       - receiver_peer
@@ -210,7 +210,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_system_call_factory
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: rpc_system_call_factory
       free_params:
       - receiver_peer
@@ -232,7 +232,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: service_call_factory
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: service_call_factory
       free_params:
       - receiver_peer

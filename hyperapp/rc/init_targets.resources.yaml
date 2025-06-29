@@ -1,6 +1,6 @@
 import:
 - base.system.config_ctl:config_ctl.module
-- base.system.system:dict_config_ctl
+- base.system.system:actor_dict.config_ctl
 - builtins:code_registry_ctr.service
 - builtins:hyperapp_dir.service
 - legacy_type.builtin:attribute
@@ -47,7 +47,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: ctr_from_template_creg
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: ctr_from_template_creg
       free_params: []
       service_params: []

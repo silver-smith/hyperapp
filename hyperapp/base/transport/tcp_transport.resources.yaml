@@ -1,5 +1,6 @@
 import:
 - base.mark:mark.module
+- base.system.system:actor_dict.config_ctl
 - base.transport.tcp_utils:tcp_utils.module
 - builtins:mosaic.service
 - builtins:unbundler.service
@@ -7,7 +8,6 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
-- legacy_type.system:dict_config_ctl
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
 - legacy_type.tcp_transport:route
@@ -48,7 +48,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: _address_to_tcp_client
-      ctl: system-dict_config_ctl.ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: _address_to_tcp_client
       service_params: []
       want_config: false
@@ -64,7 +64,7 @@ definitions:
     type: legacy_type.system:finalizer_gen_service_template
     value:
       name: _tcp_selector
-      ctl: system-dict_config_ctl.ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: _tcp_selector
       service_params:
       - system_failed
@@ -81,7 +81,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: _tcp_services
-      ctl: system-dict_config_ctl.ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: _tcp_services
       service_params:
       - bundler
@@ -93,10 +93,6 @@ definitions:
       want_config: false
       free_params: []
 
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
-    value: {}
-
   tcp_client_factory:
     type: legacy_type.builtin:attribute
     value:
@@ -107,7 +103,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: tcp_client_factory
-      ctl: system-dict_config_ctl.ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: tcp_client_factory
       service_params:
       - _tcp_services
@@ -125,7 +121,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: tcp_server_factory
-      ctl: system-dict_config_ctl.ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: tcp_server_factory
       service_params:
       - _tcp_services

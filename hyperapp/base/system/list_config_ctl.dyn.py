@@ -28,8 +28,8 @@ class DictListConfigCtl(DictConfigCtl):
     def _update_config(self, config_template, key, item):
         config_template.setdefault(key, []).append(item)
 
-    def resolve_item(self, system, service_name, key, item):
+    def resolve_value(self, system, service_name, key, template):
         return [
-            self._cfg_value_creg.animate(elt, key, system, service_name)
-            for elt in item
+            self._value_ctl.resolve(elt, key, system, service_name)
+            for elt in template
             ]

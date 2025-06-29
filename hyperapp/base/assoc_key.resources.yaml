@@ -1,4 +1,5 @@
 import:
+- base.system.system:actor_dict.config_ctl
 - builtins:association_reg.service
 - builtins:code_registry_ctr.service
 - legacy_type.assoc_key:key_base_association
@@ -10,7 +11,6 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
-- base.system.system:dict_config_ctl
 
 definitions:
 
@@ -55,7 +55,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: assoc_key_creg
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: assoc_key_creg
       free_params: []
       service_params: []

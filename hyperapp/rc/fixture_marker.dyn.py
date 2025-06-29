@@ -40,7 +40,7 @@ class FixtureObjMarker:
 
     def __call__(self, fn=None, *, ctl=None):
         if ctl is None:
-            ctl = DictConfigCtl(self._cfg_item_creg)
+            ctl = DictConfigCtl(cfg_item_creg=self._cfg_item_creg)
         if fn is None:
             # Parameterized decorator case (@mark.fixture(ctl=xx)).
             return FixtureDecorator(self._ctr_collector, self._module_name, ctl, FixtureObjCtr)
@@ -57,7 +57,7 @@ class FixtureMarker:
 
     def __call__(self, fn=None, *, ctl=None):
         if ctl is None:
-            ctl = DictConfigCtl(self._cfg_item_creg)
+            ctl = DictConfigCtl(cfg_item_creg=self._cfg_item_creg)
         if fn is None:
             # Parameterized decorator case (@mark.fixture(ctl=xx)).
             return FixtureDecorator(self._ctr_collector, self._module_name, ctl, FixtureProbeCtr)

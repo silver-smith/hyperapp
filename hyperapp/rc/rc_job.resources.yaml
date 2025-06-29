@@ -6,7 +6,7 @@ import:
 - legacy_type.rc_job:job_target
 - legacy_type.system:actor_template
 - legacy_type.system:service_template
-- base.system.system:dict_config_ctl
+- base.system.system:actor_dict.config_ctl
 
 definitions:
 
@@ -29,7 +29,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rc_job_submit_factory
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: rc_job_submit_factory
       free_params:
       - receiver_peer

@@ -346,7 +346,7 @@ class TestJob(SystemJob):
         return self._test_fn_name
 
     def _root_fixture_config_layer(self, system, cfg_item_creg, module_piece, module):
-        ctl = DictConfigCtl(cfg_item_creg)
+        ctl = DictConfigCtl(cfg_item_creg=cfg_item_creg)
         test_fn = getattr(module, self._test_fn_name)
         fn_piece = htypes.builtin.attribute(
             object=mosaic.put(module_piece),

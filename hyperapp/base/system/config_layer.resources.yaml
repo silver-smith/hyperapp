@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_config
 - legacy_type.system:service_template
@@ -31,10 +32,6 @@ definitions:
         htypes.system.service_config: legacy_type.system:service_config
         htypes.system.system_config: legacy_type.system:system_config
 
-  dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
-    value: {}
-
   resource_name_creg:
     type: legacy_type.builtin:attribute
     value:
@@ -45,8 +42,17 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: resource_name_creg
-      ctl: dict_config_ctl.ctl
+      ctl: actor_dict.config_ctl
       function: resource_name_creg
       service_params: []
       want_config: true
       free_params: []
+
+  actor.value_ctl:
+    type: legacy_type.system:actor_value_ctl
+    value: {}
+
+  actor_dict.config_ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: actor.value_ctl

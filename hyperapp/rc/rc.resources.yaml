@@ -12,7 +12,7 @@ import:
 - rc.rc_constants:rc_constants.module
 - rc.rc_filter:rc_filter.module
 - rc.target_set:target_set.module
-- base.system.system:dict_config_ctl
+- base.system.system:actor_dict.config_ctl
 
 definitions:
 
@@ -42,7 +42,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: compile_resources
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: compile_resources
       free_params:
       - name_to_project
@@ -68,7 +68,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rc_main
-      ctl: base.system.system:dict_config_ctl
+      ctl: base.system.system:actor_dict.config_ctl
       function: rc_main
       free_params:
       - name_to_project
