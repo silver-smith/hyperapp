@@ -7,6 +7,7 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
@@ -33,6 +34,11 @@ definitions:
     value:
       object: UnboundIdentityModelCommand
       attr_name: from_piece
+  UnboundIdentityModelCommand.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: UnboundIdentityModelCommand.from_piece
+      service_params: []
   add_identity_command:
     type: legacy_type.builtin:attribute
     value:
@@ -63,12 +69,11 @@ definitions:
         remotable: false
       system_fn: add_identity_command.fn
       preserve_remote: false
-  command_creg-identity_command-identity_command.actor-template:
-    type: legacy_type.system:actor_template
+  command_creg-identity_command-identity_command.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.identity_command:identity_command
-      function: UnboundIdentityModelCommand.from_piece
-      service_params: []
+      value: UnboundIdentityModelCommand.from_piece.actor-template
   identity_command.module:
     type: legacy_type.builtin:python_module
     value:

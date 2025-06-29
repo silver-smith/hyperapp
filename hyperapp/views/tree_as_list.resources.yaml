@@ -9,7 +9,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
-- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.cfg_item:fn_value_template
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
 - legacy_type.list:view
@@ -48,6 +49,10 @@ definitions:
       service_params:
       - view_reg
       - system_fn_creg
+  IndexTreeAsListWrapperView_from_piece.view-template:
+    type: legacy_type.cfg_item:fn_value_template
+    value:
+      system_fn: IndexTreeAsListWrapperView_from_piece.system-fn
   KeyTreeAsListWrapperView:
     type: legacy_type.builtin:attribute
     value:
@@ -69,18 +74,26 @@ definitions:
       service_params:
       - view_reg
       - system_fn_creg
+  KeyTreeAsListWrapperView_from_piece.view-template:
+    type: legacy_type.cfg_item:fn_value_template
+    value:
+      system_fn: KeyTreeAsListWrapperView_from_piece.system-fn
   format_list_model:
     type: legacy_type.builtin:attribute
     value:
       object: tree_as_list.module
       attr_name: format_list_model
-  formatter_creg-tree_as_list-list_model.actor-template:
+  format_list_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.tree_as_list:list_model
       function: format_list_model
       service_params:
       - format
+  formatter_creg-tree_as_list-list_model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.tree_as_list:list_model
+      value: format_list_model.actor-template
   index_tree_as_list_ui_type_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -237,11 +250,11 @@ definitions:
     value:
       t: legacy_type.tree_as_list:index_view
       command: parent.ui-command
-  tree_as_list-index_view.view-template:
-    type: legacy_type.cfg_item:typed_fn_cfg_item
+  tree_as_list-index_view.view-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree_as_list:index_view
-      system_fn: IndexTreeAsListWrapperView_from_piece.system-fn
+      value: IndexTreeAsListWrapperView_from_piece.view-template
   tree_as_list-key_view-open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -252,11 +265,11 @@ definitions:
     value:
       t: legacy_type.tree_as_list:key_view
       command: parent.ui-command
-  tree_as_list-key_view.view-template:
-    type: legacy_type.cfg_item:typed_fn_cfg_item
+  tree_as_list-key_view.view-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree_as_list:key_view
-      system_fn: KeyTreeAsListWrapperView_from_piece.system-fn
+      value: KeyTreeAsListWrapperView_from_piece.view-template
   tree_as_list.module:
     type: legacy_type.builtin:python_module
     value:

@@ -13,6 +13,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.lcs_resource_storage:element
 - legacy_type.lcs_resource_storage:mapping
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
@@ -41,7 +42,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: lcs_resource_storage_factory
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: lcs_resource_storage_factory
       service_params:
       - pick_refs
@@ -50,6 +51,10 @@ definitions:
       - name
       - path
       - project_imports
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl

@@ -16,6 +16,7 @@ import:
 - legacy_type.root:layout
 - legacy_type.root:state
 - legacy_type.root:view
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.ui:canned_ctl_item
@@ -30,7 +31,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: canned_ctl_item_factory
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: canned_ctl_item_factory
       service_params: []
       want_config: false
@@ -65,7 +66,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: controller_running
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: controller_running
       service_params:
       - feed_factory
@@ -89,6 +90,10 @@ definitions:
     type: legacy_type.feed:index_tree_feed_type
     value:
       item_t: legacy_type.layout:item
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl

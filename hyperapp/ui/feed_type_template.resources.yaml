@@ -5,21 +5,20 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.feed:feed_template
 - legacy_type.system:actor_template
 definitions:
-  cfg_item_creg-feed-feed_template.actor-template:
-    type: legacy_type.system:actor_template
+  cfg_item_creg-feed-feed_template.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.feed:feed_template
-      function: resolve_feed_type_cfg_item
-      service_params: []
-  cfg_value_creg-feed-feed_template.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_feed_type_cfg_item.actor-template
+  cfg_value_creg-feed-feed_template.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.feed:feed_template
-      function: resolve_feed_type_cfg_value
-      service_params: []
+      value: resolve_feed_type_cfg_value.actor-template
   feed_type_template.module:
     type: legacy_type.builtin:python_module
     value:
@@ -33,8 +32,18 @@ definitions:
     value:
       object: feed_type_template.module
       attr_name: resolve_feed_type_cfg_item
+  resolve_feed_type_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: resolve_feed_type_cfg_item
+      service_params: []
   resolve_feed_type_cfg_value:
     type: legacy_type.builtin:attribute
     value:
       object: feed_type_template.module
       attr_name: resolve_feed_type_cfg_value
+  resolve_feed_type_cfg_value.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: resolve_feed_type_cfg_value
+      service_params: []

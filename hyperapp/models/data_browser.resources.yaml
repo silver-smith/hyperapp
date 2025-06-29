@@ -225,13 +225,17 @@ definitions:
     value:
       object: data_browser.module
       attr_name: format_record_view
-  formatter_creg-data_browser-record_view.actor-template:
+  format_record_view.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.data_browser:record_view
       function: format_record_view
       service_params:
       - format
+  formatter_creg-data_browser-record_view.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.data_browser:record_view
+      value: format_record_view.actor-template
   list_open:
     type: legacy_type.builtin:attribute
     value:

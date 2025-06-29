@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.diff:append
 - legacy_type.diff:remove_idx
 - legacy_type.diff:remove_key
@@ -21,6 +22,11 @@ definitions:
     value:
       object: ListDiffAppend
       attr_name: from_piece
+  ListDiffAppend.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ListDiffAppend.from_piece
+      service_params: []
   ListDiffRemoveIdx:
     type: legacy_type.builtin:attribute
     value:
@@ -31,6 +37,11 @@ definitions:
     value:
       object: ListDiffRemoveIdx
       attr_name: from_piece
+  ListDiffRemoveIdx.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ListDiffRemoveIdx.from_piece
+      service_params: []
   ListDiffRemoveKey:
     type: legacy_type.builtin:attribute
     value:
@@ -41,24 +52,26 @@ definitions:
     value:
       object: ListDiffRemoveKey
       attr_name: from_piece
-  diff_creg-diff-append.actor-template:
+  ListDiffRemoveKey.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.diff:append
-      function: ListDiffAppend.from_piece
-      service_params: []
-  diff_creg-diff-remove_idx.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.diff:remove_idx
-      function: ListDiffRemoveIdx.from_piece
-      service_params: []
-  diff_creg-diff-remove_key.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.diff:remove_key
       function: ListDiffRemoveKey.from_piece
       service_params: []
+  diff_creg-diff-append.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.diff:append
+      value: ListDiffAppend.from_piece.actor-template
+  diff_creg-diff-remove_idx.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.diff:remove_idx
+      value: ListDiffRemoveIdx.from_piece.actor-template
+  diff_creg-diff-remove_key.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.diff:remove_key
+      value: ListDiffRemoveKey.from_piece.actor-template
   list_diff.module:
     type: legacy_type.builtin:python_module
     value:

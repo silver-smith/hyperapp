@@ -6,6 +6,7 @@ import:
 - builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
@@ -27,7 +28,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: server_main
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: server_main
       service_params:
       - stop_signal
@@ -42,6 +43,10 @@ definitions:
       free_params:
       - name_to_project
       - sys_argv
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl

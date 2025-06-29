@@ -29,13 +29,17 @@ definitions:
     value:
       object: view_factory_list.module
       attr_name: format_model
-  formatter_creg-view_factory_list-model.actor-template:
+  format_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.view_factory_list:model
       function: format_model
       service_params:
       - format
+  formatter_creg-view_factory_list-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.view_factory_list:model
+      value: format_model.actor-template
   open_view_factory_list:
     type: legacy_type.builtin:attribute
     value:

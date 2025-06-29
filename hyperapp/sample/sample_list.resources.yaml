@@ -30,23 +30,31 @@ definitions:
     value:
       object: sample_list.module
       attr_name: format_feed_model
+  format_feed_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_feed_model
+      service_params: []
   format_model:
     type: legacy_type.builtin:attribute
     value:
       object: sample_list.module
       attr_name: format_model
-  formatter_creg-sample_list-feed_sample_list.actor-template:
+  format_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.sample_list:feed_sample_list
-      function: format_feed_model
-      service_params: []
-  formatter_creg-sample_list-sample_list.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.sample_list:sample_list
       function: format_model
       service_params: []
+  formatter_creg-sample_list-feed_sample_list.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.sample_list:feed_sample_list
+      value: format_feed_model.actor-template
+  formatter_creg-sample_list-sample_list.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.sample_list:sample_list
+      value: format_model.actor-template
   open_feed_sample_fn_list:
     type: legacy_type.builtin:attribute
     value:

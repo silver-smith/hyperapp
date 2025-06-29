@@ -26,23 +26,31 @@ definitions:
     value:
       object: model_list.module
       attr_name: format_model
+  format_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_model
+      service_params: []
   format_model_arg:
     type: legacy_type.builtin:attribute
     value:
       object: model_list.module
       attr_name: format_model_arg
-  formatter_creg-model_list-model.actor-template:
+  format_model_arg.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.model_list:model
-      function: format_model
-      service_params: []
-  formatter_creg-model_list-model_arg.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.model_list:model_arg
       function: format_model_arg
       service_params: []
+  formatter_creg-model_list-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model_list:model
+      value: format_model.actor-template
+  formatter_creg-model_list-model_arg.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model_list:model_arg
+      value: format_model_arg.actor-template
   model_list-model.feed-template:
     type: legacy_type.feed:feed_template
     value:

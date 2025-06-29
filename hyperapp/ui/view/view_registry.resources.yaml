@@ -4,13 +4,18 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.context_code_registry:context_code_registry.module
 definitions:
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl
   view_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -20,7 +25,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_reg
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: view_reg
       service_params: []
       want_config: true

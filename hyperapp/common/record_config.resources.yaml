@@ -5,6 +5,7 @@ import:
 - base.system.config_ctl:config_ctl.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.record_config:config_ctl
 - legacy_type.system:actor_template
 definitions:
@@ -18,12 +19,16 @@ definitions:
     value:
       object: RecordConfigCtl
       attr_name: from_piece
-  config_ctl_creg-record_config-config_ctl.actor-template:
+  RecordConfigCtl.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.record_config:config_ctl
       function: RecordConfigCtl.from_piece
       service_params: []
+  config_ctl_creg-record_config-config_ctl.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.record_config:config_ctl
+      value: RecordConfigCtl.from_piece.actor-template
   record_config.module:
     type: legacy_type.builtin:python_module
     value:

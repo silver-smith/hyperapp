@@ -7,10 +7,12 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.feed:index_tree_feed_type
 - legacy_type.feed:list_feed_type
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
@@ -36,7 +38,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: feed_factory
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: feed_factory
       service_params:
       - feed_map
@@ -52,33 +54,45 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: feed_map
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: feed_map
       service_params: []
       want_config: false
       free_params: []
-  feed_type_creg-feed-index_tree_feed_type.actor-template:
-    type: legacy_type.system:actor_template
+  feed_type_creg-feed-index_tree_feed_type.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.feed:index_tree_feed_type
-      function: index_tree_feed_from_piece
-      service_params: []
-  feed_type_creg-feed-list_feed_type.actor-template:
-    type: legacy_type.system:actor_template
+      value: index_tree_feed_from_piece.actor-template
+  feed_type_creg-feed-list_feed_type.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.feed:list_feed_type
-      function: list_feed_from_piece
-      service_params: []
+      value: list_feed_from_piece.actor-template
   index_tree_feed_from_piece:
     type: legacy_type.builtin:attribute
     value:
       object: feed.module
       attr_name: index_tree_feed_from_piece
+  index_tree_feed_from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: index_tree_feed_from_piece
+      service_params: []
   list_feed_from_piece:
     type: legacy_type.builtin:attribute
     value:
       object: feed.module
       attr_name: list_feed_from_piece
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  list_feed_from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: list_feed_from_piece
+      service_params: []
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl

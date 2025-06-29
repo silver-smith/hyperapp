@@ -12,6 +12,7 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:command_result
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
@@ -24,6 +25,7 @@ import:
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:flat_list_config_ctl
 - legacy_type.system:service_template
@@ -40,6 +42,14 @@ definitions:
     value:
       object: ModelCommandAddFn
       attr_name: from_piece
+  ModelCommandAddFn.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ModelCommandAddFn.from_piece
+      service_params:
+      - system
+      - rpc_system_call_factory
+      - model_servant
   ModelCommandEnumFn:
     type: legacy_type.builtin:attribute
     value:
@@ -50,6 +60,13 @@ definitions:
     value:
       object: ModelCommandEnumFn
       attr_name: from_piece
+  ModelCommandEnumFn.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ModelCommandEnumFn.from_piece
+      service_params:
+      - system
+      - rpc_system_call_factory
   ModelCommandFn:
     type: legacy_type.builtin:attribute
     value:
@@ -60,6 +77,13 @@ definitions:
     value:
       object: ModelCommandFn
       attr_name: from_piece
+  ModelCommandFn.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ModelCommandFn.from_piece
+      service_params:
+      - system
+      - rpc_system_call_factory
   ModelCommandRemoveFn:
     type: legacy_type.builtin:attribute
     value:
@@ -70,27 +94,29 @@ definitions:
     value:
       object: ModelCommandRemoveFn
       attr_name: from_piece
-  command_creg-command-global_model_command.actor-template:
+  ModelCommandRemoveFn.from_piece.actor-template:
     type: legacy_type.system:actor_template
+    value:
+      function: ModelCommandRemoveFn.from_piece
+      service_params:
+      - system
+      - rpc_system_call_factory
+      - model_servant
+  command_creg-command-global_model_command.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:global_model_command
-      function: global_model_command_from_piece
-      service_params:
-      - system_fn_creg
-  command_creg-command-model_command.actor-template:
-    type: legacy_type.system:actor_template
+      value: global_model_command_from_piece.actor-template
+  command_creg-command-model_command.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:model_command
-      function: model_command_from_piece
-      service_params:
-      - system_fn_creg
-  command_creg-command-model_command_enumerator.actor-template:
-    type: legacy_type.system:actor_template
+      value: model_command_from_piece.actor-template
+  command_creg-command-model_command_enumerator.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:model_command_enumerator
-      function: model_command_enumerator_from_piece
-      service_params:
-      - system_fn_creg
+      value: model_command_enumerator_from_piece.actor-template
   get_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -100,7 +126,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_model_commands
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: get_model_commands
       service_params:
       - model_command_reg
@@ -114,6 +140,12 @@ definitions:
     value:
       object: model_command.module
       attr_name: global_model_command_from_piece
+  global_model_command_from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: global_model_command_from_piece
+      service_params:
+      - system_fn_creg
   global_model_command_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -128,9 +160,10 @@ definitions:
       service_params: []
       want_config: true
       free_params: []
-  list_config_ctl-dict_list_config_ctl.ctl:
+  list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
-    value: {}
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl
   model_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -162,6 +195,12 @@ definitions:
     value:
       object: model_command.module
       attr_name: model_command_enumerator_from_piece
+  model_command_enumerator_from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: model_command_enumerator_from_piece
+      service_params:
+      - system_fn_creg
   model_command_enumerator_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -171,7 +210,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: model_command_enumerator_reg
-      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
       function: model_command_enumerator_reg
       service_params: []
       want_config: true
@@ -182,6 +221,12 @@ definitions:
     value:
       object: model_command.module
       attr_name: model_command_from_piece
+  model_command_from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: model_command_from_piece
+      service_params:
+      - system_fn_creg
   model_command_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -191,49 +236,39 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: model_command_reg
-      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
       function: model_command_reg
       service_params: []
       want_config: true
       free_params:
       - model_t
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl
   system-flat_list_config_ctl.ctl:
     type: legacy_type.system:flat_list_config_ctl
     value: {}
-  system_fn_creg-command-model_command_add_fn.actor-template:
-    type: legacy_type.system:actor_template
+  system_fn_creg-command-model_command_add_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:model_command_add_fn
-      function: ModelCommandAddFn.from_piece
-      service_params:
-      - system
-      - rpc_system_call_factory
-      - model_servant
-  system_fn_creg-command-model_command_enum_fn.actor-template:
-    type: legacy_type.system:actor_template
+      value: ModelCommandAddFn.from_piece.actor-template
+  system_fn_creg-command-model_command_enum_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:model_command_enum_fn
-      function: ModelCommandEnumFn.from_piece
-      service_params:
-      - system
-      - rpc_system_call_factory
-  system_fn_creg-command-model_command_fn.actor-template:
-    type: legacy_type.system:actor_template
+      value: ModelCommandEnumFn.from_piece.actor-template
+  system_fn_creg-command-model_command_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:model_command_fn
-      function: ModelCommandFn.from_piece
-      service_params:
-      - system
-      - rpc_system_call_factory
-  system_fn_creg-command-model_command_remove_fn.actor-template:
-    type: legacy_type.system:actor_template
+      value: ModelCommandFn.from_piece.actor-template
+  system_fn_creg-command-model_command_remove_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:model_command_remove_fn
-      function: ModelCommandRemoveFn.from_piece
-      service_params:
-      - system
-      - rpc_system_call_factory
-      - model_servant
+      value: ModelCommandRemoveFn.from_piece.actor-template

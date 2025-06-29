@@ -8,7 +8,9 @@ import:
 - legacy_type.builtin:int
 - legacy_type.builtin:python_module
 - legacy_type.builtin:string
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.type_convertor:int_to_string_convertor
@@ -25,6 +27,11 @@ definitions:
     value:
       object: IntToStringConvertor
       attr_name: from_piece
+  IntToStringConvertor.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: IntToStringConvertor.from_piece
+      service_params: []
   NoOpConvertor:
     type: legacy_type.builtin:attribute
     value:
@@ -35,6 +42,11 @@ definitions:
     value:
       object: NoOpConvertor
       attr_name: from_piece
+  NoOpConvertor.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: NoOpConvertor.from_piece
+      service_params: []
   OptionalConvertor:
     type: legacy_type.builtin:attribute
     value:
@@ -45,42 +57,48 @@ definitions:
     value:
       object: OptionalConvertor
       attr_name: from_piece
+  OptionalConvertor.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: OptionalConvertor.from_piece
+      service_params:
+      - convertor_creg
   convertor_creg:
     type: legacy_type.builtin:attribute
     value:
       object: type_convertor.module
       attr_name: convertor_creg
-  convertor_creg-type_convertor-int_to_string_convertor.actor-template:
-    type: legacy_type.system:actor_template
+  convertor_creg-type_convertor-int_to_string_convertor.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.type_convertor:int_to_string_convertor
-      function: IntToStringConvertor.from_piece
-      service_params: []
-  convertor_creg-type_convertor-noop_convertor.actor-template:
-    type: legacy_type.system:actor_template
+      value: IntToStringConvertor.from_piece.actor-template
+  convertor_creg-type_convertor-noop_convertor.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.type_convertor:noop_convertor
-      function: NoOpConvertor.from_piece
-      service_params: []
-  convertor_creg-type_convertor-opt_convertor.actor-template:
-    type: legacy_type.system:actor_template
+      value: NoOpConvertor.from_piece.actor-template
+  convertor_creg-type_convertor-opt_convertor.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.type_convertor:opt_convertor
-      function: OptionalConvertor.from_piece
-      service_params:
-      - convertor_creg
+      value: OptionalConvertor.from_piece.actor-template
   convertor_creg.service:
     type: legacy_type.system:service_template
     value:
       name: convertor_creg
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: convertor_creg
       service_params: []
       want_config: true
       free_params: []
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl
   type_convertor.module:
     type: legacy_type.builtin:python_module
     value:

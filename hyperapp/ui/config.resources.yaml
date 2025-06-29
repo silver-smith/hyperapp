@@ -3,55 +3,55 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
-- ui.accessor:accessor_creg-accessor-model_accessor.actor-template
-- ui.accessor:accessor_creg-accessor-record_field_accessor.actor-template
+- ui.accessor:accessor_creg-accessor-model_accessor.actor-cfg-item
+- ui.accessor:accessor_creg-accessor-record_field_accessor.actor-cfg-item
 - ui.accessor:accessor_creg.service
 - ui.arg_mark:arg_mark-view-remove_mark.command-cfg-item
-- ui.arg_mark:arg_mark-view.view-template
+- ui.arg_mark:arg_mark-view.view-cfg-item
 - ui.arg_mark:navigator-view-add_mark.command-cfg-item
-- ui.column_format:formatter_creg-column-column_k.actor-template
-- ui.column_resource_name:resource_name_creg-column-column_k.actor-template
+- ui.column_format:formatter_creg-column-column_k.actor-cfg-item
+- ui.column_resource_name:resource_name_creg-column-column_k.actor-cfg-item
 - ui.column_visible_reg:column_visible_reg.service
-- ui.command_cfg_item:cfg_item_creg-command-cfg_item.actor-template
-- ui.command_cfg_item:cfg_item_creg-command-global_model_command.actor-template
-- ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-template
-- ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-template
-- ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-template
-- ui.command_cfg_item:cfg_value_creg-command-cfg_item.actor-template
-- ui.command_cfg_item:cfg_value_creg-command-global_model_command.actor-template
-- ui.command_cfg_item:cfg_value_creg-command-model_args_picker_command_enumerator.actor-template
-- ui.command_cfg_item:cfg_value_creg-command-ui_args_picker_command_enumerator.actor-template
-- ui.command_cfg_item:cfg_value_creg-command-ui_command.actor-template
+- ui.command_cfg_item:cfg_item_creg-command-cfg_item.actor-cfg-item
+- ui.command_cfg_item:cfg_item_creg-command-global_model_command.actor-cfg-item
+- ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-cfg-item
+- ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
+- ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-cfg-item
+- ui.command_cfg_item:cfg_value_creg-command-cfg_item.actor-cfg-item
+- ui.command_cfg_item:cfg_value_creg-command-global_model_command.actor-cfg-item
+- ui.command_cfg_item:cfg_value_creg-command-model_args_picker_command_enumerator.actor-cfg-item
+- ui.command_cfg_item:cfg_value_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
+- ui.command_cfg_item:cfg_value_creg-command-ui_command.actor-cfg-item
 - ui.command_creg:command_creg.service
 - ui.controller:canned_ctl_item_factory.service
 - ui.controller:controller_running.service
-- ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-template
-- ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-template
-- ui.crud.args_picker_command_enum:formatter_creg-command-open_args_picker_command_d.actor-template
-- ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
-- ui.crud.canned_args_command_fn:formatter_creg-command-canned_arg_command_d.actor-template
-- ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-template
+- ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-cfg-item
+- ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
+- ui.crud.args_picker_command_enum:formatter_creg-command-open_args_picker_command_d.actor-cfg-item
+- ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-cfg-item
+- ui.crud.canned_args_command_fn:formatter_creg-command-canned_arg_command_d.actor-cfg-item
+- ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-cfg-item
 - ui.crud.crud:crud-view-crud_commit_command_enum.command-cfg-item
-- ui.crud.crud:crud-view.view-template
+- ui.crud.crud:crud-view.view-cfg-item
 - ui.crud.crud:crud.service
-- ui.crud.crud:formatter_creg-crud-layout_k.actor-template
-- ui.crud.crud:resource_name_creg-crud-layout_k.actor-template
-- ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-template
-- ui.crud.crud:ui_adapter_creg-crud-record_adapter.actor-template
-- ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-template
+- ui.crud.crud:formatter_creg-crud-layout_k.actor-cfg-item
+- ui.crud.crud:resource_name_creg-crud-layout_k.actor-cfg-item
+- ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-cfg-item
+- ui.crud.crud:ui_adapter_creg-crud-record_adapter.actor-cfg-item
+- ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-cfg-item
 - ui.crud.editor_default_reg:editor_default_reg.service
 - ui.crud.editor_defaults:builtin-string.editor_default.cfg-item
 - ui.error_view:error_view.service
 - ui.feed:feed_factory.service
 - ui.feed:feed_map.service
-- ui.feed:feed_type_creg-feed-index_tree_feed_type.actor-template
-- ui.feed:feed_type_creg-feed-list_feed_type.actor-template
+- ui.feed:feed_type_creg-feed-index_tree_feed_type.actor-cfg-item
+- ui.feed:feed_type_creg-feed-list_feed_type.actor-cfg-item
 - ui.feed_creg:feed_type_creg.service
-- ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-template
-- ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-template
+- ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-cfg-item
+- ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-cfg-item
 - ui.format:format.service
 - ui.formatter_creg:formatter_creg.service
-- ui.layout:formatter_creg-layout-model.actor-template
+- ui.layout:formatter_creg-layout-model.actor-cfg-item
 - ui.layout:layout-command_list-add_view_command.command-cfg-item
 - ui.layout:layout-command_list-set_escape_shortcut.command-cfg-item
 - ui.layout:layout-command_list-set_shortcut.command-cfg-item
@@ -64,108 +64,108 @@ import:
 - ui.layout:open_layout_tree.global-model-command
 - ui.local_server:local_server_peer.service
 - ui.local_server:local_server_peer_path.service
-- ui.model_command:command_creg-command-global_model_command.actor-template
-- ui.model_command:command_creg-command-model_command.actor-template
-- ui.model_command:command_creg-command-model_command_enumerator.actor-template
+- ui.model_command:command_creg-command-global_model_command.actor-cfg-item
+- ui.model_command:command_creg-command-model_command.actor-cfg-item
+- ui.model_command:command_creg-command-model_command_enumerator.actor-cfg-item
 - ui.model_command:get_model_commands.service
 - ui.model_command:global_model_command_reg.service
 - ui.model_command:model_command_enumerator_reg.service
 - ui.model_command:model_command_reg.service
-- ui.model_command:system_fn_creg-command-model_command_add_fn.actor-template
-- ui.model_command:system_fn_creg-command-model_command_enum_fn.actor-template
-- ui.model_command:system_fn_creg-command-model_command_fn.actor-template
-- ui.model_command:system_fn_creg-command-model_command_remove_fn.actor-template
-- ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
+- ui.model_command:system_fn_creg-command-model_command_add_fn.actor-cfg-item
+- ui.model_command:system_fn_creg-command-model_command_enum_fn.actor-cfg-item
+- ui.model_command:system_fn_creg-command-model_command_fn.actor-cfg-item
+- ui.model_command:system_fn_creg-command-model_command_remove_fn.actor-cfg-item
+- ui.model_field_wrapper_view:model_field_wrapper_view-view.view-cfg-item
 - ui.model_layout_reg:model_layout_reg.service
 - ui.model_servant:model_servant.service
 - ui.model_servant:model_to_servant_dict.service
 - ui.navigator:navigator-view-go_back.command-cfg-item
 - ui.navigator:navigator-view-go_forward.command-cfg-item
-- ui.navigator:navigator-view.view-template
+- ui.navigator:navigator-view.view-cfg-item
 - ui.peer_label_reg:peer_label_reg.service
 - ui.qt.auto_tabs:auto_tabs-view-close_tab.command-cfg-item
 - ui.qt.auto_tabs:auto_tabs-view-duplicate_tab.command-cfg-item
-- ui.qt.auto_tabs:auto_tabs-view.view-template
+- ui.qt.auto_tabs:auto_tabs-view.view-cfg-item
 - ui.qt.box_layout:box_layout-view-add_element.command-cfg-item
 - ui.qt.box_layout:box_layout-view-add_stretch.command-cfg-item
 - ui.qt.box_layout:box_layout-view-insert_element.command-cfg-item
 - ui.qt.box_layout:box_layout-view-remove_element.command-cfg-item
 - ui.qt.box_layout:box_layout-view-unwrap.command-cfg-item
-- ui.qt.box_layout:box_layout-view.view-template
+- ui.qt.box_layout:box_layout-view.view-cfg-item
 - ui.qt.box_layout:wrap_box_layout.view-factory-template
-- ui.qt.command_pane:command_pane-view.view-template
-- ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-template
-- ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-template
-- ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
-- ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template
-- ui.qt.form:form-view.view-template
+- ui.qt.command_pane:command_pane-view.view-cfg-item
+- ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-cfg-item
+- ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-cfg-item
+- ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-cfg-item
+- ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-cfg-item
+- ui.qt.form:form-view.view-cfg-item
 - ui.qt.form:form_view_factory.view-factory-template
 - ui.qt.label:label-view-set_label_text.command-cfg-item
-- ui.qt.label:label-view.view-template
+- ui.qt.label:label-view.view-cfg-item
 - ui.qt.label:label_view.view-factory-template
-- ui.qt.line_edit:line_edit-edit_view.view-template
-- ui.qt.line_edit:line_edit-readonly_view.view-template
+- ui.qt.line_edit:line_edit-edit_view.view-cfg-item
+- ui.qt.line_edit:line_edit-readonly_view.view-cfg-item
 - ui.qt.line_edit:line_edit.view-factory-template
 - ui.qt.line_edit:line_view.view-factory-template
-- ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-template
-- ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
+- ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-cfg-item
+- ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-cfg-item
 - ui.qt.list:index_list_ui_type_layout.view-factory-template
 - ui.qt.list:key_list_ui_type_layout.view-factory-template
-- ui.qt.list:list-view.view-template
+- ui.qt.list:list-view.view-cfg-item
 - ui.qt.list:static_list_ui_type_layout.view-factory-template
-- ui.qt.menu_bar:menu_bar-view.view-template
-- ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
+- ui.qt.menu_bar:menu_bar-view.view-cfg-item
+- ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-cfg-item
 - ui.qt.tabs:tabs-view-add_element.command-cfg-item
 - ui.qt.tabs:tabs-view-insert_element.command-cfg-item
 - ui.qt.tabs:tabs-view-open_tab_list.command-cfg-item
 - ui.qt.tabs:tabs-view-remove_element.command-cfg-item
 - ui.qt.tabs:tabs-view-unwrap.command-cfg-item
-- ui.qt.tabs:tabs-view.view-template
+- ui.qt.tabs:tabs-view.view-cfg-item
 - ui.qt.tabs:wrap_in_tabs.view-factory-template
-- ui.qt.text:text-edit_view.view-template
-- ui.qt.text:text-readonly_view.view-template
+- ui.qt.text:text-edit_view.view-cfg-item
+- ui.qt.text:text-readonly_view.view-cfg-item
 - ui.qt.text:text_edit.view-factory-template
 - ui.qt.text:text_view.view-factory-template
 - ui.qt.tree:index_tree_ui_type_layout.view-factory-template
 - ui.qt.tree:key_tree_ui_type_layout.view-factory-template
-- ui.qt.tree:tree-view.view-template
-- ui.qt.wiki:convertor_creg-wiki-wiki_to_string_convertor.actor-template
-- ui.qt.wiki:resource_name_creg-wiki-wiki_to_string_convertor.actor-template
-- ui.qt.wiki:wiki-text_view.view-template
-- ui.qt.wiki:wiki-wiki_view.view-template
+- ui.qt.tree:tree-view.view-cfg-item
+- ui.qt.wiki:convertor_creg-wiki-wiki_to_string_convertor.actor-cfg-item
+- ui.qt.wiki:resource_name_creg-wiki-wiki_to_string_convertor.actor-cfg-item
+- ui.qt.wiki:wiki-text_view.view-cfg-item
+- ui.qt.wiki:wiki-wiki_view.view-cfg-item
 - ui.qt.wiki:wiki.view-factory-template
 - ui.qt.wiki:wiki_text_edit.view-factory-template
 - ui.qt.wiki:wiki_text_view.view-factory-template
 - ui.qt.wiki:wiki_view.view-factory-template
-- ui.qt.wiki_refs:ui_adapter_creg-wiki-ref_list_adapter.actor-template
+- ui.qt.wiki_refs:ui_adapter_creg-wiki-ref_list_adapter.actor-cfg-item
 - ui.qt.wiki_refs:wiki_refs.view-factory-template
-- ui.qt.window:window-view.view-template
+- ui.qt.window:window-view.view-cfg-item
 - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
 - ui.qt.window_commands:window-view-quit.command-cfg-item
-- ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-template
-- ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template
-- ui.record_field_view_factory:formatter_creg-record_field_view_factory-factory_k.actor-template
-- ui.ref_formatter:formatter_creg-builtin-ref.actor-template
+- ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-cfg-item
+- ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-cfg-item
+- ui.record_field_view_factory:formatter_creg-record_field_view_factory-factory_k.actor-cfg-item
+- ui.ref_formatter:formatter_creg-builtin-ref.actor-cfg-item
 - ui.remote_command:model-remote_model-remote_command_enum.command-cfg-item
 - ui.remote_command:remote_command_from_model_command.service
-- ui.remote_model:formatter_creg-model-remote_model.actor-template
-- ui.selector:cfg_item_creg-selector-template.actor-template
-- ui.selector:cfg_value_creg-selector-template.actor-template
+- ui.remote_model:formatter_creg-model-remote_model.actor-cfg-item
+- ui.selector:cfg_item_creg-selector-template.actor-cfg-item
+- ui.selector:cfg_value_creg-selector-template.actor-cfg-item
 - ui.selector:selector_reg.service
 - ui.shortcut_reg:shortcut_reg.service
 - ui.tab_groups:tabs-view-move_tab_to_new_group.command-cfg-item
 - ui.text_toggle_editable:text-edit_view-toggle_editable.command-cfg-item
 - ui.text_toggle_editable:text-readonly_view-toggle_editable.command-cfg-item
-- ui.type_convertor:convertor_creg-type_convertor-int_to_string_convertor.actor-template
-- ui.type_convertor:convertor_creg-type_convertor-noop_convertor.actor-template
-- ui.type_convertor:convertor_creg-type_convertor-opt_convertor.actor-template
+- ui.type_convertor:convertor_creg-type_convertor-int_to_string_convertor.actor-cfg-item
+- ui.type_convertor:convertor_creg-type_convertor-noop_convertor.actor-cfg-item
+- ui.type_convertor:convertor_creg-type_convertor-opt_convertor.actor-cfg-item
 - ui.type_convertor:convertor_creg.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
-- ui.ui_command:command_creg-command-ui_command.actor-template
-- ui.ui_command:command_creg-command-ui_command_enumerator.actor-template
+- ui.ui_command:command_creg-command-ui_command.actor-cfg-item
+- ui.ui_command:command_creg-command-ui_command_enumerator.actor-cfg-item
 - ui.ui_command:get_view_commands.service
 - ui.ui_command:get_view_element_commands.service
-- ui.ui_command:system_fn_creg-command-ui_command_enum_fn.actor-template
+- ui.ui_command:system_fn_creg-command-ui_command_enum_fn.actor-cfg-item
 - ui.ui_command:ui_command_enumerator_reg.service
 - ui.ui_command:universal_ui_command_enumerator_reg.service
 - ui.ui_command:universal_ui_command_reg.service
@@ -178,16 +178,16 @@ import:
 - ui.ui_model_command:get_ui_model_commands.service
 - ui.ui_model_command:ui_global_command_items.service
 - ui.ui_model_command:ui_model_command_items.service
-- ui.value_adapter:ui_adapter_creg-value_adapter-value_adapter.actor-template
+- ui.value_adapter:ui_adapter_creg-value_adapter-value_adapter.actor-cfg-item
 - ui.view.default_view_factory:default_model_factory.service
 - ui.view.default_view_factory:default_ui_factory.service
 - ui.view.replace_view:replace_view.universal-ui-command-enumerator
 - ui.view.view_factory:view_factory_reg.service
-- ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-template
-- ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-template
-- ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-multi_template.actor-template
-- ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-template.actor-template
-- ui.view.view_factory_list:formatter_creg-view_factory_list-model.actor-template
+- ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-cfg-item
+- ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-cfg-item
+- ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-multi_template.actor-cfg-item
+- ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-template.actor-cfg-item
+- ui.view.view_factory_list:formatter_creg-view_factory_list-model.actor-cfg-item
 - ui.view.view_factory_list:open_view_factory_list.global-model-command
 - ui.view.view_factory_list:view_factory-factory.editor_default.cfg-item
 - ui.view.view_factory_list:view_factory-factory.selector-template
@@ -195,8 +195,8 @@ import:
 - ui.view.view_factory_list:view_factory_list-model.model-cfg-item
 - ui.view.view_registry:view_reg.service
 - ui.view.wrap_view:wrap_view.universal-ui-command-enumerator
-- ui.visualizer:formatter_creg-ui-model_layout_k.actor-template
-- ui.visualizer:resource_name_creg-ui-model_layout_k.actor-template
+- ui.visualizer:formatter_creg-ui-model_layout_k.actor-cfg-item
+- ui.visualizer:resource_name_creg-ui-model_layout_k.actor-cfg-item
 - ui.visualizer:visualizer.service
 - ui.visualizer_reg:model_reg.service
 - ui.visualizer_reg:visualizer_reg.service
@@ -205,45 +205,45 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.accessor:accessor_creg-accessor-model_accessor.actor-template
-      - ui.accessor:accessor_creg-accessor-record_field_accessor.actor-template
+      - ui.accessor:accessor_creg-accessor-model_accessor.actor-cfg-item
+      - ui.accessor:accessor_creg-accessor-record_field_accessor.actor-cfg-item
   cfg_item_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.command_cfg_item:cfg_item_creg-command-cfg_item.actor-template
-      - ui.command_cfg_item:cfg_item_creg-command-global_model_command.actor-template
-      - ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-template
-      - ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-template
-      - ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-template
-      - ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-template
-      - ui.selector:cfg_item_creg-selector-template.actor-template
-      - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-template
-      - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-template
+      - ui.command_cfg_item:cfg_item_creg-command-cfg_item.actor-cfg-item
+      - ui.command_cfg_item:cfg_item_creg-command-global_model_command.actor-cfg-item
+      - ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-cfg-item
+      - ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
+      - ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-cfg-item
+      - ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-cfg-item
+      - ui.selector:cfg_item_creg-selector-template.actor-cfg-item
+      - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-cfg-item
+      - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-cfg-item
   cfg_value_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.command_cfg_item:cfg_value_creg-command-cfg_item.actor-template
-      - ui.command_cfg_item:cfg_value_creg-command-global_model_command.actor-template
-      - ui.command_cfg_item:cfg_value_creg-command-model_args_picker_command_enumerator.actor-template
-      - ui.command_cfg_item:cfg_value_creg-command-ui_args_picker_command_enumerator.actor-template
-      - ui.command_cfg_item:cfg_value_creg-command-ui_command.actor-template
-      - ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-template
-      - ui.selector:cfg_value_creg-selector-template.actor-template
-      - ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-multi_template.actor-template
-      - ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-template.actor-template
+      - ui.command_cfg_item:cfg_value_creg-command-cfg_item.actor-cfg-item
+      - ui.command_cfg_item:cfg_value_creg-command-global_model_command.actor-cfg-item
+      - ui.command_cfg_item:cfg_value_creg-command-model_args_picker_command_enumerator.actor-cfg-item
+      - ui.command_cfg_item:cfg_value_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
+      - ui.command_cfg_item:cfg_value_creg-command-ui_command.actor-cfg-item
+      - ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-cfg-item
+      - ui.selector:cfg_value_creg-selector-template.actor-cfg-item
+      - ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-multi_template.actor-cfg-item
+      - ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-template.actor-cfg-item
   command_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-template
-      - ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-template
-      - ui.model_command:command_creg-command-global_model_command.actor-template
-      - ui.model_command:command_creg-command-model_command.actor-template
-      - ui.model_command:command_creg-command-model_command_enumerator.actor-template
-      - ui.ui_command:command_creg-command-ui_command.actor-template
-      - ui.ui_command:command_creg-command-ui_command_enumerator.actor-template
+      - ui.crud.args_picker_command_enum:command_creg-command-model_args_picker_command_enumerator.actor-cfg-item
+      - ui.crud.args_picker_command_enum:command_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
+      - ui.model_command:command_creg-command-global_model_command.actor-cfg-item
+      - ui.model_command:command_creg-command-model_command.actor-cfg-item
+      - ui.model_command:command_creg-command-model_command_enumerator.actor-cfg-item
+      - ui.ui_command:command_creg-command-ui_command.actor-cfg-item
+      - ui.ui_command:command_creg-command-ui_command_enumerator.actor-cfg-item
   config:
     type: legacy_type.system:system_config
     value:
@@ -278,10 +278,10 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.qt.wiki:convertor_creg-wiki-wiki_to_string_convertor.actor-template
-      - ui.type_convertor:convertor_creg-type_convertor-int_to_string_convertor.actor-template
-      - ui.type_convertor:convertor_creg-type_convertor-noop_convertor.actor-template
-      - ui.type_convertor:convertor_creg-type_convertor-opt_convertor.actor-template
+      - ui.qt.wiki:convertor_creg-wiki-wiki_to_string_convertor.actor-cfg-item
+      - ui.type_convertor:convertor_creg-type_convertor-int_to_string_convertor.actor-cfg-item
+      - ui.type_convertor:convertor_creg-type_convertor-noop_convertor.actor-cfg-item
+      - ui.type_convertor:convertor_creg-type_convertor-opt_convertor.actor-cfg-item
   editor_default_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -299,23 +299,23 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.feed:feed_type_creg-feed-index_tree_feed_type.actor-template
-      - ui.feed:feed_type_creg-feed-list_feed_type.actor-template
+      - ui.feed:feed_type_creg-feed-index_tree_feed_type.actor-cfg-item
+      - ui.feed:feed_type_creg-feed-list_feed_type.actor-cfg-item
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.column_format:formatter_creg-column-column_k.actor-template
-      - ui.crud.args_picker_command_enum:formatter_creg-command-open_args_picker_command_d.actor-template
-      - ui.crud.canned_args_command_fn:formatter_creg-command-canned_arg_command_d.actor-template
-      - ui.crud.crud:formatter_creg-crud-layout_k.actor-template
-      - ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-template
-      - ui.layout:formatter_creg-layout-model.actor-template
-      - ui.record_field_view_factory:formatter_creg-record_field_view_factory-factory_k.actor-template
-      - ui.ref_formatter:formatter_creg-builtin-ref.actor-template
-      - ui.remote_model:formatter_creg-model-remote_model.actor-template
-      - ui.view.view_factory_list:formatter_creg-view_factory_list-model.actor-template
-      - ui.visualizer:formatter_creg-ui-model_layout_k.actor-template
+      - ui.column_format:formatter_creg-column-column_k.actor-cfg-item
+      - ui.crud.args_picker_command_enum:formatter_creg-command-open_args_picker_command_d.actor-cfg-item
+      - ui.crud.canned_args_command_fn:formatter_creg-command-canned_arg_command_d.actor-cfg-item
+      - ui.crud.crud:formatter_creg-crud-layout_k.actor-cfg-item
+      - ui.crud.crud_field_view_factory:formatter_creg-crud_field_view_factory-factory_k.actor-cfg-item
+      - ui.layout:formatter_creg-layout-model.actor-cfg-item
+      - ui.record_field_view_factory:formatter_creg-record_field_view_factory-factory_k.actor-cfg-item
+      - ui.ref_formatter:formatter_creg-builtin-ref.actor-cfg-item
+      - ui.remote_model:formatter_creg-model-remote_model.actor-cfg-item
+      - ui.view.view_factory_list:formatter_creg-view_factory_list-model.actor-cfg-item
+      - ui.visualizer:formatter_creg-ui-model_layout_k.actor-cfg-item
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -347,12 +347,12 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.column_resource_name:resource_name_creg-column-column_k.actor-template
-      - ui.crud.crud:resource_name_creg-crud-layout_k.actor-template
-      - ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-template
-      - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-template
-      - ui.qt.wiki:resource_name_creg-wiki-wiki_to_string_convertor.actor-template
-      - ui.visualizer:resource_name_creg-ui-model_layout_k.actor-template
+      - ui.column_resource_name:resource_name_creg-column-column_k.actor-cfg-item
+      - ui.crud.crud:resource_name_creg-crud-layout_k.actor-cfg-item
+      - ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-cfg-item
+      - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-cfg-item
+      - ui.qt.wiki:resource_name_creg-wiki-wiki_to_string_convertor.actor-cfg-item
+      - ui.visualizer:resource_name_creg-ui-model_layout_k.actor-cfg-item
   selector_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -415,28 +415,28 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-template
-      - ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-template
-      - ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-template
-      - ui.model_command:system_fn_creg-command-model_command_add_fn.actor-template
-      - ui.model_command:system_fn_creg-command-model_command_enum_fn.actor-template
-      - ui.model_command:system_fn_creg-command-model_command_fn.actor-template
-      - ui.model_command:system_fn_creg-command-model_command_remove_fn.actor-template
-      - ui.ui_command:system_fn_creg-command-ui_command_enum_fn.actor-template
+      - ui.crud.args_picker_fn:system_fn_creg-command-args_picker_command_fn.actor-cfg-item
+      - ui.crud.canned_args_command_fn:system_fn_creg-command-canned_args_command_fn.actor-cfg-item
+      - ui.crud.crud:system_fn_creg-crud-open_command_fn.actor-cfg-item
+      - ui.model_command:system_fn_creg-command-model_command_add_fn.actor-cfg-item
+      - ui.model_command:system_fn_creg-command-model_command_enum_fn.actor-cfg-item
+      - ui.model_command:system_fn_creg-command-model_command_fn.actor-cfg-item
+      - ui.model_command:system_fn_creg-command-model_command_remove_fn.actor-cfg-item
+      - ui.ui_command:system_fn_creg-command-ui_command_enum_fn.actor-cfg-item
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.crud.crud:ui_adapter_creg-crud-record_adapter.actor-template
-      - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-template
-      - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-template
-      - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template
-      - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template
-      - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-template
-      - ui.qt.wiki_refs:ui_adapter_creg-wiki-ref_list_adapter.actor-template
-      - ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-template
-      - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-template
-      - ui.value_adapter:ui_adapter_creg-value_adapter-value_adapter.actor-template
+      - ui.crud.crud:ui_adapter_creg-crud-record_adapter.actor-cfg-item
+      - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-cfg-item
+      - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-cfg-item
+      - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-cfg-item
+      - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-cfg-item
+      - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-cfg-item
+      - ui.qt.wiki_refs:ui_adapter_creg-wiki-ref_list_adapter.actor-cfg-item
+      - ui.record_adapter:ui_adapter_creg-record_adapter-fn_record_adapter.actor-cfg-item
+      - ui.record_adapter:ui_adapter_creg-record_adapter-static_record_adapter.actor-cfg-item
+      - ui.value_adapter:ui_adapter_creg-value_adapter-value_adapter.actor-cfg-item
   ui_command_enumerator_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -489,26 +489,26 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.arg_mark:arg_mark-view.view-template
-      - ui.crud.crud:crud-view.view-template
-      - ui.model_field_wrapper_view:model_field_wrapper_view-view.view-template
-      - ui.navigator:navigator-view.view-template
-      - ui.qt.auto_tabs:auto_tabs-view.view-template
-      - ui.qt.box_layout:box_layout-view.view-template
-      - ui.qt.command_pane:command_pane-view.view-template
-      - ui.qt.form:form-view.view-template
-      - ui.qt.label:label-view.view-template
-      - ui.qt.line_edit:line_edit-edit_view.view-template
-      - ui.qt.line_edit:line_edit-readonly_view.view-template
-      - ui.qt.list:list-view.view-template
-      - ui.qt.menu_bar:menu_bar-view.view-template
-      - ui.qt.tabs:tabs-view.view-template
-      - ui.qt.text:text-edit_view.view-template
-      - ui.qt.text:text-readonly_view.view-template
-      - ui.qt.tree:tree-view.view-template
-      - ui.qt.wiki:wiki-text_view.view-template
-      - ui.qt.wiki:wiki-wiki_view.view-template
-      - ui.qt.window:window-view.view-template
+      - ui.arg_mark:arg_mark-view.view-cfg-item
+      - ui.crud.crud:crud-view.view-cfg-item
+      - ui.model_field_wrapper_view:model_field_wrapper_view-view.view-cfg-item
+      - ui.navigator:navigator-view.view-cfg-item
+      - ui.qt.auto_tabs:auto_tabs-view.view-cfg-item
+      - ui.qt.box_layout:box_layout-view.view-cfg-item
+      - ui.qt.command_pane:command_pane-view.view-cfg-item
+      - ui.qt.form:form-view.view-cfg-item
+      - ui.qt.label:label-view.view-cfg-item
+      - ui.qt.line_edit:line_edit-edit_view.view-cfg-item
+      - ui.qt.line_edit:line_edit-readonly_view.view-cfg-item
+      - ui.qt.list:list-view.view-cfg-item
+      - ui.qt.menu_bar:menu_bar-view.view-cfg-item
+      - ui.qt.tabs:tabs-view.view-cfg-item
+      - ui.qt.text:text-edit_view.view-cfg-item
+      - ui.qt.text:text-readonly_view.view-cfg-item
+      - ui.qt.tree:tree-view.view-cfg-item
+      - ui.qt.wiki:wiki-text_view.view-cfg-item
+      - ui.qt.wiki:wiki-wiki_view.view-cfg-item
+      - ui.qt.window:window-view.view-cfg-item
   view_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:

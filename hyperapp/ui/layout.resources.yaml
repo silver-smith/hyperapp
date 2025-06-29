@@ -85,12 +85,16 @@ definitions:
     value:
       object: layout.module
       attr_name: format_layout_model
-  formatter_creg-layout-model.actor-template:
+  format_layout_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.layout:model
       function: format_layout_model
       service_params: []
+  formatter_creg-layout-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.layout:model
+      value: format_layout_model.actor-template
   layout-command_list-add_view_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

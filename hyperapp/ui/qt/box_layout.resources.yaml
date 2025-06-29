@@ -10,7 +10,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
-- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.cfg_item:fn_value_template
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
@@ -39,6 +40,10 @@ definitions:
       - ctx
       service_params:
       - view_reg
+  BoxLayoutView_from_piece.view-template:
+    type: legacy_type.cfg_item:fn_value_template
+    value:
+      system_fn: BoxLayoutView_from_piece.system-fn
   add_element:
     type: legacy_type.builtin:attribute
     value:
@@ -138,11 +143,11 @@ definitions:
     value:
       t: legacy_type.box_layout:view
       command: unwrap.ui-command
-  box_layout-view.view-template:
-    type: legacy_type.cfg_item:typed_fn_cfg_item
+  box_layout-view.view-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.box_layout:view
-      system_fn: BoxLayoutView_from_piece.system-fn
+      value: BoxLayoutView_from_piece.view-template
   box_layout.module:
     type: legacy_type.builtin:python_module
     value:

@@ -30,6 +30,7 @@ import:
 - legacy_type.peer_list:model
 - legacy_type.peer_list:peer
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
@@ -81,12 +82,16 @@ definitions:
     value:
       object: peer_list.module
       attr_name: format_model
-  formatter_creg-peer_list-model.actor-template:
+  format_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.peer_list:model
       function: format_model
       service_params: []
+  formatter_creg-peer_list-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.peer_list:model
+      value: format_model.actor-template
   open_model:
     type: legacy_type.builtin:attribute
     value:
@@ -242,7 +247,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: peer_list_reg
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: peer_list_reg
       service_params:
       - file_bundle_factory
@@ -327,6 +332,10 @@ definitions:
       name: run_command_d
       base: null
       fields: {}
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl

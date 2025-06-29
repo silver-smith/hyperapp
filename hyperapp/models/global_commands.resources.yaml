@@ -29,24 +29,32 @@ definitions:
     value:
       object: global_commands.module
       attr_name: format_command_arg
+  format_command_arg.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_command_arg
+      service_params:
+      - format
   format_model:
     type: legacy_type.builtin:attribute
     value:
       object: global_commands.module
       attr_name: format_model
-  formatter_creg-global_commands-command_arg.actor-template:
+  format_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.global_commands:command_arg
-      function: format_command_arg
-      service_params:
-      - format
-  formatter_creg-global_commands-model.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.global_commands:model
       function: format_model
       service_params: []
+  formatter_creg-global_commands-command_arg.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.global_commands:command_arg
+      value: format_command_arg.actor-template
+  formatter_creg-global_commands-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.global_commands:model
+      value: format_model.actor-template
   global_command_get:
     type: legacy_type.builtin:attribute
     value:

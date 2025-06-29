@@ -29,13 +29,17 @@ definitions:
     value:
       object: model_commands.module
       attr_name: format_model
-  formatter_creg-model_commands-model.actor-template:
+  format_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.model_commands:model
       function: format_model
       service_params:
       - format
+  formatter_creg-model_commands-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model_commands:model
+      value: format_model.actor-template
   list_model_commands:
     type: legacy_type.builtin:attribute
     value:

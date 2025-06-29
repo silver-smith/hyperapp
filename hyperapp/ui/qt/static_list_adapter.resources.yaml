@@ -5,6 +5,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.list_adapter:static_list_adapter
 - legacy_type.system:actor_template
 - ui.qt.list_adapter:list_adapter.module
@@ -19,6 +20,12 @@ definitions:
     value:
       object: StaticListAdapter
       attr_name: from_piece
+  StaticListAdapter.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: StaticListAdapter.from_piece
+      service_params:
+      - accessor_creg
   static_list_adapter.module:
     type: legacy_type.builtin:python_module
     value:
@@ -29,10 +36,8 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
         services.pyobj_creg: builtins:pyobj_creg.service
-  ui_adapter_creg-list_adapter-static_list_adapter.actor-template:
-    type: legacy_type.system:actor_template
+  ui_adapter_creg-list_adapter-static_list_adapter.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.list_adapter:static_list_adapter
-      function: StaticListAdapter.from_piece
-      service_params:
-      - accessor_creg
+      value: StaticListAdapter.from_piece.actor-template

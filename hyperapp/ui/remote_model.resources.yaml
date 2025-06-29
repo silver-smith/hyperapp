@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
 definitions:
@@ -14,15 +15,19 @@ definitions:
     value:
       object: remote_model.module
       attr_name: format_remote_model
-  formatter_creg-model-remote_model.actor-template:
+  format_remote_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.model:remote_model
       function: format_remote_model
       service_params:
       - peer_registry
       - peer_label_reg
       - format
+  formatter_creg-model-remote_model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model:remote_model
+      value: format_remote_model.actor-template
   remote_model.module:
     type: legacy_type.builtin:python_module
     value:

@@ -12,6 +12,7 @@ import:
 - legacy_type.command:model_command_enum_fn
 - legacy_type.command:model_command_enumerator
 - legacy_type.model:remote_model
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.model_command:model_command.module
@@ -63,13 +64,17 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: remote_command_from_model_command
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: remote_command_from_model_command
       service_params: []
       want_config: false
       free_params:
       - remote_peer
       - command
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl

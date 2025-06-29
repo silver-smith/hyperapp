@@ -8,8 +8,10 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.model:static_list_ui_t
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.ui:model_layout_k
@@ -19,26 +21,38 @@ definitions:
     value:
       object: visualizer.module
       attr_name: format_model_layout_k
-  formatter_creg-ui-model_layout_k.actor-template:
+  format_model_layout_k.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.ui:model_layout_k
       function: format_model_layout_k
       service_params: []
+  formatter_creg-ui-model_layout_k.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.ui:model_layout_k
+      value: format_model_layout_k.actor-template
   model_layout_k_resource_name:
     type: legacy_type.builtin:attribute
     value:
       object: visualizer.module
       attr_name: model_layout_k_resource_name
-  resource_name_creg-ui-model_layout_k.actor-template:
+  model_layout_k_resource_name.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.ui:model_layout_k
       function: model_layout_k_resource_name
       service_params: []
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  resource_name_creg-ui-model_layout_k.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.ui:model_layout_k
+      value: model_layout_k_resource_name.actor-template
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl
   visualizer:
     type: legacy_type.builtin:attribute
     value:
@@ -61,7 +75,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: visualizer
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: visualizer
       service_params:
       - model_layout_reg

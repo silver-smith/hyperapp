@@ -6,6 +6,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
 - legacy_type.tree_adapter:fn_index_tree_adapter
@@ -22,6 +23,15 @@ definitions:
     value:
       object: FnIndexTreeAdapter
       attr_name: from_piece
+  FnIndexTreeAdapter.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: FnIndexTreeAdapter.from_piece
+      service_params:
+      - system_fn_creg
+      - rpc_system_call_factory
+      - peer_registry
+      - feed_factory
   FnKeyTreeAdapter:
     type: legacy_type.builtin:attribute
     value:
@@ -32,6 +42,15 @@ definitions:
     value:
       object: FnKeyTreeAdapter
       attr_name: from_piece
+  FnKeyTreeAdapter.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: FnKeyTreeAdapter.from_piece
+      service_params:
+      - system_fn_creg
+      - rpc_system_call_factory
+      - peer_registry
+      - feed_factory
   fn_tree_adapter.module:
     type: legacy_type.builtin:python_module
     value:
@@ -43,23 +62,13 @@ definitions:
         htypes.model.remote_model: legacy_type.model:remote_model
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-template:
-    type: legacy_type.system:actor_template
+  ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree_adapter:fn_index_tree_adapter
-      function: FnIndexTreeAdapter.from_piece
-      service_params:
-      - system_fn_creg
-      - rpc_system_call_factory
-      - peer_registry
-      - feed_factory
-  ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-template:
-    type: legacy_type.system:actor_template
+      value: FnIndexTreeAdapter.from_piece.actor-template
+  ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree_adapter:fn_key_tree_adapter
-      function: FnKeyTreeAdapter.from_piece
-      service_params:
-      - system_fn_creg
-      - rpc_system_call_factory
-      - peer_registry
-      - feed_factory
+      value: FnKeyTreeAdapter.from_piece.actor-template

@@ -9,7 +9,8 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.cfg_item:fn_value_template
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:command_result
 - legacy_type.command:properties
@@ -23,6 +24,7 @@ import:
 - legacy_type.crud:view
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
@@ -56,6 +58,10 @@ definitions:
       - view_reg
       - model_layout_reg
       - crud
+  CrudContextView_from_piece.view-template:
+    type: legacy_type.cfg_item:fn_value_template
+    value:
+      system_fn: CrudContextView_from_piece.system-fn
   CrudOpenFn:
     type: legacy_type.builtin:attribute
     value:
@@ -66,6 +72,13 @@ definitions:
     value:
       object: CrudOpenFn
       attr_name: from_piece
+  CrudOpenFn.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: CrudOpenFn.from_piece
+      service_params:
+      - system_fn_creg
+      - crud
   CrudRecordAdapter:
     type: legacy_type.builtin:attribute
     value:
@@ -76,6 +89,14 @@ definitions:
     value:
       object: CrudRecordAdapter
       attr_name: from_piece
+  CrudRecordAdapter.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: CrudRecordAdapter.from_piece
+      service_params:
+      - system_fn_creg
+      - feed_factory
+      - crud
   crud:
     type: legacy_type.builtin:attribute
     value:
@@ -86,11 +107,11 @@ definitions:
     value:
       t: legacy_type.crud:view
       command: crud_commit_command_enum.ui-command-enumerator
-  crud-view.view-template:
-    type: legacy_type.cfg_item:typed_fn_cfg_item
+  crud-view.view-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.crud:view
-      system_fn: CrudContextView_from_piece.system-fn
+      value: CrudContextView_from_piece.view-template
   crud.module:
     type: legacy_type.builtin:python_module
     value:
@@ -122,7 +143,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: crud
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: crud
       service_params:
       - canned_ctl_item_factory
@@ -160,41 +181,46 @@ definitions:
     value:
       object: crud.module
       attr_name: format_layout_k
-  formatter_creg-crud-layout_k.actor-template:
+  format_layout_k.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.crud:layout_k
       function: format_layout_k
       service_params:
       - format
+  formatter_creg-crud-layout_k.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.crud:layout_k
+      value: format_layout_k.actor-template
   layout_k_resource_name:
     type: legacy_type.builtin:attribute
     value:
       object: crud.module
       attr_name: layout_k_resource_name
-  resource_name_creg-crud-layout_k.actor-template:
+  layout_k_resource_name.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.crud:layout_k
       function: layout_k_resource_name
       service_params: []
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  resource_name_creg-crud-layout_k.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.crud:layout_k
+      value: layout_k_resource_name.actor-template
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
-  system_fn_creg-crud-open_command_fn.actor-template:
-    type: legacy_type.system:actor_template
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl
+  system_fn_creg-crud-open_command_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.crud:open_command_fn
-      function: CrudOpenFn.from_piece
-      service_params:
-      - system_fn_creg
-      - crud
-  ui_adapter_creg-crud-record_adapter.actor-template:
-    type: legacy_type.system:actor_template
+      value: CrudOpenFn.from_piece.actor-template
+  ui_adapter_creg-crud-record_adapter.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.crud:record_adapter
-      function: CrudRecordAdapter.from_piece
-      service_params:
-      - system_fn_creg
-      - feed_factory
-      - crud
+      value: CrudRecordAdapter.from_piece.actor-template

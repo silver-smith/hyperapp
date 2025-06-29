@@ -4,6 +4,7 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
 - legacy_type.value_adapter:value_adapter
 definitions:
@@ -17,14 +18,18 @@ definitions:
     value:
       object: ValueAdapter
       attr_name: from_piece
-  ui_adapter_creg-value_adapter-value_adapter.actor-template:
+  ValueAdapter.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.value_adapter:value_adapter
       function: ValueAdapter.from_piece
       service_params:
       - accessor_creg
       - convertor_creg
+  ui_adapter_creg-value_adapter-value_adapter.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.value_adapter:value_adapter
+      value: ValueAdapter.from_piece.actor-template
   value_adapter.module:
     type: legacy_type.builtin:python_module
     value:

@@ -7,6 +7,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:args_picker_command_fn
 - legacy_type.system:actor_template
 - ui.crud.command_args:command_args.module
@@ -21,6 +22,14 @@ definitions:
     value:
       object: ArgsPickerFn
       attr_name: from_piece
+  ArgsPickerFn.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ArgsPickerFn.from_piece
+      service_params:
+      - crud
+      - system_fn_creg
+      - editor_default_reg
   args_picker_fn.module:
     type: legacy_type.builtin:python_module
     value:
@@ -33,12 +42,8 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  system_fn_creg-command-args_picker_command_fn.actor-template:
-    type: legacy_type.system:actor_template
+  system_fn_creg-command-args_picker_command_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:args_picker_command_fn
-      function: ArgsPickerFn.from_piece
-      service_params:
-      - crud
-      - system_fn_creg
-      - editor_default_reg
+      value: ArgsPickerFn.from_piece.actor-template

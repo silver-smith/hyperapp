@@ -9,7 +9,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
-- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.cfg_item:fn_value_template
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.form:view
 - legacy_type.model:record_ui_t
 - legacy_type.record_adapter:fn_record_adapter
@@ -40,11 +41,15 @@ definitions:
       service_params:
       - ui_adapter_creg
       - view_reg
-  form-view.view-template:
-    type: legacy_type.cfg_item:typed_fn_cfg_item
+  FormView_from_piece.view-template:
+    type: legacy_type.cfg_item:fn_value_template
+    value:
+      system_fn: FormView_from_piece.system-fn
+  form-view.view-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.form:view
-      system_fn: FormView_from_piece.system-fn
+      value: FormView_from_piece.view-template
   form.module:
     type: legacy_type.builtin:python_module
     value:

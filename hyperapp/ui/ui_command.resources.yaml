@@ -11,11 +11,13 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:ui_command
 - legacy_type.command:ui_command_enum_fn
 - legacy_type.command:ui_command_enumerator
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:flat_list_config_ctl
 - legacy_type.system:service_template
@@ -34,20 +36,23 @@ definitions:
     value:
       object: UiCommandEnumFn
       attr_name: from_piece
-  command_creg-command-ui_command.actor-template:
+  UiCommandEnumFn.from_piece.actor-template:
     type: legacy_type.system:actor_template
+    value:
+      function: UiCommandEnumFn.from_piece
+      service_params:
+      - system
+      - rpc_system_call_factory
+  command_creg-command-ui_command.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:ui_command
-      function: ui_command_from_piece
-      service_params:
-      - system_fn_creg
-  command_creg-command-ui_command_enumerator.actor-template:
-    type: legacy_type.system:actor_template
+      value: ui_command_from_piece.actor-template
+  command_creg-command-ui_command_enumerator.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:ui_command_enumerator
-      function: ui_command_enumerator_from_piece
-      service_params:
-      - system_fn_creg
+      value: ui_command_enumerator_from_piece.actor-template
   get_view_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -57,7 +62,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_view_commands
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: get_view_commands
       service_params:
       - diff_creg
@@ -83,7 +88,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_view_element_commands
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: get_view_element_commands
       service_params:
       - view_element_ui_command_reg
@@ -92,23 +97,25 @@ definitions:
       free_params:
       - ctx
       - view
-  list_config_ctl-dict_list_config_ctl.ctl:
+  list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.ctl:
+  system-dict_config_ctl.actor_value_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
-    value: {}
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl
   system-flat_list_config_ctl.ctl:
     type: legacy_type.system:flat_list_config_ctl
     value: {}
-  system_fn_creg-command-ui_command_enum_fn.actor-template:
-    type: legacy_type.system:actor_template
+  system_fn_creg-command-ui_command_enum_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:ui_command_enum_fn
-      function: UiCommandEnumFn.from_piece
-      service_params:
-      - system
-      - rpc_system_call_factory
+      value: UiCommandEnumFn.from_piece.actor-template
   ui_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -134,6 +141,12 @@ definitions:
     value:
       object: ui_command.module
       attr_name: ui_command_enumerator_from_piece
+  ui_command_enumerator_from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ui_command_enumerator_from_piece
+      service_params:
+      - system_fn_creg
   ui_command_enumerator_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -143,7 +156,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: ui_command_enumerator_reg
-      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
       function: ui_command_enumerator_reg
       service_params: []
       want_config: true
@@ -154,6 +167,12 @@ definitions:
     value:
       object: ui_command.module
       attr_name: ui_command_from_piece
+  ui_command_from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ui_command_from_piece
+      service_params:
+      - system_fn_creg
   universal_ui_command_enumerator_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -191,7 +210,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_element_ui_command_enumerator_reg
-      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
       function: view_element_ui_command_enumerator_reg
       service_params: []
       want_config: true
@@ -206,7 +225,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_element_ui_command_reg
-      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
       function: view_element_ui_command_reg
       service_params: []
       want_config: true
@@ -221,7 +240,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_ui_command_reg
-      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
       function: view_ui_command_reg
       service_params: []
       want_config: true
@@ -236,7 +255,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_ui_model_command_reg
-      ctl: list_config_ctl-dict_list_config_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
       function: view_ui_model_command_reg
       service_params: []
       want_config: true

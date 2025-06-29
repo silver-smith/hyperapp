@@ -3,9 +3,9 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
-- views.details:details-view.view-template
+- views.details:details-view.view-cfg-item
 - views.details:details_commands.service
-- views.details:formatter_creg-details-factory_k.actor-template
+- views.details:formatter_creg-details-factory_k.actor-cfg-item
 - views.list_as_tree:list-view-switch_list_to_tree.command-cfg-item
 - views.list_as_tree:list_as_tree-layer_list.feed-template
 - views.list_as_tree:list_as_tree-layer_list.model-cfg-item
@@ -15,22 +15,22 @@ import:
 - views.list_as_tree:list_as_tree_ui_type_layout.view-factory-template
 - views.list_as_tree:tree-view-open_layers.command-cfg-item
 - views.list_as_tree:tree-view-open_opener_commands.command-cfg-item
-- views.list_as_tree_adapter:ui_adapter_creg-list_as_tree_adapter-adapter.actor-template
-- views.local_server_context:local_server_context-view.view-template
+- views.list_as_tree_adapter:ui_adapter_creg-list_as_tree_adapter-adapter.actor-cfg-item
+- views.local_server_context:local_server_context-view.view-cfg-item
 - views.local_server_context:open_local_server_context.global-model-command
 - views.qt.splitter:navigator-view-split_horizontally.command-cfg-item
 - views.qt.splitter:splitter-view-unwrap.command-cfg-item
-- views.qt.splitter:splitter-view.view-template
+- views.qt.splitter:splitter-view.view-cfg-item
 - views.qt.splitter:wrap_splitter.view-factory-template
-- views.tree_as_list:formatter_creg-tree_as_list-list_model.actor-template
+- views.tree_as_list:formatter_creg-tree_as_list-list_model.actor-cfg-item
 - views.tree_as_list:index_tree_as_list_ui_type_layout.view-factory-template
 - views.tree_as_list:key_tree_as_list_ui_type_layout.view-factory-template
 - views.tree_as_list:tree_as_list-index_view-open.command-cfg-item
 - views.tree_as_list:tree_as_list-index_view-parent.command-cfg-item
-- views.tree_as_list:tree_as_list-index_view.view-template
+- views.tree_as_list:tree_as_list-index_view.view-cfg-item
 - views.tree_as_list:tree_as_list-key_view-open.command-cfg-item
 - views.tree_as_list:tree_as_list-key_view-parent.command-cfg-item
-- views.tree_as_list:tree_as_list-key_view.view-template
+- views.tree_as_list:tree_as_list-key_view.view-cfg-item
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -57,8 +57,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - views.details:formatter_creg-details-factory_k.actor-template
-      - views.tree_as_list:formatter_creg-tree_as_list-list_model.actor-template
+      - views.details:formatter_creg-details-factory_k.actor-cfg-item
+      - views.tree_as_list:formatter_creg-tree_as_list-list_model.actor-cfg-item
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -84,7 +84,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - views.list_as_tree_adapter:ui_adapter_creg-list_as_tree_adapter-adapter.actor-template
+      - views.list_as_tree_adapter:ui_adapter_creg-list_as_tree_adapter-adapter.actor-cfg-item
   view_factory_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -97,11 +97,11 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - views.details:details-view.view-template
-      - views.local_server_context:local_server_context-view.view-template
-      - views.qt.splitter:splitter-view.view-template
-      - views.tree_as_list:tree_as_list-index_view.view-template
-      - views.tree_as_list:tree_as_list-key_view.view-template
+      - views.details:details-view.view-cfg-item
+      - views.local_server_context:local_server_context-view.view-cfg-item
+      - views.qt.splitter:splitter-view.view-cfg-item
+      - views.tree_as_list:tree_as_list-index_view.view-cfg-item
+      - views.tree_as_list:tree_as_list-key_view.view-cfg-item
   view_ui_command_reg:
     type: legacy_type.system:item_list_config
     value:

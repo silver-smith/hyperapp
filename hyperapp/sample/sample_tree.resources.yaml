@@ -18,6 +18,7 @@ import:
 - legacy_type.sample_tree:item
 - legacy_type.sample_tree:model
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.system_fn:ctx_fn
@@ -62,12 +63,16 @@ definitions:
     value:
       object: sample_tree.module
       attr_name: format_model
-  formatter_creg-sample_tree-model.actor-template:
+  format_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.sample_tree:model
       function: format_model
       service_params: []
+  formatter_creg-sample_tree-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.sample_tree:model
+      value: format_model.actor-template
   get_sample_tree_items:
     type: legacy_type.builtin:attribute
     value:
@@ -77,7 +82,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_sample_tree_items
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: get_sample_tree_items
       service_params:
       - sample_tree_data
@@ -255,11 +260,15 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: sample_tree_data
-      ctl: system-dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
       function: sample_tree_data
       service_params: []
       want_config: false
       free_params: []
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
     value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl

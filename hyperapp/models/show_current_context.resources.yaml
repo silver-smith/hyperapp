@@ -27,12 +27,16 @@ definitions:
     value:
       object: show_current_context.module
       attr_name: format_model
-  formatter_creg-show_current_context-model.actor-template:
+  format_model.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.show_current_context:model
       function: format_model
       service_params: []
+  formatter_creg-show_current_context-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.show_current_context:model
+      value: format_model.actor-template
   show_current_context:
     type: legacy_type.builtin:attribute
     value:

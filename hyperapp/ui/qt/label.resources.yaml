@@ -6,7 +6,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
-- legacy_type.cfg_item:typed_fn_cfg_item
+- legacy_type.cfg_item:fn_value_template
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
@@ -34,16 +35,20 @@ definitions:
       - piece
       - ctx
       service_params: []
+  LabelView_from_piece.view-template:
+    type: legacy_type.cfg_item:fn_value_template
+    value:
+      system_fn: LabelView_from_piece.system-fn
   label-view-set_label_text.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.label:view
       command: set_label_text.ui-command-enumerator
-  label-view.view-template:
-    type: legacy_type.cfg_item:typed_fn_cfg_item
+  label-view.view-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.label:view
-      system_fn: LabelView_from_piece.system-fn
+      value: LabelView_from_piece.view-template
   label.module:
     type: legacy_type.builtin:python_module
     value:

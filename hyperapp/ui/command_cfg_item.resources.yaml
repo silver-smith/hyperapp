@@ -5,6 +5,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:global_model_command
 - legacy_type.command:model_args_picker_command_enumerator
@@ -12,66 +13,56 @@ import:
 - legacy_type.command:ui_command
 - legacy_type.system:actor_template
 definitions:
-  cfg_item_creg-command-cfg_item.actor-template:
-    type: legacy_type.system:actor_template
+  cfg_item_creg-command-cfg_item.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:cfg_item
-      function: resolve_typed_command_cfg_item
-      service_params: []
-  cfg_item_creg-command-global_model_command.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_typed_command_cfg_item.actor-template
+  cfg_item_creg-command-global_model_command.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:global_model_command
-      function: resolve_untyped_command_cfg_item
-      service_params: []
-  cfg_item_creg-command-model_args_picker_command_enumerator.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_untyped_command_cfg_item.actor-template
+  cfg_item_creg-command-model_args_picker_command_enumerator.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:model_args_picker_command_enumerator
-      function: resolve_untyped_command_cfg_item
-      service_params: []
-  cfg_item_creg-command-ui_args_picker_command_enumerator.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_untyped_command_cfg_item.actor-template
+  cfg_item_creg-command-ui_args_picker_command_enumerator.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:ui_args_picker_command_enumerator
-      function: resolve_untyped_command_cfg_item
-      service_params: []
-  cfg_item_creg-command-ui_command.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_untyped_command_cfg_item.actor-template
+  cfg_item_creg-command-ui_command.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:ui_command
-      function: resolve_untyped_command_cfg_item
-      service_params: []
-  cfg_value_creg-command-cfg_item.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_untyped_command_cfg_item.actor-template
+  cfg_value_creg-command-cfg_item.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:cfg_item
-      function: resolve_typed_command_cfg_value
-      service_params: []
-  cfg_value_creg-command-global_model_command.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_typed_command_cfg_value.actor-template
+  cfg_value_creg-command-global_model_command.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:global_model_command
-      function: resolve_untyped_command_cfg_value
-      service_params: []
-  cfg_value_creg-command-model_args_picker_command_enumerator.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_untyped_command_cfg_value.actor-template
+  cfg_value_creg-command-model_args_picker_command_enumerator.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:model_args_picker_command_enumerator
-      function: resolve_untyped_command_cfg_value
-      service_params: []
-  cfg_value_creg-command-ui_args_picker_command_enumerator.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_untyped_command_cfg_value.actor-template
+  cfg_value_creg-command-ui_args_picker_command_enumerator.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:ui_args_picker_command_enumerator
-      function: resolve_untyped_command_cfg_value
-      service_params: []
-  cfg_value_creg-command-ui_command.actor-template:
-    type: legacy_type.system:actor_template
+      value: resolve_untyped_command_cfg_value.actor-template
+  cfg_value_creg-command-ui_command.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.command:ui_command
-      function: resolve_untyped_command_cfg_value
-      service_params: []
+      value: resolve_untyped_command_cfg_value.actor-template
   command_cfg_item.module:
     type: legacy_type.builtin:python_module
     value:
@@ -85,18 +76,38 @@ definitions:
     value:
       object: command_cfg_item.module
       attr_name: resolve_typed_command_cfg_item
+  resolve_typed_command_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: resolve_typed_command_cfg_item
+      service_params: []
   resolve_typed_command_cfg_value:
     type: legacy_type.builtin:attribute
     value:
       object: command_cfg_item.module
       attr_name: resolve_typed_command_cfg_value
+  resolve_typed_command_cfg_value.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: resolve_typed_command_cfg_value
+      service_params: []
   resolve_untyped_command_cfg_item:
     type: legacy_type.builtin:attribute
     value:
       object: command_cfg_item.module
       attr_name: resolve_untyped_command_cfg_item
+  resolve_untyped_command_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: resolve_untyped_command_cfg_item
+      service_params: []
   resolve_untyped_command_cfg_value:
     type: legacy_type.builtin:attribute
     value:
       object: command_cfg_item.module
       attr_name: resolve_untyped_command_cfg_value
+  resolve_untyped_command_cfg_value.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: resolve_untyped_command_cfg_value
+      service_params: []
