@@ -1,5 +1,4 @@
 import:
-- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -30,7 +29,6 @@ definitions:
         htypes.system.dict_config_ctl: legacy_type.system:dict_config_ctl
         htypes.system.service_template: legacy_type.system:service_template
         htypes.system.finalizer_gen_service_template: legacy_type.system:finalizer_gen_service_template
-        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module

@@ -1,6 +1,5 @@
 from . import htypes
 from .services import (
-    deduce_t,
     mosaic,
     web,
     )
@@ -51,12 +50,18 @@ class ServiceTemplateCtrBase(CoreServiceTemplateCtr):
             want_config=self._want_config,
             **self._template_kw(),
             )
-        ctl = web.summon(self._ctl_ref)
-        ctl_t = deduce_t(ctl)
+        ctl, ctl_t = web.summon_with_t(self._ctl_ref)
         ctl_t_name = ctl_t.full_name.replace('.', '-')
         if name_to_res is not None:
             name_to_res[self._attr_name] = attribute
-            name_to_res[f'{ctl_t_name}.ctl'] = web.summon(self._ctl_ref)
+            # TODO: Check if we can use ctl instances from system module resources.
+            if isinstance(ctl, htypes.system.dict_config_ctl):
+                value_ctl, value_ctl_t = web.summon_with_t(ctl.value_ctl)
+                value_ctl_t_name = value_ctl_t.full_name.replace('.', '-')
+                value_ctl_t_var_name = value_ctl_t.name.replace('.', '-')
+                name_to_res[f'{value_ctl_t_name}.value-ctl'] = value_ctl
+                ctl_t_name = f'{ctl_t_name}.{value_ctl_t_var_name}'
+            name_to_res[f'{ctl_t_name}.ctl'] = ctl
             name_to_res[f'{self._name}.service'] = service
         return service
 
