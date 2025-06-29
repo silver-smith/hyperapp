@@ -48,7 +48,7 @@ class TPrimitive(Type):
         return '%s' % self.get_type().__name__
 
     def __hash__(self):
-        return hash(self._name)
+        return hash(('primitive', self._name))
 
     def __eq__(self, rhs):
         return rhs is self or isinstance(rhs, TPrimitive) and rhs._name == self._name
