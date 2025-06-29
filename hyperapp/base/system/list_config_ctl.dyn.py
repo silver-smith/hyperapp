@@ -2,7 +2,7 @@ from . import htypes
 from .services import (
     mosaic,
     )
-from .code.config_ctl import MultiItemConfigCtl, DictConfigCtl
+from .code.config_ctl import DictConfigCtl
 
 
 class DictListConfigCtl(DictConfigCtl):
