@@ -3,7 +3,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.config_ctl import DataValueCtl
+from .code.config_ctl import DataValueCtl, DictConfigCtl
 from .code.list_config_ctl import DictListConfigCtl
 
 
@@ -33,7 +33,7 @@ def default_model_factory(config, view_factory_reg, model_t, properties):
     return view_factory_reg[layout_k]
 
 
-@mark.service
+@mark.service(ctl=DictConfigCtl(value_ctl=DataValueCtl()))
 def default_ui_factory(config, view_factory_reg, ui_t):
     ui_t_t = deduce_t(ui_t)
     k = config[ui_t_t]

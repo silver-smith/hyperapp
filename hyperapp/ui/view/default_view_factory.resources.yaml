@@ -9,7 +9,6 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.list_config_ctl:dict_list_config_ctl
-- legacy_type.system:actor_value_ctl
 - legacy_type.system:data_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
@@ -40,7 +39,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: default_ui_factory
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config_ctl.data_value_ctl.ctl
       function: default_ui_factory
       service_params:
       - view_factory_reg
@@ -62,13 +61,10 @@ definitions:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
     value:
       value_ctl: system-data_value_ctl.value-ctl
-  system-actor_value_ctl.value-ctl:
-    type: legacy_type.system:actor_value_ctl
-    value: {}
   system-data_value_ctl.value-ctl:
     type: legacy_type.system:data_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config_ctl.data_value_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-data_value_ctl.value-ctl
