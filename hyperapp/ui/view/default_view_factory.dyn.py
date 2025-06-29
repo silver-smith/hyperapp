@@ -3,6 +3,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.config_ctl import DataValueCtl
 from .code.list_config_ctl import DictListConfigCtl
 
 
@@ -21,7 +22,7 @@ def _properties_match(factory_prop_list, wanted_props):
     return True
 
 
-@mark.service(ctl=DictListConfigCtl())
+@mark.service(ctl=DictListConfigCtl(value_ctl=DataValueCtl()))
 def default_model_factory(config, view_factory_reg, model_t, properties):
     for factory in config[model_t]:
         if _properties_match(factory.properties, properties):

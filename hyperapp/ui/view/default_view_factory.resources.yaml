@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.system.config_ctl:config_ctl.module
 - base.system.list_config_ctl:list_config_ctl.module
 - builtins:deduce_t.service
 - builtins:web.service
@@ -9,6 +10,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.list_config_ctl:dict_list_config_ctl
 - legacy_type.system:actor_value_ctl
+- legacy_type.system:data_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
@@ -21,7 +23,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: default_model_factory
-      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
+      ctl: list_config_ctl-dict_list_config_ctl.data_value_ctl.ctl
       function: default_model_factory
       service_params:
       - view_factory_reg
@@ -51,16 +53,20 @@ definitions:
       module_name: default_view_factory
       file_name: default_view_factory.dyn.py
       import_list:
+        code.config_ctl: base.system.config_ctl:config_ctl.module
         code.list_config_ctl: base.system.list_config_ctl:list_config_ctl.module
         code.mark: base.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
         services.web: builtins:web.service
-  list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl:
+  list_config_ctl-dict_list_config_ctl.data_value_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
     value:
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-data_value_ctl.value-ctl
   system-actor_value_ctl.value-ctl:
     type: legacy_type.system:actor_value_ctl
+    value: {}
+  system-data_value_ctl.value-ctl:
+    type: legacy_type.system:data_value_ctl
     value: {}
   system-dict_config_ctl.actor_value_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
