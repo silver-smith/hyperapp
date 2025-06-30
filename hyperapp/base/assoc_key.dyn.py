@@ -37,13 +37,13 @@ class AssociationKeyRegistry:
         except KeyError:
             return
         assoc_key = self._assoc_key_creg.animate(assoc_key_piece)
-        key, cfg_item = kv
-        bases = assoc_key.bases(key, cfg_item)
-        association_reg.set_association(bases, service_name, cfg_item)
+        key, template = kv
+        bases = assoc_key.bases(key, template)
+        association_reg.set_association(bases, service_name, template)
 
     # System config hook method
-    def config_item_removed(self, service_name, cfg_item):
-        assert 0, (service_name, cfg_item)
+    def config_item_removed(self, service_name, kv):
+        assert 0, (service_name, kv)
 
 
 def assoc_key(config, assoc_key_creg, system):
@@ -61,5 +61,5 @@ class KeyBaseAssociation:
         return cls()
 
     @staticmethod
-    def bases(key, cfg_item):
+    def bases(key, template):
         return [key]
