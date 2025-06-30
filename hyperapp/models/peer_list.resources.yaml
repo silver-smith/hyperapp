@@ -156,6 +156,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_peer_list.fn
+      preserve_remote: false
   open_peer_list_d:
     type: legacy_type.builtin:record_mt
     value:

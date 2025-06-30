@@ -59,6 +59,7 @@ def global_model_command():
         d=mosaic.put(d),
         properties=htypes.command.properties(False, False, False),
         system_fn=mosaic.put(system_fn),
+        preserve_remote=False,
         )
 
 

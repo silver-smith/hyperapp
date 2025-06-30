@@ -74,6 +74,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_fn_record.fn
+      preserve_remote: false
   sample_record:
     type: legacy_type.builtin:attribute
     value:

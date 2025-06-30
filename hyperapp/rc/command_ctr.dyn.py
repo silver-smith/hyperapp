@@ -359,8 +359,44 @@ class ModelCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
 
 class GlobalModelCommandTemplateCtr(UntypedCommandTemplateCtr):
 
-    _command_t = htypes.command.global_model_command
     _command_fn_t = htypes.command.model_command_fn
-    _template_ctr_t = htypes.command_resource.global_model_command_template_ctr
     _is_global = True
     _direct_command_resource_suffix = 'global-model-command'
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(
+            module_name=piece.module_name,
+            attr_qual_name=piece.attr_qual_name,
+            service_name=piece.service_name,
+            enum_service_name=piece.enum_service_name,
+            ctx_params=piece.ctx_params,
+            service_params=piece.service_params,
+            args=cls._args_dict(piece.args),
+            preserve_remote=piece.preserve_remote,
+            )
+
+    def __init__(self, module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args, preserve_remote):
+        super().__init__(module_name, attr_qual_name, service_name, enum_service_name, ctx_params, service_params, args)
+        self._preserve_remote = preserve_remote
+
+    @property
+    def piece(self):
+        return htypes.command_resource.global_model_command_template_ctr(
+            module_name=self._module_name,
+            attr_qual_name=tuple(self._attr_qual_name),
+            service_name=self._service_name,
+            enum_service_name=self._enum_service_name,
+            ctx_params=tuple(self._ctx_params),
+            service_params=tuple(self._service_params),
+            args=self._args_tuple,
+            preserve_remote=self._preserve_remote,
+            )
+
+    def _make_command_record(self, d, properties, fn):
+        return htypes.command.global_model_command(
+            d=mosaic.put(d),
+            properties=properties,
+            system_fn=mosaic.put(fn),
+            preserve_remote=self._preserve_remote,
+            )

@@ -191,10 +191,15 @@ class ModelCommandEnumeratorProbe(CommandProbe):
 
 class GlobalModelCommandProbe(CommandProbe):
 
+    def __init__(self, system_probe, ctr_collector, module_name, args, preserve_remote, fn):
+        super().__init__(system_probe, ctr_collector, module_name, args, fn)
+        self._preserve_remote = preserve_remote
+
     def _add_constructor(self, params):
         assert not self._t
         ctr = GlobalModelCommandTemplateCtr(
             **self._common_ctr_kw(params),
+            preserve_remote=self._preserve_remote,
             service_name='global_model_command_reg',
             enum_service_name=None,
             )
@@ -268,8 +273,18 @@ class ModelCommandEnumeratorDecorator(TypedCommandDecorator):
 
 
 class GlobalModelCommandDecorator(UntypedCommandDecorator):
-    _probe_class = GlobalModelCommandProbe
-    _command_desc = "Global"
+
+    def __init__(self, system, ctr_collector, module_name, args, preserve_remote):
+        super().__init__(system, ctr_collector, module_name, args)
+        self._preserve_remote = preserve_remote
+
+    def __call__(self, fn):
+        if isinstance(fn, Type):
+            raise RuntimeError("Global commands can not have type specialization: {fn!r}")
+        check_not_classmethod(fn)
+        check_is_function(fn)
+        return GlobalModelCommandProbe(
+            self._system, self._ctr_collector, self._module_name, self._args, self._preserve_remote, fn)
 
 
 class CommandMarker:
@@ -369,9 +384,10 @@ class ModelCommandEnumeratorMarker(CommandMarker):
 
 class GlobalModelCommandMarker(CommandMarker):
 
-    def __call__(self, fn=None, *, args=None):
+    def __call__(self, fn=None, *, args=None, preserve_remote=False):
         if fn is None:
-            return GlobalModelCommandDecorator(self._system, self._ctr_collector, self._module_name, args)
+            return GlobalModelCommandDecorator(
+                self._system, self._ctr_collector, self._module_name, args, preserve_remote)
         if args is not None:
             raise RuntimeError(f"Global commands decorator does not support positional arguments")
         if isinstance(fn, Type):
@@ -380,4 +396,5 @@ class GlobalModelCommandMarker(CommandMarker):
             # Not type-specialized variant  (@mark.global_command).
             check_not_classmethod(fn)
             check_is_function(fn)
-            return GlobalModelCommandProbe(self._system, self._ctr_collector, self._module_name, args=None, fn=fn)
+            return GlobalModelCommandProbe(
+                self._system, self._ctr_collector, self._module_name, args, preserve_remote, fn)

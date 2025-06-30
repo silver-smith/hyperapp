@@ -73,6 +73,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_static_list.fn
+      preserve_remote: false
   open_sample_static_list_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -103,6 +104,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_static_text.fn
+      preserve_remote: false
   open_sample_static_text_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -133,6 +135,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_wiki_text.fn
+      preserve_remote: false
   open_sample_wiki_text_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -219,6 +222,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: show_state.fn
+      preserve_remote: false
   show_state_d:
     type: legacy_type.builtin:record_mt
     value:
@@ -249,6 +253,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: system_info.fn
+      preserve_remote: false
   system_info_d:
     type: legacy_type.builtin:record_mt
     value:

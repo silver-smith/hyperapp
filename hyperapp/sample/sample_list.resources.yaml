@@ -78,6 +78,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_feed_sample_fn_list.fn
+      preserve_remote: false
   open_sample_fn_list:
     type: legacy_type.builtin:attribute
     value:
@@ -101,6 +102,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_sample_fn_list.fn
+      preserve_remote: false
   sample_list:
     type: legacy_type.builtin:attribute
     value:

@@ -120,3 +120,4 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_file_bundle_list.fn
+      preserve_remote: false

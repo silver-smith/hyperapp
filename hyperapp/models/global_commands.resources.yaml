@@ -165,6 +165,7 @@ definitions:
         uses_state: false
         remotable: true
       system_fn: open_global_commands.fn
+      preserve_remote: false
   open_global_commands_d:
     type: legacy_type.builtin:record_mt
     value:
