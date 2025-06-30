@@ -2,9 +2,10 @@
 
 import:
 - base.mark:mark.module
+- base.system.config_ctl:config_ctl.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.system:actor_value_ctl
+- legacy_type.system:data_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
@@ -19,20 +20,21 @@ definitions:
       module_name: editor_default_reg
       file_name: editor_default_reg.dyn.py
       import_list:
+        code.config_ctl: base.system.config_ctl:config_ctl.module
         code.mark: base.mark:mark.module
   editor_default_reg.service:
     type: legacy_type.system:service_template
     value:
       name: editor_default_reg
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config_ctl.data_value_ctl.ctl
       function: editor_default_reg
       service_params: []
       want_config: true
       free_params: []
-  system-actor_value_ctl.value-ctl:
-    type: legacy_type.system:actor_value_ctl
+  system-data_value_ctl.value-ctl:
+    type: legacy_type.system:data_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config_ctl.data_value_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-data_value_ctl.value-ctl
