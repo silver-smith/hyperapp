@@ -142,6 +142,11 @@ definitions:
     value:
       key: column_k-model_list.model-model_t
       value: bool-false
+  config_item-crud-layout_k-models.ref_list-add_folder:
+    type: legacy_type.data_service:config_item
+    value:
+      key: crud-layout_k-models.ref_list-add_folder
+      value: box_layout_view_1
   config_item-crud-layout_k-models.wiki_pages-add_folder:
     type: legacy_type.data_service:config_item
     value:
@@ -362,6 +367,10 @@ definitions:
     value:
       key: wiki_pages.page_model-model_layout_k
       value: form_view_1
+  crud-layout_k-models.ref_list-add_folder:
+    type: legacy_type.crud:layout_k
+    value:
+      commit_command_d: models.ref_list:add_folder.commit-d
   crud-layout_k-models.wiki_pages-add_folder:
     type: legacy_type.crud:layout_k
     value:
@@ -369,7 +378,7 @@ definitions:
   edit_view_1:
     type: legacy_type.text:edit_view
     value:
-      adapter: value_adapter_2
+      adapter: value_adapter_3
   fn_record_adapter_1:
     type: legacy_type.record_adapter:fn_record_adapter
     value:
@@ -383,7 +392,7 @@ definitions:
       - view: label_view_2
         focusable: false
         stretch: 0
-      - view: line_edit-value_adapter_3
+      - view: line_edit-value_adapter_2
         focusable: true
         stretch: 0
       - view: label_view_1
@@ -411,10 +420,10 @@ definitions:
     type: legacy_type.line_edit:edit_view
     value:
       adapter: value_adapter_1
-  line_edit-value_adapter_3:
+  line_edit-value_adapter_2:
     type: legacy_type.line_edit:edit_view
     value:
-      adapter: value_adapter_3
+      adapter: value_adapter_2
   list_view_1:
     type: legacy_type.list:view
     value:
@@ -432,6 +441,7 @@ definitions:
       items:
       - config_item-crud-layout_k-models.wiki_pages-add_folder
       - config_item-wiki_pages.page_model-model_layout_k
+      - config_item-crud-layout_k-models.ref_list-add_folder
   noop_convertor_1:
     type: legacy_type.type_convertor:noop_convertor
     value: {}
@@ -570,13 +580,13 @@ definitions:
   value_adapter_2:
     type: legacy_type.value_adapter:value_adapter
     value:
-      accessor: record_field_accessor_1
-      convertor: wiki_to_string_convertor
+      accessor: record_field_accessor_2
+      convertor: noop_convertor_1
   value_adapter_3:
     type: legacy_type.value_adapter:value_adapter
     value:
-      accessor: record_field_accessor_2
-      convertor: noop_convertor_1
+      accessor: record_field_accessor_1
+      convertor: wiki_to_string_convertor
   wiki_pages.page_model-model_layout_k:
     type: legacy_type.ui:model_layout_k
     value:
