@@ -29,7 +29,7 @@ class DataServiceConfigCtl(ConfigCtl):
 
     def to_data(self, config_template):
         return item_pieces_to_data([
-            self._item_piece(key, value)
+            self.item_piece(key, value)
             for key, value in config_template.items()
             ])
 
@@ -57,7 +57,7 @@ class DataServiceConfigCtl(ConfigCtl):
         config_template[key] = value
 
     @staticmethod
-    def _item_piece(key, value):
+    def item_piece(key, value):
         return htypes.data_service.config_item(
             key=mosaic.put(key),
             value=mosaic.put(value),
@@ -81,7 +81,7 @@ class TypeKeyDataServiceConfigCtl(DataServiceConfigCtl):
         return (key, value)
 
     @staticmethod
-    def _item_piece(key, value):
+    def item_piece(key, value):
         return htypes.data_service.config_item(
             key=pyobj_creg.actor_to_ref(key),
             value=mosaic.put(value),
