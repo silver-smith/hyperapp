@@ -41,39 +41,34 @@ class AssociationRegistry:
 
     def set_list(self, ass_list):
         for ass in ass_list:
-            self.set(ass)
+            self._set(ass)
 
     def set_association(self, bases, service_name, cfg_item):
         ass = Association(bases, service_name, cfg_item)
-        self.set(ass)
+        self._set(ass)
 
     def remove_association(self, service_name, cfg_item):
         try:
             ass = self._by_cfg_item_key[service_name, cfg_item]
         except KeyError:
             return
-        for base in ass.bases:
-            self._by_base[base].remove(ass)
-        del self._by_cfg_item_key[service_name, cfg_item]
+        self._remove(ass)
 
-    def set(self, ass):
+    def _set(self, ass):
         try:
             ass = self._by_cfg_item_key[ass.cfg_item_key]
         except KeyError:
             pass
         else:
-            self.remove(ass)
+            self._remove(ass)
         self._by_cfg_item_key[ass.cfg_item_key] = ass
         for base in ass.bases:
             self._by_base[base].append(ass)
 
-    def remove(self, ass):
+    def _remove(self, ass):
         del self._by_cfg_item_key[ass.cfg_item_key]
         for base in ass.bases:
-            try:
-                self._by_base[base].remove(ass)
-            except (KeyError, ValueError):
-                pass
+            self._by_base[base].remove(ass)
         
     def base_to_ass_list(self, base):
         return self._by_base.get(base, [])
