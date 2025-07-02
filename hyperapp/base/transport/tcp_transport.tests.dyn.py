@@ -36,6 +36,7 @@ def tcp_test_callback(
         rpc_call_factory,
         tcp_master_peer_piece,
         master_fn_ref,
+        message,
         ):
     log.info("tcp_test_callback: entered")
     tcp_master_peer = peer_registry.animate(tcp_master_peer_piece)
@@ -43,7 +44,7 @@ def tcp_test_callback(
     endpoint_registry.register(my_identity, rpc_endpoint)
     rpc_call = rpc_call_factory(tcp_master_peer, my_identity, master_fn_ref)
     log.info("tcp_test_callback: Calling master:")
-    rpc_call(message='hello')
+    rpc_call(message=message)
     log.info("tcp_test_callback: Calling master: done")
 
 
@@ -73,6 +74,7 @@ def test_tcp_call(
         process.service_call('tcp_test_callback')(
             tcp_master_peer_piece=tcp_master_identity.peer.piece,
             master_fn_ref=pyobj_creg.actor_to_ref(my_callback),
+            message='hello',
         )
         assert _callback_message == ['hello']
         log.info("Stopping: %r", process)
