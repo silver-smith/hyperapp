@@ -66,11 +66,16 @@ def test_tcp_call(
     endpoint_registry.register(tcp_master_identity, rpc_endpoint)
 
     server = tcp_server_factory(bind_address=None)
-    log.info("Tcp route: %r", server.route)
-    route_table.add_route(tcp_master_peer_ref, server.route)
 
     with subprocess_rpc_server_running('test-tcp-send', master_identity) as process:
         log.info("Started: %r", process)
+
+        # Should add route after rpc server is started.
+        # Otherwise, route will be transferred with full config passed to server on start.
+        # And test will work even if route association is not bundled with request.
+        log.info("Tcp route: %r", server.route)
+        route_table.add_route(tcp_master_peer_ref, server.route)
+
         process.service_call('tcp_test_callback')(
             tcp_master_peer_piece=tcp_master_identity.peer.piece,
             master_fn_ref=pyobj_creg.actor_to_ref(my_callback),
