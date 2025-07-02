@@ -115,20 +115,20 @@ class ProjectConfigLayer(ConfigLayer):
             return {}
         return self._data_to_config(config_piece)
 
-    def set(self, service_name, key, value):
+    def set(self, service_name, key, template):
         service_config = self._service_config(service_name)
-        service_config[key] = value
+        service_config[key] = template
         self._save()
         self._system.config_item_was_set(service_name, key)
 
-    def add(self, service_name, key, value):
+    def add(self, service_name, key, template):
         service_config = self._service_config(service_name)
         try:
-            value_set = service_config[key]
+            template_set = service_config[key]
         except KeyError:
-            value_set = set()
-            service_config[key] = value_set
-        value_set.add(value)
+            template_set = set()
+            service_config[key] = template_set
+        template_set.add(template)
         self._save()
         self._system.config_item_was_set(service_name, key)
 
