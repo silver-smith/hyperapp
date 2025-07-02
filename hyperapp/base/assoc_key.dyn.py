@@ -10,8 +10,9 @@ def assoc_key_creg(config):
 
 class AssociationKeyRegistry:
 
-    def __init__(self, system, assoc_key_creg, config):
+    def __init__(self, system, config_ctl, assoc_key_creg, config):
         self._system = system
+        self._config_ctl = config_ctl
         self._assoc_key_creg = assoc_key_creg
         self._config = config
 
@@ -38,15 +39,19 @@ class AssociationKeyRegistry:
             return
         assoc_key = self._assoc_key_creg.animate(assoc_key_piece)
         bases = assoc_key.bases(key, template)
-        association_reg.set_association(bases, service_name, template)
+        ctl = self._config_ctl[service_name]
+        item_piece = ctl.item_piece(key, template)
+        association_reg.set_association(bases, service_name, item_piece)
 
     # System config hook method
     def config_item_removed(self, service_name, key, template):
-        assert 0, (service_name, key, template)
+        ctl = self._config_ctl[service_name]
+        item_piece = ctl.item_piece(key, template)
+        association_reg.remove_association(service_name, item_piece)
 
 
-def assoc_key(config, assoc_key_creg, system):
-    return AssociationKeyRegistry(system, assoc_key_creg, config)
+def assoc_key(config, assoc_key_creg, config_ctl, system):
+    return AssociationKeyRegistry(system, config_ctl, assoc_key_creg, config)
 
 
 def init_assoc_key(assoc_key, system):

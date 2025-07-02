@@ -47,6 +47,15 @@ class AssociationRegistry:
         ass = Association(bases, service_name, cfg_item)
         self.set(ass)
 
+    def remove_association(self, service_name, cfg_item):
+        try:
+            ass = self._by_cfg_item_key[service_name, cfg_item]
+        except KeyError:
+            return
+        for base in ass.bases:
+            self._by_base[base].remove(ass)
+        del self._by_cfg_item_key[service_name, cfg_item]
+
     def set(self, ass):
         try:
             ass = self._by_cfg_item_key[ass.cfg_item_key]

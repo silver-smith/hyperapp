@@ -42,6 +42,7 @@ definitions:
       free_params: []
       service_params:
       - assoc_key_creg
+      - config_ctl
       - system
       want_config: true
 
