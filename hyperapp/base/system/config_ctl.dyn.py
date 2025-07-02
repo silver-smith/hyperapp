@@ -94,7 +94,8 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
     def from_data(self, piece):
         config_template = self.empty_config_template()
         for item_ref in piece.items:
-            key, template = self._cfg_item_creg.invite(item_ref)
+            item = web.summon(item_ref)
+            key, template = self.resolve_cfg_item(item)
             self._update_config(config_template, key, template)
         return config_template
 
@@ -115,6 +116,10 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
     @abstractmethod
     def _update_config(self, config_template, key, template):
         pass
+
+    def resolve_cfg_item(self, item):
+        key, template = self._cfg_item_creg.animate(item)
+        return (key, template)
 
     def item_piece(self, key, template):
         return self._cfg_item_creg.actor_to_piece((key, template))
