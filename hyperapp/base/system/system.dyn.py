@@ -172,11 +172,11 @@ class System:
         except KeyError:
             return
         item_list = ctl.config_to_items(config_template)
-        for kv in item_list:
-            if kv[0] != key:
+        for item_key, template in item_list:
+            if item_key != key:
                 continue
             for hook in self._config_hooks:
-                hook_method(hook)(service_name, kv)
+                hook_method(hook)(service_name, item_key, template)
 
     def _call_config_hooks(self, hook_list):
         for service_name, config_template in self._config_templates.items():
@@ -184,9 +184,9 @@ class System:
             if not ctl.is_multi_item:
                 continue  # No hooks for non-multi-item configs.
             item_list = ctl.config_to_items(config_template)
-            for kv in item_list:
+            for key, template in item_list:
                 for hook in hook_list:
-                    hook.config_item_set(service_name, kv)
+                    hook.config_item_set(service_name, key, template)
 
     def service_config_order(self, service_name):
         order = {

@@ -31,19 +31,18 @@ class AssociationKeyRegistry:
         return self._config.get(key)
 
     # System config hook method
-    def config_item_set(self, service_name, kv):
+    def config_item_set(self, service_name, key, template):
         try:
             assoc_key_piece = self._config[service_name]
         except KeyError:
             return
         assoc_key = self._assoc_key_creg.animate(assoc_key_piece)
-        key, template = kv
         bases = assoc_key.bases(key, template)
         association_reg.set_association(bases, service_name, template)
 
     # System config hook method
-    def config_item_removed(self, service_name, kv):
-        assert 0, (service_name, kv)
+    def config_item_removed(self, service_name, key, template):
+        assert 0, (service_name, key, template)
 
 
 def assoc_key(config, assoc_key_creg, system):
