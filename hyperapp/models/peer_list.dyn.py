@@ -85,7 +85,7 @@ def peer_list_reg(file_bundle_factory, peer_registry):
     return PeerList(bundle, peer_registry, peer_list_path)
 
     
-@mark.model
+@mark.model(key='name')
 def peer_list_model(piece, peer_list_reg):
     return [
         htypes.peer_list.item(
@@ -103,7 +103,7 @@ def _unpack_bundle(json_data):
     return bundle.roots[0]
 
 
-@mark.command(args=['host'])
+@mark.command.add(args=['host'])
 def add(piece, host, peer_list_reg, file_bundle_factory, peer_registry, peer_label_reg):
     log.info("Peer list: Add host: %r", host)
     if host in {'', 'localhost'}:
@@ -121,14 +121,13 @@ def add(piece, host, peer_list_reg, file_bundle_factory, peer_registry, peer_lab
         label = host
     peer_list_reg.add(label, peer)
     peer_label_reg[peer.piece] = label
+    return label
 
 
-@mark.command
-async def remove(piece, current_idx, current_item, feed_factory, peer_list_reg):
-    log.info("Peer list: Remove host #%d: %r", current_idx, current_item.name)
-    feed = feed_factory(piece)
-    if peer_list_reg.remove(current_item.name):
-        await feed.send(IndexListDiff.Remove(current_idx))
+@mark.command.remove
+async def remove(piece, current_item, peer_list_reg):
+    log.info("Peer list: Remove host: %r", current_item.name)
+    return peer_list_reg.remove(current_item.name)
 
 
 @mark.command(args=['command'])

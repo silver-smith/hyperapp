@@ -76,13 +76,12 @@ def test_add_remote(bundler, generate_rsa_identity, peer_label_reg, piece):
 
 async def test_remove(feed_factory, piece, peer_name):
     feed = feed_factory(piece)
-    current_idx = 0
     current_item = htypes.peer_list.item(
         name=peer_name,
         peer=mosaic.put("<unused>"),
         peer_repr="<unused>",
         )
-    await peer_list.remove(piece, current_idx, current_item)
+    await peer_list.remove(piece, current_item)
     await feed.wait_for_diffs(count=1)
 
 
