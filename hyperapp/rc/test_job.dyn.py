@@ -204,6 +204,7 @@ def test_subprocess_rpc_main(connection, received_refs, system_config_piece, roo
     system.load_static_config(system_config_piece)
     ImportRecorder.configure_pyobj_creg(system)
     _ = system.resolve_service('marker_registry')  # Init markers.
+    system['init_hook'].run_hooks()
     system.run(root_name, connection, received_refs, **kw)
 
 
