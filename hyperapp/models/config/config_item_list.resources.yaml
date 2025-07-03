@@ -203,7 +203,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: open_config_item_list.fn
-      preserve_remote: false
+      preserve_remote: true
   open_config_item_list_d:
     type: legacy_type.builtin:record_mt
     value:

@@ -61,7 +61,7 @@ def config_item_list(piece, system, format):
     return item_list
 
 
-@mark.command
+@mark.command(preserve_remote=True)
 def open_config_item_list(piece, current_item):
     return htypes.config_item_list.model(current_item.service_name)
 
