@@ -18,6 +18,7 @@ class AssociationKeyRegistry:
 
     def init(self, system):
         system.add_config_hook(self)
+        association_reg.set_hook(self.on_assocation_received)
 
     def __contains__(self, key):
         return key in self._config
@@ -48,6 +49,16 @@ class AssociationKeyRegistry:
         ctl = self._config_ctl[service_name]
         item_piece = ctl.item_piece(key, template)
         association_reg.remove_association(service_name, item_piece)
+
+    def on_assocation_received(self, service_name, cfg_item):
+        try:
+            assoc_key_piece = self._config[service_name]
+        except KeyError:
+            return
+        assoc_key = self._assoc_key_creg.animate(assoc_key_piece)
+        ctl = self._config_ctl[service_name]
+        key, template = ctl.resolve_cfg_item(cfg_item)
+        self._system.default_layer.set(service_name, key, template)
 
 
 def assoc_key(config, assoc_key_creg, config_ctl, system):
