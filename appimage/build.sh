@@ -6,8 +6,9 @@ hyperapp_dir="${this_dir%/*}"
 
 work_dir="/tmp/hyperapp-image"
 
-target_image_name=hyperapp-python3.11.12-cp311-cp311-manylinux2014_x86_64.AppImage
-python_image_name=python3.11.12-cp311-cp311-manylinux2014_x86_64.AppImage
+python_ver=python3.11.13
+target_image_name="hyperapp-$python_ver-cp311-cp311-manylinux2014_x86_64.AppImage"
+python_image_name="$python_ver-cp311-cp311-manylinux2014_x86_64.AppImage"
 appimagetool_image_name=appimagetool-x86_64.AppImage
 
 target_image_path="$work_dir/$target_image_name"
@@ -42,7 +43,7 @@ if [ ! -d "$target_fs" ]; then
   cp -r "$python_fs" "$target_fs"
   mv "$target_fs/AppRun" "$target_fs/python"
   # Original python appdata does not work for us. We do not need it anyway.
-  rm -r "$target_fs/usr/share/metainfo/python3.11.12.appdata.xml"
+  rm -r "$target_fs/usr/share/metainfo/$python_ver.appdata.xml"
 fi
 
 "$target_fs/python" --version
