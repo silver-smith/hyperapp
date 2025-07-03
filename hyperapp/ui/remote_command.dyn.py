@@ -53,7 +53,7 @@ class BoundRemoteCommand(BoundModelCommand):
         if result is None:
             return None
         assert isinstance(result, htypes.command.command_result), result
-        if not is_remote or result.model is None:
+        if not is_remote or result.model is None or not self._preserve_remote:
             return result
         result_model, result_model_t = web.summon_with_t(result.model)
         if not isinstance(result_model_t, TRecord):
