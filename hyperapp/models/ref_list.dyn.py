@@ -123,23 +123,32 @@ def ref_list_model(piece, format, ref_list):
 def open(piece, current_key, request, ref_list):
     try:
         folder = ref_list.get_folder(current_key)
-        path = [folder.name]
-        while folder.parent_id:
-            folder = ref_list.get_folder(folder.parent_id)
-            path = [folder.name, *path]
-        piece = htypes.ref_list.model(
-            parent_id=current_key,
-            folder_path=tuple(path),
-            )
-        if request:
-            piece = htypes.model.remote_model(
-                model=mosaic.put(piece),
-                remote_peer=mosaic.put(request.receiver_identity.peer.piece),
-                )
-        return piece
     except KeyError:
-        ref = ref_list.get_ref(current_key)
-        return web.summon(ref.ref)
+        return _open_ref(ref_list, current_key)
+    else:
+        return _open_folder(ref_list, request, current_key, folder)
+
+
+def _open_folder(ref_list, request, item_id, folder):
+    path = [folder.name]
+    while folder.parent_id:
+        folder = ref_list.get_folder(folder.parent_id)
+        path = [folder.name, *path]
+    piece = htypes.ref_list.model(
+        parent_id=item_id,
+        folder_path=tuple(path),
+        )
+    if request:
+        piece = htypes.model.remote_model(
+            model=mosaic.put(piece),
+            remote_peer=mosaic.put(request.receiver_identity.peer.piece),
+            )
+    return piece
+
+
+def _open_ref(ref_list, item_id):
+    ref = ref_list.get_ref(item_id)
+    return web.summon(ref.ref)
 
 
 @mark.command
