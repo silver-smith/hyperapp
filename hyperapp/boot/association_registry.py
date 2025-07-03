@@ -38,10 +38,15 @@ class AssociationRegistry:
     def __init__(self):
         self._by_base = defaultdict(list)
         self._by_cfg_item_key = {}
+        self._hook = lambda service_name, cfg_item: None  # Do we need several hooks or weak refs?
+
+    def set_hook(self, hook):
+        self._hook = hook
 
     def set_list(self, ass_list):
         for ass in ass_list:
             self._set(ass)
+            self._hook(ass.service_name, ass.cfg_item)
 
     def set_association(self, bases, service_name, cfg_item):
         ass = Association(bases, service_name, cfg_item)
