@@ -23,7 +23,7 @@ from .code.rc_constants import JobStatus
 from .code.python_src import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError, ImportRecorder
-from .code.config_layer import StaticConfigLayer
+from .code.config_layer import MemoryConfigLayer, StaticConfigLayer
 from .code.system import UnknownServiceError
 from .code.system_probe import SystemProbe
 from .code.system_job import Result, SystemJob, SystemJobResult
@@ -202,6 +202,8 @@ def rpc_service_wrapper(system, _real_service_name, **kw):
 def test_subprocess_rpc_main(connection, received_refs, system_config_piece, root_name, **kw):
     system = SystemProbe()
     system.load_static_config(system_config_piece)
+    system.load_config_layer('memory', MemoryConfigLayer(system))
+    system.set_default_layer('memory')
     ImportRecorder.configure_pyobj_creg(system)
     _ = system.resolve_service('marker_registry')  # Init markers.
     system['init_hook'].run_hooks()
