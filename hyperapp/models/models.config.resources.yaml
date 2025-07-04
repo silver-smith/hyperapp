@@ -142,6 +142,11 @@ definitions:
     value:
       key: column_k-model_list.model-model_t
       value: bool-false
+  config_item-crud-layout_k-models.peer_list-add:
+    type: legacy_type.data_service:config_item
+    value:
+      key: crud-layout_k-models.peer_list-add
+      value: box_layout_view_1
   config_item-crud-layout_k-models.ref_list-add_folder:
     type: legacy_type.data_service:config_item
     value:
@@ -367,6 +372,10 @@ definitions:
     value:
       key: wiki_pages.page_model-model_layout_k
       value: form_view_1
+  crud-layout_k-models.peer_list-add:
+    type: legacy_type.crud:layout_k
+    value:
+      commit_command_d: models.peer_list:add.commit-d
   crud-layout_k-models.ref_list-add_folder:
     type: legacy_type.crud:layout_k
     value:
@@ -389,13 +398,13 @@ definitions:
     value:
       direction: TopToBottom
       elements:
-      - view: label_view_2
+      - view: label_view_1
         focusable: false
         stretch: 0
       - view: line_edit-value_adapter_2
         focusable: true
         stretch: 0
-      - view: label_view_1
+      - view: label_view_2
         focusable: false
         stretch: 0
       - view: edit_view_1
@@ -411,11 +420,11 @@ definitions:
   label_view_1:
     type: legacy_type.label:view
     value:
-      text: wiki
+      text: title
   label_view_2:
     type: legacy_type.label:view
     value:
-      text: title
+      text: wiki
   line_edit-value_adapter_1:
     type: legacy_type.line_edit:edit_view
     value:
@@ -442,6 +451,7 @@ definitions:
       - config_item-crud-layout_k-models.wiki_pages-add_folder
       - config_item-wiki_pages.page_model-model_layout_k
       - config_item-crud-layout_k-models.ref_list-add_folder
+      - config_item-crud-layout_k-models.peer_list-add
   noop_convertor_1:
     type: legacy_type.type_convertor:noop_convertor
     value: {}
