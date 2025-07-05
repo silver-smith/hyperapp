@@ -10,7 +10,7 @@ def test_append():
     item = htypes.list_diff_tests.sample_item(
         id='123',
         )
-    piece = htypes.diff.append(
+    piece = htypes.list_diff.append(
         item=mosaic.put(item),
         )
     diff = list_diff.ListDiffAppend.from_piece(piece)
@@ -18,7 +18,7 @@ def test_append():
 
 
 def test_remove_idx():
-    piece = htypes.diff.remove_idx(
+    piece = htypes.list_diff.remove_idx(
         idx=123,
         )
     diff = list_diff.ListDiffRemoveIdx.from_piece(piece)
@@ -26,7 +26,7 @@ def test_remove_idx():
 
 
 def test_remove_key():
-    piece = htypes.diff.remove_key(
+    piece = htypes.list_diff.remove_key(
         key=mosaic.put('123'),
         )
     diff = list_diff.ListDiffRemoveKey.from_piece(piece)

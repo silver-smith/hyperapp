@@ -62,7 +62,7 @@ class ListDiffRemoveIdx:
 
     @property
     def piece(self):
-        return htypes.diff.remove_idx(
+        return htypes.list_diff.remove_idx(
             idx=self.idx,
             )
 
@@ -94,7 +94,7 @@ class ListDiffRemoveKey:
 
     @property
     def piece(self):
-        return htypes.diff.remove_key(
+        return htypes.list_diff.remove_key(
             key=mosaic.put(self.key),
             )
 
@@ -115,7 +115,7 @@ class ListDiffAppend:
 
     @property
     def piece(self):
-        return htypes.diff.append(
+        return htypes.list_diff.append(
             item=mosaic.put(self.item),
             )
 

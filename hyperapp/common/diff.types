@@ -1,13 +1,3 @@
 model_diff = record:
   model: ref
   diff: ref
-
-
-append = record:
-  item: ref
-
-remove_idx = record:
-  idx: int
-
-remove_key = record:
-  key: ref
