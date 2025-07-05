@@ -17,6 +17,9 @@ class DataBrowserViewDataAdapter:
     def __init__(self, data):
         self._data = data
 
+    def subscribe(self, subscriber):
+        pass
+
     @property
     def model(self):
         return self._data
@@ -24,8 +27,8 @@ class DataBrowserViewDataAdapter:
     def get_view_value(self):
         return str(self._data)
 
-    def text_to_value(self, text):
-        return text
+    def view_to_value(self, view_value):
+        return view_value
 
     def value_changed_by_me(self, new_value):
         if new_value == self._text:
