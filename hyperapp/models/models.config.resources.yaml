@@ -39,6 +39,7 @@ import:
 - models.config.config_layer_list:open_config_layer_list.d
 - models.config.config_service_list:open_config_service_list.d
 - models.config.config_service_list:toggle_assoc.d
+- models.data_browser:browse_current_model.d
 - models.data_browser:list_open.d
 - models.data_browser:record_open.d
 - models.data_browser:ref_list_open.d
@@ -212,6 +213,11 @@ definitions:
     value:
       key: models.config.config_service_list:toggle_assoc.d
       value: shortcut_A
+  config_item-models.data_browser-browse_current_model.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.data_browser:browse_current_model.d
+      value: shortcut_Ctrl_F1
   config_item-models.data_browser-list_open.d:
     type: legacy_type.data_service:config_item
     value:
@@ -387,7 +393,7 @@ definitions:
   edit_view_1:
     type: legacy_type.text:edit_view
     value:
-      adapter: value_adapter_3
+      adapter: value_adapter_2
   fn_record_adapter_1:
     type: legacy_type.record_adapter:fn_record_adapter
     value:
@@ -401,7 +407,7 @@ definitions:
       - view: label_view_1
         focusable: false
         stretch: 0
-      - view: line_edit-value_adapter_2
+      - view: line_edit-value_adapter_3
         focusable: true
         stretch: 0
       - view: label_view_2
@@ -429,10 +435,10 @@ definitions:
     type: legacy_type.line_edit:edit_view
     value:
       adapter: value_adapter_1
-  line_edit-value_adapter_2:
+  line_edit-value_adapter_3:
     type: legacy_type.line_edit:edit_view
     value:
-      adapter: value_adapter_2
+      adapter: value_adapter_3
   list_view_1:
     type: legacy_type.list:view
     value:
@@ -508,6 +514,9 @@ definitions:
   shortcut_Ctrl_Alt_W:
     type: legacy_type.builtin:string
     value: Ctrl+Alt+W
+  shortcut_Ctrl_F1:
+    type: legacy_type.builtin:string
+    value: Ctrl+F1
   shortcut_Ctrl_R:
     type: legacy_type.builtin:string
     value: Ctrl+R
@@ -582,6 +591,7 @@ definitions:
       - config_item-models.wiki_pages-save_page.d
       - config_item-models.wiki_pages-open_ref_list.d
       - config_item-models.config.config_service_list-toggle_assoc.d
+      - config_item-models.data_browser-browse_current_model.d
   value_adapter_1:
     type: legacy_type.value_adapter:value_adapter
     value:
@@ -590,13 +600,13 @@ definitions:
   value_adapter_2:
     type: legacy_type.value_adapter:value_adapter
     value:
-      accessor: record_field_accessor_2
-      convertor: noop_convertor_1
+      accessor: record_field_accessor_1
+      convertor: wiki_to_string_convertor
   value_adapter_3:
     type: legacy_type.value_adapter:value_adapter
     value:
-      accessor: record_field_accessor_1
-      convertor: wiki_to_string_convertor
+      accessor: record_field_accessor_2
+      convertor: noop_convertor_1
   wiki_pages.page_model-model_layout_k:
     type: legacy_type.ui:model_layout_k
     value:
