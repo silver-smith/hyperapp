@@ -40,6 +40,7 @@ import:
 - rc.editor_marker:editor.marker-template
 - rc.feed_ctr:feed-list_feed_ctr.actor-cfg-item
 - rc.feed_ctr:feed-index_tree_feed_ctr.actor-cfg-item
+- rc.feed_ctr:feed-value_feed_ctr.actor-cfg-item
 - rc.import_job:import_job-failed_result.actor-cfg-item
 - rc.import_job:import_job-incomplete_result.actor-cfg-item
 - rc.import_job:import_job-job.actor-cfg-item
@@ -216,6 +217,7 @@ definitions:
       - rc.editor_ctr:editor_ctr-default_ctr.actor-cfg-item
       - rc.feed_ctr:feed-list_feed_ctr.actor-cfg-item
       - rc.feed_ctr:feed-index_tree_feed_ctr.actor-cfg-item
+      - rc.feed_ctr:feed-value_feed_ctr.actor-cfg-item
       - rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-cfg-item
       - rc.fixture_ctr:fixture_resource-fixture_obj_ctr.actor-cfg-item
       - rc.fixture_ctr:fixture_resource-fixture_probe_ctr.actor-cfg-item

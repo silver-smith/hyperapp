@@ -46,6 +46,7 @@ import:
 - ui.feed:feed_map.service
 - ui.feed:feed_type_creg-feed-index_tree_feed_type.actor-cfg-item
 - ui.feed:feed_type_creg-feed-list_feed_type.actor-cfg-item
+- ui.feed:feed_type_creg-feed-value_feed_type.actor-cfg-item
 - ui.feed_creg:feed_type_creg.service
 - ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-cfg-item
 - ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-cfg-item
@@ -301,6 +302,7 @@ definitions:
       items:
       - ui.feed:feed_type_creg-feed-index_tree_feed_type.actor-cfg-item
       - ui.feed:feed_type_creg-feed-list_feed_type.actor-cfg-item
+      - ui.feed:feed_type_creg-feed-value_feed_type.actor-cfg-item
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:

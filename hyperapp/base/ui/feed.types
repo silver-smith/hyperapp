@@ -8,6 +8,11 @@ index_tree_feed_ctr = record:
   model_t: ref
   item_t: ref opt
 
+value_feed_ctr = record:
+  module_name: string
+  model_t: ref
+  value_t: ref
+
 
 feed_template = record:
   model_t: ref
@@ -20,3 +25,6 @@ list_feed_type = record:
 
 index_tree_feed_type = record:
   item_t: ref opt
+
+value_feed_type = record:
+  value_t: ref

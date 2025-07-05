@@ -58,3 +58,11 @@ def test_index_tree_feed_actor(feed_type_creg, item_t):
     piece = htypes.feed.index_tree_feed_type(mosaic.put(item_t))
     feed_type = feed_type_creg.animate(piece)
     assert feed_type is feed_module.IndexTreeFeed, repr(feed_type)
+
+
+def test_value_feed_actor(item_t):
+    piece = htypes.feed.value_feed_type(
+        value_t=mosaic.put(item_t),
+        )
+    feed_type = feed_module.value_feed_from_piece(piece)
+    assert feed_type is feed_module.ValueFeed, repr(feed_type)

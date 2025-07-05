@@ -10,7 +10,8 @@ from .services import (
 from .code.mark import mark
 from .code.list_diff import IndexListDiff, KeyListDiff
 from .code.tree_diff import TreeDiff
-from .code.feed_ctr import ListFeedCtr, IndexTreeFeedCtr
+from .code.value_diff import SetValueDiff
+from .code.feed_ctr import ListFeedCtr, IndexTreeFeedCtr, ValueFeedCtr
 
 log = logging.getLogger(__name__)
 
@@ -124,6 +125,19 @@ class FeedDiscoverer:
                 )):
             if not isinstance(self.ctr, htypes.feed.index_tree_feed_ctr):
                 raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and tree diff ({diff})")
+        elif isinstance(diff, SetValueDiff):
+            value_t = deduce_t(diff.new_value)
+            ctr = ValueFeedCtr(
+                module_name=module_name,
+                model_t=self._piece_t,
+                value_t=value_t,
+                )
+            if self.ctr:
+                if ctr != self.ctr:
+                    raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and {feed}")
+            else:
+                self.ctr = ctr
+                log.info("Feed: Deduced feed type: %s [%s]", self.ctr, value_t)
         else:
             raise NotImplementedError(f"Not implemented: feed detection for diff: {diff}")
         async with self._got_diff:

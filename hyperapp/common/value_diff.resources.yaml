@@ -1,0 +1,11 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+definitions:
+  value_diff.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: value_diff
+      file_name: value_diff.dyn.py
+      import_list: {}

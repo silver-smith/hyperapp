@@ -9,6 +9,8 @@ import:
 - legacy_type.feed:index_tree_feed_type
 - legacy_type.feed:list_feed_ctr
 - legacy_type.feed:list_feed_type
+- legacy_type.feed:value_feed_ctr
+- legacy_type.feed:value_feed_type
 - legacy_type.system:actor_template
 - rc.cfg_item_req:cfg_item_req.module
 - rc.rc_constructor:rc_constructor.module
@@ -26,6 +28,8 @@ definitions:
         htypes.feed.index_tree_feed_ctr: legacy_type.feed:index_tree_feed_ctr
         htypes.feed.index_tree_feed_type: legacy_type.feed:index_tree_feed_type
         htypes.feed.list_feed_type: legacy_type.feed:list_feed_type
+        htypes.feed.value_feed_ctr: legacy_type.feed:value_feed_ctr
+        htypes.feed.value_feed_type: legacy_type.feed:value_feed_type
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.cfg_item_req: rc.cfg_item_req:cfg_item_req.module
@@ -78,3 +82,27 @@ definitions:
     value:
       t: legacy_type.feed:index_tree_feed_ctr
       value: IndexTreeFeedCtr.from_piece.actor-template
+
+  ValueFeedCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: feed_ctr.module
+      attr_name: ValueFeedCtr
+
+  ValueFeedCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ValueFeedCtr
+      attr_name: from_piece
+
+  ValueFeedCtr.from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: ValueFeedCtr.from_piece
+      service_params: []
+
+  feed-value_feed_ctr.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.feed:value_feed_ctr
+      value: ValueFeedCtr.from_piece.actor-template

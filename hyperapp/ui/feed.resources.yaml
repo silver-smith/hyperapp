@@ -10,6 +10,7 @@ import:
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.feed:index_tree_feed_type
 - legacy_type.feed:list_feed_type
+- legacy_type.feed:value_feed_type
 - legacy_type.model:remote_model
 - legacy_type.system:actor_template
 - legacy_type.system:actor_value_ctl
@@ -69,6 +70,11 @@ definitions:
     value:
       t: legacy_type.feed:list_feed_type
       value: list_feed_from_piece.actor-template
+  feed_type_creg-feed-value_feed_type.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.feed:value_feed_type
+      value: value_feed_from_piece.actor-template
   index_tree_feed_from_piece:
     type: legacy_type.builtin:attribute
     value:
@@ -96,3 +102,13 @@ definitions:
     type: legacy_type.system:dict_config_ctl
     value:
       value_ctl: system-actor_value_ctl.value-ctl
+  value_feed_from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: feed.module
+      attr_name: value_feed_from_piece
+  value_feed_from_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: value_feed_from_piece
+      service_params: []
