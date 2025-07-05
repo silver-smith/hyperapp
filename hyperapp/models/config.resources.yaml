@@ -100,8 +100,10 @@ import:
 - models.wiki_pages:wiki_pages-list_model-remove.command-cfg-item
 - models.wiki_pages:wiki_pages-list_model.feed-template
 - models.wiki_pages:wiki_pages-list_model.model-cfg-item
+- models.wiki_pages:wiki_pages-page_model-add_ref.command-cfg-item
 - models.wiki_pages:wiki_pages-page_model-open_ref_list.command-cfg-item
 - models.wiki_pages:wiki_pages-page_model-save_page.command-cfg-item
+- models.wiki_pages:wiki_pages-page_model.feed-template
 - models.wiki_pages:wiki_pages-page_model.model-cfg-item
 - models.wiki_pages:wiki_pages-ref_list_model.feed-template
 - models.wiki_pages:wiki_pages-ref_list_model.model-cfg-item
@@ -147,6 +149,7 @@ definitions:
       - models.ref_list:ref_list-model.feed-template
       - models.show_current_context:show_current_context-model.feed-template
       - models.wiki_pages:wiki_pages-list_model.feed-template
+      - models.wiki_pages:wiki_pages-page_model.feed-template
       - models.wiki_pages:wiki_pages-ref_list_model.feed-template
   formatter_creg:
     type: legacy_type.system:item_list_config
@@ -189,6 +192,7 @@ definitions:
       - models.ref_list:ref_list-model-add_folder.command-cfg-item
       - models.ref_list:ref_list-model-add_ref.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-add_folder.command-cfg-item
+      - models.wiki_pages:wiki_pages-page_model-add_ref.command-cfg-item
   model_command_reg:
     type: legacy_type.system:item_list_config
     value:

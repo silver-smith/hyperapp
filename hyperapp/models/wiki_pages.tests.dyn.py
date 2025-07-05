@@ -7,6 +7,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .fixtures import feed_fixtures
 from .tested.code import wiki_pages
 
 
@@ -147,12 +148,16 @@ def test_new_page(folder_2_model):
     assert piece.page_id is None
 
 
-def test_save_new_page(folder_2_model):
-    piece = htypes.wiki_pages.page_model(
+@mark.fixture
+def page_model(folder_2_model):
+    return htypes.wiki_pages.page_model(
         parent_id=folder_2_model.parent_id,
         page_id=None,
         title="Sample page",
         )
+
+
+def test_save_new_page(page_model):
     ref_1_piece = htypes.wiki_pages_tests.sample_model()
     page = htypes.wiki_pages.page(
         title="New page",
@@ -163,18 +168,27 @@ def test_save_new_page(folder_2_model):
                 ),
             ),
         )
-    model, page_id = wiki_pages.save_page(piece, page)
+    model, page_id = wiki_pages.save_page(page_model, page)
     assert isinstance(model, htypes.wiki_pages.list_model)
     assert page_id
 
 
-def test_open_ref_list(folder_2_model):
-    piece = htypes.wiki_pages.page_model(
-        parent_id=folder_2_model.parent_id,
-        page_id=None,
-        title="Sample page",
+async def test_add_ref(feed_factory, page_model):
+    feed = feed_factory(page_model)
+    page = htypes.wiki_pages.page(
+        title="A page",
+        wiki=htypes.wiki.wiki(
+            text="A page text",
+            refs=(),
+            ),
         )
-    model = wiki_pages.open_ref_list(piece)
+    ref_1_piece = htypes.wiki_pages_tests.sample_model()
+    await wiki_pages.add_ref(page_model, page, mosaic.put(ref_1_piece))
+    await feed.wait_for_diffs(count=1)
+
+
+def test_open_ref_list(page_model):
+    model = wiki_pages.open_ref_list(page_model)
     assert isinstance(model, htypes.wiki_pages.ref_list_model)
 
 

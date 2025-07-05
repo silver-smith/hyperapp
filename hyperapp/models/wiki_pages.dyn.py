@@ -1,3 +1,4 @@
+import itertools
 import logging
 import uuid
 from collections import defaultdict, namedtuple
@@ -8,6 +9,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.value_diff import SetValueDiff
 
 log = logging.getLogger(__name__)
 
@@ -220,6 +222,28 @@ def save_page(piece, value, wiki_pages):
         folder_path=path,
         )
     return (model, page_id)
+
+
+@mark.command(args=['ref'])
+async def add_ref(piece, value, ref, wiki_pages, feed_factory):
+    feed = feed_factory(piece)
+    used_ids = {ref.id for ref in value.wiki.refs}
+    for idx in itertools.count(1):
+        ref_id = str(idx)
+        if ref_id not in used_ids:
+            break
+    new_ref = htypes.wiki.wiki_ref(
+        id=ref_id,
+        target=ref,
+        )
+    new_value = htypes.wiki_pages.page(
+        title=value.title,
+        wiki=htypes.wiki.wiki(
+            text=value.wiki.text,
+            refs=(*value.wiki.refs, new_ref),
+            ),
+        )
+    await feed.send(SetValueDiff(new_value))
 
 
 @mark.command(preserve_remote=True)
