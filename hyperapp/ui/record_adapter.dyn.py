@@ -128,10 +128,6 @@ class FnRecordAdapter(FnRecordAdapterBase):
             real_model = model
         return (remote_peer, real_model)
 
-    @classmethod
-    def _get_edit_value(cls, model, record_t):
-        return cls._model_to_value.setdefault(model, EditValue(record_t))
-
     def __init__(self, rpc_system_call_factory, feed_factory, model, real_model, record_t, remote_peer, ctx, value, ctx_fn):
         super().__init__(feed_factory, model, record_t, ctx, value)
         self._rpc_system_call_factory = rpc_system_call_factory
