@@ -9,6 +9,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.list_diff import IndexListDiff
+from .code.value_diff import SetValueDiff
 from .code.view import View
 
 log = logging.getLogger(__name__)
@@ -61,6 +62,9 @@ class _Model(QtCore.QAbstractTableModel):
         elif isinstance(diff, IndexListDiff.Remove):
             self.beginRemoveRows(QtCore.QModelIndex(), diff.idx, diff.idx)
             self.endRemoveRows()
+        elif isinstance(diff, SetValueDiff):
+            self.beginResetModel()
+            self.endResetModel()
         else:
             raise NotImplementedError(diff)
 
