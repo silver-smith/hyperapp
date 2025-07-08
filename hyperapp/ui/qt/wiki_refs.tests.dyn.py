@@ -45,6 +45,10 @@ def test_adapter(adapter_piece, model, ctx):
     adapter = wiki_refs.WikiRefListAdapter.from_piece(adapter_piece, model, ctx)
     assert adapter.cell_data(0, 0) == 'abc'
     assert adapter.cell_data(0, 2) == 'sample-ref-value', adapter.cell_data(0, 2)
+    current_idx = 0
+    current_item = adapter.get_item(current_idx)
+    model_state = adapter.make_model_state(current_idx, current_item)
+    assert isinstance(model_state, htypes.wiki.ref_list_model_state)
 
 
 def test_view_factory(accessor):

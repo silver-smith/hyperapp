@@ -35,6 +35,12 @@ class WikiRefListAdapter:
         item = self.get_item(row)
         return getattr(item, self._column_names[column])
 
+    def make_model_state(self, current_idx, current_item):
+        return htypes.wiki.ref_list_model_state(
+            current_id=current_item.id,
+            current_item=current_item,
+            )
+
     def get_item(self, idx):
         rec = self._ref_list[idx]
         target = web.summon(rec.target)

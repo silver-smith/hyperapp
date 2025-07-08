@@ -8,6 +8,7 @@ wiki = record:
 
 wiki_to_string_convertor = record
 
+
 ref_list_adapter = record:
   accessor: ref
 
@@ -15,6 +16,11 @@ ref_list_item = record:
   id: string
   target: ref
   title: string
+
+ref_list_model_state = record:
+  current_id: string
+  current_item: ref_list_item
+
 
 text_view = record:
   adapter: ref

@@ -14,6 +14,7 @@ import:
 - legacy_type.view_factory:template
 - legacy_type.wiki:ref_list_adapter
 - legacy_type.wiki:ref_list_item
+- legacy_type.wiki:ref_list_model_state
 - legacy_type.wiki:wiki
 definitions:
   WikiRefListAdapter:
@@ -56,6 +57,7 @@ definitions:
         htypes.list.view: legacy_type.list:view
         htypes.wiki.ref_list_adapter: legacy_type.wiki:ref_list_adapter
         htypes.wiki.ref_list_item: legacy_type.wiki:ref_list_item
+        htypes.wiki.ref_list_model_state: legacy_type.wiki:ref_list_model_state
         htypes.wiki.wiki: legacy_type.wiki:wiki
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
