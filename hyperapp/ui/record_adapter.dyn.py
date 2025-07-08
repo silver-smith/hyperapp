@@ -7,6 +7,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.value_diff import SetValueDiff
 
 log = logging.getLogger(__name__)
 
@@ -15,15 +16,6 @@ class RecordAdapter:
 
     def __init__(self, record_t):
         self._record_t = record_t
-        self._subscribers = weakref.WeakSet()
-
-    def subscribe(self, subscriber):
-        self._subscribers.add(subscriber)
-
-    def process_diff(self, diff):
-        log.info("Record adapter: process diff: %s", diff)
-        for subscriber in self._subscribers:
-            subscriber.process_diff(diff)
 
     @property
     def record_t(self):
@@ -44,6 +36,9 @@ class StaticRecordAdapter(RecordAdapter):
     def __init__(self, model, record_t):
         super().__init__(record_t)
         self._model = model
+
+    def subscribe(self, subscriber):
+        pass
 
     def get_value(self):
         return self._model
@@ -72,6 +67,14 @@ class SharedValue:
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
 
+    def process_diff(self, diff):
+        log.info("Record adapter value: process diff: %s", diff)
+        if isinstance(diff, SetValueDiff):
+            self.value = diff.new_value
+        else:
+            raise NotImplementedError(f"Record adapter: {diff} is not implemented")
+        self._notify()
+
 
 class FnRecordAdapterBase(RecordAdapter):
 
@@ -90,7 +93,7 @@ class FnRecordAdapterBase(RecordAdapter):
         except KeyError:
             self._feed = None
         else:
-            self._feed.subscribe(self)
+            self._feed.subscribe(self._value)
 
     def subscribe(self, subscriber):
         self._value.subscribe(subscriber)
