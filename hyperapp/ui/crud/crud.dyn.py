@@ -181,7 +181,7 @@ class CrudRecordAdapter(FnRecordAdapterBase):
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, crud):
         record_t = pyobj_creg.invite(model.record_t)
-        value = cls._get_edit_value(model, record_t)
+        value = cls._get_shared_value(model, record_t)
         real_model = web.summon(model.model)
         init_fn = system_fn_creg.invite(model.init_fn)
         args = _args_tuple_to_dict(model.args)

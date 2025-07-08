@@ -49,7 +49,7 @@ class StaticRecordAdapter(RecordAdapter):
         return self._model
 
 
-class EditValue:
+class SharedValue:
 
     # TODO: Add async lock for populating when populate method will become async.
     def __init__(self, value_t):
@@ -78,8 +78,8 @@ class FnRecordAdapterBase(RecordAdapter):
     _model_to_value = weakref.WeakValueDictionary()
 
     @classmethod
-    def _get_edit_value(cls, model, record_t):
-        return cls._model_to_value.setdefault(model, EditValue(record_t))
+    def _get_shared_value(cls, model, record_t):
+        return cls._model_to_value.setdefault(model, SharedValue(record_t))
 
     def __init__(self, feed_factory, model, record_t, ctx, value):
         super().__init__(record_t)
@@ -114,7 +114,7 @@ class FnRecordAdapter(FnRecordAdapterBase):
     def from_piece(cls, piece, model, ctx, system_fn_creg, peer_registry, rpc_system_call_factory, feed_factory):
         record_t = pyobj_creg.invite(piece.record_t)
         fn = system_fn_creg.invite(piece.system_fn)
-        value = cls._get_edit_value(model, record_t)
+        value = cls._get_shared_value(model, record_t)
         remote_peer, real_model = cls._resolve_model(peer_registry, model)
         return cls(rpc_system_call_factory, feed_factory, model, real_model, record_t, remote_peer, ctx, value, fn)
 
