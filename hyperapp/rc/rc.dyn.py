@@ -8,7 +8,7 @@ from pathlib import Path
 from hyperapp.boot.htypes import HException
 from hyperapp.boot.project import (
     config_project_name,
-    load_projects_file,
+    load_boot_config,
     load_texts,
     separate_configs,
     )
@@ -290,11 +290,11 @@ def build_target_sets(
         base_config_templates, config_ctl, ctr_from_template_creg,
         rc_config, job_cache, cached_count, only_target_projects, base_project):
 
-    name_to_target_rec = load_projects_file(hyperapp_dir / 'projects.yaml')
+    boot_config = load_boot_config(hyperapp_dir / 'projects.yaml')
     name_to_target_rec = {
         name: rec
         for name, rec
-        in name_to_target_rec.items()
+        in boot_config.projects.items()
         if not only_target_projects or name in only_target_projects
         }
 

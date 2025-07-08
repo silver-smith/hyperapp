@@ -1,20 +1,21 @@
-base:
-rc:
-  imports: [base]
-common:
-  imports: [base]
-ui:
-  imports: [base, common, rc]
-models:
-  imports: [base, common, ui]
-lcs:
-  imports: [base, common, ui, models]
-views:
-  # TODO: May be remove models, it is used by command_layout_context module.
-  imports: [base, common, ui, models]
-sample:
-  imports: [base, common, ui]
-server:
-  imports: [base, common, ui, models]
-client:
-  imports: [base, common, ui, models, sample, lcs, views]
+projects:
+  base: {}
+  rc:
+    imports: [base]
+  common:
+    imports: [base]
+  ui:
+    imports: [base, common, rc]
+  models:
+    imports: [base, common, ui]
+  lcs:
+    imports: [base, common, ui, models]
+  views:
+    # TODO: May be remove models, it is used by command_layout_context module.
+    imports: [base, common, ui, models]
+  sample:
+    imports: [base, common, ui]
+  server:
+    imports: [base, common, ui, models]
+  client:
+    imports: [base, common, ui, models, sample, lcs, views]

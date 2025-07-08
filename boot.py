@@ -5,6 +5,7 @@ import sys
 
 from hyperapp.boot.init_logging import init_logging
 from hyperapp.boot import cdr_coders  # register codec
+from hyperapp.boot.project import load_boot_config
 from hyperapp.boot.services import HYPERAPP_DIR, Services
 
 log = logging.getLogger('rc.main')
@@ -19,12 +20,13 @@ def main():
 
     try:
         pyobj_creg = services.pyobj_creg
-        load_projects_from_file = services.load_projects_from_file
+        load_projects = services.load_projects
 
         project_filter = sys.argv[1].split(',')
         root_service = sys.argv[2]
 
-        name_to_project = load_projects_from_file(HYPERAPP_DIR / 'projects.yaml', project_filter)
+        boot_config = load_boot_config(HYPERAPP_DIR / 'projects.yaml')
+        name_to_project = load_projects(boot_config, HYPERAPP_DIR, project_filter)
 
         system_module_piece = name_to_project['base']['base.system.system', 'system.module']
         system_module = pyobj_creg.animate(system_module_piece)

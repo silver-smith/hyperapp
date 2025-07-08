@@ -21,7 +21,7 @@ from .resource.optional_mt_resource_type import OptionalMtResourceType
 from .resource.python_module import PythonModuleResourceType, python_module_pyobj
 from .htypes.python_module import python_module_t
 from .resource.resource_module import ResourceModule
-from .project import BuiltinsProject, Project, load_projects_from_file
+from .project import BuiltinsProject, Project, load_projects
 from .resource.legacy_type import (
     add_builtin_types_to_pyobj_cache,
     convert_builtin_types_to_dict,
@@ -77,7 +77,7 @@ class Services(object):
         'builtin_service_resource_loader',
         'deduce_t',
         'project_factory',
-        'load_projects_from_file',
+        'load_projects',
     ]
 
     def __init__(self):
@@ -138,7 +138,7 @@ class Services(object):
         builtins_project = BuiltinsProject(
             self.builtin_types_as_dict(), builtin_type_modules, self.builtin_service_resource_loader)
         self.project_factory = partial(Project, builtins_project, self.type_module_loader, self.resource_module_factory)
-        self.load_projects_from_file = partial(load_projects_from_file, self.project_factory)
+        self.load_projects = partial(load_projects, self.project_factory)
         add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
 
     def stop(self):

@@ -2,6 +2,7 @@ import logging
 from collections import namedtuple
 
 import yaml
+from pydantic.dataclasses import dataclass as pydantic_dataclass, Field
 
 from hyperapp.boot.resource.legacy_type import add_legacy_types_to_cache, load_legacy_type_resources
 from hyperapp.boot.resource.resource_registry import ResourceRegistry
@@ -11,6 +12,17 @@ log = logging.getLogger(__name__)
 RESOURCE_EXT = '.resources.yaml'
 
 ProjectRec = namedtuple('ProjectRec', 'name imports')
+
+
+@pydantic_dataclass
+class ProjectRec:
+    imports: list[str] = Field(default_factory=list)
+
+
+@pydantic_dataclass
+class BootConfig:
+    projects: dict[str, ProjectRec]
+
 
 
 def load_texts(root_dir):
@@ -144,16 +156,9 @@ class Project(ResourceRegistry):
             }
 
 
-def load_projects_file(path):
-    config = yaml.safe_load(path.read_text())
-    name_to_rec = {}
-    for name, info in config.items():
-        if info:
-            imports = info.get('imports', [])
-        else:
-            imports = []
-        name_to_rec[name] = ProjectRec(name, imports)
-    return name_to_rec
+def load_boot_config(path):
+    config_dict = yaml.safe_load(path.read_text())
+    return BootConfig(**config_dict)
 
 
 def _load_config_projects(project_factory, project, config_path_to_text):
@@ -167,23 +172,21 @@ def _load_config_projects(project_factory, project, config_path_to_text):
     return name_to_project
 
 
-def load_projects_from_file(project_factory, path, filter):
-    name_to_rec = load_projects_file(path)
-    root_dir = path.parent
+def load_projects(project_factory, boot_config, root_dir, filter):
     name_to_project = {}
-    for rec in name_to_rec.values():
-        if rec.name not in filter:
+    for project_name, project_rec in boot_config.projects.items():
+        if project_name not in filter:
             continue
         imports = {
             name_to_project[import_name]
-            for import_name in rec.imports
+            for import_name in project_rec.imports
             }
-        project_dir = root_dir / rec.name
+        project_dir = root_dir / project_name
         path_to_text = load_texts(project_dir)
         project_path_to_text, config_path_to_text = separate_configs(path_to_text)
-        project = project_factory(project_dir, rec.name, imports)
+        project = project_factory(project_dir, project_name, imports)
         project.load(project_path_to_text)
-        name_to_project[rec.name] = project
+        name_to_project[project_name] = project
         name_to_project.update(_load_config_projects(project_factory, project, config_path_to_text))
             
     return name_to_project
