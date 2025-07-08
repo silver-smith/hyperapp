@@ -1,6 +1,5 @@
 import itertools
 from collections import defaultdict
-from functools import cached_property
 
 from hyperapp.boot.htypes import TPrimitive, TList, TRecord, tString
 from hyperapp.boot.config_key_error import ConfigKeyError
@@ -87,33 +86,16 @@ class StaticConfigLayer(ConfigLayer):
         raise NotImplementedError(f"{self.__class__.__name__}.remove")
 
 
-class ProjectConfigLayer(ConfigLayer):
+class MutableConfigLayer(ConfigLayer):
 
-    def __init__(self, system, config_ctl, project):
+    def __init__(self, system, config_ctl):
         super().__init__(system, config_ctl)
-        self._project = project
-        # Non-builtin services are not yet available when layer is created.
-        self._name_gen = None
-        self._pick_refs = None
-        if project.path.is_dir():
-            self._config_module_name = f'{project.name}.config'
-            self._module_path = project.path / f'config{RESOURCE_EXT}'
-            self._resource_dir = project.path
-        else:
-            self._config_module_name = self._project.name
-            self._module_path = project.path
-            self._resource_dir = project.path.parent
-        self._module = self._project.get_module(self._config_module_name)
+        self._config = None
 
-    @cached_property
+    @property
     def config(self):
-        if not self._module:
-            return {}
-        try:
-            config_piece = self._module['config']
-        except KeyError:
-            return {}
-        return self._data_to_config(config_piece)
+        self._ensure_loaded()
+        return self._config
 
     def set(self, service_name, key, template):
         service_config = self._service_config(service_name)
@@ -149,6 +131,38 @@ class ProjectConfigLayer(ConfigLayer):
         self._save()
         self._system.config_item_was_removed(service_name, key)
 
+    def _ensure_loaded(self):
+        if self._config is None:
+            self._config = self._load()
+
+
+class ProjectConfigLayer(MutableConfigLayer):
+
+    def __init__(self, system, config_ctl, project):
+        super().__init__(system, config_ctl)
+        self._project = project
+        # Non-builtin services are not yet available when layer is created.
+        self._name_gen = None
+        self._pick_refs = None
+        if project.path.is_dir():
+            self._config_module_name = f'{project.name}.config'
+            self._module_path = project.path / f'config{RESOURCE_EXT}'
+            self._resource_dir = project.path
+        else:
+            self._config_module_name = self._project.name
+            self._module_path = project.path
+            self._resource_dir = project.path.parent
+        self._module = self._project.get_module(self._config_module_name)
+
+    def _load(self):
+        if not self._module:
+            return {}
+        try:
+            config_piece = self._module['config']
+        except KeyError:
+            return {}
+        return self._data_to_config(config_piece)
+
     def _save(self):
         # We should remove not only old values from mapping,
         # but also now-unused elements they reference.
@@ -172,13 +186,15 @@ class ProjectConfigLayer(ConfigLayer):
             self._ensure_refs_stored(piece)
             self._module[f'{service_name}.config'] = piece
         if service_to_piece:
-            config_piece = htypes.system.system_config(tuple(
-                htypes.system.service_config(
-                    service=service_name,
-                    config=mosaic.put(piece),
-                    )
-                for service_name, piece in service_to_piece.items()
-                ))
+            config_piece = htypes.system.system_config(
+                services=tuple(
+                    htypes.system.service_config(
+                        service=service_name,
+                        config=mosaic.put(piece),
+                        )
+                    for service_name, piece in service_to_piece.items()
+                    ),
+                )
             self._module['config'] = config_piece
         self._module.save()
 

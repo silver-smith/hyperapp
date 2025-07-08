@@ -1,5 +1,6 @@
 import logging
 from collections import namedtuple
+from pathlib import Path
 
 import yaml
 from pydantic.dataclasses import dataclass as pydantic_dataclass, Field
@@ -22,6 +23,8 @@ class ProjectRec:
 @pydantic_dataclass
 class BootConfig:
     projects: dict[str, ProjectRec]
+    config_layers: dict[str, Path]
+    default_layer: str
 
 
 

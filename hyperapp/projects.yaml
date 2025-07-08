@@ -1,4 +1,5 @@
 projects:
+
   base: {}
   rc:
     imports: [base]
@@ -19,3 +20,8 @@ projects:
     imports: [base, common, ui, models]
   client:
     imports: [base, common, ui, models, sample, lcs, views]
+
+config_layers:
+  client_config: .local/share/hyperapp/client/config.cdr
+
+default_layer: client_config

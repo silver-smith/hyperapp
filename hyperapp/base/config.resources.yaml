@@ -51,6 +51,8 @@ import:
 - base.system.builtin_resource_name:resource_name_creg-builtin-string.actor-cfg-item
 - base.system.config_ctl:config_ctl_creg-system-flat_list_config_ctl.actor-cfg-item
 - base.system.config_layer:resource_name_creg.service
+- base.system.file_bundle_config_layer:file_bundle_config_layer_factory.service
+- base.system.file_bundle_config_layer:load_config_layers.service
 - base.system.init_hook:init_hook.service
 - base.system.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-cfg-item
 - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-cfg-item
@@ -213,6 +215,8 @@ definitions:
       - base.subprocess.subprocess_rpc_server_main:rpc_server_main.service
       - base.subprocess.subprocess_transport:subprocess_transport.service
       - base.system.config_layer:resource_name_creg.service
+      - base.system.file_bundle_config_layer:file_bundle_config_layer_factory.service
+      - base.system.file_bundle_config_layer:load_config_layers.service
       - base.system.init_hook:init_hook.service
       - base.system.system_stop:stop_signal.service
       - base.system.system_stop:system_failed.service

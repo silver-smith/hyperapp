@@ -1,0 +1,61 @@
+import:
+- base.system.config_layer:config_layer.module
+- base.system.system:actor_dict.config_ctl
+- builtins:mosaic.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:service_config
+- legacy_type.system:service_template
+- legacy_type.system:system_config
+
+definitions:
+
+  file_bundle_config_layer.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: file_bundle_config_layer
+      file_name: file_bundle_config_layer.dyn.py
+      import_list:
+        htypes.system.service_config: legacy_type.system:service_config
+        htypes.system.system_config: legacy_type.system:system_config
+        services.mosaic: builtins:mosaic.service
+        code.config_layer: base.system.config_layer:config_layer.module
+
+  FileBundleConfigLayer:
+    type: legacy_type.builtin:attribute
+    value:
+      object: file_bundle_config_layer.module
+      attr_name: FileBundleConfigLayer
+
+  file_bundle_config_layer_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: file_bundle_config_layer_factory
+      ctl: base.system.system:actor_dict.config_ctl
+      function: FileBundleConfigLayer
+      service_params:
+      - system
+      - config_ctl
+      - file_bundle_factory
+      want_config: false
+      free_params:
+      - path
+
+  load_config_layers:
+    type: legacy_type.builtin:attribute
+    value:
+      object: file_bundle_config_layer.module
+      attr_name: load_config_layers
+
+  load_config_layers.service:
+    type: legacy_type.system:service_template
+    value:
+      name: load_config_layers
+      ctl: base.system.system:actor_dict.config_ctl
+      function: load_config_layers
+      service_params:
+      - system
+      - file_bundle_config_layer_factory
+      want_config: false
+      free_params:
+      - boot_config

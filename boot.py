@@ -33,6 +33,8 @@ def main():
 
         system = system_module.System()
         system.load_projects(name_to_project.values())
+        system['load_config_layers'](boot_config)
+        system.set_default_layer(boot_config.default_layer)
         system['init_hook'].run_hooks()
         system.run(root_service, name_to_project, sys.argv[3:])
 
