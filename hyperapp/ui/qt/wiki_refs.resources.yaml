@@ -4,6 +4,7 @@ import:
 - base.mark:mark.module
 - builtins:mosaic.service
 - builtins:web.service
+- common.value_diff:value_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
@@ -54,6 +55,7 @@ definitions:
       file_name: wiki_refs.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        code.value_diff: common.value_diff:value_diff.module
         htypes.list.view: legacy_type.list:view
         htypes.wiki.ref_list_adapter: legacy_type.wiki:ref_list_adapter
         htypes.wiki.ref_list_item: legacy_type.wiki:ref_list_item

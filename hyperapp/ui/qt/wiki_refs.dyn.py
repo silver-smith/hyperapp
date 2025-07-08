@@ -1,9 +1,15 @@
+import logging
+import weakref
+
 from . import htypes
 from .services import (
     mosaic,
     web,
     )
 from .code.mark import mark
+from .code.value_diff import SetValueDiff
+
+log = logging.getLogger(__name__)
 
 
 class WikiRefListAdapter:
@@ -18,9 +24,11 @@ class WikiRefListAdapter:
         self._format = format
         self._accessor = accessor
         self._column_names = ['id', 'target', 'title']
+        self._subscribers = weakref.WeakSet()
+        self._accessor.subscribe(self)
 
-    def subscribe(self, model):
-        pass
+    def subscribe(self, subscriber):
+        self._subscribers.add(subscriber)
 
     def column_count(self):
         return len(self._column_names)
@@ -50,6 +58,13 @@ class WikiRefListAdapter:
             target=rec.target,
             title=title,
             )
+
+    def value_changed(self, new_value):
+        log.info("Wiki ref list adapter: value changed: %r", new_value)
+        visual_diff = SetValueDiff(new_value)
+        for subscriber in self._subscribers:
+            subscriber.process_diff(visual_diff)
+
 
     @property
     def _ref_list(self):
