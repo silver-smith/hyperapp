@@ -1,0 +1,5 @@
+projects:
+
+  base: {}
+  rc:
+    imports: [base]

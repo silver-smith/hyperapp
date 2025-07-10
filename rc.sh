@@ -10,4 +10,4 @@ cd "$( dirname "$0" )"
 
 set -x
 
-time ./boot.py base,rc rc_main --timeout=10 "$@"
+time ./boot.py rc rc_main --timeout=10 "$@"

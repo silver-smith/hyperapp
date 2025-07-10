@@ -1,5 +1,3 @@
-# Projects for RC to compile.
-
 projects:
 
   base: {}
@@ -13,12 +11,12 @@ projects:
     imports: [base, common, ui]
   lcs:
     imports: [base, common, ui, models]
-  views:
-    # TODO: May be remove models, it is used by command_layout_context module.
-    imports: [base, common, ui, models]
   sample:
     imports: [base, common, ui]
   server:
     imports: [base, common, ui, models]
-  client:
-    imports: [base, common, ui, models, sample, lcs, views]
+
+config_layers:
+  server_config: .local/share/hyperapp/server/config.cdr
+
+default_layer: server_config

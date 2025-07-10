@@ -25,12 +25,12 @@ export LOG_CFG=server
 
 case "$1" in
   server)
-    projects=base,rc,common,ui,models,sample,server
+    boot_config=server
     main=server_main
     shift
     ;;
   client)
-    projects=base,rc,common,ui,models,views,sample,lcs,client
+    boot_config=client
     main=client_main
     shift
     ;;
@@ -42,4 +42,4 @@ esac
 
 cd "$APPDIR/hyperapp"
 set -x
-"$APPDIR/opt/python3.11/bin/python3.11" boot.py "$projects" "$main" "$@"
+"$APPDIR/opt/python3.11/bin/python3.11" boot.py "$boot_config" "$main" "$@"

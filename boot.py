@@ -22,11 +22,11 @@ def main():
         pyobj_creg = services.pyobj_creg
         load_projects = services.load_projects
 
-        project_filter = sys.argv[1].split(',')
+        boot_config_path = HYPERAPP_DIR / (sys.argv[1] + '.yaml')
         root_service = sys.argv[2]
 
-        boot_config = load_boot_config(HYPERAPP_DIR / 'projects.yaml')
-        name_to_project = load_projects(boot_config, HYPERAPP_DIR, project_filter)
+        boot_config = load_boot_config(boot_config_path)
+        name_to_project = load_projects(boot_config, HYPERAPP_DIR)
 
         system_module_piece = name_to_project['base']['base.system.system', 'system.module']
         system_module = pyobj_creg.animate(system_module_piece)
@@ -34,7 +34,8 @@ def main():
         system = system_module.System()
         system.load_projects(name_to_project.values())
         system['load_config_layers'](boot_config)
-        system.set_default_layer(boot_config.default_layer)
+        if boot_config.default_layer:
+            system.set_default_layer(boot_config.default_layer)
         system['init_hook'].run_hooks()
         system.run(root_service, name_to_project, sys.argv[3:])
 

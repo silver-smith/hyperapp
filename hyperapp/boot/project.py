@@ -23,8 +23,8 @@ class ProjectRec:
 @pydantic_dataclass
 class BootConfig:
     projects: dict[str, ProjectRec]
-    config_layers: dict[str, Path]
-    default_layer: str
+    config_layers: dict[str, Path] = Field(default_factory=dict)
+    default_layer: str = None
 
 
 
@@ -175,11 +175,9 @@ def _load_config_projects(project_factory, project, config_path_to_text):
     return name_to_project
 
 
-def load_projects(project_factory, boot_config, root_dir, filter):
+def load_projects(project_factory, boot_config, root_dir):
     name_to_project = {}
     for project_name, project_rec in boot_config.projects.items():
-        if project_name not in filter:
-            continue
         imports = {
             name_to_project[import_name]
             for import_name in project_rec.imports

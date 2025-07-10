@@ -8,7 +8,7 @@ source $venv/bin/activate
 
 cmd=(
   ./boot.py
-  base,rc,common,ui,models,sample,server
+  server
   server_main
   "$@"
   )
