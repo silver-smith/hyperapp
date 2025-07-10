@@ -186,7 +186,6 @@ class ListAsTreeAdapter(TreeAdapter, IndexTreeAdapterMixin):
         item_list = self._load_item_list(layer, model)
         log.info("List-to-tree adapter: loaded layer for parent#%d model %r: %s", parent_id, model, item_list)
         for item in item_list:
-            self._append_item(parent_id, item)
             diff = TreeDiff.Append(self.get_path(parent_id), item)
             self.process_diff(diff)
 
