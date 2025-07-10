@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 
 this_script="$( readlink -f "$0" )"
 this_dir="${this_script%/*}"
@@ -61,4 +61,5 @@ rsync -a \
       "$hyperapp_dir" "$target_fs/"
 cp "$this_dir/AppRun" "$target_fs/"
 
+set -x
 "$appimagetool_image_path" "$target_fs" "$target_image_path"
