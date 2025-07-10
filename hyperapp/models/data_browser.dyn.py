@@ -38,6 +38,14 @@ def data_browser(data, t=None):
     raise RuntimeError(f"Data browser: Unsupported type: {t}: {data}")
 
 
+def _format_field_value(t, value):
+    if t is htypes.builtin.ref:
+        target = web.summon(value)
+        return f"{value}: {target}"
+    else:
+        return str(value)
+
+
 @mark.model
 def browse_record(piece):
     data, data_t = web.summon_with_t(piece.data)
@@ -45,7 +53,7 @@ def browse_record(piece):
         htypes.data_browser.record_item(
             name=name,
             type=str(t),
-            value=str(getattr(data, name)),
+            value=_format_field_value(t, getattr(data, name)),
             )
         for name, t in data_t.fields.items()
         ]

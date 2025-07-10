@@ -7,6 +7,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.builtin:ref
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:global_model_command
@@ -210,6 +211,7 @@ definitions:
       file_name: data_browser.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        htypes.builtin.ref: legacy_type.builtin:ref
         htypes.data_browser.list_item: legacy_type.data_browser:list_item
         htypes.data_browser.list_view: legacy_type.data_browser:list_view
         htypes.data_browser.primitive_item: legacy_type.data_browser:primitive_item
