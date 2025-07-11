@@ -8,3 +8,4 @@ Packages required to run hyperapp appimage on Debian 12:
 * libegl1
 * libxkbcommon0
 * libfontconfig1
+* libmagic1
