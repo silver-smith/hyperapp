@@ -2,6 +2,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:record_mt
 - legacy_type.model:index_list_ui_t
+- legacy_type.model:key_list_ui_t
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.system_fn:ctx_fn
@@ -20,7 +21,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - details.view-factory-template
+      - details.index_list.view-factory-template
+      - details.key_list.view-factory-template
 
   details_command_list:
     type: legacy_type.builtin:attribute
@@ -71,11 +73,20 @@ definitions:
     type: details_k
     value: {}
 
-  details.view-factory-template:
+  details.index_list.view-factory-template:
     type: legacy_type.view_factory:multi_template
     value:
       k: details.k
       model_t_list: null
       ui_t_t: legacy_type.model:index_list_ui_t
+      list_fn: details_command_list.system-fn
+      get_fn: details_get.system-fn
+
+  details.key_list.view-factory-template:
+    type: legacy_type.view_factory:multi_template
+    value:
+      k: details.k
+      model_t_list: null
+      ui_t_t: legacy_type.model:key_list_ui_t
       list_fn: details_command_list.system-fn
       get_fn: details_get.system-fn
