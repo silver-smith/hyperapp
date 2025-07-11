@@ -52,7 +52,7 @@ class ViewFactory(ViewFactoryBase):
         if model_t is not None:
             if self._ui_t_t is not None:
                 ui_t, system_fn = self._visualizer_reg(model_t)
-                return self.call_ui_t(ctx, ui_t, system_fn, accessor)
+                return await self.call_ui_t(ctx, ui_t, system_fn, accessor)
             fn_ctx = ctx.clone_with(
                 model_t=model_t,
                 )
