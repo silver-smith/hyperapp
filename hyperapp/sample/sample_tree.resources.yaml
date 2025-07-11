@@ -218,7 +218,7 @@ definitions:
   sample_tree-model.feed-type:
     type: legacy_type.feed:index_tree_feed_type
     value:
-      item_t: legacy_type.sample_tree:item
+      item_t: null
   sample_tree-model.index-tree-ui-t:
     type: legacy_type.model:index_tree_ui_t
     value:
