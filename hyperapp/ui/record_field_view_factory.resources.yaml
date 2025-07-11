@@ -12,7 +12,6 @@ import:
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.record_field_view_factory:factory_k
 - legacy_type.system:actor_template
-- ui.type_convertor:type_convertor.module
 definitions:
   format_factory_k:
     type: legacy_type.builtin:attribute
@@ -37,7 +36,6 @@ definitions:
       file_name: record_field_view_factory.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        code.type_convertor: ui.type_convertor:type_convertor.module
         htypes.accessor.record_field_accessor: legacy_type.accessor:record_field_accessor
         htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
         htypes.record_field_view_factory.factory_k: legacy_type.record_field_view_factory:factory_k

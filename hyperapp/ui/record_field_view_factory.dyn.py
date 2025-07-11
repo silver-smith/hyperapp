@@ -5,7 +5,6 @@ from .services import (
     web,
     )
 from .code.mark import mark
-from .code.type_convertor import type_to_text_convertor
 
 
 @mark.actor.formatter_creg
