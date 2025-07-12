@@ -141,13 +141,13 @@ class _Item:
             rctx = Context()
         await self.view.children_changed(self.ctx, rctx, self.widget, save_layout)
         self.view_commands, rctx = self.my_reverse_context(rctx)
-        rctx = await self.update_other_children(rctx)
+        rctx = await self.update_other_children(rctx, skip_kid=kid)
         return rctx
 
-    async def update_other_children(self, rctx):
+    async def update_other_children(self, rctx, skip_kid=None):
         for kid in self.children:
             kid._init_widget()  # For current children widget inited from current_child->current_child_idx->widget call.
-            if kid is self.current_child:
+            if kid is skip_kid:
                 continue
             rctx = await kid.update_other_children(rctx)
             kid.view_commands, _unused_rctx = kid.my_reverse_context(rctx)
