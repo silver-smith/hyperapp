@@ -23,3 +23,4 @@ def sample_list_get(piece, id):
 @mark.crud.update
 def sample_list_update(piece, id, value):
     log.info("Sample CRUD: Update %s #%d: %s", piece, id, value)
+    return f"id={id}, value={value}"
