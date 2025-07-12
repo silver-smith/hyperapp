@@ -1,6 +1,11 @@
 import logging
 
+from hyperapp.boot.htypes import TPrimitive, TList, TRecord
+
 from . import htypes
+from .services import (
+    deduce_t,
+    )
 from .code.mark import mark
 from .code.tabs import TabsView
 
@@ -38,6 +43,13 @@ class AutoTabsView(TabsView):
         super().insert_tab(ctx, widget, idx, label, tab_view, tab_state)
 
     def _tab_label(self, piece):
+        t = deduce_t(piece)
+        if isinstance(t, TPrimitive):
+            return f"Static {t.name}"
+        if isinstance(t, TList):
+            return "Static list"
+        if not isinstance(t, TRecord):
+            return f"Static {t.name}"
         title = self._format(piece)
         title = title.replace('\n', ' ')
         if len(title) > 40:
