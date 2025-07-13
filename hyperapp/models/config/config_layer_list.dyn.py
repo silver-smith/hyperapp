@@ -13,6 +13,13 @@ def config_layer_list(piece, system):
         ]
 
 
+@mark.command
+def open_service_list(piece, current_key):
+    return htypes.config_service_list.model(
+        layer=current_key,
+        )
+
+
 @mark.global_command
 def open_config_layer_list():
     return htypes.config_layer_list.model()

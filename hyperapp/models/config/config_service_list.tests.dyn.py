@@ -9,13 +9,23 @@ from .tested.code import config_service_list
 
 @mark.fixture
 def piece():
-    return htypes.config_service_list.model()
+    return htypes.config_service_list.model(
+        layer=None,
+        )
 
 
 def test_service_list_model(piece):
     item_list = config_service_list.config_service_list(piece)
     assert item_list
     assert isinstance(item_list[0], htypes.config_service_list.item)
+
+
+def test_service_layer_list_model(system):
+    piece = htypes.config_service_list.model(
+        layer=system.default_layer_name,
+        )
+    item_list = config_service_list.config_service_list(piece)
+    # Item list may be empty for default RC layer.
 
 
 def test_open():

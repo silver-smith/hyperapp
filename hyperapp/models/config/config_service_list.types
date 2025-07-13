@@ -1,4 +1,5 @@
-model = record
+model = record:
+  layer: string opt  # All layers if none.
 
 item = record:
   service_name: string

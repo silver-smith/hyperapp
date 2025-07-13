@@ -44,9 +44,12 @@ def config_item_list(piece, system, format):
                 result.append(layer_name)
         return result
 
-    config = system.get_config_template(piece.service_name)
+    if piece.layer:
+        config_template = system.get_layer_config_templates(piece.layer).get(piece.service_name)
+    else:
+        config_template = system.get_config_template(piece.service_name)
     item_list = []
-    for key, value in sorted(enum_items(config), key=lambda rec: str(rec[0])):
+    for key, value in sorted(enum_items(config_template), key=lambda rec: str(rec[0])):
         if isinstance(key, Type):
             key_data = pyobj_creg.actor_to_piece(key)
         else:
@@ -71,7 +74,10 @@ def config_item_list(piece, system, format):
 
 @mark.command(preserve_remote=True)
 def open_config_item_list(piece, current_item):
-    return htypes.config_item_list.model(current_item.service_name)
+    return htypes.config_item_list.model(
+        layer=piece.layer,
+        service_name=current_item.service_name,
+        )
 
 
 @mark.command

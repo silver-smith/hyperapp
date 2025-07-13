@@ -7,11 +7,14 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:cfg_item
 - legacy_type.command:global_model_command
+- legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.config_layer_list:item
 - legacy_type.config_layer_list:layer
 - legacy_type.config_layer_list:model
+- legacy_type.config_service_list:model
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.model:key_list_ui_t
@@ -46,6 +49,11 @@ definitions:
       - piece
       - current_item
       service_params: []
+  config_layer_list-model-open_service_list.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_layer_list:model
+      command: open_service_list.model-command
   config_layer_list-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -89,6 +97,7 @@ definitions:
         htypes.config_layer_list.item: legacy_type.config_layer_list:item
         htypes.config_layer_list.layer: legacy_type.config_layer_list:layer
         htypes.config_layer_list.model: legacy_type.config_layer_list:model
+        htypes.config_service_list.model: legacy_type.config_service_list:model
   layer_get:
     type: legacy_type.builtin:attribute
     value:
@@ -128,5 +137,38 @@ definitions:
     value:
       module_name: config_layer_list
       name: open_config_layer_list_d
+      base: null
+      fields: {}
+  open_service_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_layer_list.module
+      attr_name: open_service_list
+  open_service_list.d:
+    type: open_service_list_d
+    value: {}
+  open_service_list.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_service_list
+      ctx_params:
+      - piece
+      - current_key
+      service_params: []
+  open_service_list.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_service_list.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_service_list.fn
+      preserve_remote: false
+  open_service_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: config_layer_list
+      name: open_service_list_d
       base: null
       fields: {}

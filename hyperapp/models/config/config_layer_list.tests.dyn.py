@@ -14,6 +14,12 @@ def test_layer_list_model(piece):
     assert isinstance(item_list[0], htypes.config_layer_list.item)
 
 
+def test_open_service_list(system, piece):
+    current_key = system.default_layer_name
+    model = config_layer_list.open_service_list(piece, current_key)
+    assert isinstance(model, htypes.config_service_list.model)
+
+
 def test_open():
     model = config_layer_list.open_config_layer_list()
     assert isinstance(model, htypes.config_layer_list.model)

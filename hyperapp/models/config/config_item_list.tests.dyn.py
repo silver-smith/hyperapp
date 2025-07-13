@@ -10,14 +10,19 @@ from .tested.code import config_item_list
 
 
 def test_item_list_model():
-    piece = htypes.config_item_list.model(service_name='system')
+    piece = htypes.config_item_list.model(
+        layer=None,
+        service_name='system',
+        )
     item_list = config_item_list.config_item_list(piece)
     assert item_list
     assert isinstance(item_list[0], htypes.config_item_list.item)
 
 
 def test_open():
-    piece = htypes.config_service_list.model()
+    piece = htypes.config_service_list.model(
+        layer=None,
+        )
     current_item = htypes.config_service_list.item(
         service_name='sample_service',
         item_count=0,  # Unused.
@@ -34,7 +39,10 @@ def sample_service(config):
 
 @mark.fixture
 def piece():
-    return htypes.config_item_list.model(service_name='sample_service')
+    return htypes.config_item_list.model(
+        layer=None,
+        service_name='sample_service',
+        )
 
 
 def test_open_key(piece):
