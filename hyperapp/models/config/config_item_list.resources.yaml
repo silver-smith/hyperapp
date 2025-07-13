@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -42,6 +43,11 @@ definitions:
     value:
       t: legacy_type.config_item_list:model
       command: open_config_key.model-command
+  config_item_list-model-open_config_value.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_item_list:model
+      command: open_config_value.model-command
   config_item_list-model-remove.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -143,6 +149,7 @@ definitions:
         htypes.config_item_list.item: legacy_type.config_item_list:item
         htypes.config_item_list.model: legacy_type.config_item_list:model
         htypes.config_layer_list.layer: legacy_type.config_layer_list:layer
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
@@ -242,6 +249,39 @@ definitions:
     value:
       module_name: config_item_list
       name: open_config_key_d
+      base: null
+      fields: {}
+  open_config_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: open_config_value
+  open_config_value.d:
+    type: open_config_value_d
+    value: {}
+  open_config_value.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_config_value
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  open_config_value.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_config_value.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_config_value.fn
+      preserve_remote: false
+  open_config_value_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: config_item_list
+      name: open_config_value_d
       base: null
       fields: {}
   open_move_d:

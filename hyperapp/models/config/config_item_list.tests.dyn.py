@@ -42,11 +42,26 @@ def test_open_key(piece):
     current_item = htypes.config_item_list.item(
         key=mosaic.put(key),
         key_str="<unused>",
+        value=None,
         value_str="<unused>",
         layers=('<unused>',),
         layers_str="<unused>",
         )
     browser = config_item_list.open_config_key(piece, current_item)
+    assert browser
+
+
+def test_open_value(piece):
+    value = htypes.config_item_list_tests.sample_value("some desc")
+    current_item = htypes.config_item_list.item(
+        key=mosaic.put("<unused>"),
+        key_str="<unused>",
+        value=mosaic.put(value),
+        value_str="<unused>",
+        layers=('<unused>',),
+        layers_str="<unused>",
+        )
+    browser = config_item_list.open_config_value(piece, current_item)
     assert browser
 
 
@@ -95,6 +110,7 @@ def test_remove(system, piece):
     current_item = htypes.config_item_list.item(
         key=mosaic.put(key),
         key_str="<unused>",
+        value=None,
         value_str="<unused>",
         layers=('sample-layer',),
         layers_str="<unused>",

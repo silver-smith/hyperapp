@@ -1,9 +1,11 @@
 from collections import defaultdict
 
 from hyperapp.boot.htypes import Type
+from hyperapp.boot.htypes.deduce_value_type import DeduceTypeError
 
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
     pyobj_creg,
     web,
@@ -49,10 +51,16 @@ def config_item_list(piece, system, format):
             key_data = pyobj_creg.actor_to_piece(key)
         else:
             key_data = key
+        try:
+            deduce_t(value)
+            value_data = value
+        except DeduceTypeError:
+            value_data = None  # TODO: do these cases exists?
         layers = item_layers(key, value)
         item = htypes.config_item_list.item(
             key=mosaic.put(key_data),
             key_str=format(key),
+            value=mosaic.put_opt(value),
             value_str=str(value),
             layers=tuple(layers),
             layers_str=", ".join(layers),
@@ -70,6 +78,12 @@ def open_config_item_list(piece, current_item):
 def open_config_key(piece, current_item):
     key = web.summon(current_item.key)
     return data_browser(key)
+
+
+@mark.command
+def open_config_value(piece, current_item):
+    value = web.summon(current_item.value)
+    return data_browser(value)
 
 
 @mark.crud.get_layer(commit_action='move')

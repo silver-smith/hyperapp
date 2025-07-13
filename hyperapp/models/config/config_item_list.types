@@ -4,6 +4,7 @@ model = record:
 item = record:
   key: ref
   key_str: string
+  value: ref opt  # None for non-data values.
   value_str: string
   layers: string list
   layers_str: string
