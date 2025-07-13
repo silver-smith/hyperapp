@@ -68,7 +68,8 @@ def record_open(piece, current_item):
     name = current_item.name
     field_t = data_t.fields[name]
     value = getattr(data, name)
-    if field_t is ref_t:
+    if (field_t is ref_t
+            or field_t == TOptional(ref_t) and value is not None):
         value, field_t = web.summon_with_t(value)
     return data_browser(value, field_t)
 
