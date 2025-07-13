@@ -15,10 +15,11 @@ def _service_item(layer_name, system, assoc_key, format, service_name):
         config_template = system.get_layer_config_templates(layer_name).get(service_name)
     else:
         config_template = system.get_config_template(service_name)
+    assoc = assoc_key.get(service_name)
     return htypes.config_service_list.item(
         service_name=service_name,
         item_count=_item_count(config_template),
-        assoc=format(assoc_key.get(service_name)),
+        assoc=format(assoc) if assoc is not None else '',
         )
 
 
