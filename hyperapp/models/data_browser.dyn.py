@@ -42,7 +42,7 @@ def _format_field_value(t, value):
     if t is htypes.builtin.ref:
         target = web.summon(value)
         return f"{value}: {target}"
-    if t == TOptional(htypes.builtin.ref) and value:
+    if t == TOptional(htypes.builtin.ref) and value is not None:
         target = web.summon(value)
         return f"{value}: {target}"
     else:
