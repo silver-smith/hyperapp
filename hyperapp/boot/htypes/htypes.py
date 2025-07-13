@@ -97,6 +97,9 @@ class TOptional(Type):
         super().__init__(module_name, name)
         self.base_t = base_t
 
+    def __str__(self):
+        return '%s opt' % self.base_t
+
     def __repr__(self):
         return '%r opt' % self.base_t
 
@@ -116,6 +119,9 @@ class TList(Type):
         assert isinstance(element_t, Type), repr(element_t)
         super().__init__(module_name, name)
         self.element_t = element_t
+
+    def __str__(self):
+        return '%s list' % self.element_t
 
     def __repr__(self):
         return '%r list' % self.element_t
