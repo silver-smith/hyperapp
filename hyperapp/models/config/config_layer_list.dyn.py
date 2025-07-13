@@ -36,3 +36,8 @@ def layer_pick(piece, current_item):
     return htypes.config_layer_list.layer(
         name=current_item.name,
         )
+
+
+@mark.actor.formatter_creg
+def format_model(piece):
+    return "Config layer list"

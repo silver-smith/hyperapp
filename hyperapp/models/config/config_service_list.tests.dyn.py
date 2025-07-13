@@ -47,3 +47,8 @@ async def test_toggle_assoc(assoc_key, piece):
     assoc_key.__contains__.return_value = True
     await config_service_list.toggle_assoc(piece, current_key)
     assoc_key.__delitem__.assert_called_once()
+
+
+def test_format_model(piece):
+    title = config_service_list.format_model(piece)
+    assert type(title) is str

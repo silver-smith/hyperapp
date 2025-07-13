@@ -19,6 +19,7 @@ import:
 - legacy_type.feed:list_feed_type
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:model
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
   config_service_list:
@@ -77,6 +78,21 @@ definitions:
         htypes.assoc_key.key_base_association: legacy_type.assoc_key:key_base_association
         htypes.config_service_list.item: legacy_type.config_service_list:item
         htypes.config_service_list.model: legacy_type.config_service_list:model
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_service_list.module
+      attr_name: format_model
+  format_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_model
+      service_params: []
+  formatter_creg-config_service_list-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.config_service_list:model
+      value: format_model.actor-template
   open_config_service_list:
     type: legacy_type.builtin:attribute
     value:

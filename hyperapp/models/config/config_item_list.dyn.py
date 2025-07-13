@@ -128,4 +128,7 @@ def remove(piece, current_item, system):
 
 @mark.actor.formatter_creg
 def format_model(piece):
-    return f"Config for service: {piece.service_name}"
+    if piece.layer:
+        return f"Config: {piece.layer}/{piece.service_name}"
+    else:
+        return f"Config: {piece.service_name}"

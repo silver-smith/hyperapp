@@ -52,3 +52,11 @@ def open_config_service_list():
     return htypes.config_service_list.model(
         layer=None,
         )
+
+
+@mark.actor.formatter_creg
+def format_model(piece):
+    if piece.layer:
+        return f"Config services for: {piece.layer}"
+    else:
+        return "Config service list"

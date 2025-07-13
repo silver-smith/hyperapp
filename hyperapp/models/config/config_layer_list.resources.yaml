@@ -20,6 +20,7 @@ import:
 - legacy_type.model:key_list_ui_t
 - legacy_type.model:model
 - legacy_type.selector:template
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
   config_layer_list:
@@ -98,6 +99,21 @@ definitions:
         htypes.config_layer_list.layer: legacy_type.config_layer_list:layer
         htypes.config_layer_list.model: legacy_type.config_layer_list:model
         htypes.config_service_list.model: legacy_type.config_service_list:model
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_layer_list.module
+      attr_name: format_model
+  format_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_model
+      service_params: []
+  formatter_creg-config_layer_list-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.config_layer_list:model
+      value: format_model.actor-template
   layer_get:
     type: legacy_type.builtin:attribute
     value:

@@ -43,3 +43,8 @@ def test_selector_pick():
         )
     value = config_layer_list.layer_pick(piece, current_item)
     assert value == htypes.config_layer_list.layer('sample-layer')
+
+
+def test_format_model(piece):
+    title = config_layer_list.format_model(piece)
+    assert type(title) is str

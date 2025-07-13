@@ -23,10 +23,12 @@ import:
 - models.config.config_layer_list:config_layer_list-model-open_service_list.command-cfg-item
 - models.config.config_layer_list:config_layer_list-model.feed-template
 - models.config.config_layer_list:config_layer_list-model.model-cfg-item
+- models.config.config_layer_list:formatter_creg-config_layer_list-model.actor-cfg-item
 - models.config.config_layer_list:open_config_layer_list.global-model-command
 - models.config.config_service_list:config_service_list-model-toggle_assoc.command-cfg-item
 - models.config.config_service_list:config_service_list-model.feed-template
 - models.config.config_service_list:config_service_list-model.model-cfg-item
+- models.config.config_service_list:formatter_creg-config_service_list-model.actor-cfg-item
 - models.config.config_service_list:open_config_service_list.global-model-command
 - models.data_browser:browse_current_model.global-model-command
 - models.data_browser:data_browser-list_view-list_open.command-cfg-item
@@ -158,6 +160,8 @@ definitions:
     value:
       items:
       - models.config.config_item_list:formatter_creg-config_item_list-model.actor-cfg-item
+      - models.config.config_layer_list:formatter_creg-config_layer_list-model.actor-cfg-item
+      - models.config.config_service_list:formatter_creg-config_service_list-model.actor-cfg-item
       - models.data_browser:formatter_creg-data_browser-record_view.actor-cfg-item
       - models.global_commands:formatter_creg-global_commands-command_arg.actor-cfg-item
       - models.global_commands:formatter_creg-global_commands-model.actor-cfg-item
