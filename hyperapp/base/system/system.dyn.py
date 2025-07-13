@@ -201,10 +201,14 @@ class System:
         self._default_layer_name = layer_name
 
     @property
-    def default_layer(self):
+    def default_layer_name(self):
         if self._default_layer_name:
-            return self._name_to_layer[self._default_layer_name]
-        return list(self._name_to_layer.values())[-1]
+            return self._default_layer_name
+        return list(self._name_to_layer)[-1]
+
+    @property
+    def default_layer(self):
+        return self._name_to_layer[self.default_layer_name]
 
     def get_layer_config_templates(self, layer_name):
         layer = self._name_to_layer[layer_name]
