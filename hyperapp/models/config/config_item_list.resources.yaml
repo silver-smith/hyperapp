@@ -16,6 +16,8 @@ import:
 - legacy_type.command:model_command_fn
 - legacy_type.command:model_command_remove_fn
 - legacy_type.config_item_list:item
+- legacy_type.config_item_list:layer_item
+- legacy_type.config_item_list:layer_model
 - legacy_type.config_item_list:model
 - legacy_type.config_layer_list:layer
 - legacy_type.config_service_list:model
@@ -33,11 +35,113 @@ definitions:
     value:
       object: config_item_list.module
       attr_name: config_item_get_layer
+  config_item_layer_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: config_item_layer_list
   config_item_list:
     type: legacy_type.builtin:attribute
     value:
       object: config_item_list.module
       attr_name: config_item_list
+  config_item_list-layer_model-layer_remove.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_item_list:layer_model
+      command: layer_remove.model-command
+  config_item_list-layer_model-open_config_key.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_item_list:layer_model
+      command: open_config_key.model-command
+  config_item_list-layer_model-open_config_value.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_item_list:layer_model
+      command: open_config_value.model-command
+  config_item_list-layer_model.crud.get_layer.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: config_layer_item_get_layer
+      ctx_params:
+      - piece
+      service_params: []
+  config_item_list-layer_model.crud.move.system-fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: config_layer_item_move_to_another_layer
+      ctx_params:
+      - piece
+      - key
+      - value
+      service_params:
+      - system
+  config_item_list-layer_model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.config_item_list:layer_model
+      feed_type: config_item_list-layer_model.feed-type
+  config_item_list-layer_model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.config_item_list:layer_item
+  config_item_list-layer_model.key-list-ui-t:
+    type: legacy_type.model:key_list_ui_t
+    value:
+      item_t: legacy_type.config_item_list:layer_item
+      key_field: key
+      key_field_t: legacy_type.builtin:ref
+  config_item_list-layer_model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: config_item_list-layer_model.key-list-ui-t
+      system_fn: config_item_list-layer_model.system-fn
+  config_item_list-layer_model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.config_item_list:layer_model
+      value: config_item_list-layer_model.model
+  config_item_list-layer_model.open_move.command:
+    type: legacy_type.command:model_command
+    value:
+      d: config_item_list-layer_model.open_move.open-command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: config_item_list-layer_model.open_move.command-fn
+      preserve_remote: false
+  config_item_list-layer_model.open_move.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.config_item_list:layer_model
+      command: config_item_list-layer_model.open_move.command
+  config_item_list-layer_model.open_move.command-fn:
+    type: legacy_type.crud:open_command_fn
+    value:
+      name: open_move
+      value_t: legacy_type.config_layer_list:layer
+      key_fields:
+      - key
+      init_action_fn: config_item_list-layer_model.crud.get_layer.system-fn
+      commit_command_d: config_item_list-layer_model.open_move.commit-command.d
+      commit_action_fn: config_item_list-layer_model.crud.move.system-fn
+  config_item_list-layer_model.open_move.commit-command.d:
+    type: move_d
+    value: {}
+  config_item_list-layer_model.open_move.open-command.d:
+    type: open_move_d
+    value: {}
+  config_item_list-layer_model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: config_item_layer_list
+      ctx_params:
+      - piece
+      service_params:
+      - system
+      - format
   config_item_list-model-open_config_key.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -147,6 +251,8 @@ definitions:
         code.data_browser: models.data_browser:data_browser.module
         code.mark: base.mark:mark.module
         htypes.config_item_list.item: legacy_type.config_item_list:item
+        htypes.config_item_list.layer_item: legacy_type.config_item_list:layer_item
+        htypes.config_item_list.layer_model: legacy_type.config_item_list:layer_model
         htypes.config_item_list.model: legacy_type.config_item_list:model
         htypes.config_layer_list.layer: legacy_type.config_layer_list:layer
         services.deduce_t: builtins:deduce_t.service
@@ -158,11 +264,31 @@ definitions:
     value:
       object: config_item_list.module
       attr_name: config_item_move_to_another_layer
+  config_layer_item_get_layer:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: config_layer_item_get_layer
+  config_layer_item_move_to_another_layer:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: config_layer_item_move_to_another_layer
   config_service_list-model-open_config_item_list.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.config_service_list:model
       command: open_config_item_list.model-command
+  format_layer_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: format_layer_model
+  format_layer_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_layer_model
+      service_params: []
   format_model:
     type: legacy_type.builtin:attribute
     value:
@@ -173,11 +299,50 @@ definitions:
     value:
       function: format_model
       service_params: []
+  formatter_creg-config_item_list-layer_model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.config_item_list:layer_model
+      value: format_layer_model.actor-template
   formatter_creg-config_item_list-model.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:model
       value: format_model.actor-template
+  layer_remove:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_list.module
+      attr_name: layer_remove
+  layer_remove.d:
+    type: layer_remove_d
+    value: {}
+  layer_remove.fn:
+    type: legacy_type.command:model_command_remove_fn
+    value:
+      function: layer_remove
+      ctx_params:
+      - piece
+      - current_item
+      service_params:
+      - system
+  layer_remove.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: layer_remove.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: layer_remove.fn
+      preserve_remote: false
+  layer_remove_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: config_item_list
+      name: layer_remove_d
+      base: null
+      fields: {}
   move_d:
     type: legacy_type.builtin:record_mt
     value:

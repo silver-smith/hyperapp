@@ -1,5 +1,4 @@
 model = record:
-  layer: string opt
   service_name: string
 
 item = record:
@@ -9,3 +8,14 @@ item = record:
   value_str: string
   layers: string list
   layers_str: string
+
+
+layer_model = record:
+  layer: string
+  service_name: string
+
+layer_item = record:
+  key: ref
+  key_str: string
+  value: ref opt  # None for non-data values.
+  value_str: string
