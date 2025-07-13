@@ -1,3 +1,5 @@
+import logging
+
 from hyperapp.boot.htypes import TRecord
 
 from . import htypes
@@ -11,6 +13,8 @@ from .code.marker_utils import (
     split_actor_params,
     )
 from .code.crud_ctr import CrudInitTemplateCtr, CrudCommitTemplateCtr
+
+log = logging.getLogger(__name__)
 
 
 class CrudProbe:
@@ -76,8 +80,10 @@ class CrudProbe:
             if name in item_t.fields:
                 fields.append(name)
         if not fields:
-            expected_fields = ", ".join(item_t.fields)
-            raise RuntimeError(f"Expected at least one key parameter, one of: {expected_fields}")
+            available_fields = ", ".join(item_t.fields)
+            log.warning(
+                "%s/%s: No key fields are used (available fields: %s)",
+                self._module_name, self._fn, available_fields)
         return fields
 
     def _template_ctr_kw(self, params):
