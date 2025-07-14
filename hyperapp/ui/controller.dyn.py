@@ -310,8 +310,13 @@ class _Item:
     def replace_parent_widget_hook(self, new_widget):
         parent = self.parent
         parent.view.replace_child_widget(parent.widget, self.idx, new_widget)
-        self._widget_wr = None
+        self.invalidate_widget()
         self.view_commands = None
+
+    def invalidate_widget(self):
+        self._widget_wr = None
+        for kid in self._children:
+            kid.invalidate_widget()
 
     def save_state_hook(self):
         self.save_state()
