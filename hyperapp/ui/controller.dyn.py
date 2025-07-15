@@ -98,6 +98,8 @@ class _Item:
 
     @property
     def current_child_idx(self):
+        if self.view is None:
+            return None
         return self.view.get_current(self.widget)
 
     @property
