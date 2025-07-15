@@ -56,7 +56,8 @@ class NavigatorView(View):
     def construct_widget(self, state, ctx):
         return self._construct_widget(self._current_view, state, ctx)
 
-    def _construct_widget(self, view, state, ctx):
+    @staticmethod
+    def _construct_widget(view, state, ctx):
         return view.construct_widget(state, ctx)
 
     def get_current(self, widget):
