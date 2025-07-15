@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_type.assoc_key:key_base_association
 - legacy_type.builtin:bool
 - legacy_type.builtin:string
 - legacy_type.column:column_k
@@ -39,6 +40,11 @@ import:
 - ui.view.wrap_view:wrap_view.commit-d
 - ui.view.wrap_view:wrap_view.open-d
 definitions:
+  assoc_key.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-string_1
   bool-false:
     type: legacy_type.builtin:bool
     value: false
@@ -70,6 +76,7 @@ definitions:
       services:
         shortcut_reg: shortcut_reg.config
         column_visible_reg: column_visible_reg.config
+        assoc_key: assoc_key.config
   config_item-column_k-view_factory_list.model-k:
     type: legacy_type.data_service:config_item
     value:
@@ -85,6 +92,11 @@ definitions:
     value:
       key: column_k-view_factory_list.model-view_t
       value: bool-false
+  config_item-string_1:
+    type: legacy_type.data_service:config_item
+    value:
+      key: string_1
+      value: key_base_association_1
   config_item-ui.arg_mark-add_mark.d:
     type: legacy_type.data_service:config_item
     value:
@@ -235,6 +247,9 @@ definitions:
     value:
       key: ui.view.wrap_view:wrap_view.open-d
       value: shortcut_W
+  key_base_association_1:
+    type: legacy_type.assoc_key:key_base_association
+    value: {}
   shortcut_Alt_M:
     type: legacy_type.builtin:string
     value: Alt+M
@@ -326,3 +341,6 @@ definitions:
       - config_item-ui.qt.tabs-add_element.commit-d
       - config_item-ui.qt.tabs-insert_element.commit-d
       - config_item-ui.qt.tabs-remove_element.d
+  string_1:
+    type: legacy_type.builtin:string
+    value: peer_label_reg
