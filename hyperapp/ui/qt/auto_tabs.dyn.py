@@ -52,7 +52,7 @@ class AutoTabsView(TabsView):
             return f"Static {t.name}"
         title = self._format(piece)
         title = title.replace('\n', ' ')
-        if len(title) > 40:
+        if len(title) > 50:
             return title[:37] + '...'
         else:
             return title
