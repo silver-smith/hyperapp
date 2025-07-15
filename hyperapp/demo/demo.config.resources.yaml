@@ -3,18 +3,34 @@
 import:
 - demo.fs:fs-model.system-fn
 - demo.fs:open.d
+- demo.system_info:system_info.d
+- legacy_type.accessor:model_accessor
+- legacy_type.box_layout:view
 - legacy_type.builtin:attribute
+- legacy_type.builtin:list_mt
 - legacy_type.builtin:string
+- legacy_type.command:canned_arg_command_d
+- legacy_type.command:canned_args_command_fn
+- legacy_type.command:model_command
 - legacy_type.data_service:config_item
+- legacy_type.details:view
 - legacy_type.fs:item
 - legacy_type.fs:model
+- legacy_type.global_commands:command_arg
 - legacy_type.list:view
 - legacy_type.list_adapter:key_fn_list_adapter
+- legacy_type.list_adapter:static_list_adapter
+- legacy_type.peer_list:item
+- legacy_type.peer_list:model
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - legacy_type.system_fn:ctx_fn
+- legacy_type.system_info:item
 - legacy_type.tree_as_list:key_view
 - legacy_type.ui:model_layout_k
+- models.peer_list:peer_list-model.system-fn
+- models.peer_list:run_command.commit-d
+- models.peer_list:run_command.commit-fn
 - views.tree_as_list:tree_as_list.module
 definitions:
   attribute_1:
@@ -22,6 +38,33 @@ definitions:
     value:
       object: views.tree_as_list:tree_as_list.module
       attr_name: list_model_fn
+  box_layout_view_1:
+    type: legacy_type.box_layout:view
+    value:
+      direction: TopToBottom
+      elements:
+      - view: list_view_2
+        focusable: true
+        stretch: 1
+      - view: details_view_1
+        focusable: false
+        stretch: 0
+  canned_arg_command_d_1:
+    type: legacy_type.command:canned_arg_command_d
+    value:
+      commit_command_d: models.peer_list:run_command.commit-d
+      args:
+        command: command_arg_1
+  canned_args_command_fn_1:
+    type: legacy_type.command:canned_args_command_fn
+    value:
+      args:
+        command: command_arg_1
+      commit_fn: models.peer_list:run_command.commit-fn
+  command_arg_1:
+    type: legacy_type.global_commands:command_arg
+    value:
+      d: demo.system_info:system_info.d
   config:
     type: legacy_type.system:system_config
     value:
@@ -38,6 +81,11 @@ definitions:
     value:
       key: fs.model-model_layout_k
       value: key_view_1
+  config_item-peer_list.model-model_layout_k:
+    type: legacy_type.data_service:config_item
+    value:
+      key: peer_list.model-model_layout_k
+      value: box_layout_view_1
   ctx_fn_1:
     type: legacy_type.system_fn:ctx_fn
     value:
@@ -46,11 +94,30 @@ definitions:
       - piece
       service_params:
       - system_fn_creg
+  details_view_1:
+    type: legacy_type.details:view
+    value:
+      command: model_command_1
+      details_model: item-list_1
+      details_view: list_view_1
   fs.model-model_layout_k:
     type: legacy_type.ui:model_layout_k
     value:
       model_t: legacy_type.fs:model
+  item-list_1:
+    type: system_info-item-list
+    value:
+      host: host
+      python: /home/user/venv/hyperapp/bin/python3
+      interfaces: lo, docker0, enp88s0, zteb4caymq, wlp0s20f3
   key_fn_list_adapter_1:
+    type: legacy_type.list_adapter:key_fn_list_adapter
+    value:
+      item_t: legacy_type.peer_list:item
+      key_field: name
+      key_field_t: legacy_type.builtin:string
+      system_fn: models.peer_list:peer_list-model.system-fn
+  key_fn_list_adapter_2:
     type: legacy_type.list_adapter:key_fn_list_adapter
     value:
       item_t: legacy_type.fs:item
@@ -60,19 +127,45 @@ definitions:
   key_view_1:
     type: legacy_type.tree_as_list:key_view
     value:
-      list_view: list_view_1
+      list_view: list_view_3
       tree_model_fn: demo.fs:fs-model.system-fn
       current_path: []
       parent_items: []
   list_view_1:
     type: legacy_type.list:view
     value:
+      adapter: static_list_adapter_1
+  list_view_2:
+    type: legacy_type.list:view
+    value:
       adapter: key_fn_list_adapter_1
+  list_view_3:
+    type: legacy_type.list:view
+    value:
+      adapter: key_fn_list_adapter_2
+  model_accessor_1:
+    type: legacy_type.accessor:model_accessor
+    value: {}
+  model_command_1:
+    type: legacy_type.command:model_command
+    value:
+      d: canned_arg_command_d_1
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: canned_args_command_fn_1
+      preserve_remote: false
   model_layout_reg.config:
     type: legacy_type.system:item_list_config
     value:
       items:
       - config_item-fs.model-model_layout_k
+      - config_item-peer_list.model-model_layout_k
+  peer_list.model-model_layout_k:
+    type: legacy_type.ui:model_layout_k
+    value:
+      model_t: legacy_type.peer_list:model
   shortcut_Space:
     type: legacy_type.builtin:string
     value: Space
@@ -81,3 +174,12 @@ definitions:
     value:
       items:
       - config_item-demo.fs-open.d
+  static_list_adapter_1:
+    type: legacy_type.list_adapter:static_list_adapter
+    value:
+      item_t: legacy_type.system_info:item
+      accessor: model_accessor_1
+  system_info-item-list:
+    type: legacy_type.builtin:list_mt
+    value:
+      element: legacy_type.system_info:item
