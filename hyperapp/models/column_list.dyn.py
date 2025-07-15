@@ -47,6 +47,8 @@ async def toggle_visibility(piece, current_idx, current_item, feed_factory, colu
 
 @mark.ui_model_command(htypes.list.view)
 def open_column_list(view):
+    if view.adapter.real_model is None:
+        return  # Static list.
     model_t = deduce_t(view.adapter.real_model)
     if isinstance(model_t, TList):
         return

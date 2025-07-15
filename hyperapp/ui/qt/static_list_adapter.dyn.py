@@ -29,6 +29,10 @@ class StaticListAdapter(IndexListAdapterMixin):
     def subscribe(self, model):
         pass
 
+    @property
+    def real_model(self):
+        return None
+
     def column_count(self):
         return len(self._column_names)
 
