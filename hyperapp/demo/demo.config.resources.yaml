@@ -1,1 +1,27 @@
-definitions: {}
+# Automatically generated file. Do not edit.
+
+import:
+- demo.fs:open.d
+- legacy_type.builtin:string
+- legacy_type.data_service:config_item
+- legacy_type.system:item_list_config
+- legacy_type.system:system_config
+definitions:
+  config:
+    type: legacy_type.system:system_config
+    value:
+      services:
+        shortcut_reg: shortcut_reg.config
+  config_item-demo.fs-open.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: demo.fs:open.d
+      value: shortcut_Space
+  shortcut_Space:
+    type: legacy_type.builtin:string
+    value: Space
+  shortcut_reg.config:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - config_item-demo.fs-open.d
