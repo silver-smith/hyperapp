@@ -76,10 +76,13 @@ class NavigatorView(View):
     def widget_state(self, widget):
         return self._current_view.widget_state(widget)
 
-    def _replace_widget(self, new_view, ctx, state):
-        new_widget = self._construct_widget(new_view, state, ctx)
+    def _replace_widget(self, new_view, new_widget):
         self._ctl_hook.replace_parent_widget(new_widget)
         self._ctl_hook.context_changed()
+        # Should be called when navigator already has new state.
+        # Can not call it asynchronously because replace_parent_widget hook call above
+        # causes window focus-changed hook post children update call which will fire
+        # before element are replaced by controller.
         self._ctl_hook.element_replaced(0, new_view, new_widget)
 
     def _history_rec(self, widget):
@@ -114,13 +117,15 @@ class NavigatorView(View):
                 model_t=pyobj_creg.actor_to_ref(model_t),
                 )
         state = new_view.make_widget_state(key)
-        self._replace_widget(new_view, ctx, state)
+        # Construct widget before changing our state because it may raise a error.
+        new_widget = self._construct_widget(new_view, state, ctx)
         self._current_view = new_view
         self._current_layout = new_view.piece
         self._model = model
         self._layout_k = layout_k
         self._prev = mosaic.put(history_rec)
         self._next = None
+        self._replace_widget(new_view, new_widget)
 
     def set_current_key(self, widget, key):
         self._current_view.set_current_key(widget, key)
@@ -134,13 +139,14 @@ class NavigatorView(View):
         prev_state = web.summon(prev.state)
         model_ctx = ctx.pop().clone_with(model=prev_model)
         new_view = view_reg.invite(prev.view, model_ctx)
-        self._replace_widget(new_view, ctx, prev_state)
+        new_widget = self._construct_widget(new_view, prev_state, ctx)
         self._current_view = new_view
         self._current_layout = new_view.piece
         self._model = web.summon(prev.model)
         self._layout_k = web.summon_opt(prev.layout_k)
         self._prev = prev.prev
         self._next = mosaic.put(history_rec)
+        self._replace_widget(new_view, new_widget)
 
     def go_forward(self, ctx, widget, view_reg):
         if not self._next:
@@ -151,13 +157,14 @@ class NavigatorView(View):
         next_state = web.summon(next.state)
         model_ctx = ctx.pop().clone_with(model=next_model)
         new_view = view_reg.invite(next.view, model_ctx)
-        self._replace_widget(new_view, ctx, next_state)
+        new_widget = self._construct_widget(new_view, next_state, ctx)
         self._current_view = new_view
         self._current_layout = new_view.piece
         self._model = web.summon(next.model)
         self._layout_k = web.summon_opt(next.layout_k)
         self._prev = mosaic.put(history_rec)
         self._next = next.next
+        self._replace_widget(new_view, new_widget)
 
     def _set_layout(self, layout):
         if self._layout_k is not None:
