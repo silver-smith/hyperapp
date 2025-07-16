@@ -40,11 +40,11 @@ def lcs_view(piece, lcs):
 
 
 @mark.command
-async def lcs_remove(piece, current_idx, current_item, lcs, feed_factory):
+def lcs_remove(piece, current_idx, current_item, lcs, feed_factory):
     feed = feed_factory(piece)
     dir = {web.summon(d) for d in current_item.dir}
     lcs.remove(dir)
-    await feed.send(IndexListDiff.Remove(current_idx))
+    feed.send(IndexListDiff.Remove(current_idx))
 
 
 @mark.crud.get_layer(commit_action='move')

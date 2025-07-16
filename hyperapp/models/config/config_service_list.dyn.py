@@ -36,7 +36,7 @@ def config_service_list(piece, format, assoc_key, system):
 
 
 @mark.command
-async def toggle_assoc(piece, current_key, feed_factory, format, assoc_key, system):
+def toggle_assoc(piece, current_key, feed_factory, format, assoc_key, system):
     service_name = current_key
     feed = feed_factory(piece)
     ass = htypes.assoc_key.key_base_association()
@@ -45,7 +45,7 @@ async def toggle_assoc(piece, current_key, feed_factory, format, assoc_key, syst
     else:
         assoc_key[service_name] = ass
     item = _service_item(piece.layer, system, assoc_key, format, service_name)
-    await feed.send(KeyListDiff.Replace(service_name, item))
+    feed.send(KeyListDiff.Replace(service_name, item))
 
 
 @mark.global_command

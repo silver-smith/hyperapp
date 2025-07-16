@@ -30,14 +30,14 @@ class FeedDiscoverer:
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
 
-    async def send(self, diff):
+    def send(self, diff):
         log.info("Feed discoverer: send: %s", diff)
         frame = inspect.stack()[1].frame
         python_module_name = frame.f_globals['__name__']
         module_action = self._ctr_collector.get_module_action(python_module_name)
         assert module_action is not self._ctr_collector.Action.NotSet
         if module_action is not self._ctr_collector.Action.Ignore:
-            await self._deduce_and_store_ctr(module_action.module_name, diff)
+            self._deduce_and_store_ctr(module_action.module_name, diff)
             if self.ctr and not self._constructor_added:
                 self._add_constructor()
         for subscriber in self._subscribers:
@@ -49,7 +49,7 @@ class FeedDiscoverer:
                 async with asyncio.timeout(5):
                     await self._got_diff.wait()
 
-    async def _deduce_and_store_ctr(self, module_name, diff):
+    def _deduce_and_store_ctr(self, module_name, diff):
         if isinstance(diff, (
                 IndexListDiff.Insert,
                 IndexListDiff.Append,
@@ -140,6 +140,10 @@ class FeedDiscoverer:
                 log.info("Feed: Deduced feed type: %s [%s]", self.ctr, value_t)
         else:
             raise NotImplementedError(f"Not implemented: feed detection for diff: {diff}")
+        loop = asyncio.get_running_loop()  # Tests with diffs expected to be async.
+        loop.call_soon(asyncio.create_task, self._notify_new_diff())
+
+    async def _notify_new_diff(self):
         async with self._got_diff:
             self._got_diff_count += 1
             self._got_diff.notify_all()

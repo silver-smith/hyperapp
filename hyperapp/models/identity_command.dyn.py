@@ -56,7 +56,7 @@ class BoundIdentityModelCommand(BoundCommandBase):
 
 
 @mark.command
-async def add_identity_command(piece, lcs, ctx, feed_factory, ui_model_command_items, shortcut_reg):
+def add_identity_command(piece, lcs, ctx, feed_factory, ui_model_command_items, shortcut_reg):
     feed = feed_factory(piece)
     model, model_t = web.summon_with_t(piece.model)
     model_state = web.summon(piece.model_state)
@@ -68,4 +68,4 @@ async def add_identity_command(piece, lcs, ctx, feed_factory, ui_model_command_i
         )
     command_item = commands_item_list.add_custom_model_command(command_d, model_command_piece)
     new_item = command_item_to_model_item(shortcut_reg, lcs, command_item)
-    await feed.send(IndexListDiff.Append(new_item))
+    feed.send(IndexListDiff.Append(new_item))

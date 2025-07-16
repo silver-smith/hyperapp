@@ -25,7 +25,7 @@ class Feed:
         weakref.finalize(subscriber, self._subscriber_gone)
         self._subscribers.add(subscriber)
 
-    async def send(self, diff):
+    def send(self, diff):
         log.info("Feed: send: %s", diff)
         for subscriber in self._subscribers:
             subscriber.process_diff(diff)

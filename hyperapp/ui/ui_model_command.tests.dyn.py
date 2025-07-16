@@ -187,7 +187,7 @@ def sample_servant_fn(rpc_system_call_factory):
 
 @mark.fixture
 def sample_feed():
-    return AsyncMock()
+    return Mock()
 
 
 @mark.fixture
@@ -220,6 +220,6 @@ async def test_command_run_process_diff(model_servant, get_ui_model_commands, lc
     unbound_command = d_to_command[command_d]
     bound_command = unbound_command.bind(ctx)
     await bound_command.run()
-    sample_feed.send.assert_awaited()
+    sample_feed.send.assert_called_once()
     navigator_rec.view.set_current_key.assert_called_once()
     navigator_rec.view.open.assert_not_called()

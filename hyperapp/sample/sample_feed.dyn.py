@@ -8,23 +8,25 @@ from .code.tree_diff import TreeDiff
 log = logging.getLogger(__name__)
 
 
-async def _send_list_diff(feed):
+def _send_list_diff(feed):
     log.info("Sending list diff")
     item = htypes.sample_list.item(44, "Forth diff", "Sample item #4")
-    await feed.send(IndexListDiff.Append(item))
+    feed.send(IndexListDiff.Append(item))
 
 
-async def schedule_sample_list_feed(feed_factory, piece):
+def schedule_sample_list_feed(feed_factory, piece):
     feed = feed_factory(piece)
-    asyncio.create_task(_send_list_diff(feed))
+    loop = asyncio.get_running_loop()
+    loop.call_soon(_send_list_diff, feed)
 
 
-async def _send_tree_diff(feed):
+def _send_tree_diff(feed):
     log.info("Sending tree diff")
     item = htypes.sample_tree.item(55, "Sample item #4")
-    await feed.send(TreeDiff.Append([], item))
+    feed.send(TreeDiff.Append([], item))
 
 
-async def schedule_sample_tree_feed(feed_factory, piece):
+def schedule_sample_tree_feed(feed_factory, piece):
     feed = feed_factory(piece)
-    asyncio.create_task(_send_tree_diff(feed))
+    loop = asyncio.get_running_loop()
+    loop.call_soon(_send_tree_diff, feed)

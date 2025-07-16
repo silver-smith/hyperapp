@@ -146,7 +146,7 @@ async def test_index_adapter_append_root_diff(index_adapter, subscriber, feed):
     adapter.subscribe(subscriber)
 
     item = htypes.tree_adapter_tests.index_item(99, "New item")
-    await feed.send(TreeDiff.Append((), item))
+    feed.send(TreeDiff.Append((), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
@@ -164,7 +164,7 @@ async def test_index_adapter_append_child_diff(index_adapter, subscriber, feed):
     row_2 = adapter.row_id(0, 2)
 
     item = htypes.tree_adapter_tests.index_item(99, "New item")
-    await feed.send(TreeDiff.Append((2,), item))
+    feed.send(TreeDiff.Append((2,), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
@@ -183,7 +183,7 @@ async def test_index_adapter_remove_child_diff(index_adapter, subscriber, feed):
     row_11 = adapter.row_id(row_1, 1)
     assert adapter.cell_data(row_11, 0) == 22
 
-    await feed.send(TreeDiff.Remove((1, 1)))
+    feed.send(TreeDiff.Remove((1, 1)))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffRemove), repr(diff)
@@ -204,7 +204,7 @@ async def test_index_adapter_insert_child_diff(index_adapter, subscriber, feed):
     assert adapter.cell_data(row_11, 0) == 22
 
     item = htypes.tree_adapter_tests.index_item(99, "New item")
-    await feed.send(TreeDiff.Insert((1, 1), item))
+    feed.send(TreeDiff.Insert((1, 1), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffInsert), repr(diff)
@@ -227,7 +227,7 @@ async def test_index_adapter_replace_child_diff(index_adapter, subscriber, feed)
     assert adapter.cell_data(row_11, 0) == 22
 
     item = htypes.tree_adapter_tests.index_item(99, "New item")
-    await feed.send(TreeDiff.Replace((1, 1), item))
+    feed.send(TreeDiff.Replace((1, 1), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffReplace), repr(diff)
@@ -278,7 +278,7 @@ async def test_key_adapter_append_root_diff(key_adapter, subscriber, feed):
     adapter.subscribe(subscriber)
 
     item = htypes.tree_adapter_tests.key_item('99', "New item")
-    await feed.send(TreeDiff.Append((), item))
+    feed.send(TreeDiff.Append((), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
@@ -296,7 +296,7 @@ async def test_key_adapter_append_child_diff(key_adapter, subscriber, feed):
     row_2 = adapter.row_id(0, 2)
 
     item = htypes.tree_adapter_tests.key_item('99', "New item")
-    await feed.send(TreeDiff.Append(('3',), item))
+    feed.send(TreeDiff.Append(('3',), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
@@ -315,7 +315,7 @@ async def test_key_adapter_remove_child_diff(key_adapter, subscriber, feed):
     row_11 = adapter.row_id(row_1, 1)
     assert adapter.cell_data(row_11, 0) == '22'
 
-    await feed.send(TreeDiff.Remove(('2', '22')))
+    feed.send(TreeDiff.Remove(('2', '22')))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffRemove), repr(diff)
@@ -336,7 +336,7 @@ async def test_key_adapter_insert_child_diff(key_adapter, subscriber, feed):
     assert adapter.cell_data(row_11, 0) == '22'
 
     item = htypes.tree_adapter_tests.key_item('99', "New item")
-    await feed.send(TreeDiff.Insert(('2', '22'), item))
+    feed.send(TreeDiff.Insert(('2', '22'), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffInsert), repr(diff)
@@ -359,7 +359,7 @@ async def test_key_adapter_replace_child_diff(key_adapter, subscriber, feed):
     assert adapter.cell_data(row_11, 0) == '22'
 
     item = htypes.tree_adapter_tests.key_item('99', "New item")
-    await feed.send(TreeDiff.Replace(('2', '22'), item))
+    feed.send(TreeDiff.Replace(('2', '22'), item))
 
     diff = await subscriber.wait_for_diff()
     assert isinstance(diff, VisualTreeDiffReplace), repr(diff)

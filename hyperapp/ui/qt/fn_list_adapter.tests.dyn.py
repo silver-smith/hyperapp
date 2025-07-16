@@ -73,9 +73,9 @@ class Subscriber:
         self._queue.put_nowait(diff)
 
 
-async def _send_append_diff(feed):
+def _send_append_diff(feed):
     item = htypes.list_adapter_tests.item(44, "Forth diff", "Sample item #4")
-    await feed.send(IndexListDiff.Append(item))
+    feed.send(IndexListDiff.Append(item))
 
 
 async def test_index_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
@@ -97,16 +97,16 @@ async def test_index_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     adapter.subscribe(subscriber)
 
     feed = feed_factory(model)
-    asyncio.create_task(_send_append_diff(feed))
+    _send_append_diff(feed)
 
     diff = await asyncio.wait_for(queue.get(), timeout=5)
     assert isinstance(diff, IndexListDiff.Append), repr(diff)
     assert diff.item.id == 44
 
 
-async def _send_replace_diff(feed):
+def _send_replace_diff(feed):
     item = htypes.list_adapter_tests.item(22, "Another second", "New second")
-    await feed.send(KeyListDiff.Replace(22, item))
+    feed.send(KeyListDiff.Replace(22, item))
 
 
 async def test_key_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
@@ -130,7 +130,7 @@ async def test_key_fn_adapter(feed_factory, sample_list_model_fn, model, ctx):
     adapter.subscribe(subscriber)
 
     feed = feed_factory(model)
-    asyncio.create_task(_send_replace_diff(feed))
+    _send_replace_diff(feed)
 
     diff = await asyncio.wait_for(queue.get(), timeout=5)
     assert isinstance(diff, IndexListDiff.Replace), repr(diff)

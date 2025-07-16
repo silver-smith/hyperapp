@@ -55,6 +55,6 @@ async def test_add_command(feed_factory):
         )
     feed = feed_factory(piece)
     ctx = Context()
-    await identity_command.add_identity_command(piece, lcs, ctx)
+    identity_command.add_identity_command(piece, lcs, ctx)
     lcs.set.assert_called_once()
     await feed.wait_for_diffs(count=1)

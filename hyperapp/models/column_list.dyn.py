@@ -35,14 +35,14 @@ def column_list(piece, column_visible_reg):
 
 
 @mark.command
-async def toggle_visibility(piece, current_idx, current_item, feed_factory, column_visible_reg):
+def toggle_visibility(piece, current_idx, current_item, feed_factory, column_visible_reg):
     feed = feed_factory(piece)
     model_t = pyobj_creg.invite(piece.model_t)
     key = _column_key(model_t, current_item.name)
     prev_value = column_visible_reg.get(key, True)
     column_visible_reg[key] = not prev_value
     item = _item(column_visible_reg, model_t, current_item.name)
-    await feed.send(IndexListDiff.Replace(current_idx, item))
+    feed.send(IndexListDiff.Replace(current_idx, item))
 
 
 @mark.ui_model_command(htypes.list.view)

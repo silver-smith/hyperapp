@@ -26,7 +26,7 @@ async def open_sample_fn_list():
 async def _send_diff(feed):
     await asyncio.sleep(1)
     item = htypes.sample_list.item(4, "fourth","Sample item #4")
-    await feed.send(IndexListDiff.Append(item))
+    feed.send(IndexListDiff.Append(item))
 
 
 @mark.model

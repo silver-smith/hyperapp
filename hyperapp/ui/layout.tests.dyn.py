@@ -173,7 +173,7 @@ async def test_set_shortcut(feed_factory, shortcut_reg, current_item):
     layout.run_key_input_dialog = mock_run_input_key_dialog
     feed = feed_factory(piece)
     current_idx = 0
-    await layout.set_shortcut(piece, current_idx, current_item)
+    layout.set_shortcut(piece, current_idx, current_item)
     await feed.wait_for_diffs(count=1)
     shortcut_reg.__setitem__.assert_called_once()
 
@@ -182,7 +182,7 @@ async def test_set_escape_shortcut(feed_factory, shortcut_reg, current_item):
     piece = htypes.layout.command_list(item_id=0)
     feed = feed_factory(piece)
     current_idx = 0
-    await layout.set_escape_shortcut(piece, current_idx, current_item)
+    layout.set_escape_shortcut(piece, current_idx, current_item)
     await feed.wait_for_diffs(count=1)
     shortcut_reg.__setitem__.assert_called_once()
 

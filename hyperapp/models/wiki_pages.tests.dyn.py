@@ -183,7 +183,7 @@ async def test_add_ref(feed_factory, page_model):
             ),
         )
     ref_1_piece = htypes.wiki_pages_tests.sample_model()
-    await wiki_pages.add_ref(page_model, page, mosaic.put(ref_1_piece))
+    wiki_pages.add_ref(page_model, page, mosaic.put(ref_1_piece))
     await feed.wait_for_diffs(count=1)
 
 

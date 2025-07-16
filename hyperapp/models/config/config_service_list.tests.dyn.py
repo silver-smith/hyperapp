@@ -42,10 +42,10 @@ def assoc_key():
 
 async def test_toggle_assoc(assoc_key, piece):
     current_key = 'assoc_key'
-    await config_service_list.toggle_assoc(piece, current_key)
+    config_service_list.toggle_assoc(piece, current_key)
     assoc_key.__setitem__.assert_called_once()
     assoc_key.__contains__.return_value = True
-    await config_service_list.toggle_assoc(piece, current_key)
+    config_service_list.toggle_assoc(piece, current_key)
     assoc_key.__delitem__.assert_called_once()
 
 

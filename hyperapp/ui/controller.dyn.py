@@ -257,8 +257,8 @@ class _Item:
         self.save_state()
 
     # Should be on stack for proper module for feed constructor be picked up.
-    async def _send_model_diff(self, model_diff):
-        await self._meta.feed.send(model_diff)
+    def _send_model_diff(self, model_diff):
+        self._meta.feed.send(model_diff)
 
     def _replace_child_item(self, idx, save_layout):
         view_items = self.view.items()
@@ -267,7 +267,7 @@ class _Item:
         self.children_changed(save_layout)
         self.save_state()
         model_diff = TreeDiff.Replace([*self.path, idx], item.model_item)
-        asyncio.create_task(self._send_model_diff(model_diff))
+        self._send_model_diff(model_diff)
 
     def replace_view_hook(self, new_view, new_state, save_layout):
         log.info("Controller: Replace view (save layout=%s) @%s -> %s", save_layout, self, new_view)
@@ -288,7 +288,7 @@ class _Item:
         self.children_changed()
         self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
-        asyncio.create_task(self._send_model_diff(model_diff))
+        self._send_model_diff(model_diff)
 
     def element_removed_hook(self, idx):
         kid = self._children[idx]
@@ -296,7 +296,7 @@ class _Item:
         del self._children[idx]
         self.children_changed()
         self.save_state()
-        asyncio.create_task(self._send_model_diff(model_diff))
+        self._send_model_diff(model_diff)
 
     def elements_changed_hook(self):
         self._children = None
@@ -443,7 +443,7 @@ class _RootItem(_Item):
             item.widget.show()
         self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
-        asyncio.create_task(self._send_model_diff(model_diff))
+        self._send_model_diff(model_diff)
 
     def _navigator_rec(self, rctx):
         return None

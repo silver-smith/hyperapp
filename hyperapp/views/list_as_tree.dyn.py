@@ -192,7 +192,7 @@ def opener_command_list(piece, ctx, format, command_creg, get_model_commands, mo
 
 
 @mark.command
-async def toggle_open_command(piece, current_command, ctx, format, feed_factory, command_creg, model_layout_reg):
+def toggle_open_command(piece, current_command, ctx, format, feed_factory, command_creg, model_layout_reg):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
     model_state = web.summon(piece.model_state)
@@ -224,8 +224,8 @@ async def toggle_open_command(piece, current_command, ctx, format, feed_factory,
     if prev_command:
         key = mosaic.put(prev_command.piece)
         prev_item = _make_command_item(format, prev_command, is_opener=False)
-        await feed.send(KeyListDiff.Replace(key, prev_item))
+        feed.send(KeyListDiff.Replace(key, prev_item))
     if current_cmd:
         key = current_command
         item = _make_command_item(format, current_cmd, is_opener=new_command is not None)
-        await feed.send(KeyListDiff.Replace(key, item))
+        feed.send(KeyListDiff.Replace(key, item))

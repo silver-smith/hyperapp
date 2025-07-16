@@ -61,7 +61,7 @@ def _item_path(get_sample_tree_items, item_id):
 
 
 @mark.command
-async def remove_tree_item(piece, current_item, feed_factory, get_sample_tree_items):
+def remove_tree_item(piece, current_item, feed_factory, get_sample_tree_items):
     feed = feed_factory(piece)
     item_id = current_item.id
     log.info("Sample tree: Remove item #%d", item_id)
@@ -72,11 +72,11 @@ async def remove_tree_item(piece, current_item, feed_factory, get_sample_tree_it
     idx = _index_of(item_list, item_id)
     del item_list[idx]
     diff = TreeDiff.Remove(path)
-    await feed.send(diff)
+    feed.send(diff)
 
 
 @mark.command
-async def append_tree_item(piece, current_item, feed_factory, get_sample_tree_items):
+def append_tree_item(piece, current_item, feed_factory, get_sample_tree_items):
     feed = feed_factory(piece)
     item_id = current_item.id
     parent_id = item_id // 10
@@ -91,11 +91,11 @@ async def append_tree_item(piece, current_item, feed_factory, get_sample_tree_it
     new_item = htypes.sample_tree.item(new_id, f"New item #{new_id}")
     item_list.append(new_item)
     diff = TreeDiff.Append(path, new_item)
-    await feed.send(diff)
+    feed.send(diff)
 
 
 @mark.command
-async def insert_tree_item(piece, current_item, feed_factory, get_sample_tree_items):
+def insert_tree_item(piece, current_item, feed_factory, get_sample_tree_items):
     feed = feed_factory(piece)
     item_id = current_item.id
     log.info("Sample tree: Insert to item #%d", item_id)
@@ -110,11 +110,11 @@ async def insert_tree_item(piece, current_item, feed_factory, get_sample_tree_it
     new_item = htypes.sample_tree.item(new_id, f"New item #{new_id}")
     item_list.insert(idx, new_item)
     diff = TreeDiff.Insert(path, new_item)
-    await feed.send(diff)
+    feed.send(diff)
     
 
 @mark.global_command
-async def open_sample_fn_tree():
+def open_sample_fn_tree():
     return htypes.sample_tree.model()
 
 

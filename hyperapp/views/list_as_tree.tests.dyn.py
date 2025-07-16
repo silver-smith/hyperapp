@@ -234,7 +234,7 @@ async def test_set_root_open_command(model_layout_reg, ctx, open_command_1, root
         adapter=mosaic.put(adapter_piece),
         )
     model_layout_reg.get.return_value = view
-    result = await list_as_tree.toggle_open_command(piece, current_command, ctx)
+    result = list_as_tree.toggle_open_command(piece, current_command, ctx)
     model_layout_reg.__setitem__.assert_called_once()
 
 
@@ -264,5 +264,5 @@ async def test_set_non_root_open_command(model_layout_reg, ctx, open_command_1, 
         )
     model_layout_reg.get.return_value = view
     current_command = mosaic.put(open_command_1.piece)
-    result = await list_as_tree.toggle_open_command(piece, current_command, ctx)
+    result = list_as_tree.toggle_open_command(piece, current_command, ctx)
     model_layout_reg.__setitem__.assert_called_once()

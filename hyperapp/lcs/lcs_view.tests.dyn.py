@@ -64,7 +64,7 @@ async def test_remove(layer_1_d, piece, lcs, feed_factory):
         dir_str="<unused>",
         piece_str="<unused>",
         )
-    await lcs_view.lcs_remove(piece, 0, current_item, lcs)
+    lcs_view.lcs_remove(piece, 0, current_item, lcs)
     lcs.remove.assert_called_once()
     await feed.wait_for_diffs(count=1)
 

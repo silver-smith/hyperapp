@@ -112,7 +112,7 @@ class BoundUiModelCommand(BoundCommandBase):
         model = web.summon_opt(result.model)
         key = web.summon_opt(result.key)
         if result.diff:
-            await self._process_diff(result.diff)
+            self._process_diff(result.diff)
         await self._open(navigator_w, model, key)
 
     async def _handle_error(self, navigator_widget, exception):
@@ -120,12 +120,12 @@ class BoundUiModelCommand(BoundCommandBase):
         model, model_ctx, view_piece = await self._error_view(exception, self._ctx)
         await self._open_view(navigator_widget, model, model_ctx, view_piece)
 
-    async def _process_diff(self, model_diff_ref):
+    def _process_diff(self, model_diff_ref):
         model_diff = web.summon(model_diff_ref)
         model = web.summon(model_diff.model)
         diff = self._diff_creg.invite_opt(model_diff.diff)
         feed = self._feed_factory(model)
-        await feed.send(diff)
+        feed.send(diff)
 
     async def _open(self, navigator_w, model, key):
         if model is None:

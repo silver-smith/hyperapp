@@ -12,7 +12,7 @@ async def test_sample_list_feed(feed_factory):
     piece = htypes.sample_feed.sample_list_feed()
     feed = feed_factory(piece)
 
-    await sample_feed.schedule_sample_list_feed(feed_factory, piece)
+    sample_feed.schedule_sample_list_feed(feed_factory, piece)
     await feed.wait_for_diffs(count=1)
 
     assert isinstance(feed.ctr, ListFeedCtr)
@@ -22,7 +22,7 @@ async def test_sample_tree_feed(feed_factory):
     piece = htypes.sample_feed.sample_tree_feed()
     feed = feed_factory(piece)
 
-    await sample_feed.schedule_sample_tree_feed(feed_factory, piece)
+    sample_feed.schedule_sample_tree_feed(feed_factory, piece)
     await feed.wait_for_diffs(count=1)
 
     assert isinstance(feed.ctr, IndexTreeFeedCtr)

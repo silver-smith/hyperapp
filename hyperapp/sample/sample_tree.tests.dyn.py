@@ -20,26 +20,26 @@ def test_sample_tree(piece):
 async def test_remove_item(feed_factory, piece):
     feed = feed_factory(piece)
     current_item = htypes.sample_tree.item(111, "<unused>")
-    await sample_tree.remove_tree_item(piece, current_item)
+    sample_tree.remove_tree_item(piece, current_item)
     await feed.wait_for_diffs(count=1)
 
 
 async def test_append_item(feed_factory, piece):
     feed = feed_factory(piece)
     current_item = htypes.sample_tree.item(111, "<unused>")
-    await sample_tree.append_tree_item(piece, current_item)
+    sample_tree.append_tree_item(piece, current_item)
     await feed.wait_for_diffs(count=1)
 
 
 async def test_insert_item(feed_factory, piece):
     feed = feed_factory(piece)
     current_item = htypes.sample_tree.item(111, "<unused>")
-    await sample_tree.insert_tree_item(piece, current_item)
+    sample_tree.insert_tree_item(piece, current_item)
     await feed.wait_for_diffs(count=1)
 
 
-async def test_open_sample_fn_tree():
-    await sample_tree.open_sample_fn_tree()
+def test_open_sample_fn_tree():
+    sample_tree.open_sample_fn_tree()
 
 
 def test_format(piece):

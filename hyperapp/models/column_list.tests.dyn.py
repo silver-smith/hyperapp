@@ -36,7 +36,7 @@ async def test_toggle_visibility(feed_factory, column_visible_reg, piece):
         name='id',
         show=False,  # Should not be used.
         )
-    await column_list.toggle_visibility(piece, current_idx, current_item)
+    column_list.toggle_visibility(piece, current_idx, current_item)
     column_visible_reg.__setitem__.assert_called_once()
     assert column_visible_reg.__setitem__.call_args.args[1] == False
     await feed.wait_for_diffs(count=1)
