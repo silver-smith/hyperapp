@@ -19,14 +19,17 @@ def test_bundle_list():
 
 class MockBundle:
 
-    def load_ref(self, register_associations=False):
+    def __init__(self, bundler):
+        self._bundler = bundler
+
+    def load(self, register_associations=False):
         root = htypes.file_bundles_tests.sample_root()
-        return mosaic.put(root)
+        return self._bundler([mosaic.put(root)]).bundle
 
         
 @mark.fixture
-def file_bundle_factory(path, encoding):
-    return MockBundle()
+def file_bundle_factory(bundler, path, encoding):
+    return MockBundle(bundler)
 
 
 def test_open_bundle():
@@ -36,4 +39,4 @@ def test_open_bundle():
         path="/tmp/non-existent.cdr",
         )
     result = file_bundles.open(piece, current_item)
-    assert isinstance(result, htypes.data_browser.record_view)
+    assert isinstance(result, htypes.bundle_info.model)

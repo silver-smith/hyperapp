@@ -1,0 +1,372 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:bundle
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.bundle_info:ass_list_model
+- legacy_type.bundle_info:bundle_info
+- legacy_type.bundle_info:capsule_item
+- legacy_type.bundle_info:capsule_list_model
+- legacy_type.bundle_info:model
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.command:model_command_fn
+- legacy_type.data_browser:record_view
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
+- legacy_type.model:index_list_ui_t
+- legacy_type.model:model
+- legacy_type.model:record_ui_t
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+definitions:
+  ass_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: ass_list
+  bundle_info:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: bundle_info
+  bundle_info-ass_list_model-open_association.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.bundle_info:ass_list_model
+      command: open_association.model-command
+  bundle_info-ass_list_model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.bundle_info:ass_list_model
+      feed_type: bundle_info-ass_list_model.feed-type
+  bundle_info-ass_list_model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.bundle_info:capsule_item
+  bundle_info-ass_list_model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
+    value:
+      item_t: legacy_type.bundle_info:capsule_item
+  bundle_info-ass_list_model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: bundle_info-ass_list_model.index-list-ui-t
+      system_fn: bundle_info-ass_list_model.system-fn
+  bundle_info-ass_list_model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.bundle_info:ass_list_model
+      value: bundle_info-ass_list_model.model
+  bundle_info-ass_list_model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: ass_list
+      ctx_params:
+      - piece
+      service_params:
+      - format
+  bundle_info-capsule_list_model-open_capsule.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.bundle_info:capsule_list_model
+      command: open_capsule.model-command
+  bundle_info-capsule_list_model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.bundle_info:capsule_list_model
+      feed_type: bundle_info-capsule_list_model.feed-type
+  bundle_info-capsule_list_model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.bundle_info:capsule_item
+  bundle_info-capsule_list_model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
+    value:
+      item_t: legacy_type.bundle_info:capsule_item
+  bundle_info-capsule_list_model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: bundle_info-capsule_list_model.index-list-ui-t
+      system_fn: bundle_info-capsule_list_model.system-fn
+  bundle_info-capsule_list_model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.bundle_info:capsule_list_model
+      value: bundle_info-capsule_list_model.model
+  bundle_info-capsule_list_model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: capsule_list
+      ctx_params:
+      - piece
+      service_params:
+      - format
+  bundle_info-model-open_associations.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.bundle_info:model
+      command: open_associations.model-command
+  bundle_info-model-open_capsules.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.bundle_info:model
+      command: open_capsules.model-command
+  bundle_info-model-open_root.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.bundle_info:model
+      command: open_root.model-command
+  bundle_info-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: bundle_info-model.record-ui-t
+      system_fn: bundle_info-model.system-fn
+  bundle_info-model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.bundle_info:model
+      value: bundle_info-model.model
+  bundle_info-model.record-ui-t:
+    type: legacy_type.model:record_ui_t
+    value:
+      record_t: legacy_type.bundle_info:bundle_info
+  bundle_info-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: bundle_info
+      ctx_params:
+      - piece
+      service_params:
+      - format
+  bundle_info.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: bundle_info
+      file_name: bundle_info.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.builtin.bundle: legacy_type.builtin:bundle
+        htypes.bundle_info.ass_list_model: legacy_type.bundle_info:ass_list_model
+        htypes.bundle_info.bundle_info: legacy_type.bundle_info:bundle_info
+        htypes.bundle_info.capsule_item: legacy_type.bundle_info:capsule_item
+        htypes.bundle_info.capsule_list_model: legacy_type.bundle_info:capsule_list_model
+        htypes.data_browser.record_view: legacy_type.data_browser:record_view
+        services.web: builtins:web.service
+  capsule_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: capsule_list
+  format_ass_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: format_ass_list_model
+  format_ass_list_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_ass_list_model
+      service_params: []
+  format_capsule_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: format_capsule_list_model
+  format_capsule_list_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_capsule_list_model
+      service_params: []
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: format_model
+  format_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_model
+      service_params: []
+  formatter_creg-bundle_info-ass_list_model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.bundle_info:ass_list_model
+      value: format_ass_list_model.actor-template
+  formatter_creg-bundle_info-capsule_list_model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.bundle_info:capsule_list_model
+      value: format_capsule_list_model.actor-template
+  formatter_creg-bundle_info-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.bundle_info:model
+      value: format_model.actor-template
+  open_association:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: open_association
+  open_association.d:
+    type: open_association_d
+    value: {}
+  open_association.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_association
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  open_association.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_association.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_association.fn
+      preserve_remote: false
+  open_association_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: bundle_info
+      name: open_association_d
+      base: null
+      fields: {}
+  open_associations:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: open_associations
+  open_associations.d:
+    type: open_associations_d
+    value: {}
+  open_associations.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_associations
+      ctx_params:
+      - piece
+      service_params: []
+  open_associations.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_associations.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: open_associations.fn
+      preserve_remote: false
+  open_associations_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: bundle_info
+      name: open_associations_d
+      base: null
+      fields: {}
+  open_capsule:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: open_capsule
+  open_capsule.d:
+    type: open_capsule_d
+    value: {}
+  open_capsule.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_capsule
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  open_capsule.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_capsule.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_capsule.fn
+      preserve_remote: false
+  open_capsule_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: bundle_info
+      name: open_capsule_d
+      base: null
+      fields: {}
+  open_capsules:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: open_capsules
+  open_capsules.d:
+    type: open_capsules_d
+    value: {}
+  open_capsules.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_capsules
+      ctx_params:
+      - piece
+      service_params: []
+  open_capsules.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_capsules.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: open_capsules.fn
+      preserve_remote: false
+  open_capsules_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: bundle_info
+      name: open_capsules_d
+      base: null
+      fields: {}
+  open_root:
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundle_info.module
+      attr_name: open_root
+  open_root.d:
+    type: open_root_d
+    value: {}
+  open_root.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_root
+      ctx_params:
+      - piece
+      service_params: []
+  open_root.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_root.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: open_root.fn
+      preserve_remote: false
+  open_root_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: bundle_info
+      name: open_root_d
+      base: null
+      fields: {}

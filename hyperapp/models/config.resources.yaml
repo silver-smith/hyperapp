@@ -3,6 +3,19 @@
 import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- models.bundle_info:bundle_info-ass_list_model-open_association.command-cfg-item
+- models.bundle_info:bundle_info-ass_list_model.feed-template
+- models.bundle_info:bundle_info-ass_list_model.model-cfg-item
+- models.bundle_info:bundle_info-capsule_list_model-open_capsule.command-cfg-item
+- models.bundle_info:bundle_info-capsule_list_model.feed-template
+- models.bundle_info:bundle_info-capsule_list_model.model-cfg-item
+- models.bundle_info:bundle_info-model-open_associations.command-cfg-item
+- models.bundle_info:bundle_info-model-open_capsules.command-cfg-item
+- models.bundle_info:bundle_info-model-open_root.command-cfg-item
+- models.bundle_info:bundle_info-model.model-cfg-item
+- models.bundle_info:formatter_creg-bundle_info-ass_list_model.actor-cfg-item
+- models.bundle_info:formatter_creg-bundle_info-capsule_list_model.actor-cfg-item
+- models.bundle_info:formatter_creg-bundle_info-model.actor-cfg-item
 - models.column_list:column_list-view-toggle_visibility.command-cfg-item
 - models.column_list:column_list-view.feed-template
 - models.column_list:column_list-view.model-cfg-item
@@ -145,6 +158,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - models.bundle_info:bundle_info-ass_list_model.feed-template
+      - models.bundle_info:bundle_info-capsule_list_model.feed-template
       - models.column_list:column_list-view.feed-template
       - models.config.config_item_list:config_item_list-layer_model.feed-template
       - models.config.config_item_list:config_item_list-model.feed-template
@@ -167,6 +182,9 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - models.bundle_info:formatter_creg-bundle_info-ass_list_model.actor-cfg-item
+      - models.bundle_info:formatter_creg-bundle_info-capsule_list_model.actor-cfg-item
+      - models.bundle_info:formatter_creg-bundle_info-model.actor-cfg-item
       - models.config.config_item_list:formatter_creg-config_item_list-layer_model.actor-cfg-item
       - models.config.config_item_list:formatter_creg-config_item_list-model.actor-cfg-item
       - models.config.config_layer_list:formatter_creg-config_layer_list-model.actor-cfg-item
@@ -212,6 +230,11 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - models.bundle_info:bundle_info-ass_list_model-open_association.command-cfg-item
+      - models.bundle_info:bundle_info-capsule_list_model-open_capsule.command-cfg-item
+      - models.bundle_info:bundle_info-model-open_associations.command-cfg-item
+      - models.bundle_info:bundle_info-model-open_capsules.command-cfg-item
+      - models.bundle_info:bundle_info-model-open_root.command-cfg-item
       - models.column_list:column_list-view-toggle_visibility.command-cfg-item
       - models.command_list_model:global_commands-model-set_shortcut.command-cfg-item
       - models.command_list_model:global_commands-model.edit.command-cfg-item
@@ -250,6 +273,9 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - models.bundle_info:bundle_info-ass_list_model.model-cfg-item
+      - models.bundle_info:bundle_info-capsule_list_model.model-cfg-item
+      - models.bundle_info:bundle_info-model.model-cfg-item
       - models.column_list:column_list-view.model-cfg-item
       - models.config.config_item_list:config_item_list-layer_model.model-cfg-item
       - models.config.config_item_list:config_item_list-model.model-cfg-item

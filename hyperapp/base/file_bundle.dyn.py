@@ -30,9 +30,17 @@ class FileBundle:
         self.path.write_bytes(data)
         log.info("Saved %s to %s (%d bytes)", ref, self.path, len(data))
 
-    def load_ref(self, register_associations=True):
-        bundle = packet_coders.decode(self._encoding, self.path.read_bytes(), bundle_t)
+    @property
+    def bundle(self):
+        return packet_coders.decode(self._encoding, self.path.read_bytes(), bundle_t)
+
+    def load(self, register_associations=True):
+        bundle = self.bundle
         unbundler.register_bundle(bundle, register_associations)
+        return bundle
+
+    def load_ref(self, register_associations=True):
+        bundle = self.load(register_associations)
         ref_count = len(bundle.roots)
         if ref_count != 1:
             raise RuntimeError(f"Bundle {self.path} has {ref_count} refs, but expected only one")

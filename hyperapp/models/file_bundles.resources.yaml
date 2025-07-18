@@ -4,12 +4,12 @@ import:
 - base.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.bundle_info:model
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
-- legacy_type.data_browser:record_view
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.file_bundles:item
@@ -67,7 +67,7 @@ definitions:
       file_name: file_bundles.dyn.py
       import_list:
         code.mark: base.mark:mark.module
-        htypes.data_browser.record_view: legacy_type.data_browser:record_view
+        htypes.bundle_info.model: legacy_type.bundle_info:model
         htypes.file_bundles.item: legacy_type.file_bundles:item
         htypes.file_bundles.view: legacy_type.file_bundles:view
   open:

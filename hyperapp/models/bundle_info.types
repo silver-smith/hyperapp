@@ -1,0 +1,31 @@
+model = record:
+  bundle_name: string
+  roots: ref list
+  associations: ref list
+  capsules: ref list
+
+bundle_info = record:
+  root_title: string
+  association_count: int
+  cdr_encoded_size: int
+  capsule_count: int
+  capsule_data_size_sum: int
+  capsule_data_size_average: int
+  capsule_data_size_min: int
+  capsule_data_size_max: int
+
+
+capsule_list_model = record:
+  bundle_name: string
+  capsules: ref list
+
+ass_list_model = record:
+  bundle_name: string
+  associations: ref list
+
+capsule_item = record:
+  ref: ref
+  data_size: int
+  type_ref: ref
+  type_str: string
+  title: string
