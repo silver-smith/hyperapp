@@ -64,6 +64,7 @@ class EditLineView(View):
         else:
             text = self._adapter.get_view_value()
         w.setText(text)
+        w.setCursorPosition(0)
         w.textEdited.connect(self._on_text_edited)
         self._adapter.subscribe(w)
         return w
