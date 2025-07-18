@@ -151,6 +151,11 @@ class _Item:
 
     async def update_other_children(self, rctx, skip_kid=None):
         for kid in self.children:
+            if kid.view:
+                # Should be called before kid's children updated
+                # because details view may call replace_parent_widget_hook,
+                # which, in turn invalidates them again.
+                await kid.view.children_changed(kid.ctx, rctx, kid.widget, save_layout=False)
             kid._init_widget()  # For current children widget inited from current_child->current_child_idx->widget call.
             if kid is skip_kid:
                 continue
@@ -158,7 +163,6 @@ class _Item:
             commands_rctx = await kid.current_child_rctx()
             kid.view_commands, _unused_rctx = kid.my_reverse_context(commands_rctx)
             if kid.view:
-                await kid.view.children_changed(kid.ctx, rctx, kid.widget, save_layout=False)
                 rctx = kid.view.secondary_parent_context(rctx, kid.widget)
         return rctx
 
@@ -309,13 +313,13 @@ class _Item:
     def replace_parent_widget_hook(self, new_widget):
         parent = self.parent
         parent.view.replace_child_widget(parent.widget, self.idx, new_widget)
-        self.invalidate_widget()
-        self.view_commands = None
+        self.invalidate_widget_and_commands()
 
-    def invalidate_widget(self):
+    def invalidate_widget_and_commands(self):
         self._widget_wr = None
-        for kid in self._children:
-            kid.invalidate_widget()
+        self.view_commands = None
+        for kid in self._children or []:
+            kid.invalidate_widget_and_commands()
 
     def save_state_hook(self):
         self.save_state()
