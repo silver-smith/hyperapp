@@ -69,11 +69,20 @@ class FormView(BoxLayoutView):
         return self._adapter.get_value()
 
 
-@mark.view_factory.ui_t
-async def form_view_factory(piece, system_fn, ctx, visualizer):
+async def _form_view_factory(piece, system_fn, ctx, visualizer, editable):
     record_t = pyobj_creg.invite(piece.record_t)
     adapter = htypes.record_adapter.fn_record_adapter(
         record_t=piece.record_t,
         system_fn=mosaic.put(system_fn.piece),
         )
-    return await construct_default_form(visualizer, ctx, adapter, record_t)
+    return await construct_default_form(visualizer, ctx, adapter, record_t, editable=editable)
+
+
+@mark.view_factory.ui_t
+async def form_view_factory(piece, system_fn, ctx, visualizer):
+    return await _form_view_factory(piece, system_fn, ctx, visualizer, editable=True)
+
+
+@mark.view_factory.ui_t
+async def readonly_form_view_factory(piece, system_fn, ctx, visualizer):
+    return await _form_view_factory(piece, system_fn, ctx, visualizer, editable=False)

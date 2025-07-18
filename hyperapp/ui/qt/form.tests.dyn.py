@@ -147,3 +147,11 @@ async def test_form_view_factory(ctx, sample_record_model_fn):
         )
     view = await form.form_view_factory(piece, sample_record_model_fn, ctx)
     assert isinstance(view, htypes.form.view)
+
+
+async def test_readonly_form_view_factory(ctx, sample_record_model_fn):
+    piece = htypes.model.record_ui_t(
+        record_t=pyobj_creg.actor_to_ref(htypes.record_adapter_tests.item),
+        )
+    view = await form.readonly_form_view_factory(piece, sample_record_model_fn, ctx)
+    assert isinstance(view, htypes.form.view)

@@ -104,3 +104,41 @@ definitions:
       name: form_view_factory_k
       base: null
       fields: {}
+  readonly_form_view_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: form.module
+      attr_name: readonly_form_view_factory
+  readonly_form_view_factory.k:
+    type: readonly_form_view_factory_k
+    value: {}
+  readonly_form_view_factory.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: readonly_form_view_factory
+      ctx_params:
+      - piece
+      - system_fn
+      - ctx
+      service_params:
+      - visualizer
+  readonly_form_view_factory.view-factory-template:
+    type: legacy_type.view_factory:template
+    value:
+      k: readonly_form_view_factory.k
+      model_t_list: null
+      ui_t_t: legacy_type.model:record_ui_t
+      view_t: legacy_type.form:view
+      is_wrapper: false
+      view_ctx_params:
+      - piece
+      - model
+      - ctx
+      system_fn: readonly_form_view_factory.system-fn
+  readonly_form_view_factory_k:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: form
+      name: readonly_form_view_factory_k
+      base: null
+      fields: {}
