@@ -35,6 +35,7 @@ definitions:
       - config_item-string_opt-line_view.factory-config-item
       - config_item-string_opt-line_edit.factory-config-item
       - config_item-int-line_edit.factory-config-item
+      - config_item-int-line_view.factory-config-item
       - config_item-wiki-wiki.factory-config-item
       - config_item-wiki-text_edit.factory-config-item
 
@@ -72,6 +73,12 @@ definitions:
     value:
       t: legacy_type.builtin:int
       value: line_edit.model-factory
+
+  config_item-int-line_view.factory-config-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:int
+      value: line_view.model-factory
 
   config_item-string_opt-line_edit.factory-config-item:
     type: legacy_type.cfg_item:typed_cfg_item
