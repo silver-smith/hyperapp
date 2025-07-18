@@ -90,6 +90,16 @@ def test_view_factory(accessor):
     assert piece
 
 
+def test_opt_view_factory(accessor):
+    piece = line_edit.line_view(TOptional(htypes.builtin.string), accessor)
+    assert piece
+
+
+def test_int_view_factory(accessor):
+    piece = line_edit.line_view(htypes.builtin.int, accessor)
+    assert piece
+
+
 def test_line_edit_resource_name(edit_piece):
     gen = Mock()
     gen.assigned_name.return_value = 'some-adapter'

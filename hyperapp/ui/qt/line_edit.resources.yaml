@@ -171,6 +171,8 @@ definitions:
     value:
       k: line_view.k
       model_t_list:
+      - builtin-string-opt
+      - legacy_type.builtin:int
       - legacy_type.builtin:string
       ui_t_t: null
       view_t: legacy_type.line_edit:readonly_view
