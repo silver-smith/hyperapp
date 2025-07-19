@@ -1,2 +1,2 @@
-sample_view = record
+sample_model = record
 sample_item = record
