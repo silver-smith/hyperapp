@@ -98,8 +98,12 @@ definitions:
   model_commands-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.model_commands:model
       feed_type: model_commands-model.feed-type
+  model_commands-model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model_commands:model
+      value: model_commands-model.feed-template
   model_commands-model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

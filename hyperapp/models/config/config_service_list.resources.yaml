@@ -35,8 +35,12 @@ definitions:
   config_service_list-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.config_service_list:model
       feed_type: config_service_list-model.feed-type
+  config_service_list-model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.config_service_list:model
+      value: config_service_list-model.feed-template
   config_service_list-model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

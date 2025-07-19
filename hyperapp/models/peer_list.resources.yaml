@@ -189,8 +189,12 @@ definitions:
   peer_list-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.peer_list:model
       feed_type: peer_list-model.feed-type
+  peer_list-model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.peer_list:model
+      value: peer_list-model.feed-template
   peer_list-model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

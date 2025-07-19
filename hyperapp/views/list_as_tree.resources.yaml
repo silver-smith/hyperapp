@@ -45,8 +45,12 @@ definitions:
   list_as_tree-layer_list.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.list_as_tree:layer_list
       feed_type: list_as_tree-layer_list.feed-type
+  list_as_tree-layer_list.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.list_as_tree:layer_list
+      value: list_as_tree-layer_list.feed-template
   list_as_tree-layer_list.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
@@ -81,8 +85,12 @@ definitions:
   list_as_tree-opener_commands.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.list_as_tree:opener_commands
       feed_type: list_as_tree-opener_commands.feed-type
+  list_as_tree-opener_commands.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.list_as_tree:opener_commands
+      value: list_as_tree-opener_commands.feed-template
   list_as_tree-opener_commands.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

@@ -15,7 +15,6 @@ value_feed_ctr = record:
 
 
 feed_template = record:
-  model_t: ref
   feed_type: ref
 
 

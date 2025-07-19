@@ -48,7 +48,6 @@ import:
 - ui.feed:feed_type_creg-feed-list_feed_type.actor-cfg-item
 - ui.feed:feed_type_creg-feed-value_feed_type.actor-cfg-item
 - ui.feed_creg:feed_type_creg.service
-- ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-cfg-item
 - ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-cfg-item
 - ui.format:format.service
 - ui.formatter_creg:formatter_creg.service
@@ -56,11 +55,11 @@ import:
 - ui.layout:layout-command_list-add_view_command.command-cfg-item
 - ui.layout:layout-command_list-set_escape_shortcut.command-cfg-item
 - ui.layout:layout-command_list-set_shortcut.command-cfg-item
-- ui.layout:layout-command_list.feed-template
+- ui.layout:layout-command_list.feed-template-cfg-item
 - ui.layout:layout-command_list.model-cfg-item
 - ui.layout:layout-model-enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout-model-open_view_item_commands.command-cfg-item
-- ui.layout:layout-model.feed-template
+- ui.layout:layout-model.feed-template-cfg-item
 - ui.layout:layout-model.model-cfg-item
 - ui.layout:open_layout_tree.global-model-command
 - ui.local_server:local_server_peer.service
@@ -193,7 +192,7 @@ import:
 - ui.view.view_factory_list:open_view_factory_list.global-model-command
 - ui.view.view_factory_list:view_factory-factory.editor_default.cfg-item
 - ui.view.view_factory_list:view_factory-factory.selector-template
-- ui.view.view_factory_list:view_factory_list-model.feed-template
+- ui.view.view_factory_list:view_factory_list-model.feed-template-cfg-item
 - ui.view.view_factory_list:view_factory_list-model.model-cfg-item
 - ui.view.view_registry:view_reg.service
 - ui.view.wrap_view:wrap_view.universal-ui-command-enumerator
@@ -218,7 +217,6 @@ definitions:
       - ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-cfg-item
-      - ui.feed_type_template:cfg_item_creg-feed-feed_template.actor-cfg-item
       - ui.selector:cfg_item_creg-selector-template.actor-cfg-item
       - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-cfg-item
       - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-cfg-item
@@ -294,9 +292,9 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.layout:layout-command_list.feed-template
-      - ui.layout:layout-model.feed-template
-      - ui.view.view_factory_list:view_factory_list-model.feed-template
+      - ui.layout:layout-command_list.feed-template-cfg-item
+      - ui.layout:layout-model.feed-template-cfg-item
+      - ui.view.view_factory_list:view_factory_list-model.feed-template-cfg-item
   feed_type_creg:
     type: legacy_type.system:item_list_config
     value:

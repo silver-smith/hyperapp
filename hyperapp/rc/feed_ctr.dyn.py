@@ -22,12 +22,16 @@ class FeedCtr(ModuleCtr):
     def make_component(self, types, python_module, name_to_res=None):
         feed_type = self._make_feed_type()
         template = htypes.feed.feed_template(
-            model_t=pyobj_creg.actor_to_ref(self._model_t),
             feed_type=mosaic.put(feed_type),
+            )
+        cfg_item = htypes.cfg_item.typed_cfg_item(
+            t=pyobj_creg.actor_to_ref(self._model_t),
+            value=mosaic.put(template),
             )
         if name_to_res is not None:
             name_to_res[f'{self._type_name}.feed-type'] = feed_type
-            name_to_res[self._component_name] = template
+            name_to_res[f'{self._type_name}.feed-template'] = template
+            name_to_res[self._component_name] = cfg_item
         return template
 
     def get_component(self, name_to_res):
@@ -35,7 +39,7 @@ class FeedCtr(ModuleCtr):
 
     @property
     def _component_name(self):
-        return f'{self._type_name}.feed-template'
+        return f'{self._type_name}.feed-template-cfg-item'
 
     @property
     def _type_name(self):

@@ -7,10 +7,10 @@ import:
 - views.details:details_commands.service
 - views.details:formatter_creg-details-factory_k.actor-cfg-item
 - views.list_as_tree:list-view-switch_list_to_tree.command-cfg-item
-- views.list_as_tree:list_as_tree-layer_list.feed-template
+- views.list_as_tree:list_as_tree-layer_list.feed-template-cfg-item
 - views.list_as_tree:list_as_tree-layer_list.model-cfg-item
 - views.list_as_tree:list_as_tree-opener_commands-toggle_open_command.command-cfg-item
-- views.list_as_tree:list_as_tree-opener_commands.feed-template
+- views.list_as_tree:list_as_tree-opener_commands.feed-template-cfg-item
 - views.list_as_tree:list_as_tree-opener_commands.model-cfg-item
 - views.list_as_tree:list_as_tree_ui_type_layout.view-factory-template
 - views.list_as_tree:tree-view-open_layers.command-cfg-item
@@ -51,8 +51,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - views.list_as_tree:list_as_tree-layer_list.feed-template
-      - views.list_as_tree:list_as_tree-opener_commands.feed-template
+      - views.list_as_tree:list_as_tree-layer_list.feed-template-cfg-item
+      - views.list_as_tree:list_as_tree-opener_commands.feed-template-cfg-item
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:

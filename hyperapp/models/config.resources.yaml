@@ -4,10 +4,10 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - models.bundle_info:bundle_info-ass_list_model-open_association.command-cfg-item
-- models.bundle_info:bundle_info-ass_list_model.feed-template
+- models.bundle_info:bundle_info-ass_list_model.feed-template-cfg-item
 - models.bundle_info:bundle_info-ass_list_model.model-cfg-item
 - models.bundle_info:bundle_info-capsule_list_model-open_capsule.command-cfg-item
-- models.bundle_info:bundle_info-capsule_list_model.feed-template
+- models.bundle_info:bundle_info-capsule_list_model.feed-template-cfg-item
 - models.bundle_info:bundle_info-capsule_list_model.model-cfg-item
 - models.bundle_info:bundle_info-model-open_associations.command-cfg-item
 - models.bundle_info:bundle_info-model-open_capsules.command-cfg-item
@@ -17,7 +17,7 @@ import:
 - models.bundle_info:formatter_creg-bundle_info-capsule_list_model.actor-cfg-item
 - models.bundle_info:formatter_creg-bundle_info-model.actor-cfg-item
 - models.column_list:column_list-view-toggle_visibility.command-cfg-item
-- models.column_list:column_list-view.feed-template
+- models.column_list:column_list-view.feed-template-cfg-item
 - models.column_list:column_list-view.model-cfg-item
 - models.column_list:list-view-open_column_list.command-cfg-item
 - models.command_list_model:global_commands-model-set_shortcut.command-cfg-item
@@ -27,13 +27,13 @@ import:
 - models.config.config_item_list:config_item_list-layer_model-layer_remove.command-cfg-item
 - models.config.config_item_list:config_item_list-layer_model-open_config_key.command-cfg-item
 - models.config.config_item_list:config_item_list-layer_model-open_config_value.command-cfg-item
-- models.config.config_item_list:config_item_list-layer_model.feed-template
+- models.config.config_item_list:config_item_list-layer_model.feed-template-cfg-item
 - models.config.config_item_list:config_item_list-layer_model.model-cfg-item
 - models.config.config_item_list:config_item_list-layer_model.open_move.command-cfg-item
 - models.config.config_item_list:config_item_list-model-open_config_key.command-cfg-item
 - models.config.config_item_list:config_item_list-model-open_config_value.command-cfg-item
 - models.config.config_item_list:config_item_list-model-remove.command-cfg-item
-- models.config.config_item_list:config_item_list-model.feed-template
+- models.config.config_item_list:config_item_list-model.feed-template-cfg-item
 - models.config.config_item_list:config_item_list-model.model-cfg-item
 - models.config.config_item_list:config_item_list-model.open_move.command-cfg-item
 - models.config.config_item_list:config_service_list-model-open_config_item_list.command-cfg-item
@@ -41,51 +41,51 @@ import:
 - models.config.config_item_list:formatter_creg-config_item_list-model.actor-cfg-item
 - models.config.config_layer_list:config_layer_list-layer.selector-template
 - models.config.config_layer_list:config_layer_list-model-open_service_list.command-cfg-item
-- models.config.config_layer_list:config_layer_list-model.feed-template
+- models.config.config_layer_list:config_layer_list-model.feed-template-cfg-item
 - models.config.config_layer_list:config_layer_list-model.model-cfg-item
 - models.config.config_layer_list:formatter_creg-config_layer_list-model.actor-cfg-item
 - models.config.config_layer_list:open_config_layer_list.global-model-command
 - models.config.config_service_list:config_service_list-model-toggle_assoc.command-cfg-item
-- models.config.config_service_list:config_service_list-model.feed-template
+- models.config.config_service_list:config_service_list-model.feed-template-cfg-item
 - models.config.config_service_list:config_service_list-model.model-cfg-item
 - models.config.config_service_list:formatter_creg-config_service_list-model.actor-cfg-item
 - models.config.config_service_list:open_config_service_list.global-model-command
 - models.data_browser:browse_current_model.global-model-command
 - models.data_browser:data_browser-list_view-list_open.command-cfg-item
-- models.data_browser:data_browser-list_view.feed-template
+- models.data_browser:data_browser-list_view.feed-template-cfg-item
 - models.data_browser:data_browser-list_view.model-cfg-item
 - models.data_browser:data_browser-primitive_view.model-cfg-item
 - models.data_browser:data_browser-record_view-record_open.command-cfg-item
-- models.data_browser:data_browser-record_view.feed-template
+- models.data_browser:data_browser-record_view.feed-template-cfg-item
 - models.data_browser:data_browser-record_view.model-cfg-item
 - models.data_browser:data_browser-ref_list_view-ref_list_open.command-cfg-item
-- models.data_browser:data_browser-ref_list_view.feed-template
+- models.data_browser:data_browser-ref_list_view.feed-template-cfg-item
 - models.data_browser:data_browser-ref_list_view.model-cfg-item
 - models.data_browser:formatter_creg-data_browser-record_view.actor-cfg-item
 - models.data_browser_adapter:data_browser_data_view.view-factory-template
 - models.data_browser_adapter:ui_adapter_creg-data_browser-record_data_adapter.actor-cfg-item
 - models.data_dir:data_dir.service
 - models.file_bundles:file_bundles-view-open.command-cfg-item
-- models.file_bundles:file_bundles-view.feed-template
+- models.file_bundles:file_bundles-view.feed-template-cfg-item
 - models.file_bundles:file_bundles-view.model-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
 - models.global_commands:formatter_creg-global_commands-command_arg.actor-cfg-item
 - models.global_commands:formatter_creg-global_commands-model.actor-cfg-item
 - models.global_commands:global_commands-command_arg.selector-template
 - models.global_commands:global_commands-model-run_command.command-cfg-item
-- models.global_commands:global_commands-model.feed-template
+- models.global_commands:global_commands-model.feed-template-cfg-item
 - models.global_commands:global_commands-model.model-cfg-item
 - models.global_commands:open_global_commands.global-model-command
 - models.identity_command:command_creg-identity_command-identity_command.actor-cfg-item
 - models.identity_command:model_commands-model-add_identity_command.command-cfg-item
-- models.identity_command:model_commands-model.feed-template
+- models.identity_command:model_commands-model.feed-template-cfg-item
 - models.model_commands:formatter_creg-model_commands-model.actor-cfg-item
 - models.model_commands:model_commands-model-run_command.command-cfg-item
 - models.model_commands:model_commands-model.model-cfg-item
 - models.model_commands:navigator-view-open_model_commands.command-cfg-item
 - models.model_list:formatter_creg-model_list-model.actor-cfg-item
 - models.model_list:formatter_creg-model_list-model_arg.actor-cfg-item
-- models.model_list:model_list-model.feed-template
+- models.model_list:model_list-model.feed-template-cfg-item
 - models.model_list:model_list-model.model-cfg-item
 - models.model_list:model_list-model_arg.selector-template
 - models.model_list:open_model_list.global-model-command
@@ -95,7 +95,7 @@ import:
 - models.peer_list:peer_list-model-open_model.command-cfg-item
 - models.peer_list:peer_list-model-remove.command-cfg-item
 - models.peer_list:peer_list-model-run_command.command-cfg-item
-- models.peer_list:peer_list-model.feed-template
+- models.peer_list:peer_list-model.feed-template-cfg-item
 - models.peer_list:peer_list-model.model-cfg-item
 - models.peer_list:peer_list_reg.service
 - models.ref_list:formatter_creg-ref_list-model.actor-cfg-item
@@ -105,12 +105,12 @@ import:
 - models.ref_list:ref_list-model-open.command-cfg-item
 - models.ref_list:ref_list-model-open_parent.command-cfg-item
 - models.ref_list:ref_list-model-remove.command-cfg-item
-- models.ref_list:ref_list-model.feed-template
+- models.ref_list:ref_list-model.feed-template-cfg-item
 - models.ref_list:ref_list-model.model-cfg-item
 - models.ref_list:ref_list.service
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
 - models.show_current_context:formatter_creg-show_current_context-model.actor-cfg-item
-- models.show_current_context:show_current_context-model.feed-template
+- models.show_current_context:show_current_context-model.feed-template-cfg-item
 - models.show_current_context:show_current_context-model.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 - models.wiki_pages:formatter_creg-wiki_pages-list_model.actor-cfg-item
@@ -122,14 +122,14 @@ import:
 - models.wiki_pages:wiki_pages-list_model-open.command-cfg-item
 - models.wiki_pages:wiki_pages-list_model-open_parent.command-cfg-item
 - models.wiki_pages:wiki_pages-list_model-remove.command-cfg-item
-- models.wiki_pages:wiki_pages-list_model.feed-template
+- models.wiki_pages:wiki_pages-list_model.feed-template-cfg-item
 - models.wiki_pages:wiki_pages-list_model.model-cfg-item
 - models.wiki_pages:wiki_pages-page_model-add_ref.command-cfg-item
 - models.wiki_pages:wiki_pages-page_model-open_ref_list.command-cfg-item
 - models.wiki_pages:wiki_pages-page_model-save_page.command-cfg-item
-- models.wiki_pages:wiki_pages-page_model.feed-template
+- models.wiki_pages:wiki_pages-page_model.feed-template-cfg-item
 - models.wiki_pages:wiki_pages-page_model.model-cfg-item
-- models.wiki_pages:wiki_pages-ref_list_model.feed-template
+- models.wiki_pages:wiki_pages-ref_list_model.feed-template-cfg-item
 - models.wiki_pages:wiki_pages-ref_list_model.model-cfg-item
 - models.wiki_pages:wiki_pages.service
 definitions:
@@ -158,26 +158,26 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - models.bundle_info:bundle_info-ass_list_model.feed-template
-      - models.bundle_info:bundle_info-capsule_list_model.feed-template
-      - models.column_list:column_list-view.feed-template
-      - models.config.config_item_list:config_item_list-layer_model.feed-template
-      - models.config.config_item_list:config_item_list-model.feed-template
-      - models.config.config_layer_list:config_layer_list-model.feed-template
-      - models.config.config_service_list:config_service_list-model.feed-template
-      - models.data_browser:data_browser-list_view.feed-template
-      - models.data_browser:data_browser-record_view.feed-template
-      - models.data_browser:data_browser-ref_list_view.feed-template
-      - models.file_bundles:file_bundles-view.feed-template
-      - models.global_commands:global_commands-model.feed-template
-      - models.identity_command:model_commands-model.feed-template
-      - models.model_list:model_list-model.feed-template
-      - models.peer_list:peer_list-model.feed-template
-      - models.ref_list:ref_list-model.feed-template
-      - models.show_current_context:show_current_context-model.feed-template
-      - models.wiki_pages:wiki_pages-list_model.feed-template
-      - models.wiki_pages:wiki_pages-page_model.feed-template
-      - models.wiki_pages:wiki_pages-ref_list_model.feed-template
+      - models.bundle_info:bundle_info-ass_list_model.feed-template-cfg-item
+      - models.bundle_info:bundle_info-capsule_list_model.feed-template-cfg-item
+      - models.column_list:column_list-view.feed-template-cfg-item
+      - models.config.config_item_list:config_item_list-layer_model.feed-template-cfg-item
+      - models.config.config_item_list:config_item_list-model.feed-template-cfg-item
+      - models.config.config_layer_list:config_layer_list-model.feed-template-cfg-item
+      - models.config.config_service_list:config_service_list-model.feed-template-cfg-item
+      - models.data_browser:data_browser-list_view.feed-template-cfg-item
+      - models.data_browser:data_browser-record_view.feed-template-cfg-item
+      - models.data_browser:data_browser-ref_list_view.feed-template-cfg-item
+      - models.file_bundles:file_bundles-view.feed-template-cfg-item
+      - models.global_commands:global_commands-model.feed-template-cfg-item
+      - models.identity_command:model_commands-model.feed-template-cfg-item
+      - models.model_list:model_list-model.feed-template-cfg-item
+      - models.peer_list:peer_list-model.feed-template-cfg-item
+      - models.ref_list:ref_list-model.feed-template-cfg-item
+      - models.show_current_context:show_current_context-model.feed-template-cfg-item
+      - models.wiki_pages:wiki_pages-list_model.feed-template-cfg-item
+      - models.wiki_pages:wiki_pages-page_model.feed-template-cfg-item
+      - models.wiki_pages:wiki_pages-ref_list_model.feed-template-cfg-item
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:

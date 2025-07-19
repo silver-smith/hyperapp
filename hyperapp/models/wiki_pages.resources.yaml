@@ -452,8 +452,12 @@ definitions:
   wiki_pages-list_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.wiki_pages:list_model
       feed_type: wiki_pages-list_model.feed-type
+  wiki_pages-list_model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.wiki_pages:list_model
+      value: wiki_pages-list_model.feed-template
   wiki_pages-list_model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
@@ -501,8 +505,12 @@ definitions:
   wiki_pages-page_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.wiki_pages:page_model
       feed_type: wiki_pages-page_model.feed-type
+  wiki_pages-page_model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.wiki_pages:page_model
+      value: wiki_pages-page_model.feed-template
   wiki_pages-page_model.feed-type:
     type: legacy_type.feed:value_feed_type
     value:
@@ -532,8 +540,12 @@ definitions:
   wiki_pages-ref_list_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.wiki_pages:ref_list_model
       feed_type: wiki_pages-ref_list_model.feed-type
+  wiki_pages-ref_list_model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.wiki_pages:ref_list_model
+      value: wiki_pages-ref_list_model.feed-template
   wiki_pages-ref_list_model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

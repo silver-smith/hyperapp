@@ -37,8 +37,12 @@ definitions:
   column_list-view.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.column_list:view
       feed_type: column_list-view.feed-type
+  column_list-view.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.column_list:view
+      value: column_list-view.feed-template
   column_list-view.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

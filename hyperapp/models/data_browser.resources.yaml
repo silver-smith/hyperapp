@@ -86,8 +86,12 @@ definitions:
   data_browser-list_view.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.data_browser:list_view
       feed_type: data_browser-list_view.feed-type
+  data_browser-list_view.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.data_browser:list_view
+      value: data_browser-list_view.feed-template
   data_browser-list_view.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
@@ -142,8 +146,12 @@ definitions:
   data_browser-record_view.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.data_browser:record_view
       feed_type: data_browser-record_view.feed-type
+  data_browser-record_view.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.data_browser:record_view
+      value: data_browser-record_view.feed-template
   data_browser-record_view.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
@@ -177,8 +185,12 @@ definitions:
   data_browser-ref_list_view.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.data_browser:ref_list_view
       feed_type: data_browser-ref_list_view.feed-type
+  data_browser-ref_list_view.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.data_browser:ref_list_view
+      value: data_browser-ref_list_view.feed-template
   data_browser-ref_list_view.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

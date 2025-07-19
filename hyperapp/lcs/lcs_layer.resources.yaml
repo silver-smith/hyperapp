@@ -58,8 +58,12 @@ definitions:
   lcs_layer-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.lcs_layer:model
       feed_type: lcs_layer-model.feed-type
+  lcs_layer-model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.lcs_layer:model
+      value: lcs_layer-model.feed-template
   lcs_layer-model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

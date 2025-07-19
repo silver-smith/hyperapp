@@ -113,8 +113,12 @@ definitions:
   layout-command_list.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.layout:command_list
       feed_type: layout-command_list.feed-type
+  layout-command_list.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      value: layout-command_list.feed-template
   layout-command_list.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
@@ -156,8 +160,12 @@ definitions:
   layout-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.layout:model
       feed_type: layout-model.feed-type
+  layout-model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.layout:model
+      value: layout-model.feed-template
   layout-model.feed-type:
     type: legacy_type.feed:index_tree_feed_type
     value:

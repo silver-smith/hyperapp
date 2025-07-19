@@ -33,8 +33,12 @@ definitions:
   file_bundles-view.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.file_bundles:view
       feed_type: file_bundles-view.feed-type
+  file_bundles-view.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.file_bundles:view
+      value: file_bundles-view.feed-template
   file_bundles-view.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

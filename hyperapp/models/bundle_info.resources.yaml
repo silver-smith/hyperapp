@@ -43,8 +43,12 @@ definitions:
   bundle_info-ass_list_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.bundle_info:ass_list_model
       feed_type: bundle_info-ass_list_model.feed-type
+  bundle_info-ass_list_model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.bundle_info:ass_list_model
+      value: bundle_info-ass_list_model.feed-template
   bundle_info-ass_list_model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
@@ -79,8 +83,12 @@ definitions:
   bundle_info-capsule_list_model.feed-template:
     type: legacy_type.feed:feed_template
     value:
-      model_t: legacy_type.bundle_info:capsule_list_model
       feed_type: bundle_info-capsule_list_model.feed-type
+  bundle_info-capsule_list_model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.bundle_info:capsule_list_model
+      value: bundle_info-capsule_list_model.feed-template
   bundle_info-capsule_list_model.feed-type:
     type: legacy_type.feed:list_feed_type
     value:

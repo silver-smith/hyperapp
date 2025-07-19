@@ -4,7 +4,7 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - sample.fs:formatter_creg-fs-model.actor-cfg-item
-- sample.fs:fs-model.feed-template
+- sample.fs:fs-model.feed-template-cfg-item
 - sample.fs:fs-model.model-cfg-item
 - sample.fs:open_fs.global-model-command
 - sample.sample_commands:open_sample_static_list.global-model-command
@@ -14,15 +14,15 @@ import:
 - sample.sample_commands:sample_tree-model-sample_tree_info.command-cfg-item
 - sample.sample_commands:show_state.global-model-command
 - sample.sample_commands:system_info.global-model-command
-- sample.sample_feed:sample_feed-sample_list_feed.feed-template
-- sample.sample_feed:sample_feed-sample_tree_feed.feed-template
+- sample.sample_feed:sample_feed-sample_list_feed.feed-template-cfg-item
+- sample.sample_feed:sample_feed-sample_tree_feed.feed-template-cfg-item
 - sample.sample_list:formatter_creg-sample_list-feed_sample_list.actor-cfg-item
 - sample.sample_list:formatter_creg-sample_list-sample_list.actor-cfg-item
 - sample.sample_list:open_feed_sample_fn_list.global-model-command
 - sample.sample_list:open_sample_fn_list.global-model-command
-- sample.sample_list:sample_list-feed_sample_list.feed-template
+- sample.sample_list:sample_list-feed_sample_list.feed-template-cfg-item
 - sample.sample_list:sample_list-feed_sample_list.model-cfg-item
-- sample.sample_list:sample_list-sample_list.feed-template
+- sample.sample_list:sample_list-sample_list.feed-template-cfg-item
 - sample.sample_list:sample_list-sample_list.model-cfg-item
 - sample.sample_list_arg:sample_list_selector-item.editor_default.cfg-item
 - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
@@ -36,7 +36,7 @@ import:
 - sample.sample_tree:sample_tree-model-append_tree_item.command-cfg-item
 - sample.sample_tree:sample_tree-model-insert_tree_item.command-cfg-item
 - sample.sample_tree:sample_tree-model-remove_tree_item.command-cfg-item
-- sample.sample_tree:sample_tree-model.feed-template
+- sample.sample_tree:sample_tree-model.feed-template-cfg-item
 - sample.sample_tree:sample_tree-model.model-cfg-item
 - sample.sample_tree:sample_tree_data.service
 definitions:
@@ -61,12 +61,12 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - sample.fs:fs-model.feed-template
-      - sample.sample_feed:sample_feed-sample_list_feed.feed-template
-      - sample.sample_feed:sample_feed-sample_tree_feed.feed-template
-      - sample.sample_list:sample_list-feed_sample_list.feed-template
-      - sample.sample_list:sample_list-sample_list.feed-template
-      - sample.sample_tree:sample_tree-model.feed-template
+      - sample.fs:fs-model.feed-template-cfg-item
+      - sample.sample_feed:sample_feed-sample_list_feed.feed-template-cfg-item
+      - sample.sample_feed:sample_feed-sample_tree_feed.feed-template-cfg-item
+      - sample.sample_list:sample_list-feed_sample_list.feed-template-cfg-item
+      - sample.sample_list:sample_list-sample_list.feed-template-cfg-item
+      - sample.sample_tree:sample_tree-model.feed-template-cfg-item
   formatter_creg:
     type: legacy_type.system:item_list_config
     value:
