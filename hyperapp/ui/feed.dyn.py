@@ -17,10 +17,13 @@ log = logging.getLogger(__name__)
 
 class Feed:
 
-    def __init__(self, piece, on_empty):
+    def __init__(self, piece):
         self._piece = piece
-        self._on_empty = on_empty
+        self._close_hooks = []
         self._subscribers = weakref.WeakSet()
+
+    def add_close_hook(self, hook):
+        self._close_hooks.append(hook)
 
     def subscribe(self, subscriber):
         # Note: finalize should be called first.
@@ -33,8 +36,10 @@ class Feed:
             subscriber.process_diff(diff)
 
     def _subscriber_gone(self):
-        if not self._subscribers:
-            self._on_empty(self._piece)
+        if self._subscribers:
+            return
+        for hook in self._close_hooks:
+            hook(self._piece)
 
 
 class ListFeed(Feed):
@@ -76,7 +81,7 @@ def feed_factory(config, feed_map, piece):
     except KeyError:
         pass
 
-    def on_empty(piece):
+    def remove_feed(piece):
         del feed_map[piece]
 
     if isinstance(piece, htypes.model.remote_model):
@@ -86,8 +91,9 @@ def feed_factory(config, feed_map, piece):
 
     model_t = deduce_t(real_model)
     Feed = config[model_t]
-    feed = Feed(piece, on_empty)
+    feed = Feed(piece)
     feed_map[piece] = feed
+    feed.add_close_hook(remove_feed)
     return feed
 
 
