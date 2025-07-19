@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import Mock
 
 from . import htypes
@@ -6,7 +7,10 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.context import Context
 from .tested.code import feed as feed_module
+
+log = logging.getLogger(__name__)
 
 
 @mark.config_fixture('feed_factory')
@@ -27,6 +31,36 @@ def test_index_tree_feed_factory(feed_factory):
     piece = htypes.feed_tests.sample_index_tree_feed()
     feed = feed_factory(piece)
     assert isinstance(feed, feed_module.IndexTreeFeed), repr(feed)
+
+
+def test_remote_list_feed_factory(
+        generate_rsa_identity,
+        endpoint_registry,
+        rpc_endpoint,
+        rpc_call_factory,
+        subprocess_rpc_server_running,
+        client_feed_factory,
+        ):
+
+    model = htypes.feed_tests.sample_list_feed()
+
+    identity = generate_rsa_identity(fast=True)
+    endpoint_registry.register(identity, rpc_endpoint)
+
+    subprocess_name = 'test-remote-list-feed-factory-main'
+    with subprocess_rpc_server_running(subprocess_name, identity) as process:
+        log.info("Started: %r", process)
+
+        remote_model = htypes.model.remote_model(
+            model=mosaic.put(model),
+            remote_peer=mosaic.put(process.peer.piece),
+            )
+        ctx = Context(
+            identity=identity,
+            )
+
+        feed = client_feed_factory(remote_model, ctx)
+        assert isinstance(feed, feed_module.ListFeed), repr(feed)
 
 
 class SampleSubscriber:

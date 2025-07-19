@@ -31,7 +31,7 @@ definitions:
       - system_fn_creg
       - rpc_system_call_factory
       - peer_registry
-      - feed_factory
+      - client_feed_factory
   FnKeyTreeAdapter:
     type: legacy_type.builtin:attribute
     value:
@@ -50,7 +50,7 @@ definitions:
       - system_fn_creg
       - rpc_system_call_factory
       - peer_registry
-      - feed_factory
+      - client_feed_factory
   fn_tree_adapter.module:
     type: legacy_type.builtin:python_module
     value:

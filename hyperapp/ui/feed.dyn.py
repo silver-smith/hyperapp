@@ -9,6 +9,8 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.system_fn import ContextFn
+from .code.feed_servant import subscribe_server_feed
 
 log = logging.getLogger(__name__)
 
@@ -87,3 +89,28 @@ def feed_factory(config, feed_map, piece):
     feed = Feed(piece, on_empty)
     feed_map[piece] = feed
     return feed
+
+
+def _subscribe_remote_feed(peer_registry, rpc_system_call_factory, remote_model, ctx):
+    real_model = web.summon(remote_model.model)
+    remote_peer = peer_registry.invite(remote_model.remote_peer)
+    fn = ContextFn(
+        rpc_system_call_factory=rpc_system_call_factory,
+        ctx_params=('request', 'real_model'),
+        service_params=('feed_factory',),
+        raw_fn=subscribe_server_feed,
+        )
+    rpc_call = rpc_system_call_factory(
+        receiver_peer=remote_peer,
+        sender_identity=ctx.identity,
+        fn=fn,
+        )
+    call_kw = fn.call_kw(ctx, real_model=real_model)
+    rpc_call(**call_kw)
+
+
+@mark.service
+def client_feed_factory(peer_registry, rpc_system_call_factory, feed_factory, piece, ctx):
+    if isinstance(piece, htypes.model.remote_model):
+        _subscribe_remote_feed(peer_registry, rpc_system_call_factory, piece, ctx)
+    return feed_factory(piece)

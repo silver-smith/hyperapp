@@ -2,6 +2,7 @@
 
 import:
 - base.mark:mark.module
+- base.system_fn:system_fn.module
 - builtins:deduce_t.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -16,14 +17,36 @@ import:
 - legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
+- ui.feed_servant:feed_servant.module
 definitions:
+  client_feed_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: feed.module
+      attr_name: client_feed_factory
+  client_feed_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: client_feed_factory
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      function: client_feed_factory
+      service_params:
+      - peer_registry
+      - rpc_system_call_factory
+      - feed_factory
+      want_config: false
+      free_params:
+      - piece
+      - ctx
   feed.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: feed
       file_name: feed.dyn.py
       import_list:
+        code.feed_servant: ui.feed_servant:feed_servant.module
         code.mark: base.mark:mark.module
+        code.system_fn: base.system_fn:system_fn.module
         htypes.feed.index_tree_feed_type: legacy_type.feed:index_tree_feed_type
         htypes.feed.list_feed_type: legacy_type.feed:list_feed_type
         htypes.model.remote_model: legacy_type.model:remote_model

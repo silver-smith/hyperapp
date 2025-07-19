@@ -32,7 +32,7 @@ definitions:
       service_params:
       - system_fn_creg
       - rpc_system_call_factory
-      - feed_factory
+      - client_feed_factory
       - model_servant
       - column_visible_reg
       - peer_registry
@@ -53,7 +53,7 @@ definitions:
       service_params:
       - system_fn_creg
       - rpc_system_call_factory
-      - feed_factory
+      - client_feed_factory
       - model_servant
       - column_visible_reg
       - peer_registry

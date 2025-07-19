@@ -26,7 +26,7 @@ class FnListAdapter(FnListAdapterBase):
             real_model = model
         return (remote_peer, real_model)
 
-    def __init__(self, system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
+    def __init__(self, system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg,
                  model, real_model, item_t, remote_peer, ctx, fn):
         assert not (remote_peer and 'ctx' in fn.ctx_params)  # Functions with 'ctx' param are not remotable.
         super().__init__(column_visible_reg, real_model, item_t)
@@ -37,7 +37,7 @@ class FnListAdapter(FnListAdapterBase):
         self._ctx = ctx
         self._fn = fn
         try:
-            self._feed = feed_factory(model)
+            self._feed = client_feed_factory(model, ctx)
         except KeyError:
             self._feed = None
         else:
@@ -92,11 +92,11 @@ class FnIndexListAdapter(FnListAdapter, IndexListAdapterMixin):
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx,
-                   system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg, peer_registry):
+                   system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg, peer_registry):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         remote_peer, real_model = cls._resolve_model(peer_registry, model)
-        return cls(system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
+        return cls(system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg,
                    model, real_model, item_t, remote_peer, ctx, fn)
     
 
@@ -105,16 +105,16 @@ class FnKeyListAdapter(FnListAdapter, KeyListAdapterMixin):
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx,
-                   system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg, peer_registry):
+                   system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg, peer_registry):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         remote_peer, real_model = cls._resolve_model(peer_registry, model)
         key_field_t = pyobj_creg.invite(piece.key_field_t)
-        return cls(system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
+        return cls(system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg,
                    model, real_model, item_t, remote_peer, ctx, fn, piece.key_field, key_field_t)
 
-    def __init__(self, system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
+    def __init__(self, system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg,
                  model, real_model, item_t, remote_peer, ctx, fn, key_field, key_field_t):
-        super().__init__(system_fn_creg, rpc_system_call_factory, feed_factory, model_servant, column_visible_reg,
+        super().__init__(system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg,
                          model, real_model, item_t, remote_peer, ctx, fn)
         KeyListAdapterMixin.__init__(self, key_field, key_field_t)

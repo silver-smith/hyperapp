@@ -179,16 +179,16 @@ class CrudRecordAdapter(FnRecordAdapterBase):
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, crud):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, client_feed_factory, crud):
         record_t = pyobj_creg.invite(model.record_t)
         value = cls._get_shared_value(model, record_t)
         real_model = web.summon(model.model)
         init_fn = system_fn_creg.invite(model.init_fn)
         args = _args_tuple_to_dict(model.args)
-        return cls(feed_factory, model, record_t, ctx, value, crud, real_model, init_fn, args)
+        return cls(client_feed_factory, model, record_t, ctx, value, crud, real_model, init_fn, args)
 
-    def __init__(self, feed_factory, model, record_t, ctx, value, crud, real_model, init_fn, args):
-        super().__init__(feed_factory, model, record_t, ctx, value)
+    def __init__(self, client_feed_factory, model, record_t, ctx, value, crud, real_model, init_fn, args):
+        super().__init__(client_feed_factory, model, record_t, ctx, value)
         self._crud = crud
         self._real_model = real_model
         self._args = args
@@ -445,10 +445,10 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
 
 @mark.ui_command_enum
-def crud_commit_command_enum(view, system_fn_creg, diff_creg, feed_factory, error_view, view_reg, visualizer):
+def crud_commit_command_enum(view, system_fn_creg, diff_creg, client_feed_factory, error_view, view_reg, visualizer):
     model_command = view.unbound_commit_command
     ui_command = wrap_model_command_to_ui_command(
-        diff_creg, feed_factory, error_view, view_reg, visualizer, model_command)
+        diff_creg, client_feed_factory, error_view, view_reg, visualizer, model_command)
     return [ui_command]
 
 

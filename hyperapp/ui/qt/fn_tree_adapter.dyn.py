@@ -26,7 +26,7 @@ class FnTreeAdapter(TreeAdapter):
             real_model = model
         return (remote_peer, real_model)
 
-    def __init__(self, rpc_system_call_factory, feed_factory, model, real_model, item_t, remote_peer, ctx, fn):
+    def __init__(self, rpc_system_call_factory, client_feed_factory, model, real_model, item_t, remote_peer, ctx, fn):
         assert not (remote_peer and 'ctx' in fn.ctx_params)  # Functions with 'ctx' param are not remotable.
         super().__init__(real_model, item_t)
         self._rpc_system_call_factory = rpc_system_call_factory
@@ -36,7 +36,7 @@ class FnTreeAdapter(TreeAdapter):
         self._fn = fn
         self._lateral_ids = set()
         try:
-            self._feed = feed_factory(model)
+            self._feed = client_feed_factory(model, ctx)
         except KeyError:
             self._feed = None
         else:
@@ -127,14 +127,14 @@ class FnIndexTreeAdapter(FnTreeAdapter, IndexTreeAdapterMixin):
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, system_fn_creg, rpc_system_call_factory, peer_registry, feed_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, rpc_system_call_factory, peer_registry, client_feed_factory):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         remote_peer, real_model = cls._resolve_model(peer_registry, model)
-        return cls(rpc_system_call_factory, feed_factory, model, real_model, item_t, remote_peer, ctx, fn)
+        return cls(rpc_system_call_factory, client_feed_factory, model, real_model, item_t, remote_peer, ctx, fn)
 
-    def __init__(self, rpc_system_call_factory, feed_factory, model, real_model, item_t, remote_peer, ctx, fn):
-        super().__init__(rpc_system_call_factory, feed_factory, model, real_model, item_t, remote_peer, ctx, fn)
+    def __init__(self, rpc_system_call_factory, client_feed_factory, model, real_model, item_t, remote_peer, ctx, fn):
+        super().__init__(rpc_system_call_factory, client_feed_factory, model, real_model, item_t, remote_peer, ctx, fn)
         IndexTreeAdapterMixin.__init__(self)
 
 
@@ -142,15 +142,15 @@ class FnKeyTreeAdapter(FnTreeAdapter, KeyTreeAdapterMixin):
 
     @classmethod
     @mark.actor.ui_adapter_creg
-    def from_piece(cls, piece, model, ctx, system_fn_creg, rpc_system_call_factory, peer_registry, feed_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, rpc_system_call_factory, peer_registry, client_feed_factory):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
         remote_peer, real_model = cls._resolve_model(peer_registry, model)
         key_field_t = pyobj_creg.invite(piece.key_field_t)
-        return cls(rpc_system_call_factory, feed_factory,
+        return cls(rpc_system_call_factory, client_feed_factory,
                    model, real_model, item_t, remote_peer, ctx, fn, piece.key_field, key_field_t)
 
-    def __init__(self, rpc_system_call_factory, feed_factory,
+    def __init__(self, rpc_system_call_factory, client_feed_factory,
                  model, real_model, item_t, remote_peer, ctx, fn, key_field, key_field_t):
-        super().__init__(rpc_system_call_factory, feed_factory, model, real_model, item_t, remote_peer, ctx, fn)
+        super().__init__(rpc_system_call_factory, client_feed_factory, model, real_model, item_t, remote_peer, ctx, fn)
         KeyTreeAdapterMixin.__init__(self, key_field, key_field_t)

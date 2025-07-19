@@ -95,7 +95,7 @@ definitions:
       function: CrudRecordAdapter.from_piece
       service_params:
       - system_fn_creg
-      - feed_factory
+      - client_feed_factory
       - crud
   crud:
     type: legacy_type.builtin:attribute
@@ -168,7 +168,7 @@ definitions:
       service_params:
       - system_fn_creg
       - diff_creg
-      - feed_factory
+      - client_feed_factory
       - error_view
       - view_reg
       - visualizer
