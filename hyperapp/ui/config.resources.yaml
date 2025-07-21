@@ -49,6 +49,7 @@ import:
 - ui.feed:feed_type_creg-feed-list_feed_type.actor-cfg-item
 - ui.feed:feed_type_creg-feed-value_feed_type.actor-cfg-item
 - ui.feed_creg:feed_type_creg.service
+- ui.feed_servant:server_feed.service
 - ui.feed_type_template:cfg_value_creg-feed-feed_template.actor-cfg-item
 - ui.format:format.service
 - ui.formatter_creg:formatter_creg.service
@@ -376,6 +377,7 @@ definitions:
       - ui.feed:feed_factory.service
       - ui.feed:feed_map.service
       - ui.feed_creg:feed_type_creg.service
+      - ui.feed_servant:server_feed.service
       - ui.format:format.service
       - ui.formatter_creg:formatter_creg.service
       - ui.local_server:local_server_peer.service

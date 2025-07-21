@@ -103,7 +103,7 @@ def _subscribe_remote_feed(peer_registry, rpc_system_call_factory, remote_model,
     fn = ContextFn(
         rpc_system_call_factory=rpc_system_call_factory,
         ctx_params=('request', 'real_model'),
-        service_params=('feed_factory',),
+        service_params=('feed_factory', 'server_feed'),
         raw_fn=subscribe_server_feed,
         )
     rpc_call = rpc_system_call_factory(
