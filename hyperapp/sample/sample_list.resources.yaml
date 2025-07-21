@@ -18,8 +18,24 @@ import:
 - legacy_type.sample_list:open_sample_fn_list_d
 - legacy_type.sample_list:sample_list
 - legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:finalizer_gen_service_template
 - legacy_type.system_fn:ctx_fn
 definitions:
+  _sample_thread_pool:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_list.module
+      attr_name: _sample_thread_pool
+  _sample_thread_pool.service:
+    type: legacy_type.system:finalizer_gen_service_template
+    value:
+      name: _sample_thread_pool
+      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      function: _sample_thread_pool
+      service_params: []
+      want_config: false
   feed_sample_list:
     type: legacy_type.builtin:attribute
     value:
@@ -142,6 +158,7 @@ definitions:
       ctx_params:
       - piece
       service_params:
+      - _sample_thread_pool
       - feed_factory
   sample_list-sample_list.feed-template:
     type: legacy_type.feed:feed_template
@@ -188,3 +205,10 @@ definitions:
         htypes.sample_list.feed_sample_list: legacy_type.sample_list:feed_sample_list
         htypes.sample_list.item: legacy_type.sample_list:item
         htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
+  system-actor_value_ctl.value-ctl:
+    type: legacy_type.system:actor_value_ctl
+    value: {}
+  system-dict_config_ctl.actor_value_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      value_ctl: system-actor_value_ctl.value-ctl

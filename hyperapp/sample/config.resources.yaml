@@ -16,6 +16,7 @@ import:
 - sample.sample_commands:system_info.global-model-command
 - sample.sample_feed:sample_feed-sample_list_feed.feed-template-cfg-item
 - sample.sample_feed:sample_feed-sample_tree_feed.feed-template-cfg-item
+- sample.sample_list:_sample_thread_pool.service
 - sample.sample_list:formatter_creg-sample_list-feed_sample_list.actor-cfg-item
 - sample.sample_list:formatter_creg-sample_list-sample_list.actor-cfg-item
 - sample.sample_list:open_feed_sample_fn_list.global-model-command
@@ -118,5 +119,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - sample.sample_list:_sample_thread_pool.service
       - sample.sample_tree:get_sample_tree_items.service
       - sample.sample_tree:sample_tree_data.service
