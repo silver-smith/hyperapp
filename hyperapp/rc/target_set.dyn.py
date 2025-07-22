@@ -53,7 +53,7 @@ class FullTargetSet:
         return iter(self._name_to_target_set.items())
 
     def __getitem__(self, name):
-        for target_set in [self._global_targets, self._name_to_target_set.values()]:
+        for target_set in [self._global_targets, *self._name_to_target_set.values()]:
             try:
                 return target_set[name]
             except KeyError:
