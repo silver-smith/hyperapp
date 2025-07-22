@@ -118,7 +118,7 @@ class DataServiceConfig:
 
     # Used with config fixtures.
     def update(self, config):
-        self._system.update_service_config(self._service_name, config)
+        self._target_layer.update(self._service_name, config)
 
 
 def config_item_name(piece, gen):

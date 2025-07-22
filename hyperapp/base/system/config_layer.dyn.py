@@ -25,6 +25,10 @@ class MemoryConfigLayer:
     def config(self):
         return dict(self._config)
 
+    def update(self, service_name, config_template):
+        self._config[service_name].update(config_template)
+        self._system.invalidate_config_cache()
+
     def set(self, service_name, key, template):
         self._config[service_name][key] = template
         self._system.config_item_was_set(service_name, key)
@@ -42,6 +46,9 @@ class ConfigLayer:
     def __init__(self, system, config_ctl):
         self._system = system
         self._config_ctl = config_ctl
+
+    def update(self, service_name, config_template):
+        raise NotImplementedError(f"{self.__class__.__name__}.update")
 
     def _data_to_config(self, config_piece):
         service_to_config_piece = {

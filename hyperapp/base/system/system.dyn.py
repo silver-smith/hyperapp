@@ -115,15 +115,6 @@ class System:
         self._config_hooks.append(hook)
         self._call_config_hooks([hook])
 
-    def update_service_config(self, service_name, config_template):
-        try:
-            dest = self._config_templates[service_name]
-        except KeyError:
-            ctl = self._config_ctl[service_name]
-            dest = ctl.empty_config_template()
-            self._config_templates[service_name]= dest
-        dest.update(config_template)
-
     def update_service_own_config(self, service_name, config_template):
         service = self._name_to_service[service_name]
         for key, item in config_template.items():
