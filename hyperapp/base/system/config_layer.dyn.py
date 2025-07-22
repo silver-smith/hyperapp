@@ -25,11 +25,11 @@ class MemoryConfigLayer:
     def config(self):
         return dict(self._config)
 
-    def set(self, service_name, key, value):
-        self._config[service_name][key] = value
+    def set(self, service_name, key, template):
+        self._config[service_name][key] = template
         self._system.config_item_was_set(service_name, key)
 
-    def add(self, service_name, key, value):
+    def add(self, service_name, key, template):
         raise NotImplementedError(f"{self.__class__.__name__}.add")
 
     def remove(self, service_name, key):
@@ -76,10 +76,10 @@ class StaticConfigLayer(ConfigLayer):
     def config(self):
         return self._data_to_config(self._config_piece)
 
-    def set(self, service_name, key, value):
+    def set(self, service_name, key, template):
         raise NotImplementedError(f"{self.__class__.__name__}.set")
 
-    def add(self, service_name, key, value):
+    def add(self, service_name, key, template):
         raise NotImplementedError(f"{self.__class__.__name__}.add")
 
     def remove(self, service_name, key):
