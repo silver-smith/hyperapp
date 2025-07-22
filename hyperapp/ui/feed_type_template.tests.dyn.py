@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     mosaic,
@@ -5,6 +7,13 @@ from .services import (
     )
 from .code.mark import mark
 from .tested.code import feed_type_template
+
+
+@mark.config_fixture('feed_type_creg')
+def feed_factory_config():
+    return {
+        htypes.feed.list_feed_type: Mock(),
+        }
 
 
 @mark.fixture
