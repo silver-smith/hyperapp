@@ -107,7 +107,7 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
 
     def _config_to_item_pieces(self, config_template):
         return [
-            self.item_piece(key, template)
+            self.item_to_data(key, template)
             for key, template in self.config_to_items(config_template)
             ]
 
@@ -123,7 +123,7 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
         key, template = self._cfg_item_creg.animate(item)
         return (key, template)
 
-    def item_piece(self, key, template):
+    def item_to_data(self, key, template):
         return self._cfg_item_creg.actor_to_piece((key, template))
 
     def _item_pieces_to_data(self, item_list):

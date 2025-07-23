@@ -41,13 +41,13 @@ class AssociationKeyRegistry:
         assoc_key = self._assoc_key_creg.animate(assoc_key_piece)
         bases = assoc_key.bases(key, template)
         ctl = self._config_ctl[service_name]
-        item_piece = ctl.item_piece(key, template)
+        item_piece = ctl.item_to_data(key, template)
         association_reg.set_association(bases, service_name, item_piece)
 
     # System config hook method
     def config_item_removed(self, service_name, key, template):
         ctl = self._config_ctl[service_name]
-        item_piece = ctl.item_piece(key, template)
+        item_piece = ctl.item_to_data(key, template)
         association_reg.remove_association(service_name, item_piece)
 
     def on_assocation_received(self, service_name, cfg_item):

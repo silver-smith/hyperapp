@@ -30,7 +30,7 @@ def add_base_target_items(config_ctl, ctr_from_template_creg, base_config_templa
 
     def add_item(service_name, template, key=None, rc_key=None, req=None):
         assert ctl.is_multi_item  # Expecting only MultiItemConfigCtl ctl instances.
-        item_piece = ctl.item_piece(key, template)
+        item_piece = ctl.item_to_data(key, template)
         module_name, var_name = project.reverse_resolve(item_piece)
         ctr = ctr_from_template_creg.animate(item_piece, service_name, var_name)
         if rc_key is None:
