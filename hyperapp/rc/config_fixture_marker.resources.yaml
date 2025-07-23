@@ -27,3 +27,17 @@ definitions:
       function: config_fixture_marker
       service_params:
       - ctr_collector
+
+  config_template_fixture_marker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_fixture_marker.module
+      attr_name: config_template_fixture_marker
+
+  config_template_fixture.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: config_template_fixture
+      function: config_template_fixture_marker
+      service_params:
+      - ctr_collector

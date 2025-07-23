@@ -182,10 +182,10 @@ class SystemJob:
         system.load_static_config(config)
         system.load_config_layer('memory', MemoryConfigLayer(system))
         system.set_default_layer('memory')
-        self._configure_system(system, resources)
         ImportRecorder.configure_pyobj_creg(system)
         system.migrate_globals()
         _ = system.resolve_service('marker_registry')  # Init markers.
+        self._configure_system(system, resources)
         system['init_hook'].run_hooks()
         return system
 

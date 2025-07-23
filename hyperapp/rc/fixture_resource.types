@@ -27,13 +27,19 @@ fixture_probe_template = record:
   params: string list
 
 
-config_fixture_ctr = record:
+config_fixture_ctr_base = record:
   module_name: string
   attr_qual_name: string list
   service_name: string
   service_params: string list
 
-config_fixture_resource = record:
+config_fixture_ctr = record(config_fixture_ctr_base)
+config_template_fixture_ctr = record(config_fixture_ctr_base)
+
+config_fixture_resource_base = record:
   service_name: string
   function: ref
   service_params: string list
+
+config_fixture_resource = record(config_fixture_resource_base)
+config_template_fixture_resource = record(config_fixture_resource_base)

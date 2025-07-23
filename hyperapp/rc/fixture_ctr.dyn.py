@@ -4,7 +4,7 @@ from .services import (
     )
 from .code.rc_constructor import ModuleCtr
 from .code.config_item_resource import ConfigItemResourceOverride
-from .code.fixture_resource import ConfigFixtureResource
+from .code.fixture_resource import ConfigFixtureResource, ConfigTemplateFixtureResource
 
 
 class FixtureCtrBase(ModuleCtr):
@@ -131,4 +131,48 @@ class ConfigFixtureCtr(ModuleCtr):
         return object
 
     def make_resource(self, types, module_name, python_module):
-        return ConfigFixtureResource(self._service_name, self.make_component(types, python_module), self._service_params)
+        return ConfigFixtureResource(
+            self._service_name, self.make_component(types, python_module), self._service_params)
+
+
+class ConfigTemplateFixtureCtr(ModuleCtr):
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.module_name, piece.attr_qual_name, piece.service_name, piece.service_params)
+
+    def __init__(self, module_name, attr_qual_name, service_name, service_params):
+        super().__init__(module_name)
+        self._attr_qual_name = attr_qual_name
+        self._service_name = service_name
+        self._service_params = service_params
+
+    @property
+    def piece(self):
+        return htypes.fixture_resource.config_template_fixture_ctr(
+            module_name=self._module_name,
+            attr_qual_name=tuple(self._attr_qual_name),
+            service_name=self._service_name,
+            service_params=self._service_params,
+            )
+
+    @property
+    def is_fixture(self):
+        return True
+
+    def update_fixtures_targets(self, import_tgt, target_set):
+        assert import_tgt.module_name == self._module_name
+        import_tgt.add_test_ctr(self)
+
+    def make_component(self, types, python_module, name_to_res=None):
+        object = python_module
+        for name in self._attr_qual_name:
+            object = htypes.builtin.attribute(
+                object=mosaic.put(object),
+                attr_name=name,
+                )
+        return object
+
+    def make_resource(self, types, module_name, python_module):
+        return ConfigTemplateFixtureResource(
+            self._service_name, self.make_component(types, python_module), self._service_params)
