@@ -72,6 +72,8 @@ class ConfigProbe:
     def __getitem__(self, key):
         try:
             value = self._config[key]
+        except ConfigKeyError:
+            raise
         except KeyError:
             if isinstance(key, Probe):
                 key = key.apply_obj()
