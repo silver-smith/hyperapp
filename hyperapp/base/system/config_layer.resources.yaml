@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
+- legacy_type.system:one_way_key_ctl
 - legacy_type.system:service_config
 - legacy_type.system:service_template
 - legacy_type.system:system_config
@@ -48,6 +49,10 @@ definitions:
       want_config: true
       free_params: []
 
+  one_way.key_ctl:
+    type: legacy_type.system:one_way_key_ctl
+    value: {}
+
   actor.value_ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
@@ -55,4 +60,5 @@ definitions:
   actor_dict.config_ctl:
     type: legacy_type.system:dict_config_ctl
     value:
+      key_ctl: one_way.key_ctl
       value_ctl: actor.value_ctl

@@ -1,0 +1,13 @@
+import:
+- legacy_type.builtin:python_module
+- legacy_type.system:one_way_key_ctl
+
+definitions:
+
+  config_key_ctl.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: config_key_ctl
+      file_name: config_key_ctl.dyn.py
+      import_list:
+        htypes.system.one_way_key_ctl: legacy_type.system:one_way_key_ctl

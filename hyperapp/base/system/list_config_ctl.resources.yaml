@@ -38,6 +38,7 @@ definitions:
     value:
       function: DictListConfigCtl.from_piece
       service_params:
+      - config_key_ctl_creg
       - config_value_ctl_creg
       - cfg_item_creg
       - cfg_value_creg

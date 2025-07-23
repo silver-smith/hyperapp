@@ -11,9 +11,12 @@ item_list_config = record:
 
 
 dict_config_ctl = record:
+  key_ctl: ref
   value_ctl: ref
 
 flat_list_config_ctl = record
+
+one_way_key_ctl = record
 
 actor_value_ctl = record
 data_value_ctl = record

@@ -10,6 +10,7 @@ class DictListConfigCtl(DictConfigCtl):
     @property
     def piece(self):
         return htypes.list_config_ctl.dict_list_config_ctl(
+            key_ctl=mosaic.put(self._key_ctl.piece),
             value_ctl=mosaic.put(self._value_ctl.piece),
             )
 

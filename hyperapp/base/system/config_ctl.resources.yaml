@@ -1,4 +1,5 @@
 import:
+- base.system.config_key_ctl:config_key_ctl.module
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -30,6 +31,7 @@ definitions:
         htypes.system.system_config: legacy_type.system:system_config
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+        code.config_key_ctl: base.system.config_key_ctl:config_key_ctl.module
 
   FlatListConfigCtl:
     type: legacy_type.builtin:attribute
