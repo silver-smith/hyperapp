@@ -57,7 +57,7 @@ class AssociationKeyRegistry:
             return
         assoc_key = self._assoc_key_creg.animate(assoc_key_piece)
         ctl = self._config_ctl[service_name]
-        key, template = ctl.resolve_cfg_item(cfg_item)
+        key, template = ctl.data_to_item(cfg_item)
         self._system.default_layer.set(service_name, key, template)
 
 

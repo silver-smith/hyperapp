@@ -97,7 +97,7 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
         config_template = self.empty_config_template()
         for item_ref in piece.items:
             item = web.summon(item_ref)
-            key, template = self.resolve_cfg_item(item)
+            key, template = self.data_to_item(item)
             self._update_config(config_template, key, template)
         return config_template
 
@@ -119,7 +119,7 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
     def _update_config(self, config_template, key, template):
         pass
 
-    def resolve_cfg_item(self, item):
+    def data_to_item(self, item):
         key, template = self._cfg_item_creg.animate(item)
         return (key, template)
 
