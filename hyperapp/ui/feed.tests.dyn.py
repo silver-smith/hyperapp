@@ -13,11 +13,27 @@ from .tested.code import feed as feed_module
 log = logging.getLogger(__name__)
 
 
-@mark.config_fixture('feed_factory')
-def feed_factory_config():
+
+@mark.fixture
+def item_t():
+    return pyobj_creg.actor_to_piece(htypes.feed_tests.sample_item)
+
+
+@mark.config_template_fixture('feed_factory')
+def feed_factory_config(item_t):
+    list_feed_type = htypes.feed.list_feed_type(
+        item_t=mosaic.put(item_t),
+        )
+    index_tree_feed_type = htypes.feed.index_tree_feed_type(
+        item_t=mosaic.put(item_t),
+        )
     return {
-        htypes.feed_tests.sample_list_feed: feed_module.ListFeed,
-        htypes.feed_tests.sample_index_tree_feed: feed_module.IndexTreeFeed,
+        htypes.feed_tests.sample_list_feed: htypes.feed.feed_template(
+            feed_type=mosaic.put(list_feed_type),
+            ),
+        htypes.feed_tests.sample_index_tree_feed: htypes.feed.feed_template(
+            feed_type=mosaic.put(index_tree_feed_type),
+            ),
         }
 
 
@@ -75,11 +91,6 @@ def test_feed_finalizer(feed_map, feed_factory):
     assert piece in feed_map
     del subscriber
     assert piece not in feed_map
-
-
-@mark.fixture
-def item_t():
-    return pyobj_creg.actor_to_piece(htypes.feed_tests.sample_item)
 
 
 def test_list_feed_actor(feed_type_creg, item_t):
