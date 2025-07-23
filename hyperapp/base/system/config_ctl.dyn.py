@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from functools import partial
 
+from hyperapp.boot.config_key_error import ConfigKeyError
+
 from . import htypes
 from .services import (
     mosaic,
@@ -183,7 +185,9 @@ class LazyDictConfig:
     def _resolve_template(self, key, value_template):
         try:
             value = self._ctl.resolve_value(self._system, self._service_name, key, value_template)
-        except KeyError as x:
+        except ConfigKeyError as x:
+            if x.service_name == 'cfg_value_creg':
+                raise
             # This is not a key error for the caller.
             raise RuntimeError(
                 f"Error resolving {self._service_name} config tempate for {key!r}: {x.__class__.__name__}: {x}") from x
