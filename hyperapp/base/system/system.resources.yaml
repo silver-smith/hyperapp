@@ -10,6 +10,7 @@ import:
 - base.system.actor_template:actor_template.module
 - base.system.config_ctl:config_ctl.module
 - base.system.config_layer:config_layer.module
+- base.system.config_layer:one_way.key_ctl
 - base.system.config_key_ctl:config_key_ctl.module
 - base.system.service_template:service_template.module
 - base.typed_cfg_item:typed_cfg_item.module
@@ -33,10 +34,6 @@ definitions:
         code.service_template: base.system.service_template:service_template.module
         code.typed_cfg_item: base.typed_cfg_item:typed_cfg_item.module
 
-  one_way.key_ctl:
-    type: legacy_type.system:one_way_key_ctl
-    value: {}
-
   actor.value_ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
@@ -48,11 +45,11 @@ definitions:
   actor_dict.config_ctl:
     type: legacy_type.system:dict_config_ctl
     value:
-      key_ctl: one_way.key_ctl
+      key_ctl: base.system.config_layer:one_way.key_ctl
       value_ctl: actor.value_ctl
 
   data_dict.config_ctl:
     type: legacy_type.system:dict_config_ctl
     value:
-      key_ctl: one_way.key_ctl
+      key_ctl: base.system.config_layer:one_way.key_ctl
       value_ctl: data.value_ctl
