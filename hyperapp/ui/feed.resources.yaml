@@ -124,6 +124,24 @@ definitions:
     value:
       function: list_feed_from_piece
       service_params: []
+  remote_feed_receiver:
+    type: legacy_type.builtin:attribute
+    value:
+      object: feed.module
+      attr_name: remote_feed_receiver
+  remote_feed_receiver.service:
+    type: legacy_type.system:service_template
+    value:
+      name: remote_feed_receiver
+      ctl: system-dict_config.one_way.actor.ctl
+      function: remote_feed_receiver
+      service_params:
+      - diff_creg
+      - feed_factory
+      want_config: false
+      free_params:
+      - piece
+      - diff
   system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}

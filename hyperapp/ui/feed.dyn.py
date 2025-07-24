@@ -99,6 +99,14 @@ def feed_factory(config, feed_map, piece):
     return feed
 
 
+@mark.service
+def remote_feed_receiver(diff_creg, feed_factory, piece, diff):
+    diff_obj = diff_creg.animate(diff)
+    log.info("Received remote diff: %s", diff_obj)
+    feed = feed_factory(piece)
+    feed.send(diff_obj)
+
+
 def _subscribe_remote_feed(peer_registry, rpc_system_call_factory, remote_model, ctx):
     real_model = web.summon(remote_model.model)
     remote_peer = peer_registry.invite(remote_model.remote_peer)

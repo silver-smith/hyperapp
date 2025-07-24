@@ -8,6 +8,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.list_diff import IndexListDiff
 from .tested.code import feed as feed_module
 
 log = logging.getLogger(__name__)
@@ -47,6 +48,15 @@ def test_index_tree_feed_factory(feed_factory):
     piece = htypes.feed_tests.sample_index_tree_feed()
     feed = feed_factory(piece)
     assert isinstance(feed, feed_module.IndexTreeFeed), repr(feed)
+
+
+def test_remote_feed_receiver(remote_feed_receiver):
+    piece = htypes.feed_tests.sample_list_feed()
+    item = htypes.feed_tests.sample_item(
+        attr="Sample item",
+        )
+    diff = IndexListDiff.Append(item)
+    remote_feed_receiver(piece, diff.piece)
 
 
 def test_remote_list_feed_factory(
