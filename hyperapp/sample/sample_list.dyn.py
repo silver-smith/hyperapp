@@ -32,8 +32,11 @@ def _send_diff(feed):
 
 
 def _send_diff_sync(feed):
-    time.sleep(1)
-    _send_diff(feed)
+    try:
+        time.sleep(1)
+        _send_diff(feed)
+    except:
+        log.exception("Error sending diff")
 
 
 @mark.service
