@@ -18,7 +18,7 @@ def test_sample_list():
     assert value
 
 
-def _test_thread_pool(_sample_thread_pool):
+def test_thread_pool(_sample_thread_pool):
     _sample_thread_pool.submit(lambda: None)
 
 
