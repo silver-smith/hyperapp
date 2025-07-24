@@ -10,6 +10,7 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:dict_config_ctl
+- legacy_type.system:one_way_key_ctl
 - legacy_type.system:service_template
 - rc.rc_constructor:rc_constructor.module
 - rc.service_req:service_req.module
@@ -27,6 +28,7 @@ definitions:
         htypes.service_resource.service_template_ctr: legacy_type.service_resource:service_template_ctr
         htypes.service_resource.finalizer_gen_service_template_ctr: legacy_type.service_resource:finalizer_gen_service_template_ctr
         htypes.system.dict_config_ctl: legacy_type.system:dict_config_ctl
+        htypes.system.one_way_key_ctl: legacy_type.system:one_way_key_ctl
         htypes.system.service_template: legacy_type.system:service_template
         htypes.system.finalizer_gen_service_template: legacy_type.system:finalizer_gen_service_template
         services.mosaic: builtins:mosaic.service

@@ -50,18 +50,25 @@ class ServiceTemplateCtrBase(CoreServiceTemplateCtr):
             want_config=self._want_config,
             **self._template_kw(),
             )
-        ctl, ctl_t = web.summon_with_t(self._ctl_ref)
-        ctl_t_name = ctl_t.full_name.replace('.', '-')
         if name_to_res is not None:
             name_to_res[self._attr_name] = attribute
+            ctl, ctl_t = web.summon_with_t(self._ctl_ref)
+            ctl_t_name = ctl_t.full_name.replace('.', '-').removesuffix('_ctl')
             # TODO: Check if we can use ctl instances from system module resources.
             if isinstance(ctl, htypes.system.dict_config_ctl):
+                key_ctl, key_ctl_t = web.summon_with_t(ctl.key_ctl)
+                key_ctl_t_var_name = key_ctl_t.name.replace('.', '-').removesuffix('_key_ctl')
+                if not isinstance(key_ctl, htypes.system.one_way_key_ctl):  # This one is loaded from base project.
+                    key_ctl_t_name = key_ctl_t.full_name.replace('.', '-').removesuffix('_key_ctl')
+                    name_to_res[f'{key_ctl_t_name}.key-ctl'] = key_ctl
                 value_ctl, value_ctl_t = web.summon_with_t(ctl.value_ctl)
-                value_ctl_t_name = value_ctl_t.full_name.replace('.', '-')
-                value_ctl_t_var_name = value_ctl_t.name.replace('.', '-')
+                value_ctl_t_name = value_ctl_t.full_name.replace('.', '-').removesuffix('_value_ctl')
+                value_ctl_t_var_name = value_ctl_t.name.replace('.', '-').removesuffix('_value_ctl')
                 name_to_res[f'{value_ctl_t_name}.value-ctl'] = value_ctl
-                ctl_t_name = f'{ctl_t_name}.{value_ctl_t_var_name}'
-            name_to_res[f'{ctl_t_name}.ctl'] = ctl
+                ctl_name = f'{ctl_t_name}.{key_ctl_t_var_name}.{value_ctl_t_var_name}'
+            else:
+                ctl_name = ctl_t_name
+            name_to_res[f'{ctl_name}.ctl'] = ctl
             name_to_res[f'{self._name}.service'] = service
         return service
 
