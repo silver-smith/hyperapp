@@ -17,8 +17,8 @@ class OneWayKeyCtl:
     def piece(self):
         return htypes.system.one_way_key_ctl()
 
-    def data_to_item(self, item):
-        key, template = self._cfg_item_creg.animate(item)
+    def data_to_item(self, piece):
+        key, template = self._cfg_item_creg.animate(piece)
         return (key, template)
 
     def item_to_data(self, key, template):

@@ -47,9 +47,9 @@ class DataServiceConfigCtl(ConfigCtl):
         return config_template.items()
 
     @staticmethod
-    def data_to_item(item):
-        key = web.summon(item.key)
-        value = web.summon(item.value)
+    def data_to_item(piece):
+        key = web.summon(piece.key)
+        value = web.summon(piece.value)
         return (key, value)
 
     @staticmethod
@@ -75,9 +75,9 @@ class TypeKeyDataServiceConfigCtl(DataServiceConfigCtl):
         return htypes.data_service.type_key_config_ctl()
 
     @staticmethod
-    def data_to_item(item):
-        key = pyobj_creg.invite(item.key)
-        value = web.summon(item.value)
+    def data_to_item(piece):
+        key = pyobj_creg.invite(piece.key)
+        value = web.summon(piece.value)
         return (key, value)
 
     @staticmethod
