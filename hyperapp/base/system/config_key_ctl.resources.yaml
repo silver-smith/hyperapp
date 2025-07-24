@@ -1,6 +1,11 @@
 import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:one_way_key_ctl
+- legacy_type.system:type_key_ctl
 
 definitions:
 
@@ -10,4 +15,9 @@ definitions:
       module_name: config_key_ctl
       file_name: config_key_ctl.dyn.py
       import_list:
+        htypes.cfg_item.typed_cfg_item: legacy_type.cfg_item:typed_cfg_item
         htypes.system.one_way_key_ctl: legacy_type.system:one_way_key_ctl
+        htypes.system.type_key_ctl: legacy_type.system:type_key_ctl
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service

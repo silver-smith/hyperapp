@@ -17,6 +17,7 @@ dict_config_ctl = record:
 flat_list_config_ctl = record
 
 one_way_key_ctl = record
+type_key_ctl = record
 
 actor_value_ctl = record
 data_value_ctl = record
