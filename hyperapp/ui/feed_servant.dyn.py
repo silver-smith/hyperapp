@@ -58,5 +58,5 @@ def server_feed(rpc_system_call_factory, feed_factory):
 
 
 def subscribe_server_feed(feed_factory, server_feed, request, real_model):
-    log.info("%s is subscribing feed: %s", request.remote_peer, real_model)
+    log.info("%s is subscribing feed: %s to %s", request.receiver_identity, real_model, request.remote_peer)
     server_feed.add(request.receiver_identity, request.remote_peer, real_model)

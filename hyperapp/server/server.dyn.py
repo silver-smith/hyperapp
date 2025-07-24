@@ -64,7 +64,7 @@ def server_main(
     peer_bundle.save_piece(server_identity.peer.piece)
     log.info("Server peer: saved to: %s", peer_bundle.path)
 
-    log.info("Server: Started at %s", server.route)
+    log.info("Server: %s is listening at %s", server_identity, server.route)
     try:
         stop_signal.wait()
     except KeyboardInterrupt:
