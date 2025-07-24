@@ -9,6 +9,8 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.config_key_ctl import TypeKeyCtl
+from .code.config_ctl import DictConfigCtl
 from .code.system_fn import ContextFn
 from .code.feed_servant import subscribe_server_feed
 
@@ -74,7 +76,7 @@ def feed_map():
     return {}
 
 
-@mark.service
+@mark.service(ctl=DictConfigCtl(key_ctl=TypeKeyCtl()))
 def feed_factory(config, feed_map, piece):
     try:
         return feed_map[piece]
