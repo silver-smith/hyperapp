@@ -1,3 +1,4 @@
+import codecs
 from functools import cached_property
 
 from cryptography.fernet import Fernet
@@ -20,6 +21,13 @@ RSA_KEY_SIZE_FAST = 1024  # Used for testing only.
 BUNDLE_ENCODING = 'cdr'
 
 
+def _pem_repr(pem):
+    hash_algorithm = hashes.MD5()  # No safety required.
+    digest = hashes.Hash(hash_algorithm)
+    digest.update(pem)
+    return codecs.encode(digest.finalize(), 'hex').decode()[:10]
+
+
 class RsaIdentity:
 
     @classmethod
@@ -40,8 +48,8 @@ class RsaIdentity:
         self._private_key = private_key
 
     def __repr__(self):
-        pem_tail = self.peer.public_key_pem.splitlines()[-2][-10:].decode()
-        return f"<RsaIdentity {pem_tail}>"
+        pem_repr = _pem_repr(self.peer.public_key_pem)
+        return f"<RsaIdentity {pem_repr}>"
 
     @property
     def piece(self):
@@ -102,8 +110,8 @@ class RsaPeer:
         self._public_key = public_key
 
     def __repr__(self):
-        pem_tail = self.public_key_pem.splitlines()[-2][-10:].decode()
-        return f"<RsaPeer {pem_tail}>"
+        pem_repr = _pem_repr(self.public_key_pem)
+        return f"<RsaPeer {pem_repr}>"
 
     @property
     def piece(self):
@@ -193,7 +201,8 @@ class RsaParcel:
         self._signature = signature
 
     def __repr__(self):
-        return '<RsaParsel>'
+        pem_repr = _pem_repr(self._receiver.public_key_pem)
+        return '<RsaParsel for: {pem_repr}>'
 
     @property
     def piece(self):
