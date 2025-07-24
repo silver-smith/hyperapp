@@ -1,43 +1,39 @@
 # Automatically generated file. Do not edit.
 
 import:
-- base.context:context.module
 - base.mark:mark.module
 - base.system.config_layer:one_way.key_ctl
-- base.system_fn:system_fn.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
-- ui.remote_feed_receiver:remote_feed_receiver.module
 definitions:
-  feed_servant.module:
-    type: legacy_type.builtin:python_module
-    value:
-      module_name: feed_servant
-      file_name: feed_servant.dyn.py
-      import_list:
-        code.context: base.context:context.module
-        code.mark: base.mark:mark.module
-        code.remote_feed_receiver: ui.remote_feed_receiver:remote_feed_receiver.module
-        code.system_fn: base.system_fn:system_fn.module
-  server_feed:
+  remote_feed_receiver:
     type: legacy_type.builtin:attribute
     value:
-      object: feed_servant.module
-      attr_name: server_feed
-  server_feed.service:
+      object: remote_feed_receiver.module
+      attr_name: remote_feed_receiver
+  remote_feed_receiver.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: remote_feed_receiver
+      file_name: remote_feed_receiver.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+  remote_feed_receiver.service:
     type: legacy_type.system:service_template
     value:
-      name: server_feed
+      name: remote_feed_receiver
       ctl: system-dict_config.one_way.actor.ctl
-      function: server_feed
+      function: remote_feed_receiver
       service_params:
-      - rpc_system_call_factory
+      - diff_creg
       - feed_factory
       want_config: false
-      free_params: []
+      free_params:
+      - model
+      - diff
   system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
