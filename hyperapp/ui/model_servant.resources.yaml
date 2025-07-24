@@ -25,7 +25,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: model_servant
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: model_servant
       service_params:
       - model_to_servant_dict
@@ -41,16 +41,16 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: model_to_servant_dict
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: model_to_servant_dict
       service_params: []
       want_config: false
       free_params: []
-  system-actor_value_ctl.value-ctl:
+  system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config.one_way.actor.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-actor.value-ctl

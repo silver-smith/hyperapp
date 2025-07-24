@@ -8,7 +8,7 @@ import:
 - legacy_type.data_service:config_ctl
 - legacy_type.system:service_template
 definitions:
-  data_service-config_ctl.ctl:
+  data_service-config.ctl:
     type: legacy_type.data_service:config_ctl
     value: {}
   shortcut_reg:
@@ -28,7 +28,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: shortcut_reg
-      ctl: data_service-config_ctl.ctl
+      ctl: data_service-config.ctl
       function: shortcut_reg
       service_params: []
       want_config: true

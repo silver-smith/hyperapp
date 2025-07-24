@@ -25,11 +25,11 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: data_dir
-      ctl: record_config-config_ctl.ctl
+      ctl: record_config-config.ctl
       function: data_dir
       service_params: []
       want_config: true
       free_params: []
-  record_config-config_ctl.ctl:
+  record_config-config.ctl:
     type: legacy_type.record_config:config_ctl
     value: {}

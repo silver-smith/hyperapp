@@ -29,7 +29,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: client_feed_factory
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: client_feed_factory
       service_params:
       - peer_registry
@@ -63,7 +63,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: feed_factory
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: feed_factory
       service_params:
       - feed_map
@@ -79,7 +79,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: feed_map
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: feed_map
       service_params: []
       want_config: false
@@ -119,14 +119,14 @@ definitions:
     value:
       function: list_feed_from_piece
       service_params: []
-  system-actor_value_ctl.value-ctl:
+  system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config.one_way.actor.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-actor.value-ctl
   value_feed_from_piece:
     type: legacy_type.builtin:attribute
     value:

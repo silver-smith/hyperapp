@@ -32,7 +32,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: custom_ui_global_model_commands
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: custom_ui_global_model_commands
       service_params: []
       want_config: false
@@ -47,7 +47,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: custom_ui_model_commands
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: custom_ui_model_commands
       service_params: []
       want_config: false
@@ -63,7 +63,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_ui_model_commands
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: get_ui_model_commands
       service_params:
       - ui_model_command_items
@@ -72,14 +72,14 @@ definitions:
       - lcs
       - model_t
       - ctx
-  system-actor_value_ctl.value-ctl:
+  system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config.one_way.actor.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-actor.value-ctl
   ui_global_command_items:
     type: legacy_type.builtin:attribute
     value:
@@ -89,7 +89,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: ui_global_command_items
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: ui_global_command_items
       service_params:
       - format
@@ -134,7 +134,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: ui_model_command_items
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: ui_model_command_items
       service_params:
       - format

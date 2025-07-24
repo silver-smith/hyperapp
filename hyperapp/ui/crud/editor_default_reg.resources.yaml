@@ -27,16 +27,16 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: editor_default_reg
-      ctl: system-dict_config_ctl.data_value_ctl.ctl
+      ctl: system-dict_config.one_way.data.ctl
       function: editor_default_reg
       service_params: []
       want_config: true
       free_params: []
-  system-data_value_ctl.value-ctl:
+  system-data.value-ctl:
     type: legacy_type.system:data_value_ctl
     value: {}
-  system-dict_config_ctl.data_value_ctl.ctl:
+  system-dict_config.one_way.data.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-data_value_ctl.value-ctl
+      value_ctl: system-data.value-ctl

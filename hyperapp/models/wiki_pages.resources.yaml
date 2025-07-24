@@ -413,14 +413,14 @@ definitions:
       name: save_page_d
       base: null
       fields: {}
-  system-actor_value_ctl.value-ctl:
+  system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config.one_way.actor.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-actor.value-ctl
   wiki_pages:
     type: legacy_type.builtin:attribute
     value:
@@ -598,7 +598,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: wiki_pages
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: wiki_pages
       service_params:
       - file_bundle_factory

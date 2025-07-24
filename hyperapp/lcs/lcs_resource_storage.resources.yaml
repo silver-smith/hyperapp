@@ -43,7 +43,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: lcs_resource_storage_factory
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: lcs_resource_storage_factory
       service_params:
       - pick_refs
@@ -52,11 +52,11 @@ definitions:
       - name
       - path
       - project_imports
-  system-actor_value_ctl.value-ctl:
+  system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config.one_way.actor.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-actor.value-ctl

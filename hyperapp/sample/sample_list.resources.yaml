@@ -33,7 +33,7 @@ definitions:
     type: legacy_type.system:finalizer_gen_service_template
     value:
       name: _sample_thread_pool
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: _sample_thread_pool
       service_params: []
       want_config: false
@@ -206,11 +206,11 @@ definitions:
         htypes.sample_list.feed_sample_list: legacy_type.sample_list:feed_sample_list
         htypes.sample_list.item: legacy_type.sample_list:item
         htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
-  system-actor_value_ctl.value-ctl:
+  system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config.one_way.actor.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-actor.value-ctl

@@ -25,11 +25,11 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: column_visible_reg
-      ctl: data_service-config_ctl.ctl
+      ctl: data_service-config.ctl
       function: column_visible_reg
       service_params: []
       want_config: true
       free_params: []
-  data_service-config_ctl.ctl:
+  data_service-config.ctl:
     type: legacy_type.data_service:config_ctl
     value: {}

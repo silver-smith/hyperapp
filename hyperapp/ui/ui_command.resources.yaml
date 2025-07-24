@@ -63,7 +63,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_view_commands
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: get_view_commands
       service_params:
       - diff_creg
@@ -89,7 +89,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_view_element_commands
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: get_view_element_commands
       service_params:
       - view_element_ui_command_reg
@@ -98,20 +98,20 @@ definitions:
       free_params:
       - ctx
       - view
-  list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl:
+  list_config_ctl-dict_list_config.one_way.actor.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
-  system-actor_value_ctl.value-ctl:
+      value_ctl: system-actor.value-ctl
+  system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config.one_way.actor.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
-  system-flat_list_config_ctl.ctl:
+      value_ctl: system-actor.value-ctl
+  system-flat_list_config.ctl:
     type: legacy_type.system:flat_list_config_ctl
     value: {}
   system_fn_creg-command-ui_command_enum_fn.actor-cfg-item:
@@ -159,7 +159,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: ui_command_enumerator_reg
-      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
+      ctl: list_config_ctl-dict_list_config.one_way.actor.ctl
       function: ui_command_enumerator_reg
       service_params: []
       want_config: true
@@ -185,7 +185,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: universal_ui_command_enumerator_reg
-      ctl: system-flat_list_config_ctl.ctl
+      ctl: system-flat_list_config.ctl
       function: universal_ui_command_enumerator_reg
       service_params: []
       want_config: true
@@ -199,7 +199,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: universal_ui_command_reg
-      ctl: system-flat_list_config_ctl.ctl
+      ctl: system-flat_list_config.ctl
       function: universal_ui_command_reg
       service_params: []
       want_config: true
@@ -213,7 +213,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_element_ui_command_enumerator_reg
-      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
+      ctl: list_config_ctl-dict_list_config.one_way.actor.ctl
       function: view_element_ui_command_enumerator_reg
       service_params: []
       want_config: true
@@ -228,7 +228,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_element_ui_command_reg
-      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
+      ctl: list_config_ctl-dict_list_config.one_way.actor.ctl
       function: view_element_ui_command_reg
       service_params: []
       want_config: true
@@ -243,7 +243,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_ui_command_reg
-      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
+      ctl: list_config_ctl-dict_list_config.one_way.actor.ctl
       function: view_ui_command_reg
       service_params: []
       want_config: true
@@ -258,7 +258,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_ui_model_command_reg
-      ctl: list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl
+      ctl: list_config_ctl-dict_list_config.one_way.actor.ctl
       function: view_ui_model_command_reg
       service_params: []
       want_config: true

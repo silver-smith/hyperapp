@@ -16,14 +16,14 @@ import:
 - legacy_type.view_factory:multi_item_k
 - ui.remote_model:remote_model.module
 definitions:
-  system-actor_value_ctl.value-ctl:
+  system-actor.value-ctl:
     type: legacy_type.system:actor_value_ctl
     value: {}
-  system-dict_config_ctl.actor_value_ctl.ctl:
+  system-dict_config.one_way.actor.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
       key_ctl: base.system.config_layer:one_way.key_ctl
-      value_ctl: system-actor_value_ctl.value-ctl
+      value_ctl: system-actor.value-ctl
   view_factory.module:
     type: legacy_type.builtin:python_module
     value:
@@ -47,7 +47,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_factory_reg
-      ctl: system-dict_config_ctl.actor_value_ctl.ctl
+      ctl: system-dict_config.one_way.actor.ctl
       function: view_factory_reg
       service_params:
       - visualizer_reg
