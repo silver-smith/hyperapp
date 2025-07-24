@@ -3,6 +3,7 @@
 import:
 - base.mark:mark.module
 - base.system.config_ctl:config_ctl.module
+- base.system.config_layer:one_way.key_ctl
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:data_value_ctl
@@ -37,4 +38,5 @@ definitions:
   system-dict_config_ctl.data_value_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
+      key_ctl: base.system.config_layer:one_way.key_ctl
       value_ctl: system-data_value_ctl.value-ctl

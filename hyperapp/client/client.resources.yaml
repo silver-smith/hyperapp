@@ -4,6 +4,7 @@ import:
 - base.context:context.module
 - base.mark:mark.module
 - base.reconstructors:reconstructors.module
+- base.system.config_layer:one_way.key_ctl
 - builtins:hyperapp_dir.service
 - builtins:mosaic.service
 - lcs.lcs:lcs.module
@@ -115,4 +116,5 @@ definitions:
   system-dict_config_ctl.actor_value_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
+      key_ctl: base.system.config_layer:one_way.key_ctl
       value_ctl: system-actor_value_ctl.value-ctl

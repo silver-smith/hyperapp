@@ -3,6 +3,7 @@
 import:
 - base.mark:mark.module
 - base.system.config_ctl:config_ctl.module
+- base.system.config_layer:one_way.key_ctl
 - base.system.list_config_ctl:list_config_ctl.module
 - builtins:deduce_t.service
 - builtins:web.service
@@ -60,6 +61,7 @@ definitions:
   list_config_ctl-dict_list_config_ctl.data_value_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
     value:
+      key_ctl: base.system.config_layer:one_way.key_ctl
       value_ctl: system-data_value_ctl.value-ctl
   system-data_value_ctl.value-ctl:
     type: legacy_type.system:data_value_ctl
@@ -67,4 +69,5 @@ definitions:
   system-dict_config_ctl.data_value_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
+      key_ctl: base.system.config_layer:one_way.key_ctl
       value_ctl: system-data_value_ctl.value-ctl

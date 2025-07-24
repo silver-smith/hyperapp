@@ -3,6 +3,7 @@
 import:
 - base.mark:mark.module
 - base.system.config_ctl:config_ctl.module
+- base.system.config_layer:one_way.key_ctl
 - base.system.list_config_ctl:list_config_ctl.module
 - base.system_fn:system_fn.module
 - builtins:deduce_t.service
@@ -163,6 +164,7 @@ definitions:
   list_config_ctl-dict_list_config_ctl.actor_value_ctl.ctl:
     type: legacy_type.list_config_ctl:dict_list_config_ctl
     value:
+      key_ctl: base.system.config_layer:one_way.key_ctl
       value_ctl: system-actor_value_ctl.value-ctl
   model_command.module:
     type: legacy_type.builtin:python_module
@@ -248,6 +250,7 @@ definitions:
   system-dict_config_ctl.actor_value_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value:
+      key_ctl: base.system.config_layer:one_way.key_ctl
       value_ctl: system-actor_value_ctl.value-ctl
   system-flat_list_config_ctl.ctl:
     type: legacy_type.system:flat_list_config_ctl
