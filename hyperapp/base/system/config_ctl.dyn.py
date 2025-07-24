@@ -91,7 +91,6 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
     is_multi_item = True
 
     def __init__(self, cfg_item_creg=None, cfg_value_creg=None, key_ctl=None):
-        self._cfg_item_creg = cfg_item_creg
         self._key_ctl = key_ctl or OneWayKeyCtl(cfg_item_creg)
         self._cfg_value_creg = cfg_value_creg
 
@@ -122,11 +121,11 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
         pass
 
     def data_to_item(self, piece):
-        key, template = self._cfg_item_creg.animate(piece)
+        key, template = self._key_ctl.data_to_item(piece)
         return (key, template)
 
     def item_to_data(self, key, template):
-        return self._cfg_item_creg.actor_to_piece((key, template))
+        return self._key_ctl.item_to_data(key, template)
 
     def _item_pieces_to_data(self, item_list):
         return item_pieces_to_data(item_list)
