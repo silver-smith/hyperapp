@@ -3,6 +3,7 @@
 import:
 - demo.hello_world:hello_world.global-model-command
 - demo.system_info:system_info.global-model-command
+- demo.system_info_model:formatter_creg-system_info_model-model.actor-cfg-item
 - demo.system_info_model:open_system_info.global-model-command
 - demo.system_info_model:system_info_model-model.feed-template
 - demo.system_info_model:system_info_model-model.model-cfg-item
@@ -14,6 +15,7 @@ definitions:
     value:
       services:
         feed_factory: feed_factory
+        formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
         model_reg: model_reg
   feed_factory:
@@ -21,6 +23,11 @@ definitions:
     value:
       items:
       - demo.system_info_model:system_info_model-model.feed-template
+  formatter_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - demo.system_info_model:formatter_creg-system_info_model-model.actor-cfg-item
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:

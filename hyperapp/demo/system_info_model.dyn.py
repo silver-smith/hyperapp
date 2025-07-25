@@ -18,3 +18,8 @@ def system_info(piece):
 @mark.global_command
 def open_system_info():
     return htypes.system_info_model.model()
+
+
+@mark.actor.formatter_creg
+def format_model(piece):
+    return "System info"

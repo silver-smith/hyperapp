@@ -12,10 +12,26 @@ import:
 - legacy_type.feed:list_feed_type
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:model
+- legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - legacy_type.system_info:item
 - legacy_type.system_info_model:model
 definitions:
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: system_info_model.module
+      attr_name: format_model
+  format_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_model
+      service_params: []
+  formatter_creg-system_info_model-model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.system_info_model:model
+      value: format_model.actor-template
   open_system_info:
     type: legacy_type.builtin:attribute
     value:
