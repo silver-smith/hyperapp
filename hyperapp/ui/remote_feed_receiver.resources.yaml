@@ -3,8 +3,10 @@
 import:
 - base.mark:mark.module
 - base.system.config_layer:one_way.key_ctl
+- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.model:remote_model
 - legacy_type.system:actor_value_ctl
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
@@ -21,6 +23,8 @@ definitions:
       file_name: remote_feed_receiver.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        htypes.model.remote_model: legacy_type.model:remote_model
+        services.mosaic: builtins:mosaic.service
   remote_feed_receiver.service:
     type: legacy_type.system:service_template
     value:
@@ -32,6 +36,7 @@ definitions:
       - feed_factory
       want_config: false
       free_params:
+      - request
       - model
       - diff
   system-actor.value-ctl:

@@ -22,7 +22,7 @@ class RemoteSubscription:
         log.info("Sending diff %s to %s", diff, self._remote_peer)
         fn = ContextFn(
             rpc_system_call_factory=self._rpc_system_call_factory,
-            ctx_params=('model', 'diff'),
+            ctx_params=('request', 'model', 'diff'),
             service_params=('diff_creg', 'feed_factory'),
             raw_fn=remote_feed_receiver,
             )
