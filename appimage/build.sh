@@ -19,7 +19,7 @@ mkdir -p "$work_dir"
 
 if [ ! -x "$appimagetool_image_path" ]; then
   rm -rf "$work_dir/*"
-  wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/$appimagetool_image_name" --output-document="$appimagetool_image_path"
+  wget "https://github.com/AppImage/appimagetool/releases/download/continuous/$appimagetool_image_name" --output-document="$appimagetool_image_path"
   chmod +x "$appimagetool_image_path"
 fi
 
