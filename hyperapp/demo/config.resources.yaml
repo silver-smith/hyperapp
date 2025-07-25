@@ -3,6 +3,9 @@
 import:
 - demo.hello_world:hello_world.global-model-command
 - demo.system_info:system_info.global-model-command
+- demo.system_info_model:open_system_info.global-model-command
+- demo.system_info_model:system_info_model-model.feed-template
+- demo.system_info_model:system_info_model-model.model-cfg-item
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -10,10 +13,23 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
+        feed_factory: feed_factory
         global_model_command_reg: global_model_command_reg
+        model_reg: model_reg
+  feed_factory:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - demo.system_info_model:system_info_model-model.feed-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
       items:
       - demo.hello_world:hello_world.global-model-command
       - demo.system_info:system_info.global-model-command
+      - demo.system_info_model:open_system_info.global-model-command
+  model_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - demo.system_info_model:system_info_model-model.model-cfg-item

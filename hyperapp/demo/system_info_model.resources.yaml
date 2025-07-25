@@ -1,0 +1,93 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:global_model_command
+- legacy_type.command:model_command_fn
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
+- legacy_type.model:index_list_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
+- legacy_type.system_info:item
+- legacy_type.system_info_model:model
+definitions:
+  open_system_info:
+    type: legacy_type.builtin:attribute
+    value:
+      object: system_info_model.module
+      attr_name: open_system_info
+  open_system_info.d:
+    type: open_system_info_d
+    value: {}
+  open_system_info.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_system_info
+      ctx_params: []
+      service_params: []
+  open_system_info.global-model-command:
+    type: legacy_type.command:global_model_command
+    value:
+      d: open_system_info.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_system_info.fn
+      preserve_remote: false
+  open_system_info_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: system_info_model
+      name: open_system_info_d
+      base: null
+      fields: {}
+  system_info:
+    type: legacy_type.builtin:attribute
+    value:
+      object: system_info_model.module
+      attr_name: system_info
+  system_info_model-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      model_t: legacy_type.system_info_model:model
+      feed_type: system_info_model-model.feed-type
+  system_info_model-model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.system_info:item
+  system_info_model-model.index-list-ui-t:
+    type: legacy_type.model:index_list_ui_t
+    value:
+      item_t: legacy_type.system_info:item
+  system_info_model-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: system_info_model-model.index-list-ui-t
+      system_fn: system_info_model-model.system-fn
+  system_info_model-model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.system_info_model:model
+      value: system_info_model-model.model
+  system_info_model-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: system_info
+      ctx_params:
+      - piece
+      service_params: []
+  system_info_model.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: system_info_model
+      file_name: system_info_model.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.system_info.item: legacy_type.system_info:item
+        htypes.system_info_model.model: legacy_type.system_info_model:model
