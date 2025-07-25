@@ -12,10 +12,12 @@ def feed_factory(model):
     return Mock()
 
 
-def test_remote_feed_receiver(remote_feed_receiver):
+def test_remote_feed_receiver(generate_rsa_identity, remote_feed_receiver):
+    identity = generate_rsa_identity(fast=True)
+    request = Mock(remote_peer=identity.peer)
     model = htypes.remote_feed_receiver_tests.sample_list_feed()
     item = htypes.remote_feed_receiver_tests.sample_item(
         attr="Sample item",
         )
     diff = IndexListDiff.Append(item)
-    remote_feed_receiver(model, diff.piece)
+    remote_feed_receiver(request, model, diff.piece)
