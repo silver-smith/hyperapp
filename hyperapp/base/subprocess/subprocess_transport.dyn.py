@@ -98,10 +98,10 @@ class SubprocessRoute:
 
 class SubprocessTransport:
 
-    def __init__(self, system_failed, bundler, parcel_registry, transport, route_table):
+    def __init__(self, system_failed, bundler, parcel_creg, transport, route_table):
         self._system_failed = system_failed
         self._bundler = bundler
-        self._parcel_registry = parcel_registry
+        self._parcel_creg = parcel_creg
         self._transport = transport
         self._route_table = route_table
         self._server_connections = {}  # connection -> ConnectionRec
@@ -186,7 +186,7 @@ class SubprocessTransport:
         ref_set = unbundler.register_bundle(parcel_bundle)
         connection_rec.seen_refs |= ref_set
         parcel_piece_ref = parcel_bundle.roots[0]
-        parcel = self._parcel_registry.invite(parcel_piece_ref)
+        parcel = self._parcel_creg.invite(parcel_piece_ref)
         self._process_parcel(connection, connection_rec, parcel)
 
     def _process_parcel(self, connection, connection_rec, parcel):
@@ -196,7 +196,7 @@ class SubprocessTransport:
         self._transport.send_parcel(parcel)
 
 
-def subprocess_transport(system_failed, bundler, parcel_registry, transport, route_table):
-    transport = SubprocessTransport(system_failed, bundler, parcel_registry, transport, route_table)
+def subprocess_transport(system_failed, bundler, parcel_creg, transport, route_table):
+    transport = SubprocessTransport(system_failed, bundler, parcel_creg, transport, route_table)
     yield transport
     transport.stop()

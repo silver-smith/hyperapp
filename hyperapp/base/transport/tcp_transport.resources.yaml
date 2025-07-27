@@ -87,7 +87,7 @@ definitions:
       function: _tcp_services
       service_params:
       - bundler
-      - parcel_registry
+      - parcel_creg
       - transport
       - route_table
       - _address_to_tcp_client

@@ -63,14 +63,14 @@ import:
 - base.transport.endpoint:endpoint_registry.service
 - base.transport.endpoint:endpoint_thread_pool.service
 - base.transport.identity:identity_creg.service
-- base.transport.identity:parcel_registry.service
+- base.transport.identity:parcel_creg.service
 - base.transport.identity:peer_creg.service
 - base.transport.identity:signature_creg.service
 - base.transport.route_creg:route_creg.service
 - base.transport.route_table:route_table.service
 - base.transport.rsa_identity:generate_rsa_identity.service
 - base.transport.rsa_identity:identity_creg-rsa_identity-rsa_identity.actor-cfg-item
-- base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-cfg-item
+- base.transport.rsa_identity:parcel_creg-rsa_identity-rsa_parcel.actor-cfg-item
 - base.transport.rsa_identity:peer_creg-rsa_identity-rsa_peer.actor-cfg-item
 - base.transport.rsa_identity:signature_creg-rsa_identity-rsa_signature.actor-cfg-item
 - base.transport.tcp_transport:_address_to_tcp_client.service
@@ -109,7 +109,7 @@ definitions:
         config_ctl_creg: config_ctl_creg
         identity_creg: identity_creg
         init_hook: init_hook
-        parcel_registry: parcel_registry
+        parcel_creg: parcel_creg
         peer_creg: peer_creg
         resource_name_creg: resource_name_creg
         route_creg: route_creg
@@ -136,11 +136,11 @@ definitions:
     value:
       items:
       - base.assoc_key:init_assoc_key.hook
-  parcel_registry:
+  parcel_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-cfg-item
+      - base.transport.rsa_identity:parcel_creg-rsa_identity-rsa_parcel.actor-cfg-item
   peer_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -224,7 +224,7 @@ definitions:
       - base.transport.endpoint:endpoint_registry.service
       - base.transport.endpoint:endpoint_thread_pool.service
       - base.transport.identity:identity_creg.service
-      - base.transport.identity:parcel_registry.service
+      - base.transport.identity:parcel_creg.service
       - base.transport.identity:peer_creg.service
       - base.transport.identity:signature_creg.service
       - base.transport.route_creg:route_creg.service

@@ -33,7 +33,7 @@ definitions:
       service_params:
       - system_failed
       - bundler
-      - parcel_registry
+      - parcel_creg
       - transport
       - route_table
       want_config: false

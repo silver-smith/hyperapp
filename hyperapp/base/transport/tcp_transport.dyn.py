@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 _Services = namedtuple('_Services', [
     'bundler',
-    'parcel_registry',
+    'parcel_creg',
     'transport',
     'route_table',
     'address_to_tcp_client',
@@ -127,7 +127,7 @@ class Connection:
         log.info("%s: Received bundle: parcel: %s", self, parcel_ref)
         ref_set = unbundler.register_bundle(bundle)
         self._seen_refs |= ref_set
-        parcel = self._svc.parcel_registry.invite(parcel_ref)
+        parcel = self._svc.parcel_creg.invite(parcel_ref)
         sender_ref = mosaic.put(parcel.sender.piece)
         # Add route first - it may be used during parcel processing.
         log.info("%s will be routed via established connection from: %s", sender_ref, self)
@@ -233,7 +233,7 @@ def _tcp_selector(system_failed, _address_to_tcp_client):
 @mark.service
 def _tcp_services(
         bundler,
-        parcel_registry,
+        parcel_creg,
         transport,
         route_table,
         _address_to_tcp_client,
@@ -241,7 +241,7 @@ def _tcp_services(
         ):
     return _Services(
         bundler=bundler,
-        parcel_registry=parcel_registry,
+        parcel_creg=parcel_creg,
         transport=transport,
         route_table=route_table,
         address_to_tcp_client=_address_to_tcp_client,

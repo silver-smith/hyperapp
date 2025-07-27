@@ -15,5 +15,5 @@ def signature_creg(config):
     return code_registry_ctr('signature_creg', config)
 
 
-def parcel_registry(config):
-    return code_registry_ctr('parcel_registry', config)
+def parcel_creg(config):
+    return code_registry_ctr('parcel_creg', config)

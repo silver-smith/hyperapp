@@ -20,7 +20,7 @@ def test_rsa_peer(peer_creg, generate_rsa_identity):
     assert peer_1.piece == peer_2.piece
 
 
-def test_rsa_parcel(parcel_registry, generate_rsa_identity):
+def test_rsa_parcel(parcel_creg, generate_rsa_identity):
     sender_identity = generate_rsa_identity(fast=True)
     receiver_identity = generate_rsa_identity(fast=True)
 
@@ -31,7 +31,7 @@ def test_rsa_parcel(parcel_registry, generate_rsa_identity):
 
     parcel_1.verify()
 
-    parcel_2 = parcel_registry.animate(parcel_1.piece)
+    parcel_2 = parcel_creg.animate(parcel_1.piece)
     assert parcel_2.piece == parcel_1.piece
 
     parcel_2.verify()
