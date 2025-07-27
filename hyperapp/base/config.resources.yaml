@@ -65,14 +65,14 @@ import:
 - base.transport.identity:identity_creg.service
 - base.transport.identity:parcel_registry.service
 - base.transport.identity:peer_creg.service
-- base.transport.identity:signature_registry.service
+- base.transport.identity:signature_creg.service
 - base.transport.route_creg:route_creg.service
 - base.transport.route_table:route_table.service
 - base.transport.rsa_identity:generate_rsa_identity.service
 - base.transport.rsa_identity:identity_creg-rsa_identity-rsa_identity.actor-cfg-item
 - base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-cfg-item
 - base.transport.rsa_identity:peer_creg-rsa_identity-rsa_peer.actor-cfg-item
-- base.transport.rsa_identity:signature_registry-rsa_identity-rsa_signature.actor-cfg-item
+- base.transport.rsa_identity:signature_creg-rsa_identity-rsa_signature.actor-cfg-item
 - base.transport.tcp_transport:_address_to_tcp_client.service
 - base.transport.tcp_transport:_tcp_selector.service
 - base.transport.tcp_transport:_tcp_services.service
@@ -115,7 +115,7 @@ definitions:
         route_creg: route_creg
         rpc_message_creg: rpc_message_creg
         rpc_target_creg: rpc_target_creg
-        signature_registry: signature_registry
+        signature_creg: signature_creg
         system: system
         system_fn_creg: system_fn_creg
   config_ctl_creg:
@@ -174,11 +174,11 @@ definitions:
       - base.rpc.rpc_endpoint:rpc_target_creg-rpc-function_target.actor-cfg-item
       - base.rpc.rpc_endpoint:rpc_target_creg-rpc-service_target.actor-cfg-item
       - base.rpc.rpc_endpoint:rpc_target_creg-rpc-system_fn_target.actor-cfg-item
-  signature_registry:
+  signature_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:signature_registry-rsa_identity-rsa_signature.actor-cfg-item
+      - base.transport.rsa_identity:signature_creg-rsa_identity-rsa_signature.actor-cfg-item
   system:
     type: legacy_type.system:item_list_config
     value:
@@ -226,7 +226,7 @@ definitions:
       - base.transport.identity:identity_creg.service
       - base.transport.identity:parcel_registry.service
       - base.transport.identity:peer_creg.service
-      - base.transport.identity:signature_registry.service
+      - base.transport.identity:signature_creg.service
       - base.transport.route_creg:route_creg.service
       - base.transport.route_table:route_table.service
       - base.transport.rsa_identity:generate_rsa_identity.service

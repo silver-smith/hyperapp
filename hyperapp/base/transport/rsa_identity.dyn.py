@@ -189,8 +189,8 @@ class RsaSignature:
 class RsaParcel:
 
     @classmethod
-    def from_piece(cls, piece, signature_registry):
-        signature = signature_registry.invite(piece.sender_signature_ref)
+    def from_piece(cls, piece, signature_creg):
+        signature = signature_creg.invite(piece.sender_signature_ref)
         receiver = RsaPeer.from_public_key_pem(piece.receiver_public_key_pem)
         return cls(receiver, piece.encrypted_fernet_key, piece.encrypted_bundle, signature)
 

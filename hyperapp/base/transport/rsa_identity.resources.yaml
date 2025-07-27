@@ -108,7 +108,7 @@ definitions:
       function: RsaSignature.from_piece
       service_params: []
 
-  signature_registry-rsa_identity-rsa_signature.actor-cfg-item:
+  signature_creg-rsa_identity-rsa_signature.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.rsa_identity:rsa_signature
@@ -131,7 +131,7 @@ definitions:
     value:
       function: RsaParcel.from_piece
       service_params:
-      - signature_registry
+      - signature_creg
 
   parcel_registry-rsa_identity-rsa_parcel.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

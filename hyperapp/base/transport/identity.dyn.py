@@ -11,8 +11,8 @@ def peer_creg(config):
     return code_registry_ctr('peer_creg', config)
 
 
-def signature_registry(config):
-    return code_registry_ctr('signature_registry', config)
+def signature_creg(config):
+    return code_registry_ctr('signature_creg', config)
 
 
 def parcel_registry(config):
