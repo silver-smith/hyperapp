@@ -16,6 +16,13 @@ class RouteTable:
         self._route_creg = route_creg
         self._peer2route_list = defaultdict(list)
 
+    def has_route(self, peer):
+        if peer.piece in self._peer2route_list:
+            return True
+        if peer.piece in self._config:
+            return True
+        return False
+
     def add_route(self, peer, route):
         self._peer2route_list[peer.piece].append(route)
         if route.piece is None:
