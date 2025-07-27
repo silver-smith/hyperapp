@@ -9,6 +9,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.context import Context
 from .code.config_key_ctl import TypeKeyCtl
 from .code.config_ctl import DictConfigCtl
 from .code.system_fn import ContextFn
@@ -19,9 +20,10 @@ log = logging.getLogger(__name__)
 
 class Feed:
 
-    def __init__(self, piece):
-        self._piece = piece
+    def __init__(self, model):
+        self._model = model
         self._close_hooks = []
+        self._subscribed_to_remote_as = None
         self._subscribers = weakref.WeakSet()
 
     def add_close_hook(self, hook):
@@ -37,11 +39,39 @@ class Feed:
         for subscriber in self._subscribers:
             subscriber.process_diff(diff)
 
+    def subscribe_to_remote_feed(self, peer_registry, rpc_system_call_factory, identity):
+        if not isinstance(self._model, htypes.model.remote_model):
+            return
+        if self._subscribed_to_remote_as:
+            assert self._subscribed_to_remote_as == identity  # Already subscribed with another identity.
+            return
+        remote_peer = peer_registry.invite(self._model.remote_peer)
+        real_model = web.summon(self._model.model)
+        self._subscribe_to_remote_feed(rpc_system_call_factory, identity, remote_peer, real_model)
+        self._subscribed_to_remote_as = identity
+
+    @staticmethod
+    def _subscribe_to_remote_feed(rpc_system_call_factory, identity, remote_peer, real_model):
+        fn = ContextFn(
+            rpc_system_call_factory=rpc_system_call_factory,
+            ctx_params=('request', 'real_model'),
+            service_params=('feed_factory', 'server_feed'),
+            raw_fn=subscribe_server_feed,
+            )
+        rpc_call = rpc_system_call_factory(
+            receiver_peer=remote_peer,
+            sender_identity=identity,
+            fn=fn,
+            )
+        ctx = Context(real_model=real_model)
+        call_kw = fn.call_kw(ctx)
+        rpc_call(**call_kw)
+
     def _subscriber_gone(self):
         if self._subscribers:
             return
         for hook in self._close_hooks:
-            hook(self._piece)
+            hook(self._model)
 
 
 class ListFeed(Feed):
@@ -99,26 +129,8 @@ def feed_factory(config, feed_map, piece):
     return feed
 
 
-def _subscribe_remote_feed(peer_registry, rpc_system_call_factory, remote_model, ctx):
-    real_model = web.summon(remote_model.model)
-    remote_peer = peer_registry.invite(remote_model.remote_peer)
-    fn = ContextFn(
-        rpc_system_call_factory=rpc_system_call_factory,
-        ctx_params=('request', 'real_model'),
-        service_params=('feed_factory', 'server_feed'),
-        raw_fn=subscribe_server_feed,
-        )
-    rpc_call = rpc_system_call_factory(
-        receiver_peer=remote_peer,
-        sender_identity=ctx.identity,
-        fn=fn,
-        )
-    call_kw = fn.call_kw(ctx, real_model=real_model)
-    rpc_call(**call_kw)
-
-
 @mark.service
 def client_feed_factory(peer_registry, rpc_system_call_factory, feed_factory, piece, ctx):
-    if isinstance(piece, htypes.model.remote_model):
-        _subscribe_remote_feed(peer_registry, rpc_system_call_factory, piece, ctx)
-    return feed_factory(piece)
+    feed = feed_factory(piece)
+    feed.subscribe_to_remote_feed(peer_registry, rpc_system_call_factory, ctx.identity)
+    return feed

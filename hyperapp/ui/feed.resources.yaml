@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- base.context:context.module
 - base.mark:mark.module
 - base.system.config_ctl:config_ctl.module
 - base.system.config_key_ctl:config_key_ctl.module
@@ -50,6 +51,7 @@ definitions:
       import_list:
         code.config_ctl: base.system.config_ctl:config_ctl.module
         code.config_key_ctl: base.system.config_key_ctl:config_key_ctl.module
+        code.context: base.context:context.module
         code.feed_servant: ui.feed_servant:feed_servant.module
         code.mark: base.mark:mark.module
         code.system_fn: base.system_fn:system_fn.module
