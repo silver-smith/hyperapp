@@ -13,10 +13,10 @@ def test_rsa_identity(identity_creg, generate_rsa_identity):
     assert identity.piece == identity_2.piece
 
 
-def test_rsa_peer(peer_registry, generate_rsa_identity):
+def test_rsa_peer(peer_creg, generate_rsa_identity):
     identity = generate_rsa_identity(fast=True)
     peer_1 = identity.peer
-    peer_2 = peer_registry.animate(peer_1.piece)
+    peer_2 = peer_creg.animate(peer_1.piece)
     assert peer_1.piece == peer_2.piece
 
 

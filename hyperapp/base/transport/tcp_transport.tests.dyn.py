@@ -29,7 +29,7 @@ def my_callback(message):
 
 @mark.fixture
 def tcp_test_callback(
-        peer_registry,
+        peer_creg,
         generate_rsa_identity,
         endpoint_registry,
         rpc_endpoint,
@@ -39,7 +39,7 @@ def tcp_test_callback(
         message,
         ):
     log.info("tcp_test_callback: entered")
-    tcp_master_peer = peer_registry.animate(tcp_master_peer_piece)
+    tcp_master_peer = peer_creg.animate(tcp_master_peer_piece)
     my_identity = generate_rsa_identity(fast=True)
     endpoint_registry.register(my_identity, rpc_endpoint)
     rpc_call = rpc_call_factory(tcp_master_peer, my_identity, master_fn_ref)

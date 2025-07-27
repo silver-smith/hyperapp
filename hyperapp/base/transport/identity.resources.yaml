@@ -47,18 +47,18 @@ definitions:
       service_params: []
       want_config: true
 
-  peer_registry:
+  peer_creg:
     type: legacy_type.builtin:attribute
     value:
       object: identity.module
-      attr_name: peer_registry
+      attr_name: peer_creg
 
-  peer_registry.service:
+  peer_creg.service:
     type: legacy_type.system:service_template
     value:
-      name: peer_registry
+      name: peer_creg
       ctl: base.system.system:actor_dict.config_ctl
-      function: peer_registry
+      function: peer_creg
       free_params: []
       service_params: []
       want_config: true

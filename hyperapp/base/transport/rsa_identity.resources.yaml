@@ -84,7 +84,7 @@ definitions:
       function: RsaPeer.from_piece
       service_params: []
 
-  peer_registry-rsa_identity-rsa_peer.actor-cfg-item:
+  peer_creg-rsa_identity-rsa_peer.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.rsa_identity:rsa_peer

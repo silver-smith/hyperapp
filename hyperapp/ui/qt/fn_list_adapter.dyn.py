@@ -17,9 +17,9 @@ log = logging.getLogger(__name__)
 class FnListAdapter(FnListAdapterBase):
 
     @staticmethod
-    def _resolve_model(peer_registry, model):
+    def _resolve_model(peer_creg, model):
         if isinstance(model, htypes.model.remote_model):
-            remote_peer = peer_registry.invite(model.remote_peer)
+            remote_peer = peer_creg.invite(model.remote_peer)
             real_model = web.summon(model.model)
         else:
             remote_peer = None
@@ -92,10 +92,10 @@ class FnIndexListAdapter(FnListAdapter, IndexListAdapterMixin):
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx,
-                   system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg, peer_registry):
+                   system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg, peer_creg):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
-        remote_peer, real_model = cls._resolve_model(peer_registry, model)
+        remote_peer, real_model = cls._resolve_model(peer_creg, model)
         return cls(system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg,
                    model, real_model, item_t, remote_peer, ctx, fn)
     
@@ -105,10 +105,10 @@ class FnKeyListAdapter(FnListAdapter, KeyListAdapterMixin):
     @classmethod
     @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx,
-                   system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg, peer_registry):
+                   system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg, peer_creg):
         item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
-        remote_peer, real_model = cls._resolve_model(peer_registry, model)
+        remote_peer, real_model = cls._resolve_model(peer_creg, model)
         key_field_t = pyobj_creg.invite(piece.key_field_t)
         return cls(system_fn_creg, rpc_system_call_factory, client_feed_factory, model_servant, column_visible_reg,
                    model, real_model, item_t, remote_peer, ctx, fn, piece.key_field, key_field_t)

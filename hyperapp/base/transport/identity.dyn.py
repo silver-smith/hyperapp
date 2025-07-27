@@ -7,8 +7,8 @@ def identity_creg(config):
     return code_registry_ctr('identity_creg', config)
 
 
-def peer_registry(config):
-    return code_registry_ctr('peer_registry', config)
+def peer_creg(config):
+    return code_registry_ctr('peer_creg', config)
 
 
 def signature_registry(config):

@@ -53,7 +53,7 @@ definitions:
       service_params:
       - get_system_config_piece
       - partial_ref
-      - peer_registry
+      - peer_creg
       - rpc_submit_factory
       - rpc_call_factory
       - service_call_factory

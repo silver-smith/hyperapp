@@ -169,7 +169,7 @@ definitions:
       service_params:
       - system
       - transport
-      - peer_registry
+      - peer_creg
       - rpc_target_creg
 
   rpc_message_creg-rpc-request.actor-cfg-item:

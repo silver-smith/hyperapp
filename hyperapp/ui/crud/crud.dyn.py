@@ -44,10 +44,10 @@ class CrudContextView(ContextView):
 
     @classmethod
     @mark.view
-    def from_piece(cls, piece, ctx, system_fn_creg, peer_registry, view_reg, model_layout_reg, crud):
+    def from_piece(cls, piece, ctx, system_fn_creg, peer_creg, view_reg, model_layout_reg, crud):
         base_view = view_reg.invite(piece.base_view, ctx)
         model = web.summon_opt(piece.model)
-        remote_peer = peer_registry.invite_opt(piece.remote_peer)
+        remote_peer = peer_creg.invite_opt(piece.remote_peer)
         commit_command_d = web.summon(piece.commit_command_d)
         return cls(
             system_fn_creg, model_layout_reg, crud, base_view, piece.label, model, remote_peer,

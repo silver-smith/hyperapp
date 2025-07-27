@@ -30,7 +30,7 @@ class FeedDiscoverer:
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
 
-    def subscribe_to_remote_feed(self, peer_registry, rpc_system_call_factory, identity):
+    def subscribe_to_remote_feed(self, peer_creg, rpc_system_call_factory, identity):
         pass
 
     def send(self, diff):

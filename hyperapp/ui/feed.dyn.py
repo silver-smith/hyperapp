@@ -43,13 +43,13 @@ class Feed:
                 log.info("Subscriber %s is gone: %s", subscriber, x)
                 self._subscribers.remove(subscriber)
 
-    def subscribe_to_remote_feed(self, peer_registry, rpc_system_call_factory, identity):
+    def subscribe_to_remote_feed(self, peer_creg, rpc_system_call_factory, identity):
         if not isinstance(self._model, htypes.model.remote_model):
             return
         if self._subscribed_to_remote_as:
             assert self._subscribed_to_remote_as == identity  # Already subscribed with another identity.
             return
-        remote_peer = peer_registry.invite(self._model.remote_peer)
+        remote_peer = peer_creg.invite(self._model.remote_peer)
         real_model = web.summon(self._model.model)
         self._subscribe_to_remote_feed(rpc_system_call_factory, identity, remote_peer, real_model)
         self._subscribed_to_remote_as = identity
@@ -134,7 +134,7 @@ def feed_factory(config, feed_map, piece):
 
 
 @mark.service
-def client_feed_factory(peer_registry, rpc_system_call_factory, feed_factory, piece, ctx):
+def client_feed_factory(peer_creg, rpc_system_call_factory, feed_factory, piece, ctx):
     feed = feed_factory(piece)
-    feed.subscribe_to_remote_feed(peer_registry, rpc_system_call_factory, ctx.identity)
+    feed.subscribe_to_remote_feed(peer_creg, rpc_system_call_factory, ctx.identity)
     return feed

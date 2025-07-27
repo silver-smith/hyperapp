@@ -55,7 +55,7 @@ definitions:
       - ctx
       service_params:
       - system_fn_creg
-      - peer_registry
+      - peer_creg
       - view_reg
       - model_layout_reg
       - crud

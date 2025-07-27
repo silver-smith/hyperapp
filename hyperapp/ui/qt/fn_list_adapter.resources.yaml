@@ -35,7 +35,7 @@ definitions:
       - client_feed_factory
       - model_servant
       - column_visible_reg
-      - peer_registry
+      - peer_creg
   FnKeyListAdapter:
     type: legacy_type.builtin:attribute
     value:
@@ -56,7 +56,7 @@ definitions:
       - client_feed_factory
       - model_servant
       - column_visible_reg
-      - peer_registry
+      - peer_creg
   fn_list_adapter.module:
     type: legacy_type.builtin:python_module
     value:

@@ -29,7 +29,7 @@ definitions:
       function: FnRecordAdapter.from_piece
       service_params:
       - system_fn_creg
-      - peer_registry
+      - peer_creg
       - rpc_system_call_factory
       - client_feed_factory
   StaticRecordAdapter:

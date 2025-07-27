@@ -73,7 +73,7 @@ def _rpc_subprocess_callback(request, subprocess_name, subprocess_id, subprocess
 def subprocess_rpc_server_running(
         get_system_config_piece,
         partial_ref,
-        peer_registry,
+        peer_creg,
         rpc_submit_factory,
         rpc_call_factory,
         service_call_factory,
@@ -100,7 +100,7 @@ def subprocess_rpc_server_running(
             try:
                 if not event.wait(timeout=start_timeout_sec):
                     raise RuntimeError(f"Timed out waiting for subprocess #{subprocess_id} {name!r} ({start_timeout_sec} sec)")
-                peer = peer_registry.animate(_subprocess_peer[subprocess_id])
+                peer = peer_creg.animate(_subprocess_peer[subprocess_id])
                 log.info("Rpc server #%d %r is started with peer %s", subprocess_id, name, peer)
                 yield _RpcServerProcess(
                     id=subprocess_id,

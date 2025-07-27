@@ -20,7 +20,7 @@ def _stop(stop_signal, cancel_rpc_request_futures):
 def rpc_server_main(
         stop_signal,
         bundler,
-        peer_registry,
+        peer_creg,
         route_table,
         generate_rsa_identity,
         endpoint_registry,
@@ -40,7 +40,7 @@ def rpc_server_main(
 
     register_reconstructors()
 
-    master_peer = peer_registry.animate(master_peer_piece)
+    master_peer = peer_creg.animate(master_peer_piece)
     master_peer_ref = mosaic.put(master_peer_piece)
     route = SubprocessRoute(bundler, 'master', received_refs, connection)
     route_table.add_route(master_peer_ref, route)

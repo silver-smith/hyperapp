@@ -79,7 +79,7 @@ def rpc_target_creg(config):
     return code_registry_ctr('rpc_target_creg', config)
 
 
-def on_rpc_request(request, transport_request, system, transport, peer_registry, rpc_target_creg):
+def on_rpc_request(request, transport_request, system, transport, peer_creg, rpc_target_creg):
     log.info("Process rpc request: %s", request)
     receiver_identity = transport_request.receiver_identity
     remote_peer = transport_request.remote_peer

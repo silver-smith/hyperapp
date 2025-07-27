@@ -13,7 +13,7 @@ def test_two():
 
 class SampleServant:
 
-    def __init__(self, mosaic, web, peer_registry, rpc_call_factory):
+    def __init__(self, mosaic, web, peer_creg, rpc_call_factory):
         pass
 
     @property
@@ -30,9 +30,9 @@ class SampleServant:
         pass
 
 
-def sample_servant(mosaic, web, peer_registry, rpc_call_factory):
-    log.info("Sample module: sample_factory call: %s, %s, %s, %s", mosaic, web, peer_registry, rpc_call_factory)
-    return SampleServant(mosaic, web, peer_registry, rpc_call_factory)
+def sample_servant(mosaic, web, peer_creg, rpc_call_factory):
+    log.info("Sample module: sample_factory call: %s, %s, %s, %s", mosaic, web, peer_creg, rpc_call_factory)
+    return SampleServant(mosaic, web, peer_creg, rpc_call_factory)
 
 
 log.info("Sample module module is loaded")

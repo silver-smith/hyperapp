@@ -75,9 +75,9 @@ def remote_command_from_model_command(remote_peer, command):
 
 
 @mark.command_enum
-def remote_command_enum(piece, ctx, peer_registry, get_model_commands, remote_command_from_model_command):
+def remote_command_enum(piece, ctx, peer_creg, get_model_commands, remote_command_from_model_command):
     model, model_t = web.summon_with_t(piece.model)
-    remote_peer = peer_registry.invite(piece.remote_peer)
+    remote_peer = peer_creg.invite(piece.remote_peer)
     command_list = get_model_commands(model_t, ctx)
     return [
         remote_command_from_model_command(remote_peer, command)

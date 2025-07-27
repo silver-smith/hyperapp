@@ -36,7 +36,7 @@ definitions:
       ctl: system-dict_config.one_way.actor.ctl
       function: client_feed_factory
       service_params:
-      - peer_registry
+      - peer_creg
       - rpc_system_call_factory
       - feed_factory
       want_config: false

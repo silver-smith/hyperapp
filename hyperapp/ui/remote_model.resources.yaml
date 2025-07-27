@@ -20,7 +20,7 @@ definitions:
     value:
       function: format_remote_model
       service_params:
-      - peer_registry
+      - peer_creg
       - peer_label_reg
       - format
   formatter_creg-model-remote_model.actor-cfg-item:

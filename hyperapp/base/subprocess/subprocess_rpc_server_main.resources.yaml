@@ -41,7 +41,7 @@ definitions:
       service_params:
       - stop_signal
       - bundler
-      - peer_registry
+      - peer_creg
       - route_table
       - generate_rsa_identity
       - endpoint_registry

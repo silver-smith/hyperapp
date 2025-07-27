@@ -29,9 +29,9 @@ Peer = namedtuple('Peer', 'name peer')
 
 class PeerList:
 
-    def __init__(self, file_bundle, peer_registry, path):
+    def __init__(self, file_bundle, peer_creg, path):
         self._file_bundle = file_bundle
-        self._peer_registry = peer_registry
+        self._peer_creg = peer_creg
         self._path = path
 
     def values(self):
@@ -61,7 +61,7 @@ class PeerList:
         except FileNotFoundError:
             return []
         return [
-            Peer(rec.name, self._peer_registry.invite(rec.peer))
+            Peer(rec.name, self._peer_creg.invite(rec.peer))
             for rec in bundle.peer_list
             ]
 
@@ -80,9 +80,9 @@ class PeerList:
 
 
 @mark.service
-def peer_list_reg(file_bundle_factory, peer_registry):
+def peer_list_reg(file_bundle_factory, peer_creg):
     bundle = file_bundle_factory(peer_list_path)
-    return PeerList(bundle, peer_registry, peer_list_path)
+    return PeerList(bundle, peer_creg, peer_list_path)
 
     
 @mark.model(key='name')
@@ -104,19 +104,19 @@ def _unpack_bundle(json_data):
 
 
 @mark.command.add(args=['host'])
-def add(piece, host, peer_list_reg, file_bundle_factory, peer_registry, peer_label_reg):
+def add(piece, host, peer_list_reg, file_bundle_factory, peer_creg, peer_label_reg):
     log.info("Peer list: Add host: %r", host)
     if host in {'', 'localhost'}:
         path = Path.home() / server_bundle_path
         bundle = file_bundle_factory(path)
-        peer = peer_registry.animate(bundle.load_piece())
+        peer = peer_creg.animate(bundle.load_piece())
         log.info("Loaded local server peer from: %s", bundle.path)
         label = 'localhost'
     else:
         command = ['ssh', host, 'cat', server_bundle_path]
         bundle_json = subprocess.check_output(command)
         peer_ref = _unpack_bundle(bundle_json)
-        peer = peer_registry.invite(peer_ref)
+        peer = peer_creg.invite(peer_ref)
         log.info("Loaded server %r peer", host)
         label = host
     peer_list_reg.add(label, peer)
@@ -131,10 +131,10 @@ async def remove(piece, current_item, peer_list_reg):
 
 
 @mark.command(args=['command'])
-async def open_model(piece, current_item, command, ctx, peer_registry, global_model_command_reg):
+async def open_model(piece, current_item, command, ctx, peer_creg, global_model_command_reg):
     command_d = web.summon(command.d)
     command = global_model_command_reg[command_d]
-    peer = peer_registry.invite(current_item.peer)
+    peer = peer_creg.invite(current_item.peer)
     log.info("Peer list: Open model from global command %s @ %s (%s)", command, current_item.name, repr(peer))
     bound_command = command.bind(ctx)
     result = await bound_command.run()
@@ -149,9 +149,9 @@ async def open_model(piece, current_item, command, ctx, peer_registry, global_mo
 
 @mark.command(args=['command'])
 async def run_command(piece, current_item, command, ctx,
-                      peer_registry, global_model_command_reg, remote_command_from_model_command):
+                      peer_creg, global_model_command_reg, remote_command_from_model_command):
     command_d = web.summon(command.d)
-    peer = peer_registry.invite(current_item.peer)
+    peer = peer_creg.invite(current_item.peer)
     log.info("Peer list: Run global command %s @ %s (%s)", command_d, current_item.name, repr(peer))
     command = global_model_command_reg[command_d]
     remote_command = remote_command_from_model_command(peer, command)

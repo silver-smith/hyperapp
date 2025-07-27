@@ -57,7 +57,7 @@ definitions:
       service_params:
       - peer_list_reg
       - file_bundle_factory
-      - peer_registry
+      - peer_creg
       - peer_label_reg
   add.model-command-enumerator:
     type: legacy_type.command:model_args_picker_command_enumerator
@@ -113,7 +113,7 @@ definitions:
       - command
       - ctx
       service_params:
-      - peer_registry
+      - peer_creg
       - global_model_command_reg
   open_model.model-command-enumerator:
     type: legacy_type.command:model_args_picker_command_enumerator
@@ -261,7 +261,7 @@ definitions:
       function: peer_list_reg
       service_params:
       - file_bundle_factory
-      - peer_registry
+      - peer_creg
       want_config: false
       free_params: []
   remove:
@@ -316,7 +316,7 @@ definitions:
       - command
       - ctx
       service_params:
-      - peer_registry
+      - peer_creg
       - global_model_command_reg
       - remote_command_from_model_command
   run_command.model-command-enumerator:
