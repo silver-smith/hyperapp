@@ -62,11 +62,6 @@ import:
 - base.system_fn_creg:system_fn_creg.service
 - base.transport.endpoint:endpoint_registry.service
 - base.transport.endpoint:endpoint_thread_pool.service
-- base.transport.identity:identity_creg.service
-- base.transport.identity:parcel_creg.service
-- base.transport.identity:peer_creg.service
-- base.transport.identity:signature_creg.service
-- base.transport.route_creg:route_creg.service
 - base.transport.route_table:route_table.service
 - base.transport.rsa_identity:generate_rsa_identity.service
 - base.transport.rsa_identity:identity_creg-rsa_identity-rsa_identity.actor-cfg-item
@@ -80,6 +75,11 @@ import:
 - base.transport.tcp_transport:tcp_client_factory.service
 - base.transport.tcp_transport:tcp_server_factory.service
 - base.transport.transport:transport.service
+- base.transport.transport_registries:identity_creg.service
+- base.transport.transport_registries:parcel_creg.service
+- base.transport.transport_registries:peer_creg.service
+- base.transport.transport_registries:route_creg.service
+- base.transport.transport_registries:signature_creg.service
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 definitions:
@@ -223,11 +223,6 @@ definitions:
       - base.system_fn_creg:system_fn_creg.service
       - base.transport.endpoint:endpoint_registry.service
       - base.transport.endpoint:endpoint_thread_pool.service
-      - base.transport.identity:identity_creg.service
-      - base.transport.identity:parcel_creg.service
-      - base.transport.identity:peer_creg.service
-      - base.transport.identity:signature_creg.service
-      - base.transport.route_creg:route_creg.service
       - base.transport.route_table:route_table.service
       - base.transport.rsa_identity:generate_rsa_identity.service
       - base.transport.tcp_transport:_address_to_tcp_client.service
@@ -236,6 +231,11 @@ definitions:
       - base.transport.tcp_transport:tcp_client_factory.service
       - base.transport.tcp_transport:tcp_server_factory.service
       - base.transport.transport:transport.service
+      - base.transport.transport_registries:identity_creg.service
+      - base.transport.transport_registries:parcel_creg.service
+      - base.transport.transport_registries:peer_creg.service
+      - base.transport.transport_registries:route_creg.service
+      - base.transport.transport_registries:signature_creg.service
   system_fn_creg:
     type: legacy_type.system:item_list_config
     value:

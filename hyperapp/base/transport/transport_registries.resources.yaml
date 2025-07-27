@@ -7,18 +7,18 @@ import:
 
 definitions:
 
-  identity.module:
+  transport_registries.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: identity
-      file_name: identity.dyn.py
+      module_name: transport_registries
+      file_name: transport_registries.dyn.py
       import_list:
         services.code_registry_ctr: builtins:code_registry_ctr.service
 
   identity_creg:
     type: legacy_type.builtin:attribute
     value:
-      object: identity.module
+      object: transport_registries.module
       attr_name: identity_creg
 
   identity_creg.service:
@@ -34,7 +34,7 @@ definitions:
   parcel_creg:
     type: legacy_type.builtin:attribute
     value:
-      object: identity.module
+      object: transport_registries.module
       attr_name: parcel_creg
 
   parcel_creg.service:
@@ -50,7 +50,7 @@ definitions:
   peer_creg:
     type: legacy_type.builtin:attribute
     value:
-      object: identity.module
+      object: transport_registries.module
       attr_name: peer_creg
 
   peer_creg.service:
@@ -66,7 +66,7 @@ definitions:
   signature_creg:
     type: legacy_type.builtin:attribute
     value:
-      object: identity.module
+      object: transport_registries.module
       attr_name: signature_creg
 
   signature_creg.service:
@@ -75,6 +75,22 @@ definitions:
       name: signature_creg
       ctl: base.system.system:actor_dict.config_ctl
       function: signature_creg
+      free_params: []
+      service_params: []
+      want_config: true
+
+  route_creg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport_registries.module
+      attr_name: route_creg
+
+  route_creg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: route_creg
+      ctl: base.system.system:actor_dict.config_ctl
+      function: route_creg
       free_params: []
       service_params: []
       want_config: true
