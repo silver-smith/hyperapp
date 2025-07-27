@@ -7,9 +7,9 @@ from .services import (
 from .tested.code import rsa_identity
 
 
-def test_rsa_identity(identity_registry, generate_rsa_identity):
+def test_rsa_identity(identity_creg, generate_rsa_identity):
     identity = generate_rsa_identity(fast=True)
-    identity_2 = identity_registry.animate(identity.piece)
+    identity_2 = identity_creg.animate(identity.piece)
     assert identity.piece == identity_2.piece
 
 

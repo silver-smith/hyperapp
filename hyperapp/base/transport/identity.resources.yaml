@@ -15,18 +15,18 @@ definitions:
       import_list:
         services.code_registry_ctr: builtins:code_registry_ctr.service
 
-  identity_registry:
+  identity_creg:
     type: legacy_type.builtin:attribute
     value:
       object: identity.module
-      attr_name: identity_registry
+      attr_name: identity_creg
 
-  identity_registry.service:
+  identity_creg.service:
     type: legacy_type.system:service_template
     value:
-      name: identity_registry
+      name: identity_creg
       ctl: base.system.system:actor_dict.config_ctl
-      function: identity_registry
+      function: identity_creg
       free_params: []
       service_params: []
       want_config: true

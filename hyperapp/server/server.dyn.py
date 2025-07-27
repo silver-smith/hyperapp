@@ -30,7 +30,7 @@ def _parse_args(sys_argv):
 def server_main(
         stop_signal,
         route_table,
-        identity_registry,
+        identity_creg,
         generate_rsa_identity,
         endpoint_registry,
         rpc_endpoint,
@@ -45,7 +45,7 @@ def server_main(
 
     identity_bundle = file_bundle_factory(args.identity_path)
     try:
-        server_identity = identity_registry.animate(identity_bundle.load_piece())
+        server_identity = identity_creg.animate(identity_bundle.load_piece())
         log.info("Server identity: loaded from: %s", identity_bundle.path)
     except FileNotFoundError:
         server_identity = generate_rsa_identity()

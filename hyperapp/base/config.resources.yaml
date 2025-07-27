@@ -62,14 +62,14 @@ import:
 - base.system_fn_creg:system_fn_creg.service
 - base.transport.endpoint:endpoint_registry.service
 - base.transport.endpoint:endpoint_thread_pool.service
-- base.transport.identity:identity_registry.service
+- base.transport.identity:identity_creg.service
 - base.transport.identity:parcel_registry.service
 - base.transport.identity:peer_registry.service
 - base.transport.identity:signature_registry.service
 - base.transport.route_creg:route_creg.service
 - base.transport.route_table:route_table.service
 - base.transport.rsa_identity:generate_rsa_identity.service
-- base.transport.rsa_identity:identity_registry-rsa_identity-rsa_identity.actor-cfg-item
+- base.transport.rsa_identity:identity_creg-rsa_identity-rsa_identity.actor-cfg-item
 - base.transport.rsa_identity:parcel_registry-rsa_identity-rsa_parcel.actor-cfg-item
 - base.transport.rsa_identity:peer_registry-rsa_identity-rsa_peer.actor-cfg-item
 - base.transport.rsa_identity:signature_registry-rsa_identity-rsa_signature.actor-cfg-item
@@ -107,7 +107,7 @@ definitions:
         cfg_item_creg: cfg_item_creg
         cfg_value_creg: cfg_value_creg
         config_ctl_creg: config_ctl_creg
-        identity_registry: identity_registry
+        identity_creg: identity_creg
         init_hook: init_hook
         parcel_registry: parcel_registry
         peer_registry: peer_registry
@@ -126,11 +126,11 @@ definitions:
       - base.data_service:config_ctl_creg-data_service-type_key_config_ctl.actor-cfg-item
       - base.system.config_ctl:config_ctl_creg-system-flat_list_config_ctl.actor-cfg-item
       - base.system.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-cfg-item
-  identity_registry:
+  identity_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.rsa_identity:identity_registry-rsa_identity-rsa_identity.actor-cfg-item
+      - base.transport.rsa_identity:identity_creg-rsa_identity-rsa_identity.actor-cfg-item
   init_hook:
     type: legacy_type.system:item_list_config
     value:
@@ -223,7 +223,7 @@ definitions:
       - base.system_fn_creg:system_fn_creg.service
       - base.transport.endpoint:endpoint_registry.service
       - base.transport.endpoint:endpoint_thread_pool.service
-      - base.transport.identity:identity_registry.service
+      - base.transport.identity:identity_creg.service
       - base.transport.identity:parcel_registry.service
       - base.transport.identity:peer_registry.service
       - base.transport.identity:signature_registry.service

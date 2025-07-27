@@ -43,7 +43,7 @@ definitions:
       function: RsaIdentity.from_piece
       service_params: []
 
-  identity_registry-rsa_identity-rsa_identity.actor-cfg-item:
+  identity_creg-rsa_identity-rsa_identity.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.rsa_identity:rsa_identity

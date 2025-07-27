@@ -3,8 +3,8 @@ from .services import (
     )
 
 
-def identity_registry(config):
-    return code_registry_ctr('identity_registry', config)
+def identity_creg(config):
+    return code_registry_ctr('identity_creg', config)
 
 
 def peer_registry(config):
