@@ -69,6 +69,12 @@ class ConfigProbe:
         self._config = config
         self._used_keys = used_keys
 
+    def __contains__(self, key):
+        result = key in self._config
+        if result:
+            self._used_keys.add((self._service_name, key))
+        return result
+
     def __getitem__(self, key):
         try:
             value = self._config[key]
