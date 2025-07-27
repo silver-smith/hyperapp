@@ -68,11 +68,11 @@ import:
 - base.transport.rsa_identity:parcel_creg-rsa_identity-rsa_parcel.actor-cfg-item
 - base.transport.rsa_identity:peer_creg-rsa_identity-rsa_peer.actor-cfg-item
 - base.transport.rsa_identity:signature_creg-rsa_identity-rsa_signature.actor-cfg-item
-- base.transport.tcp_transport:_address_to_tcp_client.service
+- base.transport.tcp_transport:_address_to_tcp_conn.service
 - base.transport.tcp_transport:_tcp_selector.service
 - base.transport.tcp_transport:_tcp_services.service
 - base.transport.tcp_transport:route_creg-tcp_transport-route.actor-cfg-item
-- base.transport.tcp_transport:tcp_client_factory.service
+- base.transport.tcp_transport:tcp_connection_factory.service
 - base.transport.tcp_transport:tcp_server_factory.service
 - base.transport.transport:transport.service
 - base.transport.transport_registries:identity_creg.service
@@ -225,10 +225,10 @@ definitions:
       - base.transport.endpoint:endpoint_thread_pool.service
       - base.transport.route_table:route_table.service
       - base.transport.rsa_identity:generate_rsa_identity.service
-      - base.transport.tcp_transport:_address_to_tcp_client.service
+      - base.transport.tcp_transport:_address_to_tcp_conn.service
       - base.transport.tcp_transport:_tcp_selector.service
       - base.transport.tcp_transport:_tcp_services.service
-      - base.transport.tcp_transport:tcp_client_factory.service
+      - base.transport.tcp_transport:tcp_connection_factory.service
       - base.transport.tcp_transport:tcp_server_factory.service
       - base.transport.transport:transport.service
       - base.transport.transport_registries:identity_creg.service

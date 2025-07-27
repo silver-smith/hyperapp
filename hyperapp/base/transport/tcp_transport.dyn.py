@@ -23,16 +23,16 @@ _Services = namedtuple('_Services', [
     'parcel_creg',
     'transport',
     'route_table',
-    'address_to_tcp_client',
+    'address_to_tcp_conn',
     'tcp_selector',
     ])
 
 
 class Server:
 
-    def __init__(self, svc, tcp_client_factory):
+    def __init__(self, svc, tcp_connection_factory):
         self._svc = svc
-        self._tcp_client_factory = tcp_client_factory
+        self._tcp_connection_factory = tcp_connection_factory
         self._listen_socket = socket.socket()
         self._actual_address = None
         self._listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -50,7 +50,7 @@ class Server:
 
     @property
     def route(self):
-        return Route(self._tcp_client_factory, self._actual_address, is_local=True)
+        return Route(self._tcp_connection_factory, self._actual_address, is_local=True)
 
     def _on_accept(self, listen_sock, mask):
         sock, address = listen_sock.accept()
@@ -140,11 +140,11 @@ class Route:
 
     @classmethod
     @mark.actor.route_creg(htypes.tcp_transport.route)
-    def from_piece(cls, piece, tcp_client_factory):
-        return cls(tcp_client_factory, (piece.host, piece.port), is_local=False)
+    def from_piece(cls, piece, tcp_connection_factory):
+        return cls(tcp_connection_factory, (piece.host, piece.port), is_local=False)
 
-    def __init__(self, tcp_client_factory, address, is_local):
-        self._tcp_client_factory = tcp_client_factory
+    def __init__(self, tcp_connection_factory, address, is_local):
+        self._tcp_connection_factory = tcp_connection_factory
         self._is_local = is_local  # True for routes produced by this process.
         self._address = address
 
@@ -170,8 +170,8 @@ class Route:
     def send(self, parcel):
         if self._is_local:
             raise RuntimeError("Can not send parcel using TCP to myself")
-        client = self._tcp_client_factory(self._address)
-        client.send(parcel)
+        conn = self._tcp_connection_factory(self._address)
+        conn.send(parcel)
 
 
 class IncomingConnectionRoute:
@@ -194,12 +194,12 @@ class IncomingConnectionRoute:
 
 
 @mark.service
-def _address_to_tcp_client():
+def _address_to_tcp_conn():
     return {}  # (host, port) -> Connection
 
 
 @mark.service
-def _tcp_selector(system_failed, _address_to_tcp_client):
+def _tcp_selector(system_failed, _address_to_tcp_conn):
     tcp_stop_signal = threading.Event()
     selector = selectors.DefaultSelector()
 
@@ -211,10 +211,10 @@ def _tcp_selector(system_failed, _address_to_tcp_client):
                 for key, mask in event_list:
                     handler = key.data
                     handler(key.fileobj, mask)
-                for address, client in list(_address_to_tcp_client.items()):
-                    if client.is_closed:
-                        log.debug("Remove client %s from cache", client)
-                        del _address_to_tcp_client[address]
+                for address, conn in list(_address_to_tcp_conn.items()):
+                    if conn.is_closed:
+                        log.debug("Remove connection %s from cache", conn)
+                        del _address_to_tcp_conn[address]
         except Exception as x:
             log.exception("TCP selector thread is failed:")
             system_failed(f"TCP selector thread is failed: {x}", x)
@@ -237,7 +237,7 @@ def _tcp_services(
         parcel_creg,
         transport,
         route_table,
-        _address_to_tcp_client,
+        _address_to_tcp_conn,
         _tcp_selector,
         ):
     return _Services(
@@ -245,15 +245,15 @@ def _tcp_services(
         parcel_creg=parcel_creg,
         transport=transport,
         route_table=route_table,
-        address_to_tcp_client=_address_to_tcp_client,
+        address_to_tcp_conn=_address_to_tcp_conn,
         tcp_selector=_tcp_selector,
         )
 
 
 @mark.service
-def tcp_client_factory(_tcp_services, address):
+def tcp_connection_factory(_tcp_services, address):
     svc = _tcp_services
-    connection = svc.address_to_tcp_client.get(address)
+    connection = svc.address_to_tcp_conn.get(address)
     if not connection:
         sock = socket.socket()
         try:
@@ -262,13 +262,13 @@ def tcp_client_factory(_tcp_services, address):
             raise RuntimeError(f"Connecting to %s: %s", address, x)
         sock.setblocking(False)
         connection = Connection(svc, address, sock)
-        svc.address_to_tcp_client[address] = connection
+        svc.address_to_tcp_conn[address] = connection
         svc.tcp_selector.register(sock, selectors.EVENT_READ, connection.on_read)
     return connection
 
 
 @mark.service
-def tcp_server_factory(_tcp_services, tcp_client_factory, bind_address=None):
-    server = Server(_tcp_services, tcp_client_factory)
+def tcp_server_factory(_tcp_services, tcp_connection_factory, bind_address=None):
+    server = Server(_tcp_services, tcp_connection_factory)
     server.start(bind_address)
     return server

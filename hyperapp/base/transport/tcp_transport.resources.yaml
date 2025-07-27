@@ -40,18 +40,18 @@ definitions:
       object: Route
       attr_name: from_piece
 
-  _address_to_tcp_client:
+  _address_to_tcp_conn:
     type: legacy_type.builtin:attribute
     value:
       object: tcp_transport.module
-      attr_name: _address_to_tcp_client
+      attr_name: _address_to_tcp_conn
 
-  _address_to_tcp_client.service:
+  _address_to_tcp_conn.service:
     type: legacy_type.system:service_template
     value:
-      name: _address_to_tcp_client
+      name: _address_to_tcp_conn
       ctl: base.system.system:actor_dict.config_ctl
-      function: _address_to_tcp_client
+      function: _address_to_tcp_conn
       service_params: []
       want_config: false
       free_params: []
@@ -70,7 +70,7 @@ definitions:
       function: _tcp_selector
       service_params:
       - system_failed
-      - _address_to_tcp_client
+      - _address_to_tcp_conn
       want_config: false
 
   _tcp_services:
@@ -90,23 +90,23 @@ definitions:
       - parcel_creg
       - transport
       - route_table
-      - _address_to_tcp_client
+      - _address_to_tcp_conn
       - _tcp_selector
       want_config: false
       free_params: []
 
-  tcp_client_factory:
+  tcp_connection_factory:
     type: legacy_type.builtin:attribute
     value:
       object: tcp_transport.module
-      attr_name: tcp_client_factory
+      attr_name: tcp_connection_factory
 
-  tcp_client_factory.service:
+  tcp_connection_factory.service:
     type: legacy_type.system:service_template
     value:
-      name: tcp_client_factory
+      name: tcp_connection_factory
       ctl: base.system.system:actor_dict.config_ctl
-      function: tcp_client_factory
+      function: tcp_connection_factory
       service_params:
       - _tcp_services
       want_config: false
@@ -127,7 +127,7 @@ definitions:
       function: tcp_server_factory
       service_params:
       - _tcp_services
-      - tcp_client_factory
+      - tcp_connection_factory
       want_config: false
       free_params:
       - bind_address
@@ -137,7 +137,7 @@ definitions:
     value:
       function: Route.from_piece
       service_params:
-      - tcp_client_factory
+        - tcp_connection_factory
 
   route_creg-tcp_transport-route.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
