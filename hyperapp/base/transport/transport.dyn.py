@@ -1,9 +1,6 @@
 import logging
 from collections import defaultdict
 
-from .services import (
-    mosaic,
-    )
 log = logging.getLogger(__name__)
 
 
@@ -19,14 +16,13 @@ class Transport:
         self._receiver_peer_to_seen_refs = defaultdict(set)
 
     def send_parcel(self, parcel):
-        receiver_peer_ref = mosaic.put(parcel.receiver.piece)
-        route_list = self._route_table.peer_route_list(receiver_peer_ref)
-        log.debug("Routes to %s for %s: %s", receiver_peer_ref, parcel, route_list)
+        route_list = self._route_table.peer_route_list(parcel.receiver)
+        log.debug("Routes to %s for %s: %s", parcel.receiver, parcel, route_list)
         if not route_list:
-            raise RuntimeError(f"No route for peer {receiver_peer_ref}")
+            raise RuntimeError(f"No route for peer {parcel.receiver}")
         available_route_list = [route for route in route_list if route.available]
         if not available_route_list:
-            raise RuntimeError(f"No available route for peer {receiver_peer_ref}")
+            raise RuntimeError(f"No available route for peer {parcel.receiver}")
         route, *_ = available_route_list
         log.debug("Send parcel %s by route %s (all routes: %s)", parcel, route, route_list)
         route.send(parcel)

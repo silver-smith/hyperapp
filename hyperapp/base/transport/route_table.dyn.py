@@ -16,19 +16,17 @@ class RouteTable:
         self._route_creg = route_creg
         self._peer2route_list = defaultdict(list)
 
-    def add_route(self, peer_ref, route):
-        self._peer2route_list[peer_ref].append(route)
+    def add_route(self, peer, route):
+        self._peer2route_list[peer.piece].append(route)
         if route.piece is None:
             return  # Local route.
-        peer_piece = web.summon(peer_ref)
-        self._config[peer_piece] = route.piece
+        self._config[peer.piece] = route.piece
 
-    def peer_route_list(self, peer_ref):
-        route_list = self._peer2route_list.get(peer_ref)
+    def peer_route_list(self, peer):
+        route_list = self._peer2route_list.get(peer.piece)
         if route_list:
             return route_list
-        peer_piece = web.summon(peer_ref)
-        route_piece = self._config[peer_piece]
+        route_piece = self._config[peer.piece]
         route = self._route_creg.animate(route_piece)
         return [route]
 

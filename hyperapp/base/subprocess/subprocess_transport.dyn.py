@@ -190,9 +190,8 @@ class SubprocessTransport:
         self._process_parcel(connection, connection_rec, parcel)
 
     def _process_parcel(self, connection, connection_rec, parcel):
-        sender_ref = mosaic.put(parcel.sender.piece)
         route = SubprocessRoute(self._bundler, connection_rec.name, connection_rec.seen_refs, connection)
-        self._route_table.add_route(sender_ref, route)
+        self._route_table.add_route(parcel.sender, route)
         self._transport.send_parcel(parcel)
 
 

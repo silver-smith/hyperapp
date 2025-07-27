@@ -2,7 +2,6 @@ import:
 - base.reconstructors:reconstructors.module
 - base.subprocess.subprocess_transport:subprocess_transport.module
 - base.system.system:actor_dict.config_ctl
-- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:service_template
@@ -17,7 +16,6 @@ definitions:
       import_list:
         code.reconstructors: base.reconstructors:reconstructors.module
         code.subprocess_transport: base.subprocess.subprocess_transport:subprocess_transport.module
-        services.mosaic: builtins:mosaic.service
 
   rpc_server_main:
     type: legacy_type.builtin:attribute

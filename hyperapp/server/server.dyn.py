@@ -4,9 +4,6 @@ from pathlib import Path
 
 from hyperapp.boot import dict_coders
 
-from .services import (
-    mosaic,
-    )
 from .code.mark import mark
 from .code.reconstructors import register_reconstructors
 
@@ -52,13 +49,12 @@ def server_main(
         identity_bundle.save_piece(server_identity.piece)
         log.info("Server identity: generated and saved to: %s", identity_bundle.path)
 
-    server_peer_ref = mosaic.put(server_identity.peer.piece)
     endpoint_registry.register(server_identity, rpc_endpoint)
 
     bind_address = (args.host, args.port)
     server = tcp_server_factory(bind_address)
     log.info("Tcp route: %r", server.route)
-    route_table.add_route(server_peer_ref, server.route)
+    route_table.add_route(server_identity.peer, server.route)
 
     peer_bundle = file_bundle_factory(Path.home() / '.local/share/hyperapp/server/peer.json')
     peer_bundle.save_piece(server_identity.peer.piece)

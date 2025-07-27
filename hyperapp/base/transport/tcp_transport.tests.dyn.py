@@ -4,7 +4,6 @@ from hyperapp.boot.htypes.packet_coders import packet_coders
 
 from . import htypes
 from .services import (
-    mosaic,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -62,7 +61,6 @@ def test_tcp_call(
     endpoint_registry.register(master_identity, rpc_endpoint)
 
     tcp_master_identity = generate_rsa_identity(fast=True)
-    tcp_master_peer_ref = mosaic.put(tcp_master_identity.peer.piece)
     endpoint_registry.register(tcp_master_identity, rpc_endpoint)
 
     server = tcp_server_factory(bind_address=None)
@@ -74,7 +72,7 @@ def test_tcp_call(
         # Otherwise, route will be transferred with full config passed to server on start.
         # And test will work even if route association is not bundled with request.
         log.info("Tcp route: %r", server.route)
-        route_table.add_route(tcp_master_peer_ref, server.route)
+        route_table.add_route(tcp_master_identity.peer, server.route)
 
         process.service_call('tcp_test_callback')(
             tcp_master_peer_piece=tcp_master_identity.peer.piece,

@@ -128,10 +128,9 @@ class Connection:
         ref_set = unbundler.register_bundle(bundle)
         self._seen_refs |= ref_set
         parcel = self._svc.parcel_creg.invite(parcel_ref)
-        sender_ref = mosaic.put(parcel.sender.piece)
         # Add route first - it may be used during parcel processing.
-        log.info("%s will be routed via established connection from: %s", sender_ref, self)
-        self._svc.route_table.add_route(sender_ref, self._this_route)
+        log.info("%s will be routed via established connection from: %s", parcel.sender, self)
+        self._svc.route_table.add_route(parcel.sender, self._this_route)
         self._svc.transport.send_parcel(parcel)
 
 

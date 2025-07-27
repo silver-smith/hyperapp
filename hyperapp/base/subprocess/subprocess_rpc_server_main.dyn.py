@@ -2,9 +2,6 @@ import logging
 from concurrent.futures import CancelledError
 from functools import partial
 
-from .services import (
-    mosaic,
-    )
 from .code.subprocess_transport import SubprocessRoute
 from .code.reconstructors import register_reconstructors
 
@@ -41,12 +38,10 @@ def rpc_server_main(
     register_reconstructors()
 
     master_peer = peer_creg.animate(master_peer_piece)
-    master_peer_ref = mosaic.put(master_peer_piece)
     route = SubprocessRoute(bundler, 'master', received_refs, connection)
-    route_table.add_route(master_peer_ref, route)
+    route_table.add_route(master_peer, route)
 
     my_identity = generate_rsa_identity(fast=True)
-    my_peer_ref = mosaic.put(my_identity.peer.piece)
 
     endpoint_registry.register(my_identity, rpc_endpoint)
 

@@ -5,7 +5,6 @@ from concurrent.futures import ThreadPoolExecutor
 from hyperapp.boot.ref import ref_repr
 
 from .services import (
-    mosaic,
     unbundler,
     )
 
@@ -59,10 +58,9 @@ class EndpointRegistry:
         self._route_table = route_table
 
     def register(self, identity, endpoint):
-        peer_ref = mosaic.put(identity.peer.piece)
-        log.info("Local peer %s: %s", ref_repr(peer_ref), endpoint)
+        log.info("Local peer %s: %s", identity.peer, endpoint)
         route = LocalRoute(self._system_failed, self._endpoint_thread_pool, identity, endpoint)
-        self._route_table.add_route(peer_ref, route)
+        self._route_table.add_route(identity.peer, route)
 
 
 def endpoint_thread_pool():

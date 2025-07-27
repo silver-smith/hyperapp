@@ -4,7 +4,6 @@ import:
 - base.mark:mark.module
 - base.reconstructors:reconstructors.module
 - base.system.config_layer:one_way.key_ctl
-- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_value_ctl
@@ -19,7 +18,6 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         code.reconstructors: base.reconstructors:reconstructors.module
-        services.mosaic: builtins:mosaic.service
   server_main:
     type: legacy_type.builtin:attribute
     value:
