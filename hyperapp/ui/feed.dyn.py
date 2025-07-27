@@ -28,7 +28,7 @@ class Feed:
         self._close_hooks.append(hook)
 
     def subscribe(self, subscriber):
-        # Note: finalize should be called first.
+        # Note: finalize should be called before adding to subscribers to work.
         weakref.finalize(subscriber, self._subscriber_gone)
         self._subscribers.add(subscriber)
 
