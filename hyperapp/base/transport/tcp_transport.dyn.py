@@ -138,7 +138,7 @@ class Connection:
 class Route:
 
     @classmethod
-    @mark.actor.route_registry(htypes.tcp_transport.route)
+    @mark.actor.route_creg(htypes.tcp_transport.route)
     def from_piece(cls, piece, tcp_client_factory):
         return cls(tcp_client_factory, (piece.host, piece.port), is_local=False)
 

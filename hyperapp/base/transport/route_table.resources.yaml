@@ -29,5 +29,5 @@ definitions:
       function: route_table
       free_params: []
       service_params:
-      - route_registry
+      - route_creg
       want_config: true

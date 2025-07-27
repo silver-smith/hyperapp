@@ -139,7 +139,7 @@ definitions:
       service_params:
       - tcp_client_factory
 
-  route_registry-tcp_transport-route.actor-cfg-item:
+  route_creg-tcp_transport-route.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tcp_transport:route

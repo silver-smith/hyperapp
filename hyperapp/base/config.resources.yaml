@@ -66,7 +66,7 @@ import:
 - base.transport.identity:parcel_registry.service
 - base.transport.identity:peer_registry.service
 - base.transport.identity:signature_registry.service
-- base.transport.route_registry:route_registry.service
+- base.transport.route_creg:route_creg.service
 - base.transport.route_table:route_table.service
 - base.transport.rsa_identity:generate_rsa_identity.service
 - base.transport.rsa_identity:identity_registry-rsa_identity-rsa_identity.actor-cfg-item
@@ -76,7 +76,7 @@ import:
 - base.transport.tcp_transport:_address_to_tcp_client.service
 - base.transport.tcp_transport:_tcp_selector.service
 - base.transport.tcp_transport:_tcp_services.service
-- base.transport.tcp_transport:route_registry-tcp_transport-route.actor-cfg-item
+- base.transport.tcp_transport:route_creg-tcp_transport-route.actor-cfg-item
 - base.transport.tcp_transport:tcp_client_factory.service
 - base.transport.tcp_transport:tcp_server_factory.service
 - base.transport.transport:transport.service
@@ -112,7 +112,7 @@ definitions:
         parcel_registry: parcel_registry
         peer_registry: peer_registry
         resource_name_creg: resource_name_creg
-        route_registry: route_registry
+        route_creg: route_creg
         rpc_message_creg: rpc_message_creg
         rpc_target_creg: rpc_target_creg
         signature_registry: signature_registry
@@ -155,11 +155,11 @@ definitions:
       - base.system.builtin_resource_name:resource_name_creg-builtin-call.actor-cfg-item
       - base.system.builtin_resource_name:resource_name_creg-builtin-record_mt.actor-cfg-item
       - base.system.builtin_resource_name:resource_name_creg-builtin-string.actor-cfg-item
-  route_registry:
+  route_creg:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - base.transport.tcp_transport:route_registry-tcp_transport-route.actor-cfg-item
+      - base.transport.tcp_transport:route_creg-tcp_transport-route.actor-cfg-item
   rpc_message_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -227,7 +227,7 @@ definitions:
       - base.transport.identity:parcel_registry.service
       - base.transport.identity:peer_registry.service
       - base.transport.identity:signature_registry.service
-      - base.transport.route_registry:route_registry.service
+      - base.transport.route_creg:route_creg.service
       - base.transport.route_table:route_table.service
       - base.transport.rsa_identity:generate_rsa_identity.service
       - base.transport.tcp_transport:_address_to_tcp_client.service
