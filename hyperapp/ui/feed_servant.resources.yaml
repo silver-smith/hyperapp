@@ -5,6 +5,7 @@ import:
 - base.mark:mark.module
 - base.system.config_layer:one_way.key_ctl
 - base.system_fn:system_fn.module
+- base.transport.transport:transport.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_value_ctl
@@ -22,6 +23,7 @@ definitions:
         code.mark: base.mark:mark.module
         code.remote_feed_receiver: ui.remote_feed_receiver:remote_feed_receiver.module
         code.system_fn: base.system_fn:system_fn.module
+        code.transport: base.transport.transport:transport.module
   server_feed:
     type: legacy_type.builtin:attribute
     value:

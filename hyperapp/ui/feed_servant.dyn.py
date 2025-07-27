@@ -4,10 +4,14 @@ from collections import defaultdict
 from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
+from .code.transport import RemoteIsGoneError
 from .code.remote_feed_receiver import remote_feed_receiver
 
 log = logging.getLogger(__name__)
 
+
+class SubscriberIsGoneError(Exception):
+    pass
 
 
 class RemoteSubscription:
@@ -33,7 +37,10 @@ class RemoteSubscription:
             )
         ctx = Context()
         call_kw = fn.call_kw(ctx, model=self._model, diff=diff.piece)
-        rpc_call(**call_kw)
+        try:
+            rpc_call(**call_kw)
+        except RemoteIsGoneError as x:
+            raise SubscriberIsGoneError(str(x)) from x
 
 
 class ServerFeed:

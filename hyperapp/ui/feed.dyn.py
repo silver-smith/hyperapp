@@ -13,7 +13,7 @@ from .code.context import Context
 from .code.config_key_ctl import TypeKeyCtl
 from .code.config_ctl import DictConfigCtl
 from .code.system_fn import ContextFn
-from .code.feed_servant import subscribe_server_feed
+from .code.feed_servant import SubscriberIsGoneError, subscribe_server_feed
 
 log = logging.getLogger(__name__)
 
@@ -36,8 +36,12 @@ class Feed:
 
     def send(self, diff):
         log.info("Feed: send: %s", diff)
-        for subscriber in self._subscribers:
-            subscriber.process_diff(diff)
+        for subscriber in [*self._subscribers]:
+            try:
+                subscriber.process_diff(diff)
+            except SubscriberIsGoneError as x:
+                log.info("Subscriber %s is gone: %s", subscriber, x)
+                self._subscribers.remove(subscriber)
 
     def subscribe_to_remote_feed(self, peer_registry, rpc_system_call_factory, identity):
         if not isinstance(self._model, htypes.model.remote_model):

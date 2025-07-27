@@ -12,6 +12,7 @@ from .services import (
     unbundler,
     )
 from .code.mark import mark
+from .code.transport import RemoteIsGoneError
 from .code.tcp_utils import address_to_str, has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 
 log = logging.getLogger(__name__)
@@ -187,7 +188,7 @@ class IncomingConnectionRoute:
 
     def send(self, parcel):
         if self._connection.is_closed:
-            raise RuntimeError(f"Can not send {parcel} back to {self._connection}: it is already closed")
+            raise RemoteIsGoneError(f"Can not send {parcel} back to {self._connection}: it is already closed")
         self._connection.send(parcel)
 
 

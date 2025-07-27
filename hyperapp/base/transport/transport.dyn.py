@@ -7,6 +7,10 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
+class RemoteIsGoneError(Exception):
+    pass
+
+
 class Transport:
 
     def __init__(self, bundler, route_table):
