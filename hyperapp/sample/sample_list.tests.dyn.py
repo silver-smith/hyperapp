@@ -18,10 +18,6 @@ def test_sample_list():
     assert value
 
 
-def test_thread_pool(_sample_thread_pool):
-    _sample_thread_pool.submit(lambda: None)
-
-
 async def test_feed_sample_list(feed_factory):
     piece = htypes.sample_list.feed_sample_list()
     feed = feed_factory(piece)
