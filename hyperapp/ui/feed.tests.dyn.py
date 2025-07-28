@@ -77,6 +77,9 @@ def test_remote_list_feed_factory(
 
         feed = client_feed_factory(remote_model, ctx)
         assert isinstance(feed, feed_module.ListFeed), repr(feed)
+        subscriber = Mock()
+        feed.subscribe(subscriber)
+        del subscriber  # Last one (only one) unsubscribed, fire unsubscribe rpc call.
 
 
 class SampleSubscriber:

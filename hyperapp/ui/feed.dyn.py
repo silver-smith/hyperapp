@@ -13,7 +13,7 @@ from .code.context import Context
 from .code.config_key_ctl import TypeKeyCtl
 from .code.config_ctl import DictConfigCtl
 from .code.system_fn import ContextFn
-from .code.feed_servant import SubscriberIsGoneError, subscribe_server_feed
+from .code.feed_servant import SubscriberIsGoneError, subscribe_server_feed, unsubscribe_server_feed
 
 log = logging.getLogger(__name__)
 
@@ -51,12 +51,19 @@ class Feed:
         if self._subscribed_to_remote_as:
             assert self._subscribed_to_remote_as == identity  # Already subscribed with another identity.
             return
+        self._call_remote_feed(identity, subscribe_server_feed)
+        self._subscribed_to_remote_as = identity
+        self.add_close_hook(self._unsubscribe_from_remote_feed)
+
+    def _unsubscribe_from_remote_feed(self, model):
+        assert model is self._model
+        if not self._subscribed_to_remote_as:
+            return  # Not subscribed to remote.
+        self._call_remote_feed(self._subscribed_to_remote_as, unsubscribe_server_feed)
+
+    def _call_remote_feed(self, identity, remote_fn):
         remote_peer = self._peer_creg.invite(self._model.remote_peer)
         real_model = web.summon(self._model.model)
-        self._call_remote_feed(identity, remote_peer, real_model, subscribe_server_feed)
-        self._subscribed_to_remote_as = identity
-
-    def _call_remote_feed(self, identity, remote_peer, real_model, remote_fn):
         fn = ContextFn(
             rpc_system_call_factory=self._rpc_system_call_factory,
             ctx_params=('request', 'real_model'),
