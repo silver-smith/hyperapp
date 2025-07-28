@@ -113,6 +113,12 @@ class RsaPeer:
         pem_repr = _pem_repr(self.public_key_pem)
         return f"<RsaPeer {pem_repr}>"
 
+    def __eq__(self, rhs):
+        return self.public_key_pem == rhs.public_key_pem
+
+    def __hash__(self):
+        return hash(self.public_key_pem)
+
     @property
     def piece(self):
         return htypes.rsa_identity.rsa_peer(self.public_key_pem)
