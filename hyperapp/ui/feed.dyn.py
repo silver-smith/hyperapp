@@ -20,7 +20,9 @@ log = logging.getLogger(__name__)
 
 class Feed:
 
-    def __init__(self, model):
+    def __init__(self, peer_creg, rpc_system_call_factory, model):
+        self._peer_creg = peer_creg
+        self._rpc_system_call_factory = rpc_system_call_factory
         self._model = model
         self._close_hooks = []
         self._subscribed_to_remote_as = None
@@ -35,34 +37,33 @@ class Feed:
         self._subscribers.add(subscriber)
 
     def send(self, diff):
-        log.info("Feed: send: %s", diff)
+        log.info("Feed %s: Send: %s", self._model, diff)
         for subscriber in [*self._subscribers]:
             try:
                 subscriber.process_diff(diff)
             except SubscriberIsGoneError as x:
-                log.info("Subscriber %s is gone: %s", subscriber, x)
+                log.info("Feed %s: Subscriber %s is gone: %s", self._model, subscriber, x)
                 self._subscribers.remove(subscriber)
 
-    def subscribe_to_remote_feed(self, peer_creg, rpc_system_call_factory, identity):
+    def subscribe_to_remote_feed(self, identity):
         if not isinstance(self._model, htypes.model.remote_model):
             return
         if self._subscribed_to_remote_as:
             assert self._subscribed_to_remote_as == identity  # Already subscribed with another identity.
             return
-        remote_peer = peer_creg.invite(self._model.remote_peer)
+        remote_peer = self._peer_creg.invite(self._model.remote_peer)
         real_model = web.summon(self._model.model)
-        self._subscribe_to_remote_feed(rpc_system_call_factory, identity, remote_peer, real_model)
+        self._call_remote_feed(identity, remote_peer, real_model, subscribe_server_feed)
         self._subscribed_to_remote_as = identity
 
-    @staticmethod
-    def _subscribe_to_remote_feed(rpc_system_call_factory, identity, remote_peer, real_model):
+    def _call_remote_feed(self, identity, remote_peer, real_model, remote_fn):
         fn = ContextFn(
-            rpc_system_call_factory=rpc_system_call_factory,
+            rpc_system_call_factory=self._rpc_system_call_factory,
             ctx_params=('request', 'real_model'),
             service_params=('feed_factory', 'server_feed'),
-            raw_fn=subscribe_server_feed,
+            raw_fn=remote_fn,
             )
-        rpc_call = rpc_system_call_factory(
+        rpc_call = self._rpc_system_call_factory(
             receiver_peer=remote_peer,
             sender_identity=identity,
             fn=fn,
@@ -74,6 +75,7 @@ class Feed:
     def _subscriber_gone(self):
         if self._subscribers:
             return
+        log.info("Feed %s: All subscribers are gone", self._model)
         for hook in self._close_hooks:
             hook(self._model)
 
@@ -111,7 +113,7 @@ def feed_map():
 
 
 @mark.service(ctl=DictConfigCtl(key_ctl=TypeKeyCtl()))
-def feed_factory(config, feed_map, piece):
+def feed_factory(config, peer_creg, rpc_system_call_factory, feed_map, piece):
     try:
         return feed_map[piece]
     except KeyError:
@@ -127,14 +129,14 @@ def feed_factory(config, feed_map, piece):
 
     model_t = deduce_t(real_model)
     Feed = config[model_t]
-    feed = Feed(piece)
+    feed = Feed(peer_creg, rpc_system_call_factory, piece)
     feed_map[piece] = feed
     feed.add_close_hook(remove_feed)
     return feed
 
 
 @mark.service
-def client_feed_factory(peer_creg, rpc_system_call_factory, feed_factory, piece, ctx):
+def client_feed_factory(feed_factory, piece, ctx):
     feed = feed_factory(piece)
-    feed.subscribe_to_remote_feed(peer_creg, rpc_system_call_factory, ctx.identity)
+    feed.subscribe_to_remote_feed(ctx.identity)
     return feed
