@@ -8,6 +8,7 @@ service_probe_ctr = record:
   attr_name: string
   name: string
   ctl: ref
+  is_generator_fn: bool
   params: string list
 
 service_probe_template = record:

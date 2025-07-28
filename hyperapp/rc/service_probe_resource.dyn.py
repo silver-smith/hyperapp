@@ -60,14 +60,23 @@ class ServiceProbeCtr(ModuleCtr):
 
     @classmethod
     def from_piece(cls, piece, config_ctl):
-        return cls(config_ctl, piece.module_name, piece.attr_name, piece.name, piece.ctl, piece.params)
+        return cls(
+            config_ctl,
+            piece.module_name,
+            piece.attr_name,
+            piece.name,
+            piece.ctl,
+            piece.is_generator_fn,
+            piece.params,
+            )
 
-    def __init__(self, config_ctl, module_name, attr_name, name, ctl_ref, params):
+    def __init__(self, config_ctl, module_name, attr_name, name, ctl_ref, is_generator_fn, params):
         super().__init__(module_name)
         self._config_ctl = config_ctl
         self._attr_name = attr_name
         self._name = name
         self._ctl_ref = ctl_ref
+        self._is_generator_fn = is_generator_fn
         self._params = params
 
     @property
@@ -77,21 +86,30 @@ class ServiceProbeCtr(ModuleCtr):
             attr_name=self._attr_name,
             name=self._name,
             ctl=self._ctl_ref,
+            is_generator_fn=self._is_generator_fn,
             params=self._params,
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
         resource_tgt.import_tgt.add_test_ctr(self)
         if tuple(self._params) in {(), ('config',)}:
-            template_ctr = ServiceTemplateCtr(
+            ctr_kw = dict(
                 config_ctl=self._config_ctl,
                 attr_name=self._attr_name,
                 name=self._name,
                 ctl_ref=self._ctl_ref,
-                free_params=[],
                 service_params=[],
                 want_config='config' in self._params,
                 )
+            if self._is_generator_fn:
+                template_ctr = FinalizerGenServiceTemplateCtr(
+                    **ctr_kw,
+                    )
+            else:
+                template_ctr = ServiceTemplateCtr(
+                    **ctr_kw,
+                    free_params=[],
+                    )
         else:
             template_ctr = None
         req = ServiceReq(self._name)

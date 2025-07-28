@@ -14,6 +14,7 @@ def add_service_ctr(config_ctl_reg, ctr_collector, module_name, ctl, fn):
         attr_name=fn.__name__,
         name=fn.__name__,
         ctl_ref=mosaic.put(ctl.piece),
+        is_generator_fn=inspect.isgeneratorfunction(fn) or inspect.isasyncgenfunction(fn),
         params=tuple(inspect.signature(fn).parameters),
         )
     ctr_collector.add_constructor(ctr)
