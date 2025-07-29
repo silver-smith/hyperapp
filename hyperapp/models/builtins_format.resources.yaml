@@ -1,0 +1,50 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.system:actor_template
+definitions:
+  builtins_format.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: builtins_format
+      file_name: builtins_format.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        services.web: builtins:web.service
+  format_attribute:
+    type: legacy_type.builtin:attribute
+    value:
+      object: builtins_format.module
+      attr_name: format_attribute
+  format_attribute.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_attribute
+      service_params:
+      - format
+  format_python_module:
+    type: legacy_type.builtin:attribute
+    value:
+      object: builtins_format.module
+      attr_name: format_python_module
+  format_python_module.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_python_module
+      service_params:
+      - format
+  formatter_creg-builtin-attribute.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:attribute
+      value: format_attribute.actor-template
+  formatter_creg-builtin-python_module.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.builtin:python_module
+      value: format_python_module.actor-template
