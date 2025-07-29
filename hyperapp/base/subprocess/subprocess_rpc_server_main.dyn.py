@@ -19,6 +19,7 @@ def rpc_server_main(
         bundler,
         peer_creg,
         route_table,
+        transport_log,
         generate_rsa_identity,
         endpoint_registry,
         cancel_rpc_request_futures,
@@ -38,7 +39,7 @@ def rpc_server_main(
     register_reconstructors()
 
     master_peer = peer_creg.animate(master_peer_piece)
-    route = SubprocessRoute(bundler, 'master', received_refs, connection)
+    route = SubprocessRoute(bundler, transport_log, 'master', received_refs, connection)
     route_table.add_route(master_peer, route)
 
     my_identity = generate_rsa_identity(fast=True)

@@ -10,9 +10,10 @@ class RemoteIsGoneError(Exception):
 
 class Transport:
 
-    def __init__(self, bundler, route_table):
+    def __init__(self, bundler, route_table, transport_log):
         self._bundler = bundler
         self._route_table = route_table
+        self._log = transport_log
         self._receiver_peer_to_seen_refs = defaultdict(set)
 
     def send_parcel(self, parcel):
@@ -33,8 +34,9 @@ class Transport:
         refs_and_bundle = self._bundler(ref_list, seen_refs)
         seen_refs |= refs_and_bundle.ref_set
         parcel = receiver.make_parcel(refs_and_bundle.bundle, sender_identity)
+        self._log.add_out_message(parcel, refs_and_bundle.bundle)
         self.send_parcel(parcel)
 
 
-def transport(bundler, route_table):
-    return Transport(bundler, route_table)
+def transport(bundler, route_table, transport_log):
+    return Transport(bundler, route_table, transport_log)

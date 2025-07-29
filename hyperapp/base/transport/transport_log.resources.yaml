@@ -1,0 +1,44 @@
+import:
+- base.mark:mark.module
+- base.system.config_layer:one_way.key_ctl
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:actor_value_ctl
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
+
+definitions:
+
+  transport_log.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: transport_log
+      file_name: transport_log.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+
+  system-actor.value-ctl:
+    type: legacy_type.system:actor_value_ctl
+    value: {}
+
+  system-dict_config.one_way.actor.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      key_ctl: base.system.config_layer:one_way.key_ctl
+      value_ctl: system-actor.value-ctl
+
+  transport_log:
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport_log.module
+      attr_name: transport_log
+
+  transport_log.service:
+    type: legacy_type.system:service_template
+    value:
+      name: transport_log
+      ctl: system-dict_config.one_way.actor.ctl
+      function: transport_log
+      service_params: []
+      want_config: false
+      free_params: []

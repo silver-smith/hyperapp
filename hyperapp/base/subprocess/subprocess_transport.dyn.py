@@ -66,8 +66,9 @@ class ConnectionRec:
 
 class SubprocessRoute:
 
-    def __init__(self, bundler, name, seen_refs, connection):
+    def __init__(self, bundler, transport_log, name, seen_refs, connection):
         self._bundler = bundler
+        self._log = transport_log
         self._name = name
         self._seen_refs = seen_refs
         self._connection = connection
@@ -85,6 +86,7 @@ class SubprocessRoute:
         refs_and_bundle = self._bundler([parcel_ref], self._seen_refs)
         self._seen_refs |= refs_and_bundle.ref_set
         bundle_cdr = packet_coders.encode('cdr', refs_and_bundle.bundle)
+        self._log.commit_out_message(parcel, 'subprocess', refs_and_bundle.bundle, len(bundle_cdr))
         log.debug("Subprocess transport: send bundle to %r. Bundle size: %.2f KB", self._name, len(bundle_cdr)/1024)
         try:
             self._connection.send(encode_packet(bundle_cdr))
@@ -98,11 +100,12 @@ class SubprocessRoute:
 
 class SubprocessTransport:
 
-    def __init__(self, system_failed, bundler, parcel_creg, transport, route_table):
+    def __init__(self, system_failed, bundler, parcel_creg, transport, transport_log, route_table):
         self._system_failed = system_failed
         self._bundler = bundler
         self._parcel_creg = parcel_creg
         self._transport = transport
+        self._transport_log = transport_log
         self._route_table = route_table
         self._server_connections = {}  # connection -> ConnectionRec
         self._is_stopping = False
@@ -190,12 +193,13 @@ class SubprocessTransport:
         self._process_parcel(connection, connection_rec, parcel)
 
     def _process_parcel(self, connection, connection_rec, parcel):
-        route = SubprocessRoute(self._bundler, connection_rec.name, connection_rec.seen_refs, connection)
+        route = SubprocessRoute(
+            self._bundler, self._transport_log, connection_rec.name, connection_rec.seen_refs, connection)
         self._route_table.add_route(parcel.sender, route)
         self._transport.send_parcel(parcel)
 
 
-def subprocess_transport(system_failed, bundler, parcel_creg, transport, route_table):
-    transport = SubprocessTransport(system_failed, bundler, parcel_creg, transport, route_table)
+def subprocess_transport(system_failed, bundler, parcel_creg, transport, transport_log, route_table):
+    transport = SubprocessTransport(system_failed, bundler, parcel_creg, transport, transport_log, route_table)
     yield transport
     transport.stop()

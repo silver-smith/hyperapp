@@ -23,6 +23,7 @@ _Services = namedtuple('_Services', [
     'parcel_creg',
     'transport',
     'route_table',
+    'transport_log',
     'address_to_tcp_conn',
     'tcp_selector',
     ])
@@ -82,6 +83,7 @@ class Connection:
         refs_and_bundle = self._svc.bundler([parcel_ref], self._seen_refs)
         self._seen_refs |= refs_and_bundle.ref_set
         data = encode_tcp_packet(refs_and_bundle.bundle)
+        self._svc.transport_log.commit_out_message(parcel, 'tcp', refs_and_bundle.bundle, len(data))
         ofs = 0
         while ofs < len(data):
             sent_size = self._socket_send(data[ofs:])
@@ -237,6 +239,7 @@ def _tcp_services(
         parcel_creg,
         transport,
         route_table,
+        transport_log,
         _address_to_tcp_conn,
         _tcp_selector,
         ):
@@ -245,6 +248,7 @@ def _tcp_services(
         parcel_creg=parcel_creg,
         transport=transport,
         route_table=route_table,
+        transport_log=transport_log,
         address_to_tcp_conn=_address_to_tcp_conn,
         tcp_selector=_tcp_selector,
         )

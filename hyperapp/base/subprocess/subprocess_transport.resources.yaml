@@ -35,5 +35,6 @@ definitions:
       - bundler
       - parcel_creg
       - transport
+      - transport_log
       - route_table
       want_config: false

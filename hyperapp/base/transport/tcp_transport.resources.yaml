@@ -90,6 +90,7 @@ definitions:
       - parcel_creg
       - transport
       - route_table
+      - transport_log
       - _address_to_tcp_conn
       - _tcp_selector
       want_config: false

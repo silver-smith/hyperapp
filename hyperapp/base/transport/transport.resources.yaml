@@ -29,4 +29,5 @@ definitions:
       service_params:
       - bundler
       - route_table
+      - transport_log
       want_config: false

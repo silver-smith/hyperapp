@@ -75,6 +75,7 @@ import:
 - base.transport.tcp_transport:tcp_connection_factory.service
 - base.transport.tcp_transport:tcp_server_factory.service
 - base.transport.transport:transport.service
+- base.transport.transport_log:transport_log.service
 - base.transport.transport_registries:identity_creg.service
 - base.transport.transport_registries:parcel_creg.service
 - base.transport.transport_registries:peer_creg.service
@@ -231,6 +232,7 @@ definitions:
       - base.transport.tcp_transport:tcp_connection_factory.service
       - base.transport.tcp_transport:tcp_server_factory.service
       - base.transport.transport:transport.service
+      - base.transport.transport_log:transport_log.service
       - base.transport.transport_registries:identity_creg.service
       - base.transport.transport_registries:parcel_creg.service
       - base.transport.transport_registries:peer_creg.service
