@@ -1,0 +1,10 @@
+model = record
+
+item = record:
+  id: int
+  dt: datetime
+  transport_name: string
+  msg_title: string
+  msg_bundle: bundle
+  transport_bundle: bundle
+  transport_size: int

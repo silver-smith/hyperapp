@@ -1,0 +1,104 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:int
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:global_model_command
+- legacy_type.command:model_command_fn
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
+- legacy_type.model:key_list_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
+- legacy_type.transport_log_model:item
+- legacy_type.transport_log_model:model
+definitions:
+  open_transport_log:
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport_log_model.module
+      attr_name: open_transport_log
+  open_transport_log.d:
+    type: open_transport_log_d
+    value: {}
+  open_transport_log.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_transport_log
+      ctx_params: []
+      service_params: []
+  open_transport_log.global-model-command:
+    type: legacy_type.command:global_model_command
+    value:
+      d: open_transport_log.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_transport_log.fn
+      preserve_remote: false
+  open_transport_log_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: transport_log_model
+      name: open_transport_log_d
+      base: null
+      fields: {}
+  transport_log_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport_log_model.module
+      attr_name: transport_log_model
+  transport_log_model-model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      feed_type: transport_log_model-model.feed-type
+  transport_log_model-model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.transport_log_model:model
+      value: transport_log_model-model.feed-template
+  transport_log_model-model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.transport_log_model:item
+  transport_log_model-model.key-list-ui-t:
+    type: legacy_type.model:key_list_ui_t
+    value:
+      item_t: legacy_type.transport_log_model:item
+      key_field: id
+      key_field_t: legacy_type.builtin:int
+  transport_log_model-model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: transport_log_model-model.key-list-ui-t
+      system_fn: transport_log_model-model.system-fn
+  transport_log_model-model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.transport_log_model:model
+      value: transport_log_model-model.model
+  transport_log_model-model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: transport_log_model
+      ctx_params:
+      - piece
+      service_params:
+      - transport_log
+      - format
+  transport_log_model.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: transport_log_model
+      file_name: transport_log_model.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.transport_log_model.item: legacy_type.transport_log_model:item
+        htypes.transport_log_model.model: legacy_type.transport_log_model:model
+        services.web: builtins:web.service

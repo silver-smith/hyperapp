@@ -113,6 +113,9 @@ import:
 - models.show_current_context:show_current_context-model.feed-template-cfg-item
 - models.show_current_context:show_current_context-model.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
+- models.transport_log_model:open_transport_log.global-model-command
+- models.transport_log_model:transport_log_model-model.feed-template-cfg-item
+- models.transport_log_model:transport_log_model-model.model-cfg-item
 - models.wiki_pages:formatter_creg-wiki_pages-list_model.actor-cfg-item
 - models.wiki_pages:formatter_creg-wiki_pages-page_model.actor-cfg-item
 - models.wiki_pages:formatter_creg-wiki_pages-ref_list_model.actor-cfg-item
@@ -175,6 +178,7 @@ definitions:
       - models.peer_list:peer_list-model.feed-template-cfg-item
       - models.ref_list:ref_list-model.feed-template-cfg-item
       - models.show_current_context:show_current_context-model.feed-template-cfg-item
+      - models.transport_log_model:transport_log_model-model.feed-template-cfg-item
       - models.wiki_pages:wiki_pages-list_model.feed-template-cfg-item
       - models.wiki_pages:wiki_pages-page_model.feed-template-cfg-item
       - models.wiki_pages:wiki_pages-ref_list_model.feed-template-cfg-item
@@ -214,6 +218,7 @@ definitions:
       - models.peer_list:open_peer_list.global-model-command
       - models.ref_list:open_ref_list.global-model-command
       - models.show_current_context:show_current_context.global-model-command
+      - models.transport_log_model:open_transport_log.global-model-command
       - models.wiki_pages:open_wiki_pages.global-model-command
   model_command_enumerator_reg:
     type: legacy_type.system:item_list_config
@@ -292,6 +297,7 @@ definitions:
       - models.peer_list:peer_list-model.model-cfg-item
       - models.ref_list:ref_list-model.model-cfg-item
       - models.show_current_context:show_current_context-model.model-cfg-item
+      - models.transport_log_model:transport_log_model-model.model-cfg-item
       - models.wiki_pages:wiki_pages-list_model.model-cfg-item
       - models.wiki_pages:wiki_pages-page_model.model-cfg-item
       - models.wiki_pages:wiki_pages-ref_list_model.model-cfg-item
