@@ -109,6 +109,11 @@ import:
 - models.ref_list:ref_list-model.model-cfg-item
 - models.ref_list:ref_list.service
 - models.rename_command:model_commands-model.open_rename.command-cfg-item
+- models.rpc_message_format:formatter_creg-rpc-error_response.actor-cfg-item
+- models.rpc_message_format:formatter_creg-rpc-function_target.actor-cfg-item
+- models.rpc_message_format:formatter_creg-rpc-request.actor-cfg-item
+- models.rpc_message_format:formatter_creg-rpc-response.actor-cfg-item
+- models.rpc_message_format:formatter_creg-rpc-system_fn_target.actor-cfg-item
 - models.show_current_context:formatter_creg-show_current_context-model.actor-cfg-item
 - models.show_current_context:show_current_context-model.feed-template-cfg-item
 - models.show_current_context:show_current_context-model.model-cfg-item
@@ -201,6 +206,11 @@ definitions:
       - models.model_list:formatter_creg-model_list-model_arg.actor-cfg-item
       - models.peer_list:formatter_creg-peer_list-model.actor-cfg-item
       - models.ref_list:formatter_creg-ref_list-model.actor-cfg-item
+      - models.rpc_message_format:formatter_creg-rpc-error_response.actor-cfg-item
+      - models.rpc_message_format:formatter_creg-rpc-function_target.actor-cfg-item
+      - models.rpc_message_format:formatter_creg-rpc-request.actor-cfg-item
+      - models.rpc_message_format:formatter_creg-rpc-response.actor-cfg-item
+      - models.rpc_message_format:formatter_creg-rpc-system_fn_target.actor-cfg-item
       - models.show_current_context:formatter_creg-show_current_context-model.actor-cfg-item
       - models.wiki_pages:formatter_creg-wiki_pages-list_model.actor-cfg-item
       - models.wiki_pages:formatter_creg-wiki_pages-page_model.actor-cfg-item

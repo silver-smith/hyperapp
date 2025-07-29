@@ -1,0 +1,103 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.rpc:error_response
+- legacy_type.rpc:function_target
+- legacy_type.rpc:request
+- legacy_type.rpc:response
+- legacy_type.rpc:system_fn_target
+- legacy_type.system:actor_template
+definitions:
+  format_rpc_error_response:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_message_format.module
+      attr_name: format_rpc_error_response
+  format_rpc_error_response.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_rpc_error_response
+      service_params:
+      - format
+  format_rpc_function_target:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_message_format.module
+      attr_name: format_rpc_function_target
+  format_rpc_function_target.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_rpc_function_target
+      service_params:
+      - format
+  format_rpc_request:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_message_format.module
+      attr_name: format_rpc_request
+  format_rpc_request.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_rpc_request
+      service_params:
+      - format
+  format_rpc_response:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_message_format.module
+      attr_name: format_rpc_response
+  format_rpc_response.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_rpc_response
+      service_params:
+      - format
+  format_rpc_system_fn_target:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_message_format.module
+      attr_name: format_rpc_system_fn_target
+  format_rpc_system_fn_target.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_rpc_system_fn_target
+      service_params:
+      - format
+  formatter_creg-rpc-error_response.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:error_response
+      value: format_rpc_error_response.actor-template
+  formatter_creg-rpc-function_target.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:function_target
+      value: format_rpc_function_target.actor-template
+  formatter_creg-rpc-request.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:request
+      value: format_rpc_request.actor-template
+  formatter_creg-rpc-response.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:response
+      value: format_rpc_response.actor-template
+  formatter_creg-rpc-system_fn_target.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.rpc:system_fn_target
+      value: format_rpc_system_fn_target.actor-template
+  rpc_message_format.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: rpc_message_format
+      file_name: rpc_message_format.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        services.web: builtins:web.service
