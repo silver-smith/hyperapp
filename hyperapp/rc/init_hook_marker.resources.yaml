@@ -1,0 +1,29 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.marker:marker_template
+- rc.init_hook_ctr:init_hook_ctr.module
+
+definitions:
+
+  init_hook_marker.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: init_hook_marker
+      file_name: init_hook_marker.dyn.py
+      import_list:
+        code.init_hook_ctr: rc.init_hook_ctr:init_hook_ctr.module
+
+  init_hook_marker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: init_hook_marker.module
+      attr_name: init_hook_marker
+
+  init_hook.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: init_hook
+      function: init_hook_marker
+      service_params:
+      - ctr_collector

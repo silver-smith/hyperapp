@@ -1,10 +1,16 @@
 import:
+- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
+- legacy_type.builtin:attribute
+- legacy_type.cfg_item:fn_value_template
+- legacy_type.init_hook_ctr:init_hook_ctr
+- legacy_type.system_fn:ctx_fn
 - rc.rc_constructor:rc_constructor.module
+- rc.init_hook_req:init_hook_req.module
 
 definitions:
 
@@ -14,7 +20,37 @@ definitions:
       module_name: init_hook_ctr
       file_name: init_hook_ctr.dyn.py
       import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.cfg_item.fn_value_template: legacy_type.cfg_item:fn_value_template
+        htypes.init_hook_ctr.init_hook_ctr: legacy_type.init_hook_ctr:init_hook_ctr
+        htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
+        services.mosaic: builtins:mosaic.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
+        code.init_hook_req: rc.init_hook_req:init_hook_req.module
+
+  BaseInitHookCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: init_hook_ctr.module
+      attr_name: BaseInitHookCtr
+
+  BaseInitHookCtr.from_template_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: BaseInitHookCtr
+      attr_name: from_template_piece
+
+  BaseInitHookCtr.from_template_piece.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: BaseInitHookCtr.from_template_piece
+      service_params: []
+
+  cfg_item-fn_value_template.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.cfg_item:fn_value_template
+      value: BaseInitHookCtr.from_template_piece.actor-template
 
   InitHookCtr:
     type: legacy_type.builtin:attribute
@@ -22,20 +58,20 @@ definitions:
       object: init_hook_ctr.module
       attr_name: InitHookCtr
 
-  InitHookCtr.from_template_piece:
+  InitHookCtr.from_piece:
     type: legacy_type.builtin:attribute
     value:
       object: InitHookCtr
-      attr_name: from_template_piece
+      attr_name: from_piece
 
-  InitHookCtr.from_template_piece.actor-template:
+  InitHookCtr.from_piece.actor-template:
     type: legacy_type.system:actor_template
     value:
-      function: InitHookCtr.from_template_piece
+      function: InitHookCtr.from_piece
       service_params: []
 
-  cfg_item-fn_value_template.actor-cfg-item:
+  init_hook_ctr-init_hook_ctr.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
-      t: legacy_type.cfg_item:fn_value_template
-      value: InitHookCtr.from_template_piece.actor-template
+      t: legacy_type.init_hook_ctr:init_hook_ctr
+      value: InitHookCtr.from_piece.actor-template

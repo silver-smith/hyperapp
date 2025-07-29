@@ -50,7 +50,9 @@ import:
 - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
 - rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-cfg-item
 - rc.import_resource:import_resource-import_resource.actor-cfg-item
+- rc.init_hook_ctr:init_hook_ctr-init_hook_ctr.actor-cfg-item
 - rc.init_hook_ctr:cfg_item-fn_value_template.actor-cfg-item
+- rc.init_hook_marker:init_hook.marker-template
 - rc.init_hook_req:init_hook_req-init_hook_req.actor-cfg-item
 - rc.init_targets:ctr_from_template_creg.service
 - rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-cfg-item
@@ -190,6 +192,7 @@ definitions:
       - rc.crud_marker:crud.marker-template
       - rc.editor_marker:editor.marker-template
       - rc.fixture_marker:fixture.marker-template
+      - rc.init_hook_marker:init_hook.marker-template
       - rc.model_marker:model.marker-template
       - rc.multi_actor_marker:multi_actor.marker-template
       - rc.selector_marker:selector.marker-template
@@ -207,6 +210,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - rc.init_hook_ctr:init_hook_ctr-init_hook_ctr.actor-cfg-item
       - rc.actor_ctr:actor_resource-actor_probe_ctr.actor-cfg-item
       - rc.actor_ctr:actor_resource-actor_template_ctr.actor-cfg-item
       - rc.command_ctr:command_resource-global_model_command_template_ctr.actor-cfg-item
