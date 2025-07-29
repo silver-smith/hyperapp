@@ -5,7 +5,14 @@ from datetime import datetime
 from .code.mark import mark
 
 
-Message = namedtuple('Message', 'dt transport_name msg_bundle transport_bundle transport_size')
+Message = namedtuple('Message', [
+    'dt',
+    'direction',
+    'transport_name',
+    'msg_bundle',
+    'transport_bundle',
+    'transport_size',
+    ])
 
 
 class TransportLog:
@@ -29,6 +36,7 @@ class TransportLog:
         id, dt, transport_name, transport_bundle, transport_size = self._pending_in.pop(parcel)
         self._messages[id] = Message(
             dt=dt,
+            direction='in',
             transport_name=transport_name,
             msg_bundle=msg_bundle,
             transport_bundle=transport_bundle,
@@ -44,6 +52,7 @@ class TransportLog:
         id, dt, msg_bundle = self._pending_out.pop(parcel)
         self._messages[id] = Message(
             dt=dt,
+            direction='out',
             transport_name=transport_name,
             msg_bundle=msg_bundle,
             transport_bundle=transport_bundle,

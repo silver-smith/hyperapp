@@ -14,6 +14,7 @@ def _msg_item(format, id, message):
     return htypes.transport_log_model.item(
         id=id,
         dt=message.dt,
+        direction=message.direction,
         transport_name=message.transport_name,
         msg_title=msg_title,
         msg_bundle=message.msg_bundle,

@@ -3,6 +3,7 @@ model = record
 item = record:
   id: int
   dt: datetime
+  direction: string
   transport_name: string
   msg_title: string
   msg_bundle: bundle
