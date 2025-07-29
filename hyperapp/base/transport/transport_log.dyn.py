@@ -22,6 +22,10 @@ class TransportLog:
         self._pending_out = {}
         self._messages = {}  # datetime -> Message
         self._counter = itertools.count(1)
+        self._hooks = []
+
+    def add_hook(self, hook):
+        self._hooks.append(hook)
 
     @property
     def messages(self):
@@ -34,7 +38,7 @@ class TransportLog:
 
     def commit_in_message(self, parcel, msg_bundle):
         id, dt, transport_name, transport_bundle, transport_size = self._pending_in.pop(parcel)
-        self._messages[id] = Message(
+        message = Message(
             dt=dt,
             direction='in',
             transport_name=transport_name,
@@ -42,6 +46,8 @@ class TransportLog:
             transport_bundle=transport_bundle,
             transport_size=transport_size,
             )
+        self._messages[id] = message
+        self._call_hooks(id, message)
 
     def add_out_message(self, parcel, msg_bundle):
         id = next(self._counter)
@@ -50,7 +56,7 @@ class TransportLog:
 
     def commit_out_message(self, parcel, transport_name, transport_bundle, transport_size):
         id, dt, msg_bundle = self._pending_out.pop(parcel)
-        self._messages[id] = Message(
+        message = Message(
             dt=dt,
             direction='out',
             transport_name=transport_name,
@@ -58,6 +64,13 @@ class TransportLog:
             transport_bundle=transport_bundle,
             transport_size=transport_size,
             )
+        self._messages[id] = message
+        self._call_hooks(id, message)
+
+    def _call_hooks(self, id, message):
+        for hook in self._hooks:
+            hook(id, message)
+
 
 @mark.service
 def transport_log():
