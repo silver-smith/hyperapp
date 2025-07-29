@@ -7,9 +7,13 @@ import:
 - legacy_type.builtin:int
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.bundle_info:model
 - legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:cfg_item
 - legacy_type.command:global_model_command
+- legacy_type.command:model_command
 - legacy_type.command:model_command_fn
+- legacy_type.data_browser:record_view
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.model:key_list_ui_t
@@ -18,6 +22,72 @@ import:
 - legacy_type.transport_log_model:item
 - legacy_type.transport_log_model:model
 definitions:
+  message:
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport_log_model.module
+      attr_name: message
+  message.d:
+    type: message_d
+    value: {}
+  message.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: message
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  message.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: message.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: message.fn
+      preserve_remote: false
+  message_bundle:
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport_log_model.module
+      attr_name: message_bundle
+  message_bundle.d:
+    type: message_bundle_d
+    value: {}
+  message_bundle.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: message_bundle
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  message_bundle.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: message_bundle.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: message_bundle.fn
+      preserve_remote: false
+  message_bundle_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: transport_log_model
+      name: message_bundle_d
+      base: null
+      fields: {}
+  message_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: transport_log_model
+      name: message_d
+      base: null
+      fields: {}
   open_transport_log:
     type: legacy_type.builtin:attribute
     value:
@@ -49,11 +119,59 @@ definitions:
       name: open_transport_log_d
       base: null
       fields: {}
+  transport_bundle:
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport_log_model.module
+      attr_name: transport_bundle
+  transport_bundle.d:
+    type: transport_bundle_d
+    value: {}
+  transport_bundle.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: transport_bundle
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  transport_bundle.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: transport_bundle.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: transport_bundle.fn
+      preserve_remote: false
+  transport_bundle_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: transport_log_model
+      name: transport_bundle_d
+      base: null
+      fields: {}
   transport_log_model:
     type: legacy_type.builtin:attribute
     value:
       object: transport_log_model.module
       attr_name: transport_log_model
+  transport_log_model-model-message.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.transport_log_model:model
+      command: message.model-command
+  transport_log_model-model-message_bundle.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.transport_log_model:model
+      command: message_bundle.model-command
+  transport_log_model-model-transport_bundle.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.transport_log_model:model
+      command: transport_bundle.model-command
   transport_log_model-model.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -99,6 +217,8 @@ definitions:
       file_name: transport_log_model.dyn.py
       import_list:
         code.mark: base.mark:mark.module
+        htypes.bundle_info.model: legacy_type.bundle_info:model
+        htypes.data_browser.record_view: legacy_type.data_browser:record_view
         htypes.transport_log_model.item: legacy_type.transport_log_model:item
         htypes.transport_log_model.model: legacy_type.transport_log_model:model
         services.web: builtins:web.service

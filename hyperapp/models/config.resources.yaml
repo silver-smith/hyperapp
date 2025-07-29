@@ -122,6 +122,9 @@ import:
 - models.show_current_context:show_current_context.global-model-command
 - models.system_fn_format:formatter_creg-system_fn-ctx_fn.actor-cfg-item
 - models.transport_log_model:open_transport_log.global-model-command
+- models.transport_log_model:transport_log_model-model-message.command-cfg-item
+- models.transport_log_model:transport_log_model-model-message_bundle.command-cfg-item
+- models.transport_log_model:transport_log_model-model-transport_bundle.command-cfg-item
 - models.transport_log_model:transport_log_model-model.feed-template-cfg-item
 - models.transport_log_model:transport_log_model-model.model-cfg-item
 - models.wiki_pages:formatter_creg-wiki_pages-list_model.actor-cfg-item
@@ -284,6 +287,9 @@ definitions:
       - models.ref_list:ref_list-model-open_parent.command-cfg-item
       - models.ref_list:ref_list-model-remove.command-cfg-item
       - models.rename_command:model_commands-model.open_rename.command-cfg-item
+      - models.transport_log_model:transport_log_model-model-message.command-cfg-item
+      - models.transport_log_model:transport_log_model-model-message_bundle.command-cfg-item
+      - models.transport_log_model:transport_log_model-model-transport_bundle.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-new_page.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-open.command-cfg-item
       - models.wiki_pages:wiki_pages-list_model-open_parent.command-cfg-item

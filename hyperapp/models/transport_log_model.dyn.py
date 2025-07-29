@@ -1,3 +1,5 @@
+from hyperapp.boot.ref import make_ref
+
 from . import htypes
 from .services import (
     web,
@@ -30,6 +32,42 @@ def transport_log_model(piece, transport_log, format):
         for id, message
         in transport_log.messages.items()
         ]
+
+
+def _bundle_info_model(name, bundle):
+    return htypes.bundle_info.model(
+        bundle_name=name,
+        roots=bundle.roots,
+        associations=bundle.associations,
+        capsules=tuple(make_ref(capsule) for capsule in bundle.capsule_list),
+        )
+
+
+@mark.command
+def message(piece, current_item):
+    bundle = current_item.msg_bundle
+    if len(bundle.roots) != 1:
+        log.warning("Can not open message roots: It has %d roots", len(bundle.roots))
+        return
+    return htypes.data_browser.record_view(
+        data=bundle.roots[0],
+        )
+
+
+@mark.command
+def message_bundle(piece, current_item):
+    return _bundle_info_model(
+        name=f"{current_item.transport_name}.{current_item.id}.{current_item.direction}.msg",
+        bundle=current_item.msg_bundle,
+        )
+
+
+@mark.command
+def transport_bundle(piece, current_item):
+    return _bundle_info_model(
+        name=f"{current_item.transport_name}.{current_item.id}.{current_item.direction}.transport",
+        bundle=current_item.transport_bundle,
+        )
 
 
 @mark.global_command
