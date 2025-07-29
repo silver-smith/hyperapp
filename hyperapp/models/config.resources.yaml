@@ -121,6 +121,7 @@ import:
 - models.show_current_context:show_current_context-model.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
 - models.system_fn_format:formatter_creg-system_fn-ctx_fn.actor-cfg-item
+- models.transport_log_model:init_hook.hook
 - models.transport_log_model:open_transport_log.global-model-command
 - models.transport_log_model:transport_log_model-model-message.command-cfg-item
 - models.transport_log_model:transport_log_model-model-message_bundle.command-cfg-item
@@ -160,6 +161,7 @@ definitions:
         feed_factory: feed_factory
         formatter_creg: formatter_creg
         global_model_command_reg: global_model_command_reg
+        init_hook: init_hook
         model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
         model_reg: model_reg
@@ -239,6 +241,11 @@ definitions:
       - models.show_current_context:show_current_context.global-model-command
       - models.transport_log_model:open_transport_log.global-model-command
       - models.wiki_pages:open_wiki_pages.global-model-command
+  init_hook:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - models.transport_log_model:init_hook.hook
   model_command_enumerator_reg:
     type: legacy_type.system:item_list_config
     value:

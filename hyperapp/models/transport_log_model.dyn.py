@@ -5,6 +5,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.list_diff import KeyListDiff
 
 
 def _msg_item(format, id, message):
@@ -73,3 +74,16 @@ def transport_bundle(piece, current_item):
 @mark.global_command
 def open_transport_log():
     return htypes.transport_log_model.model()
+
+
+@mark.init_hook
+def init_hook(format, feed_factory, transport_log):
+    model = htypes.transport_log_model.model()
+    feed = feed_factory(model)
+
+    def hook(id, message):
+        item = _msg_item(format, id, message)
+        diff = KeyListDiff.Append(item)
+        feed.send(diff)
+
+    transport_log.add_hook(hook)

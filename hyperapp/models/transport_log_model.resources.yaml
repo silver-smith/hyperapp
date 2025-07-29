@@ -3,11 +3,13 @@
 import:
 - base.mark:mark.module
 - builtins:web.service
+- common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:int
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.bundle_info:model
+- legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:global_model_command
@@ -22,6 +24,24 @@ import:
 - legacy_type.transport_log_model:item
 - legacy_type.transport_log_model:model
 definitions:
+  init_hook:
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport_log_model.module
+      attr_name: init_hook
+  init_hook.hook:
+    type: legacy_type.cfg_item:fn_value_template
+    value:
+      system_fn: init_hook.system-fn
+  init_hook.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: init_hook
+      ctx_params: []
+      service_params:
+      - format
+      - feed_factory
+      - transport_log
   message:
     type: legacy_type.builtin:attribute
     value:
@@ -216,6 +236,7 @@ definitions:
       module_name: transport_log_model
       file_name: transport_log_model.dyn.py
       import_list:
+        code.list_diff: common.list_diff:list_diff.module
         code.mark: base.mark:mark.module
         htypes.bundle_info.model: legacy_type.bundle_info:model
         htypes.data_browser.record_view: legacy_type.data_browser:record_view
