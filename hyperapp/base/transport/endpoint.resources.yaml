@@ -48,5 +48,6 @@ definitions:
       service_params:
       - system_failed
       - route_table
+      - transport_log
       - endpoint_thread_pool
       want_config: false

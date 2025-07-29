@@ -122,14 +122,15 @@ class Connection:
         while has_full_tcp_packet(self._buffer):
             bundle, packet_size = decode_tcp_packet(self._buffer)
             self._buffer = self._buffer[packet_size:]
-            self._process_bundle(bundle)
+            self._process_bundle(bundle, packet_size)
 
-    def _process_bundle(self, bundle):
+    def _process_bundle(self, bundle, packet_size):
         parcel_ref = bundle.roots[0]
         log.info("%s: Received bundle: parcel: %s", self, parcel_ref)
         ref_set = unbundler.register_bundle(bundle)
         self._seen_refs |= ref_set
         parcel = self._svc.parcel_creg.invite(parcel_ref)
+        self._svc.transport_log.add_in_message(parcel, 'tcp', bundle, packet_size)
         if not self._svc.route_table.has_route(parcel.sender):
             # Looks like incoming connection. Add incoming route.
             # Add route before sending parcel - it may be used during parcel processing.

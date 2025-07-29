@@ -12,5 +12,9 @@ def test_log(bundler, generate_rsa_identity, transport_log):
     msg_bundle = bundler([mosaic.put(msg)]).bundle
     parcel = receiver.peer.make_parcel(msg_bundle, sender)
     transport_bundle = bundler([mosaic.put(parcel.piece)]).bundle
+
     transport_log.add_out_message(parcel, msg_bundle)
     transport_log.commit_out_message(parcel, 'tcp', transport_bundle, 12345)
+
+    transport_log.add_in_message(parcel, 'tcp', transport_bundle, 12345)
+    transport_log.commit_in_message(parcel, msg_bundle)

@@ -16,8 +16,9 @@ Request = namedtuple('Request', 'receiver_identity remote_peer ref_list')
 
 class LocalRoute:
 
-    def __init__(self, system_failed, endpoint_thread_pool, identity, endpoint):
+    def __init__(self, system_failed, transport_log, endpoint_thread_pool, identity, endpoint):
         self._system_failed = system_failed
+        self._transport_log = transport_log
         self._endpoint_thread_pool = endpoint_thread_pool
         self._identity = identity
         self._endpoint = endpoint
@@ -37,6 +38,7 @@ class LocalRoute:
         parcel.verify()
         bundle = self._identity.decrypt_parcel(parcel)
         unbundler.register_bundle(bundle)
+        self._transport_log.commit_in_message(parcel, bundle)
         request = Request(self._identity, parcel.sender, bundle.roots)
         self._endpoint_thread_pool.submit(self._process_endpoint, request)
 
@@ -52,14 +54,15 @@ class LocalRoute:
 
 class EndpointRegistry:
 
-    def __init__(self, system_failed, endpoint_thread_pool, route_table):
+    def __init__(self, system_failed, transport_log, endpoint_thread_pool, route_table):
         self._system_failed = system_failed
+        self._transport_log = transport_log
         self._endpoint_thread_pool = endpoint_thread_pool
         self._route_table = route_table
 
     def register(self, identity, endpoint):
         log.info("Local peer %s: %s", identity.peer, endpoint)
-        route = LocalRoute(self._system_failed, self._endpoint_thread_pool, identity, endpoint)
+        route = LocalRoute(self._system_failed, self._transport_log, self._endpoint_thread_pool, identity, endpoint)
         self._route_table.add_route(identity.peer, route)
 
 
@@ -71,5 +74,5 @@ def endpoint_thread_pool():
     log.info("Endpoint thread pool is shut down")
 
 
-def endpoint_registry(system_failed, route_table, endpoint_thread_pool):
-    return EndpointRegistry(system_failed, endpoint_thread_pool, route_table)
+def endpoint_registry(system_failed, route_table, transport_log, endpoint_thread_pool):
+    return EndpointRegistry(system_failed, transport_log, endpoint_thread_pool, route_table)

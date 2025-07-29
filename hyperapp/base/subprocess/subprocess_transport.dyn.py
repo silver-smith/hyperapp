@@ -190,6 +190,7 @@ class SubprocessTransport:
         connection_rec.seen_refs |= ref_set
         parcel_piece_ref = parcel_bundle.roots[0]
         parcel = self._parcel_creg.invite(parcel_piece_ref)
+        self._transport_log.add_in_message(parcel, 'subprocess', parcel_bundle, len(data))
         self._process_parcel(connection, connection_rec, parcel)
 
     def _process_parcel(self, connection, connection_rec, parcel):

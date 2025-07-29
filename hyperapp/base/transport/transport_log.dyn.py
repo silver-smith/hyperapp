@@ -11,6 +11,7 @@ Message = namedtuple('Message', 'dt transport_name msg_bundle transport_bundle t
 class TransportLog:
 
     def __init__(self):
+        self._pending_in = {}
         self._pending_out = {}
         self._messages = {}  # datetime -> Message
         self._counter = itertools.count(1)
@@ -18,6 +19,21 @@ class TransportLog:
     @property
     def messages(self):
         return self._messages
+
+    def add_in_message(self, parcel, transport_name, transport_bundle, transport_size):
+        id = next(self._counter)
+        dt = datetime.now()
+        self._pending_in[parcel] = (id, dt, transport_name, transport_bundle, transport_size)
+
+    def commit_in_message(self, parcel, msg_bundle):
+        id, dt, transport_name, transport_bundle, transport_size = self._pending_in.pop(parcel)
+        self._messages[id] = Message(
+            dt=dt,
+            transport_name=transport_name,
+            msg_bundle=msg_bundle,
+            transport_bundle=transport_bundle,
+            transport_size=transport_size,
+            )
 
     def add_out_message(self, parcel, msg_bundle):
         id = next(self._counter)
@@ -33,7 +49,6 @@ class TransportLog:
             transport_bundle=transport_bundle,
             transport_size=transport_size,
             )
-
 
 @mark.service
 def transport_log():
