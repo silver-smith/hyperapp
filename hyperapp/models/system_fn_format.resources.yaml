@@ -1,0 +1,35 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
+definitions:
+  format_ctx_fn:
+    type: legacy_type.builtin:attribute
+    value:
+      object: system_fn_format.module
+      attr_name: format_ctx_fn
+  format_ctx_fn.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_ctx_fn
+      service_params:
+      - format
+  formatter_creg-system_fn-ctx_fn.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.system_fn:ctx_fn
+      value: format_ctx_fn.actor-template
+  system_fn_format.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: system_fn_format
+      file_name: system_fn_format.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        services.web: builtins:web.service

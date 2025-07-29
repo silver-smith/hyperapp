@@ -118,6 +118,7 @@ import:
 - models.show_current_context:show_current_context-model.feed-template-cfg-item
 - models.show_current_context:show_current_context-model.model-cfg-item
 - models.show_current_context:show_current_context.global-model-command
+- models.system_fn_format:formatter_creg-system_fn-ctx_fn.actor-cfg-item
 - models.transport_log_model:open_transport_log.global-model-command
 - models.transport_log_model:transport_log_model-model.feed-template-cfg-item
 - models.transport_log_model:transport_log_model-model.model-cfg-item
@@ -212,6 +213,7 @@ definitions:
       - models.rpc_message_format:formatter_creg-rpc-response.actor-cfg-item
       - models.rpc_message_format:formatter_creg-rpc-system_fn_target.actor-cfg-item
       - models.show_current_context:formatter_creg-show_current_context-model.actor-cfg-item
+      - models.system_fn_format:formatter_creg-system_fn-ctx_fn.actor-cfg-item
       - models.wiki_pages:formatter_creg-wiki_pages-list_model.actor-cfg-item
       - models.wiki_pages:formatter_creg-wiki_pages-page_model.actor-cfg-item
       - models.wiki_pages:formatter_creg-wiki_pages-ref_list_model.actor-cfg-item
