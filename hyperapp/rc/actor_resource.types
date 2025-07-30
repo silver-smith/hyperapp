@@ -17,5 +17,4 @@ actor_template_ctr = record:
   service_params: string list
 
 actor_probe_template = record:
-  t: ref
   function: ref

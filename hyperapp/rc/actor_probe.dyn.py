@@ -54,11 +54,6 @@ class ActorProbe(ActorProbeBase):
         self._ctr_collector.add_constructor(ctr)
 
 
-def resolve_actor_probe_cfg_item(piece):
-    t = pyobj_creg.invite(piece.t)
-    return (t, piece)
-
-
 def resolve_actor_probe_cfg_value(piece, key, system, service_name):
     fn = pyobj_creg.invite(piece.function)
     assert (

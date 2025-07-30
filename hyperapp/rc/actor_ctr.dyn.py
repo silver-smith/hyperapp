@@ -45,9 +45,12 @@ class ActorProbeCtr(Constructor):
                 object=mosaic.put(object),
                 attr_name=name,
                 )
-        return htypes.actor_resource.actor_probe_template(
-            t=pyobj_creg.actor_to_ref(self._t),
+        template = htypes.actor_resource.actor_probe_template(
             function=mosaic.put(object),
+            )
+        return htypes.cfg_item.typed_cfg_item(
+            t=pyobj_creg.actor_to_ref(self._t),
+            value=mosaic.put(template),
             )
 
     def make_resource(self, types, module_name, python_module):

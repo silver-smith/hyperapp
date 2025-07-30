@@ -7,7 +7,6 @@ import:
 - rc.actor_ctr:actor_resource-actor_template_ctr.actor-cfg-item
 - rc.actor_ctr:ctr_from_template_creg-cfg_item-typed_cfg_item.actor-cfg-item
 - rc.actor_marker:actor.marker-template
-- rc.actor_probe:cfg_item_creg-actor_resource-actor_probe_template.actor-cfg-item
 - rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-cfg-item
 - rc.builtin_service_target:builtin_service-builtin_service_req.actor-cfg-item
 - rc.cfg_item_req:actor_resource-cfg_item_req.actor-cfg-item
@@ -139,7 +138,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.actor_probe:cfg_item_creg-actor_resource-actor_probe_template.actor-cfg-item
       - rc.marker_registry:cfg_item_creg-marker-marker_template.actor-cfg-item
       - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
       - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
