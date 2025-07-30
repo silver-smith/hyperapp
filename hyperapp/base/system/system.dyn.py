@@ -11,7 +11,7 @@ from .services import (
 from .code.config_ctl import DictConfigCtl, config_value_ctl_creg_config, service_pieces_to_config
 from .code.config_key_ctl import config_key_ctl_creg_config
 from .code.config_layer import ProjectConfigLayer, StaticConfigLayer
-from .code.typed_cfg_item import typed_cfg_item_config
+from .code.cfg_item import cfg_item_config
 from .code.service_template import service_template_cfg_item_config, service_template_cfg_value_config
 from .code.actor_template import actor_template_cfg_item_config, actor_template_cfg_value_config
 
@@ -98,7 +98,7 @@ class System:
 
     def _make_cfg_item_creg_config(self):
         return {
-            **typed_cfg_item_config(),
+            **cfg_item_config(),
             **service_template_cfg_item_config(),
             **actor_template_cfg_item_config(),
             }

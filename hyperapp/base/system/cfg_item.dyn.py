@@ -11,7 +11,7 @@ def resolve_typed_cfg_item(piece):
     return (t, value)
 
 
-def typed_cfg_item_config():
+def cfg_item_config():
     return {
         htypes.cfg_item.typed_cfg_item: resolve_typed_cfg_item,
         }
