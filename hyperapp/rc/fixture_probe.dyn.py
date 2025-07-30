@@ -17,11 +17,6 @@ class FixtureProbe(Probe):
         return f"<FixtureProbe {self._fn} {self._params} {self._ctl_ref}>"
 
 
-
-def resolve_fixture_cfg_item(piece):
-    return (piece.service_name, piece)
-
-
 def resolve_fixture_obj_cfg_value(piece, key, system, service_name):
     fn = pyobj_creg.invite(piece.function)
     probe = FixtureProbe(system, piece.service_name, piece.ctl, fn, piece.params)

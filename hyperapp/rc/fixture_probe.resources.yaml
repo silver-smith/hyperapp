@@ -22,47 +22,11 @@ definitions:
         services.web: builtins:web.service
         code.system_probe: rc.system_probe:system_probe.module
 
-  resolve_fixture_cfg_item:
-    type: legacy_type.builtin:attribute
-    value:
-      object: fixture_probe.module
-      attr_name: resolve_fixture_cfg_item
-
   resolve_fixture_obj_cfg_value:
     type: legacy_type.builtin:attribute
     value:
       object: fixture_probe.module
       attr_name: resolve_fixture_obj_cfg_value
-
-  resolve_fixture_probe_cfg_value:
-    type: legacy_type.builtin:attribute
-    value:
-      object: fixture_probe.module
-      attr_name: resolve_fixture_probe_cfg_value
-
-  resolve_fixture_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_fixture_cfg_item
-      service_params: []
-
-  cfg_item_creg-fixture_resource-fixture_obj_template.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.fixture_resource:fixture_obj_template
-      value: resolve_fixture_cfg_item.actor-template
-
-  resolve_fixture_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_fixture_cfg_item
-      service_params: []
-
-  cfg_item_creg-fixture_resource-fixture_probe_template.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.fixture_resource:fixture_probe_template
-      value: resolve_fixture_cfg_item.actor-template
 
   resolve_fixture_obj_cfg_value.actor-template:
     type: legacy_type.system:actor_template
@@ -75,6 +39,12 @@ definitions:
     value:
       t: legacy_type.fixture_resource:fixture_obj_template
       value: resolve_fixture_obj_cfg_value.actor-template
+
+  resolve_fixture_probe_cfg_value:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fixture_probe.module
+      attr_name: resolve_fixture_probe_cfg_value
 
   resolve_fixture_probe_cfg_value.actor-template:
     type: legacy_type.system:actor_template

@@ -62,8 +62,6 @@ import:
 - rc.fixture_marker:fixture.marker-template
 - rc.fixture_resource:fixture_resource-config_fixture_resource.actor-cfg-item
 - rc.fixture_resource:fixture_resource-config_template_fixture_resource.actor-cfg-item
-- rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_obj_template.actor-cfg-item
-- rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_probe_template.actor-cfg-item
 - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-cfg-item
 - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_probe_template.actor-cfg-item
 - rc.job_cache:job_cache.service
@@ -145,8 +143,6 @@ definitions:
       - rc.marker_registry:cfg_item_creg-marker-marker_template.actor-cfg-item
       - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
       - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
-      - rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_obj_template.actor-cfg-item
-      - rc.fixture_probe:cfg_item_creg-fixture_resource-fixture_probe_template.actor-cfg-item
       - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
       - rc.service_probe_resource:cfg_item_creg-service_resource-service_probe_template.actor-cfg-item
 

@@ -59,11 +59,15 @@ class FixtureObjCtr(FixtureCtrBase):
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
-        return htypes.fixture_resource.fixture_obj_template(
+        template = htypes.fixture_resource.fixture_obj_template(
             service_name=self._name,
             ctl=self._ctl_ref,
             function=mosaic.put(function),
             params=self._params,
+            )
+        return htypes.cfg_item.str_cfg_item(
+            key=self._name,
+            value=mosaic.put(template),
             )
 
 
@@ -84,11 +88,15 @@ class FixtureProbeCtr(FixtureCtrBase):
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
-        return htypes.fixture_resource.fixture_probe_template(
+        template = htypes.fixture_resource.fixture_probe_template(
             service_name=self._name,
             ctl=self._ctl_ref,
             function=mosaic.put(function),
             params=self._params,
+            )
+        return htypes.cfg_item.str_cfg_item(
+            key=self._name,
+            value=mosaic.put(template),
             )
 
 

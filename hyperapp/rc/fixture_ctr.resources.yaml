@@ -2,6 +2,7 @@ import:
 - builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:str_cfg_item
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.fixture_resource:config_fixture_ctr
 - legacy_type.fixture_resource:config_template_fixture_ctr
@@ -25,6 +26,7 @@ definitions:
       file_name: fixture_ctr.dyn.py
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.cfg_item.str_cfg_item: legacy_type.cfg_item:str_cfg_item
         htypes.fixture_resource.config_fixture_ctr: legacy_type.fixture_resource:config_fixture_ctr
         htypes.fixture_resource.config_template_fixture_ctr: legacy_type.fixture_resource:config_template_fixture_ctr
         htypes.fixture_resource.fixture_obj_ctr: legacy_type.fixture_resource:fixture_obj_ctr

@@ -361,8 +361,12 @@ class TestJob(SystemJob):
             function=mosaic.put(fn_piece),
             params=tuple(inspect.signature(test_fn).parameters),
             )
+        cfg_item = htypes.cfg_item.str_cfg_item(
+            key=self._test_fn_name,
+            value=mosaic.put(template),
+            )
         service_to_config_piece = {
-            'system': item_pieces_to_data([template])
+            'system': item_pieces_to_data([cfg_item])
             }
         config_piece = service_pieces_to_config(service_to_config_piece)
         return StaticConfigLayer(system, system['config_ctl'], config_piece)
