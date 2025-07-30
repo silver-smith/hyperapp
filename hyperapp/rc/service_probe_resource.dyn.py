@@ -134,5 +134,5 @@ class ServiceProbeCtr(ModuleCtr):
         item = self.make_component(types, python_module)
         return ConfigItemResource(
             service_name='system',
-            template_ref=mosaic.put(item),
+            cfg_item_ref=mosaic.put(item),
             )

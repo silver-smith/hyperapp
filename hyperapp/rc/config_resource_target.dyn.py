@@ -49,7 +49,7 @@ class ConfigResourceTarget(Target):
                 continue
             resource = ConfigItemResource(
                 service_name=service_name,
-                template_ref=mosaic.put(target.resource),
+                cfg_item_ref=mosaic.put(target.resource),
                 )
             req_to_resources[req].add(resource)
         return dict(req_to_resources)

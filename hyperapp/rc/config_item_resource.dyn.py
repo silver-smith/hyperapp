@@ -11,19 +11,19 @@ class ConfigItemResourceBase(Resource):
     def from_piece(cls, piece):
         return cls(piece.service_name, piece.config_item)
 
-    def __init__(self, service_name, template_ref):
+    def __init__(self, service_name, cfg_item_ref):
         self._service_name = service_name
-        self._template_ref = template_ref
+        self._cfg_item_ref = cfg_item_ref
 
     def __eq__(self, rhs):
         return (
             self.__class__ is rhs.__class__
             and self._service_name == rhs._service_name
-            and self._template_ref == rhs._template_ref
+            and self._cfg_item_ref == rhs._cfg_item_ref
             )
 
     def __hash__(self):
-        return hash(('config-item-resource', self._service_name, self._template_ref))
+        return hash(('config-item-resource', self._service_name, self._cfg_item_ref))
 
     @property
     def is_system_resource(self):
@@ -40,12 +40,12 @@ class ConfigItemResource(ConfigItemResourceBase):
     def piece(self):
         return htypes.config_item_resource.config_item_resource(
             service_name=self._service_name,
-            config_item=self._template_ref,
+            config_item=self._cfg_item_ref,
             )
 
     @property
     def system_config_items(self):
-        item = web.summon(self._template_ref)
+        item = web.summon(self._cfg_item_ref)
         return {self._service_name: [item]}
 
 
@@ -55,10 +55,10 @@ class ConfigItemResourceOverride(ConfigItemResourceBase):
     def piece(self):
         return htypes.config_item_resource.config_item_resource_override(
             service_name=self._service_name,
-            config_item=self._template_ref,
+            config_item=self._cfg_item_ref,
             )
 
     @property
     def system_config_items_override(self):
-        item = web.summon(self._template_ref)
+        item = web.summon(self._cfg_item_ref)
         return {self._service_name: [item]}

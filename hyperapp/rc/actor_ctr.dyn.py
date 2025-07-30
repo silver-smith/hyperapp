@@ -57,7 +57,7 @@ class ActorProbeCtr(Constructor):
         item = self.make_component(types, python_module)
         return ConfigItemResource(
             service_name=self._service_name,
-            template_ref=mosaic.put(item),
+            cfg_item_ref=mosaic.put(item),
             )
 
     @property

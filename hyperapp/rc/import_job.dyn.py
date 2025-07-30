@@ -319,7 +319,7 @@ class ImportJob(SystemJob):
             )
         yield ConfigItemResource(
             service_name='ctr_collector',
-            template_ref=mosaic.put(mark_module_item),
+            cfg_item_ref=mosaic.put(mark_module_item),
             )
 
     def incomplete_error(self, module_name, error_msg, traceback=None, missing_reqs=None):

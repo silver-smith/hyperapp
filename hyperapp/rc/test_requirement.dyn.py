@@ -78,7 +78,7 @@ class TestedCodeReq(Requirement):
                 )
             module_marker = ConfigItemResource(
                 service_name='ctr_collector',
-                template_ref=mosaic.put(mark_module_item),
+                cfg_item_ref=mosaic.put(mark_module_item),
                 )
             resources = [*target.test_resources, recorder_res, module_marker]
         tested_code_res = TestedCodeResource(

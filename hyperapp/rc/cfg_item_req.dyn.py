@@ -89,7 +89,7 @@ class CfgItemReq(Requirement):
             template_piece = resource_tgt.get_resource_component(target.constructor)
         return ConfigItemResource(
             service_name=self._service_name,
-            template_ref=mosaic.put(template_piece),
+            cfg_item_ref=mosaic.put(template_piece),
             )
 
     @property

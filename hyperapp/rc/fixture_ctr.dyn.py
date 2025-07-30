@@ -38,7 +38,7 @@ class FixtureCtrBase(ModuleCtr):
         item = self.make_component(types, python_module)
         return ConfigItemResourceOverride(
             service_name='system',
-            template_ref=mosaic.put(item),
+            cfg_item_ref=mosaic.put(item),
             )
 
 
