@@ -2,6 +2,7 @@ import:
 - builtins:deduce_t.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:str_cfg_item
 - legacy_type.command:model_command_add_fn
 - legacy_type.command:model_command_fn
 - legacy_type.command:model_command_remove_fn
@@ -35,11 +36,16 @@ definitions:
   ui_command.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: ui_command
       function: UiCommandMarker
       service_params:
       - system
       - ctr_collector
+
+  ui_command.marker-cfg-item:
+    type: legacy_type.cfg_item:str_cfg_item
+    value:
+      key: ui_command
+      value: ui_command.marker-template
 
   UiModelCommandMarker:
     type: legacy_type.builtin:attribute
@@ -50,11 +56,16 @@ definitions:
   ui_model_command.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: ui_model_command
       function: UiModelCommandMarker
       service_params:
       - system
       - ctr_collector
+
+  ui_model_command.marker-cfg-item:
+    type: legacy_type.cfg_item:str_cfg_item
+    value:
+      key: ui_model_command
+      value: ui_model_command.marker-template
 
   UniversalUiCommandMarker:
     type: legacy_type.builtin:attribute
@@ -65,11 +76,16 @@ definitions:
   universal_ui_command.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: universal_ui_command
       function: UniversalUiCommandMarker
       service_params:
       - system
       - ctr_collector
+
+  universal_ui_command.marker-cfg-item:
+    type: legacy_type.cfg_item:str_cfg_item
+    value:
+      key: universal_ui_command
+      value: universal_ui_command.marker-template
 
   UiCommandEnumeratorMarker:
     type: legacy_type.builtin:attribute
@@ -80,11 +96,16 @@ definitions:
   ui_command_enum.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: ui_command_enum
       function: UiCommandEnumeratorMarker
       service_params:
       - system
       - ctr_collector
+
+  ui_command_enum.marker-cfg-item:
+    type: legacy_type.cfg_item:str_cfg_item
+    value:
+      key: ui_command_enum
+      value: ui_command_enum.marker-template
 
   ModelCommandMarker:
     type: legacy_type.builtin:attribute
@@ -95,11 +116,16 @@ definitions:
   command.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: command
       function: ModelCommandMarker
       service_params:
       - system
       - ctr_collector
+
+  command.marker-cfg-item:
+    type: legacy_type.cfg_item:str_cfg_item
+    value:
+      key: command
+      value: command.marker-template
 
   ModelCommandEnumeratorMarker:
     type: legacy_type.builtin:attribute
@@ -110,11 +136,16 @@ definitions:
   command_enum.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: command_enum
       function: ModelCommandEnumeratorMarker
       service_params:
       - system
       - ctr_collector
+
+  command_enum.marker-cfg-item:
+    type: legacy_type.cfg_item:str_cfg_item
+    value:
+      key: command_enum
+      value: command_enum.marker-template
 
   GlobalModelCommandMarker:
     type: legacy_type.builtin:attribute
@@ -125,8 +156,13 @@ definitions:
   global_command.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: global_command
       function: GlobalModelCommandMarker
       service_params:
       - system
       - ctr_collector
+
+  global_command.marker-cfg-item:
+    type: legacy_type.cfg_item:str_cfg_item
+    value:
+      key: global_command
+      value: global_command.marker-template

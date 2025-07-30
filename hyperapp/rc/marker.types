@@ -1,4 +1,3 @@
 marker_template = record:
-  name: string
   function: ref
   service_params: string list

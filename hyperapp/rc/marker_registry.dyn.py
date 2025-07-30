@@ -3,10 +3,6 @@ from functools import partial
 from .services import pyobj_creg
 
 
-def resolve_marker_cfg_item(piece):
-    return (piece.name, piece)
-
-
 def resolve_marker_cfg_value(piece, key, system, service_name):
     fn = pyobj_creg.invite(piece.function)
     kw = {

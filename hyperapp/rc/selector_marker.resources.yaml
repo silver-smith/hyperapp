@@ -2,6 +2,7 @@ import:
 - builtins:deduce_t.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:str_cfg_item
 - legacy_type.marker:marker_template
 - rc.marker_utils:marker_utils.module
 - rc.selector_ctr:selector_ctr.module
@@ -27,8 +28,13 @@ definitions:
   selector.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: selector
       function: SelectorMarker
       service_params:
       - system
       - ctr_collector
+
+  selector.marker-cfg-item:
+    type: legacy_type.cfg_item:str_cfg_item
+    value:
+      key: selector
+      value: selector.marker-template

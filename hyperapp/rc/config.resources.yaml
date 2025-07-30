@@ -6,13 +6,13 @@ import:
 - rc.actor_ctr:actor_resource-actor_probe_ctr.actor-cfg-item
 - rc.actor_ctr:actor_resource-actor_template_ctr.actor-cfg-item
 - rc.actor_ctr:ctr_from_template_creg-cfg_item-typed_cfg_item.actor-cfg-item
-- rc.actor_marker:actor.marker-template
+- rc.actor_marker:actor.marker-cfg-item
 - rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-cfg-item
 - rc.builtin_service_target:builtin_service-builtin_service_req.actor-cfg-item
 - rc.cfg_item_req:actor_resource-cfg_item_req.actor-cfg-item
 - rc.crud_ctr:crud_ctr-commit_ctr.actor-cfg-item
 - rc.crud_ctr:crud_ctr-init_ctr.actor-cfg-item
-- rc.crud_marker:crud.marker-template
+- rc.crud_marker:crud.marker-cfg-item
 - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
 - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
 - rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
@@ -25,19 +25,19 @@ import:
 - rc.command_ctr:command_resource-ui_command_template_ctr.actor-cfg-item
 - rc.command_ctr:command_resource-ui_model_command_template_ctr.actor-cfg-item
 - rc.command_ctr:command_resource-universal_ui_command_template_ctr.actor-cfg-item
-- rc.command_marker:command.marker-template
-- rc.command_marker:command_enum.marker-template
-- rc.command_marker:global_command.marker-template
-- rc.command_marker:ui_command.marker-template
-- rc.command_marker:universal_ui_command.marker-template
-- rc.command_marker:ui_command_enum.marker-template
-- rc.command_marker:ui_model_command.marker-template
-- rc.config_fixture_marker:config_fixture.marker-template
-- rc.config_fixture_marker:config_template_fixture.marker-template
+- rc.command_marker:command.marker-cfg-item
+- rc.command_marker:command_enum.marker-cfg-item
+- rc.command_marker:global_command.marker-cfg-item
+- rc.command_marker:ui_command.marker-cfg-item
+- rc.command_marker:universal_ui_command.marker-cfg-item
+- rc.command_marker:ui_command_enum.marker-cfg-item
+- rc.command_marker:ui_model_command.marker-cfg-item
+- rc.config_fixture_marker:config_fixture.marker-cfg-item
+- rc.config_fixture_marker:config_template_fixture.marker-cfg-item
 - rc.config_item_resource:config_item_resource-config_item_resource.actor-cfg-item
 - rc.config_item_resource:config_item_resource-config_item_resource_override.actor-cfg-item
 - rc.editor_ctr:editor_ctr-default_ctr.actor-cfg-item
-- rc.editor_marker:editor.marker-template
+- rc.editor_marker:editor.marker-cfg-item
 - rc.feed_ctr:feed-list_feed_ctr.actor-cfg-item
 - rc.feed_ctr:feed-index_tree_feed_ctr.actor-cfg-item
 - rc.feed_ctr:feed-value_feed_ctr.actor-cfg-item
@@ -51,26 +51,25 @@ import:
 - rc.import_resource:import_resource-import_resource.actor-cfg-item
 - rc.init_hook_ctr:init_hook_ctr-init_hook_ctr.actor-cfg-item
 - rc.init_hook_ctr:cfg_item-fn_value_template.actor-cfg-item
-- rc.init_hook_marker:init_hook.marker-template
+- rc.init_hook_marker:init_hook.marker-cfg-item
 - rc.init_hook_req:init_hook_req-init_hook_req.actor-cfg-item
 - rc.init_targets:ctr_from_template_creg.service
 - rc.fixture_ctr:fixture_resource-config_fixture_ctr.actor-cfg-item
 - rc.fixture_ctr:fixture_resource-config_template_fixture_ctr.actor-cfg-item
 - rc.fixture_ctr:fixture_resource-fixture_obj_ctr.actor-cfg-item
 - rc.fixture_ctr:fixture_resource-fixture_probe_ctr.actor-cfg-item
-- rc.fixture_marker:fixture.marker-template
+- rc.fixture_marker:fixture.marker-cfg-item
 - rc.fixture_resource:fixture_resource-config_fixture_resource.actor-cfg-item
 - rc.fixture_resource:fixture_resource-config_template_fixture_resource.actor-cfg-item
 - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-cfg-item
 - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_probe_template.actor-cfg-item
 - rc.job_cache:job_cache.service
 - rc.marker_ctr:marker-marker_template.actor-cfg-item
-- rc.marker_registry:cfg_item_creg-marker-marker_template.actor-cfg-item
 - rc.marker_registry:cfg_value_creg-marker-marker_template.actor-cfg-item
 - rc.marker_registry:marker_registry.service
 - rc.marker_req:marker_req-marker_req.actor-cfg-item
 - rc.model_ctr:model_resource-model_ctr.actor-cfg-item
-- rc.model_marker:model.marker-template
+- rc.model_marker:model.marker-cfg-item
 - rc.rc_constructor_creg:rc_constructor_creg.service
 - rc.rc_job:rc_job_submit_factory.service
 - rc.rc_job:rc_job-job_target.actor-cfg-item
@@ -85,13 +84,13 @@ import:
 - rc.python_module_resource_target:python_module_resource_target-python_module_req.actor-cfg-item
 - rc.selector_ctr:selector_ctr-get_ctr.actor-cfg-item
 - rc.selector_ctr:selector_ctr-pick_ctr.actor-cfg-item
-- rc.selector_marker:selector.marker-template
+- rc.selector_marker:selector.marker-cfg-item
 - rc.service_ctr:service_resource-finalizer_gen_service_template_ctr.actor-cfg-item
 - rc.service_ctr:service_resource-service_template_ctr.actor-cfg-item
 - rc.service_ctr:system-finalizer_gen_service_template.actor-cfg-item
 - rc.service_ctr:system-service_template.actor-cfg-item
 - rc.service_probe_resource:service_resource-service_probe_ctr.actor-cfg-item
-- rc.service_marker:service.marker-template
+- rc.service_marker:service.marker-cfg-item
 - rc.service_probe_resource:cfg_item_creg-service_resource-service_probe_template.actor-cfg-item
 - rc.service_probe_resource:cfg_value_creg-service_resource-service_probe_template.actor-cfg-item
 - rc.service_req:service_resource-service_req.actor-cfg-item
@@ -109,8 +108,8 @@ import:
 - rc.view_ctr:view_ctr-template_ctr.actor-cfg-item
 - rc.view_factory_ctr:view_factory_ctr-multi_model_ctr.actor-cfg-item
 - rc.view_factory_ctr:view_factory_ctr-single_model_ctr.actor-cfg-item
-- rc.view_factory_marker:view_factory.marker-template
-- rc.view_marker:view.marker-template
+- rc.view_factory_marker:view_factory.marker-cfg-item
+- rc.view_marker:view.marker-cfg-item
 
 definitions:
 
@@ -138,7 +137,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.marker_registry:cfg_item_creg-marker-marker_template.actor-cfg-item
       - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
       - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
       - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
@@ -171,25 +169,25 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.actor_marker:actor.marker-template
-      - rc.command_marker:command.marker-template
-      - rc.command_marker:command_enum.marker-template
-      - rc.command_marker:global_command.marker-template
-      - rc.command_marker:ui_command.marker-template
-      - rc.command_marker:universal_ui_command.marker-template
-      - rc.command_marker:ui_command_enum.marker-template
-      - rc.command_marker:ui_model_command.marker-template
-      - rc.config_fixture_marker:config_fixture.marker-template
-      - rc.config_fixture_marker:config_template_fixture.marker-template
-      - rc.crud_marker:crud.marker-template
-      - rc.editor_marker:editor.marker-template
-      - rc.fixture_marker:fixture.marker-template
-      - rc.init_hook_marker:init_hook.marker-template
-      - rc.model_marker:model.marker-template
-      - rc.selector_marker:selector.marker-template
-      - rc.service_marker:service.marker-template
-      - rc.view_factory_marker:view_factory.marker-template
-      - rc.view_marker:view.marker-template
+      - rc.actor_marker:actor.marker-cfg-item
+      - rc.command_marker:command.marker-cfg-item
+      - rc.command_marker:command_enum.marker-cfg-item
+      - rc.command_marker:global_command.marker-cfg-item
+      - rc.command_marker:ui_command.marker-cfg-item
+      - rc.command_marker:universal_ui_command.marker-cfg-item
+      - rc.command_marker:ui_command_enum.marker-cfg-item
+      - rc.command_marker:ui_model_command.marker-cfg-item
+      - rc.config_fixture_marker:config_fixture.marker-cfg-item
+      - rc.config_fixture_marker:config_template_fixture.marker-cfg-item
+      - rc.crud_marker:crud.marker-cfg-item
+      - rc.editor_marker:editor.marker-cfg-item
+      - rc.fixture_marker:fixture.marker-cfg-item
+      - rc.init_hook_marker:init_hook.marker-cfg-item
+      - rc.model_marker:model.marker-cfg-item
+      - rc.selector_marker:selector.marker-cfg-item
+      - rc.service_marker:service.marker-cfg-item
+      - rc.view_factory_marker:view_factory.marker-cfg-item
+      - rc.view_marker:view.marker-cfg-item
 
   rpc_target_creg:
     type: legacy_type.system:item_list_config
