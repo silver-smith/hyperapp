@@ -6,7 +6,6 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.view_factory import ViewFactory
-from .code.multi_actor_template import MultiActorItem
 from .tested.code import view_factory_list
 
 

@@ -55,7 +55,6 @@ import:
 - base.system.file_bundle_config_layer:load_config_layers.service
 - base.system.init_hook:init_hook.service
 - base.system.list_config_ctl:config_ctl_creg-list_config_ctl-dict_list_config_ctl.actor-cfg-item
-- base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-cfg-item
 - base.system.system_stop:stop_signal.service
 - base.system.system_stop:system_failed.service
 - base.system_fn:system_fn_creg-system_fn-ctx_fn.actor-cfg-item
@@ -94,7 +93,6 @@ definitions:
     value:
       items:
       - base.fn_cfg_item:cfg_item_creg-cfg_item-fn_value_template.actor-cfg-item
-      - base.system.multi_actor_template:cfg_item_creg-system-multi_actor_template.actor-cfg-item
   cfg_value_creg:
     type: legacy_type.system:item_list_config
     value:
