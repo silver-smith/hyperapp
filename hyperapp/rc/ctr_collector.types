@@ -1,6 +1,4 @@
-mark_module_cfg_item = record:
-  module: ref
+mark_module_template = record:
   name: string
 
-ignore_module_cfg_item = record:
-  module: ref
+ignore_module_template = record

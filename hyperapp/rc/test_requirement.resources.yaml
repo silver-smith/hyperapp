@@ -5,8 +5,9 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.ctr_collector:mark_module_cfg_item
+- legacy_type.ctr_collector:mark_module_template
 - legacy_type.import_resource:import_resource
 - legacy_type.system:actor_template
 - legacy_type.test_target:constructors_picker_resource
@@ -28,7 +29,8 @@ definitions:
       file_name: test_requirement.dyn.py
       import_list:
         htypes.builtin.import_rec: legacy_type.builtin:import_rec
-        htypes.ctr_collector.mark_module_cfg_item: legacy_type.ctr_collector:mark_module_cfg_item
+        htypes.cfg_item.data_cfg_item: legacy_type.cfg_item:data_cfg_item
+        htypes.ctr_collector.mark_module_template: legacy_type.ctr_collector:mark_module_template
         htypes.import_resource.import_resource: legacy_type.import_resource:import_resource
         htypes.test_target.constructors_picker_resource: legacy_type.test_target:constructors_picker_resource
         htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req

@@ -46,10 +46,6 @@ class CtrCollector:
         return self._constructors
 
 
-def resolve_mark_module_cfg_item(piece):
-    return (web.summon(piece.module), piece)
-
-
 def resolve_mark_module_cfg_value(piece, key, system, service_name):
     return CtrCollector.Action.Mark(piece.name)
 

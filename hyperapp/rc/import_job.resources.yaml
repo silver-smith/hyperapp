@@ -4,8 +4,9 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.ctr_collector:mark_module_cfg_item
+- legacy_type.ctr_collector:mark_module_template
 - legacy_type.import_job:failed_result
 - legacy_type.import_job:function
 - legacy_type.import_job:job
@@ -28,7 +29,8 @@ definitions:
       module_name: import_job
       file_name: import_job.dyn.py
       import_list:
-        htypes.ctr_collector.mark_module_cfg_item: legacy_type.ctr_collector:mark_module_cfg_item
+        htypes.cfg_item.data_cfg_item: legacy_type.cfg_item:data_cfg_item
+        htypes.ctr_collector.mark_module_template: legacy_type.ctr_collector:mark_module_template
         htypes.import_job.failed_result: legacy_type.import_job:failed_result
         htypes.import_job.function: legacy_type.import_job:function
         htypes.import_job.job: legacy_type.import_job:job

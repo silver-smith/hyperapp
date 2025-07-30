@@ -72,13 +72,16 @@ class TestedCodeReq(Requirement):
                 recorder_module_name=module_name,
                 recorder_piece=recorder_piece,
                 )
-            mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
-                module=mosaic.put(module_piece),
+            mark_module_template = htypes.ctr_collector.mark_module_template(
                 name=module_name,
+                )
+            mark_module_cfg_item = htypes.cfg_item.data_cfg_item(
+                key=mosaic.put(module_piece),
+                value=mosaic.put(mark_module_template),
                 )
             module_marker = ConfigItemResource(
                 service_name='ctr_collector',
-                cfg_item_ref=mosaic.put(mark_module_item),
+                cfg_item_ref=mosaic.put(mark_module_cfg_item),
                 )
             resources = [*target.test_resources, recorder_res, module_marker]
         tested_code_res = TestedCodeResource(

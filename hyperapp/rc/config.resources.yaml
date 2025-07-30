@@ -13,10 +13,8 @@ import:
 - rc.crud_ctr:crud_ctr-commit_ctr.actor-cfg-item
 - rc.crud_ctr:crud_ctr-init_ctr.actor-cfg-item
 - rc.crud_marker:crud.marker-cfg-item
-- rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
-- rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
-- rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
-- rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
+- rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_template.actor-cfg-item
+- rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_template.actor-cfg-item
 - rc.ctr_collector:ctr_collector.service
 - rc.command_ctr:command_resource-global_model_command_template_ctr.actor-cfg-item
 - rc.command_ctr:command_resource-model_command_template_ctr.actor-cfg-item
@@ -137,8 +135,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.ctr_collector:cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
-      - rc.ctr_collector:cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
       - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
       - rc.service_probe_resource:cfg_item_creg-service_resource-service_probe_template.actor-cfg-item
 
@@ -147,8 +143,8 @@ definitions:
     value:
       items:
       - rc.actor_probe:cfg_value_creg-actor_resource-actor_probe_template.actor-cfg-item
-      - rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item
-      - rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item
+      - rc.ctr_collector:cfg_value_creg-ctr_collector-mark_module_template.actor-cfg-item
+      - rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_template.actor-cfg-item
       - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-cfg-item
       - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_probe_template.actor-cfg-item
       - rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-cfg-item

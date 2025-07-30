@@ -4,8 +4,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.ctr_collector:ignore_module_cfg_item
-- legacy_type.ctr_collector:mark_module_cfg_item
+- legacy_type.ctr_collector:ignore_module_template
+- legacy_type.ctr_collector:mark_module_template
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - base.system.system:actor_dict.config_ctl
@@ -38,35 +38,6 @@ definitions:
       - marker_ctl
       want_config: true
 
-  resolve_mark_module_cfg_item:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ctr_collector.module
-      attr_name: resolve_mark_module_cfg_item
-
-  resolve_mark_module_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_mark_module_cfg_item
-      service_params: []
-
-  cfg_item_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.ctr_collector:mark_module_cfg_item
-      value: resolve_mark_module_cfg_item.actor-template
-
-  resolve_mark_module_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_mark_module_cfg_item
-      service_params: []
-
-  cfg_item_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.ctr_collector:ignore_module_cfg_item
-      value: resolve_mark_module_cfg_item.actor-template
 
   resolve_mark_module_cfg_value:
     type: legacy_type.builtin:attribute
@@ -80,10 +51,10 @@ definitions:
       function: resolve_mark_module_cfg_value
       service_params: []
 
-  cfg_value_creg-ctr_collector-mark_module_cfg_item.actor-cfg-item:
+  cfg_value_creg-ctr_collector-mark_module_template.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
-      t: legacy_type.ctr_collector:mark_module_cfg_item
+      t: legacy_type.ctr_collector:mark_module_template
       value: resolve_mark_module_cfg_value.actor-template
 
   resolve_ignore_module_cfg_value:
@@ -98,8 +69,8 @@ definitions:
       function: resolve_ignore_module_cfg_value
       service_params: []
 
-  cfg_value_creg-ctr_collector-ignore_module_cfg_item.actor-cfg-item:
+  cfg_value_creg-ctr_collector-ignore_module_template.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
-      t: legacy_type.ctr_collector:ignore_module_cfg_item
+      t: legacy_type.ctr_collector:ignore_module_template
       value: resolve_ignore_module_cfg_value.actor-template

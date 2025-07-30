@@ -313,13 +313,16 @@ class ImportJob(SystemJob):
         return result.make_result(recorder, module, key_to_req, system)
 
     def _job_resources(self, module_piece):
-        mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
-            module=mosaic.put(module_piece),
+        template = htypes.ctr_collector.mark_module_template(
             name=self._src.name,
+            )
+        cfg_item = htypes.cfg_item.data_cfg_item(
+            key=mosaic.put(module_piece),
+            value=mosaic.put(template),
             )
         yield ConfigItemResource(
             service_name='ctr_collector',
-            cfg_item_ref=mosaic.put(mark_module_item),
+            cfg_item_ref=mosaic.put(cfg_item),
             )
 
     def incomplete_error(self, module_name, error_msg, traceback=None, missing_reqs=None):
