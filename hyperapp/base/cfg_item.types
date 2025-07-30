@@ -1,6 +1,11 @@
+str_cfg_item = record:
+  key: string
+  value: ref
+
 typed_cfg_item = record:
   t: ref
   value: ref
+
 
 fn_value_template = record:
   system_fn: ref
