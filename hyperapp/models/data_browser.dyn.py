@@ -1,4 +1,4 @@
-from hyperapp.boot.htypes import TPrimitive, TList, TOptional, TRecord, ref_t
+from hyperapp.boot.htypes import TPrimitive, TList, TOptional, TRecord, TException, ref_t
 
 from . import htypes
 from .services import (
@@ -16,7 +16,7 @@ def data_browser(data, t=None):
         return htypes.data_browser.primitive_view(
             data=mosaic.put(data, t),
             )
-    if isinstance(t, TRecord):
+    if isinstance(t, (TRecord, TException)):
         return htypes.data_browser.record_view(
             data=mosaic.put(data, t),
             )
