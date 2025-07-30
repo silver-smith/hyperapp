@@ -2,6 +2,10 @@ str_cfg_item = record:
   key: string
   value: ref
 
+data_cfg_item = record:
+  key: ref
+  value: ref
+
 typed_cfg_item = record:
   t: ref
   value: ref
