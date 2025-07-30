@@ -13,7 +13,6 @@ service_probe_ctr = record:
 
 service_probe_template = record:
   attr_name: string
-  service_name: string
   ctl: ref
   function: ref
   params: string list

@@ -44,14 +44,10 @@ class ServiceProbe(Probe):
         self._system.add_constructor(ctr)
 
 
-def resolve_service_probe_cfg_item(piece):
-    return (piece.service_name, piece)
-
-
 def resolve_service_probe_cfg_value(piece, key, system, service_name):
     config_ctl = system.resolve_service('config_ctl')
     fn = pyobj_creg.invite(piece.function)
-    probe = ServiceProbe(system, config_ctl, piece.attr_name, piece.service_name, piece.ctl, fn, piece.params)
+    probe = ServiceProbe(system, config_ctl, piece.attr_name, key, piece.ctl, fn, piece.params)
     probe.apply_if_no_params()
     return probe
 
@@ -122,12 +118,15 @@ class ServiceProbeCtr(ModuleCtr):
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
-        return htypes.service_resource.service_probe_template(
+        template = htypes.service_resource.service_probe_template(
             attr_name=self._attr_name,
-            service_name=self._name,
             ctl=self._ctl_ref,
             function=mosaic.put(function),
             params=self._params,
+            )
+        return htypes.cfg_item.str_cfg_item(
+            key=self._name,
+            value=mosaic.put(template),
             )
 
     def make_resource(self, types, module_name, python_module):

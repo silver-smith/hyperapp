@@ -4,6 +4,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.cfg_item:str_cfg_item
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.service_resource:service_probe_ctr
 - legacy_type.service_resource:service_probe_template
@@ -24,6 +25,7 @@ definitions:
       file_name: service_probe_resource.dyn.py
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.cfg_item.str_cfg_item: legacy_type.cfg_item:str_cfg_item
         htypes.service_resource.service_probe_ctr: legacy_type.service_resource:service_probe_ctr
         htypes.service_resource.service_probe_template: legacy_type.service_resource:service_probe_template
         services.mosaic: builtins:mosaic.service
@@ -36,29 +38,11 @@ definitions:
         code.service_req: rc.service_req:service_req.module
         code.system_probe: rc.system_probe:system_probe.module
 
-  resolve_service_probe_cfg_item:
-    type: legacy_type.builtin:attribute
-    value:
-      object: service_probe_resource.module
-      attr_name: resolve_service_probe_cfg_item
-
   resolve_service_probe_cfg_value:
     type: legacy_type.builtin:attribute
     value:
       object: service_probe_resource.module
       attr_name: resolve_service_probe_cfg_value
-
-  resolve_service_probe_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_service_probe_cfg_item
-      service_params: []
-
-  cfg_item_creg-service_resource-service_probe_template.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.service_resource:service_probe_template
-      value: resolve_service_probe_cfg_item.actor-template
 
   resolve_service_probe_cfg_value.actor-template:
     type: legacy_type.system:actor_template
