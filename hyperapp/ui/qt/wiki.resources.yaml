@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system:actor_template
@@ -144,10 +145,14 @@ definitions:
       ctx_params:
       - accessor
       service_params: []
+  wiki.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: wiki.k
+      value: wiki.view-factory-template
   wiki.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: wiki.k
       model_t_list:
       - legacy_type.wiki:wiki
       ui_t_t: null
@@ -190,10 +195,14 @@ definitions:
       ctx_params:
       - accessor
       service_params: []
+  wiki_text_edit.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: wiki_text_edit.k
+      value: wiki_text_edit.view-factory-template
   wiki_text_edit.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: wiki_text_edit.k
       model_t_list:
       - legacy_type.wiki:wiki
       ui_t_t: null
@@ -226,10 +235,14 @@ definitions:
       ctx_params:
       - accessor
       service_params: []
+  wiki_text_view.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: wiki_text_view.k
+      value: wiki_text_view.view-factory-template
   wiki_text_view.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: wiki_text_view.k
       model_t_list:
       - legacy_type.wiki:wiki
       ui_t_t: null
@@ -262,10 +275,14 @@ definitions:
       ctx_params:
       - accessor
       service_params: []
+  wiki_view.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: wiki_view.k
+      value: wiki_view.view-factory-template
   wiki_view.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: wiki_view.k
       model_t_list:
       - legacy_type.wiki:wiki
       ui_t_t: null

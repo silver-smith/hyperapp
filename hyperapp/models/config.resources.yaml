@@ -64,7 +64,7 @@ import:
 - models.data_browser:data_browser-ref_list_view.feed-template-cfg-item
 - models.data_browser:data_browser-ref_list_view.model-cfg-item
 - models.data_browser:formatter_creg-data_browser-record_view.actor-cfg-item
-- models.data_browser_adapter:data_browser_data_view.view-factory-template
+- models.data_browser_adapter:data_browser_data_view.view-factory-cfg-item
 - models.data_browser_adapter:ui_adapter_creg-data_browser-record_data_adapter.actor-cfg-item
 - models.data_dir:data_dir.service
 - models.file_bundles:file_bundles-view-open.command-cfg-item
@@ -354,7 +354,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - models.data_browser_adapter:data_browser_data_view.view-factory-template
+      - models.data_browser_adapter:data_browser_data_view.view-factory-cfg-item
   view_ui_model_command_reg:
     type: legacy_type.system:item_list_config
     value:

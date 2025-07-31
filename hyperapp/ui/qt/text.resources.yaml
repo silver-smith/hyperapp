@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.system_fn:ctx_fn
@@ -107,10 +108,14 @@ definitions:
       - model_t
       - accessor
       service_params: []
+  text_edit.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: text_edit.k
+      value: text_edit.view-factory-template
   text_edit.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: text_edit.k
       model_t_list:
       - legacy_type.builtin:string
       ui_t_t: null
@@ -144,10 +149,14 @@ definitions:
       - model_t
       - accessor
       service_params: []
+  text_view.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: text_view.k
+      value: text_view.view-factory-template
   text_view.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: text_view.k
       model_t_list:
       - legacy_type.builtin:string
       ui_t_t: null

@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
@@ -286,10 +287,14 @@ definitions:
       ctx_params:
       - inner
       service_params: []
+  wrap_in_tabs.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: wrap_in_tabs.k
+      value: wrap_in_tabs.view-factory-template
   wrap_in_tabs.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: wrap_in_tabs.k
       model_t_list: null
       ui_t_t: null
       view_t: legacy_type.tabs:view

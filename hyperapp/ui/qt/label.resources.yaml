@@ -6,6 +6,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
@@ -73,10 +74,14 @@ definitions:
       function: label_view
       ctx_params: []
       service_params: []
+  label_view.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: label_view.k
+      value: label_view.view-factory-template
   label_view.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: label_view.k
       model_t_list: null
       ui_t_t: null
       view_t: legacy_type.label:view

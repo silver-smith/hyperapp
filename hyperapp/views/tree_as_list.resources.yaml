@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
@@ -110,10 +111,14 @@ definitions:
       - piece
       - system_fn
       service_params: []
+  index_tree_as_list_ui_type_layout.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: index_tree_as_list_ui_type_layout.k
+      value: index_tree_as_list_ui_type_layout.view-factory-template
   index_tree_as_list_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: index_tree_as_list_ui_type_layout.k
       model_t_list: null
       ui_t_t: legacy_type.model:index_tree_ui_t
       view_t: legacy_type.tree_as_list:index_view
@@ -146,10 +151,14 @@ definitions:
       - piece
       - system_fn
       service_params: []
+  key_tree_as_list_ui_type_layout.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: key_tree_as_list_ui_type_layout.k
+      value: key_tree_as_list_ui_type_layout.view-factory-template
   key_tree_as_list_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: key_tree_as_list_ui_type_layout.k
       model_t_list: null
       ui_t_t: legacy_type.model:key_tree_ui_t
       view_t: legacy_type.tree_as_list:key_view

@@ -94,28 +94,28 @@ import:
 - ui.qt.box_layout:box_layout-view-remove_element.command-cfg-item
 - ui.qt.box_layout:box_layout-view-unwrap.command-cfg-item
 - ui.qt.box_layout:box_layout-view.view-cfg-item
-- ui.qt.box_layout:wrap_box_layout.view-factory-template
+- ui.qt.box_layout:wrap_box_layout.view-factory-cfg-item
 - ui.qt.command_pane:command_pane-view.view-cfg-item
 - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-index_fn_list_adapter.actor-cfg-item
 - ui.qt.fn_list_adapter:ui_adapter_creg-list_adapter-key_fn_list_adapter.actor-cfg-item
 - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_index_tree_adapter.actor-cfg-item
 - ui.qt.fn_tree_adapter:ui_adapter_creg-tree_adapter-fn_key_tree_adapter.actor-cfg-item
 - ui.qt.form:form-view.view-cfg-item
-- ui.qt.form:form_view_factory.view-factory-template
-- ui.qt.form:readonly_form_view_factory.view-factory-template
+- ui.qt.form:form_view_factory.view-factory-cfg-item
+- ui.qt.form:readonly_form_view_factory.view-factory-cfg-item
 - ui.qt.label:label-view-set_label_text.command-cfg-item
 - ui.qt.label:label-view.view-cfg-item
-- ui.qt.label:label_view.view-factory-template
+- ui.qt.label:label_view.view-factory-cfg-item
 - ui.qt.line_edit:line_edit-edit_view.view-cfg-item
 - ui.qt.line_edit:line_edit-readonly_view.view-cfg-item
-- ui.qt.line_edit:line_edit.view-factory-template
-- ui.qt.line_edit:line_view.view-factory-template
+- ui.qt.line_edit:line_edit.view-factory-cfg-item
+- ui.qt.line_edit:line_view.view-factory-cfg-item
 - ui.qt.line_edit:resource_name_creg-line_edit-edit_view.actor-cfg-item
 - ui.qt.line_edit:resource_name_creg-line_edit-readonly_view.actor-cfg-item
-- ui.qt.list:index_list_ui_type_layout.view-factory-template
-- ui.qt.list:key_list_ui_type_layout.view-factory-template
+- ui.qt.list:index_list_ui_type_layout.view-factory-cfg-item
+- ui.qt.list:key_list_ui_type_layout.view-factory-cfg-item
 - ui.qt.list:list-view.view-cfg-item
-- ui.qt.list:static_list_ui_type_layout.view-factory-template
+- ui.qt.list:static_list_ui_type_layout.view-factory-cfg-item
 - ui.qt.menu_bar:menu_bar-view.view-cfg-item
 - ui.qt.static_list_adapter:ui_adapter_creg-list_adapter-static_list_adapter.actor-cfg-item
 - ui.qt.tabs:tabs-view-add_element.command-cfg-item
@@ -124,24 +124,24 @@ import:
 - ui.qt.tabs:tabs-view-remove_element.command-cfg-item
 - ui.qt.tabs:tabs-view-unwrap.command-cfg-item
 - ui.qt.tabs:tabs-view.view-cfg-item
-- ui.qt.tabs:wrap_in_tabs.view-factory-template
+- ui.qt.tabs:wrap_in_tabs.view-factory-cfg-item
 - ui.qt.text:text-edit_view.view-cfg-item
 - ui.qt.text:text-readonly_view.view-cfg-item
-- ui.qt.text:text_edit.view-factory-template
-- ui.qt.text:text_view.view-factory-template
-- ui.qt.tree:index_tree_ui_type_layout.view-factory-template
-- ui.qt.tree:key_tree_ui_type_layout.view-factory-template
+- ui.qt.text:text_edit.view-factory-cfg-item
+- ui.qt.text:text_view.view-factory-cfg-item
+- ui.qt.tree:index_tree_ui_type_layout.view-factory-cfg-item
+- ui.qt.tree:key_tree_ui_type_layout.view-factory-cfg-item
 - ui.qt.tree:tree-view.view-cfg-item
 - ui.qt.wiki:convertor_creg-wiki-wiki_to_string_convertor.actor-cfg-item
 - ui.qt.wiki:resource_name_creg-wiki-wiki_to_string_convertor.actor-cfg-item
 - ui.qt.wiki:wiki-text_view.view-cfg-item
 - ui.qt.wiki:wiki-wiki_view.view-cfg-item
-- ui.qt.wiki:wiki.view-factory-template
-- ui.qt.wiki:wiki_text_edit.view-factory-template
-- ui.qt.wiki:wiki_text_view.view-factory-template
-- ui.qt.wiki:wiki_view.view-factory-template
+- ui.qt.wiki:wiki.view-factory-cfg-item
+- ui.qt.wiki:wiki_text_edit.view-factory-cfg-item
+- ui.qt.wiki:wiki_text_view.view-factory-cfg-item
+- ui.qt.wiki:wiki_view.view-factory-cfg-item
 - ui.qt.wiki_refs:ui_adapter_creg-wiki-ref_list_adapter.actor-cfg-item
-- ui.qt.wiki_refs:wiki_refs.view-factory-template
+- ui.qt.wiki_refs:wiki_refs.view-factory-cfg-item
 - ui.qt.window:window-view.view-cfg-item
 - ui.qt.window_commands:window-view-duplicate_window.command-cfg-item
 - ui.qt.window_commands:window-view-quit.command-cfg-item
@@ -186,8 +186,6 @@ import:
 - ui.view.default_view_factory:default_ui_factory.service
 - ui.view.replace_view:replace_view.universal-ui-command-enumerator
 - ui.view.view_factory:view_factory_reg.service
-- ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-cfg-item
-- ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-cfg-item
 - ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-multi_template.actor-cfg-item
 - ui.view.view_factory_cfg_item:cfg_value_creg-view_factory-template.actor-cfg-item
 - ui.view.view_factory_list:formatter_creg-view_factory_list-model.actor-cfg-item
@@ -219,8 +217,6 @@ definitions:
       - ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-cfg-item
-      - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-cfg-item
-      - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-cfg-item
   cfg_value_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -472,25 +468,25 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.qt.box_layout:wrap_box_layout.view-factory-template
-      - ui.qt.form:form_view_factory.view-factory-template
-      - ui.qt.form:readonly_form_view_factory.view-factory-template
-      - ui.qt.label:label_view.view-factory-template
-      - ui.qt.line_edit:line_edit.view-factory-template
-      - ui.qt.line_edit:line_view.view-factory-template
-      - ui.qt.list:index_list_ui_type_layout.view-factory-template
-      - ui.qt.list:key_list_ui_type_layout.view-factory-template
-      - ui.qt.list:static_list_ui_type_layout.view-factory-template
-      - ui.qt.tabs:wrap_in_tabs.view-factory-template
-      - ui.qt.text:text_edit.view-factory-template
-      - ui.qt.text:text_view.view-factory-template
-      - ui.qt.tree:index_tree_ui_type_layout.view-factory-template
-      - ui.qt.tree:key_tree_ui_type_layout.view-factory-template
-      - ui.qt.wiki:wiki.view-factory-template
-      - ui.qt.wiki:wiki_text_edit.view-factory-template
-      - ui.qt.wiki:wiki_text_view.view-factory-template
-      - ui.qt.wiki:wiki_view.view-factory-template
-      - ui.qt.wiki_refs:wiki_refs.view-factory-template
+      - ui.qt.box_layout:wrap_box_layout.view-factory-cfg-item
+      - ui.qt.form:form_view_factory.view-factory-cfg-item
+      - ui.qt.form:readonly_form_view_factory.view-factory-cfg-item
+      - ui.qt.label:label_view.view-factory-cfg-item
+      - ui.qt.line_edit:line_edit.view-factory-cfg-item
+      - ui.qt.line_edit:line_view.view-factory-cfg-item
+      - ui.qt.list:index_list_ui_type_layout.view-factory-cfg-item
+      - ui.qt.list:key_list_ui_type_layout.view-factory-cfg-item
+      - ui.qt.list:static_list_ui_type_layout.view-factory-cfg-item
+      - ui.qt.tabs:wrap_in_tabs.view-factory-cfg-item
+      - ui.qt.text:text_edit.view-factory-cfg-item
+      - ui.qt.text:text_view.view-factory-cfg-item
+      - ui.qt.tree:index_tree_ui_type_layout.view-factory-cfg-item
+      - ui.qt.tree:key_tree_ui_type_layout.view-factory-cfg-item
+      - ui.qt.wiki:wiki.view-factory-cfg-item
+      - ui.qt.wiki:wiki_text_edit.view-factory-cfg-item
+      - ui.qt.wiki:wiki_text_view.view-factory-cfg-item
+      - ui.qt.wiki:wiki_view.view-factory-cfg-item
+      - ui.qt.wiki_refs:wiki_refs.view-factory-cfg-item
   view_reg:
     type: legacy_type.system:item_list_config
     value:

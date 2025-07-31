@@ -11,6 +11,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:ref
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
@@ -169,10 +170,14 @@ definitions:
       - piece
       - system_fn
       service_params: []
+  list_as_tree_ui_type_layout.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: list_as_tree_ui_type_layout.k
+      value: list_as_tree_ui_type_layout.view-factory-template
   list_as_tree_ui_type_layout.view-factory-template:
     type: legacy_type.view_factory:template
     value:
-      k: list_as_tree_ui_type_layout.k
       model_t_list: null
       ui_t_t: legacy_type.model:index_list_ui_t
       view_t: legacy_type.tree:view

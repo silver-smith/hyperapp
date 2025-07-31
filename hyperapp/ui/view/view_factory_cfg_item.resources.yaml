@@ -12,16 +12,6 @@ import:
 - legacy_type.view_factory:template
 - ui.view.view_factory:view_factory.module
 definitions:
-  cfg_item_creg-view_factory-multi_template.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.view_factory:multi_template
-      value: resolve_view_factory_cfg_item.actor-template
-  cfg_item_creg-view_factory-template.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.view_factory:template
-      value: resolve_view_factory_cfg_item.actor-template
   cfg_value_creg-view_factory-multi_template.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
@@ -32,16 +22,6 @@ definitions:
     value:
       t: legacy_type.view_factory:template
       value: resolve_view_factory_cfg_value.actor-template
-  resolve_view_factory_cfg_item:
-    type: legacy_type.builtin:attribute
-    value:
-      object: view_factory_cfg_item.module
-      attr_name: resolve_view_factory_cfg_item
-  resolve_view_factory_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_view_factory_cfg_item
-      service_params: []
   resolve_view_factory_cfg_value:
     type: legacy_type.builtin:attribute
     value:
