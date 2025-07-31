@@ -3,9 +3,10 @@ from .services import (
     )
 
 
-def resolve_import_record_cfg_item(piece):
+def resolve_import_key_cfg_item(piece):
     key = (piece.module_name, piece.import_name)
-    return (key, piece)
+    value = web.summon(piece.value)
+    return (key, value)
 
 
 def resolve_import_record_cfg_value(piece, key, system, service_name):

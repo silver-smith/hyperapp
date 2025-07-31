@@ -44,8 +44,8 @@ import:
 - rc.import_job:import_job-job.actor-cfg-item
 - rc.import_job:import_job-succeeded_result.actor-cfg-item
 - rc.import_recorder:import_recorder_reg.service
-- rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
-- rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-cfg-item
+- rc.import_record_cfg_item:cfg_item_creg-import_resource-import_key_cfg_item.actor-cfg-item
+- rc.import_record_cfg_item:cfg_value_creg-import_resource-import_template.actor-cfg-item
 - rc.import_resource:import_resource-import_resource.actor-cfg-item
 - rc.init_hook_ctr:init_hook_ctr-init_hook_ctr.actor-cfg-item
 - rc.init_hook_ctr:cfg_item-fn_value_template.actor-cfg-item
@@ -134,7 +134,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_resource.actor-cfg-item
+      - rc.import_record_cfg_item:cfg_item_creg-import_resource-import_key_cfg_item.actor-cfg-item
 
   cfg_value_creg:
     type: legacy_type.system:item_list_config
@@ -145,7 +145,7 @@ definitions:
       - rc.ctr_collector:cfg_value_creg-ctr_collector-ignore_module_template.actor-cfg-item
       - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_obj_template.actor-cfg-item
       - rc.fixture_probe:cfg_value_creg-fixture_resource-fixture_probe_template.actor-cfg-item
-      - rc.import_record_cfg_item:cfg_value_creg-import_resource-import_resource.actor-cfg-item
+      - rc.import_record_cfg_item:cfg_value_creg-import_resource-import_template.actor-cfg-item
       - rc.marker_registry:cfg_value_creg-marker-marker_template.actor-cfg-item
       - rc.service_probe_resource:cfg_value_creg-service_resource-service_probe_template.actor-cfg-item
 

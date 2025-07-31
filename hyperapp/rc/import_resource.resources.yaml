@@ -6,6 +6,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
 - legacy_type.import_resource:import_resource
+- legacy_type.import_resource:import_template
+- legacy_type.import_resource:import_key_cfg_item
 - legacy_type.system:actor_template
 - rc.rc_resource:rc_resource.module
 
@@ -19,6 +21,8 @@ definitions:
       import_list:
         htypes.builtin.import_rec: legacy_type.builtin:import_rec
         htypes.import_resource.import_resource: legacy_type.import_resource:import_resource
+        htypes.import_resource.import_template: legacy_type.import_resource:import_template
+        htypes.import_resources.import_key_cfg_item: legacy_type.import_resource:import_key_cfg_item
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
         code.rc_resource: rc.rc_resource:rc_resource.module

@@ -54,4 +54,13 @@ class ImportResource(Resource):
 
     @property
     def system_config_items(self):
-        return {'import_recorder_reg': [self.piece]}
+        template = htypes.import_resource.import_template(
+            import_name=self._import_name,
+            resource=mosaic.put(self._resource),
+            )
+        cfg_item = htypes.import_resources.import_key_cfg_item(
+            module_name=self._module_name,
+            import_name=self._import_name,
+            value=mosaic.put(template),
+            )
+        return {'import_recorder_reg': [cfg_item]}

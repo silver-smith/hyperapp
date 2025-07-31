@@ -172,10 +172,14 @@ class TestedCodeResource(Resource):
 
     @property
     def system_config_items(self):
-        cfg_item = htypes.import_resource.import_resource(
-            module_name=self._test_module_name,
+        template = htypes.import_resource.import_template(
             import_name=self._import_name,
             resource=mosaic.put(self._module_piece),
+            )
+        cfg_item = htypes.import_resource.import_key_cfg_item(
+            module_name=self._test_module_name,
+            import_name=self._import_name,
+            value=mosaic.put(template),
             )
         return {'import_recorder_reg': [cfg_item]}
 
