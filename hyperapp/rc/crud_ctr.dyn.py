@@ -215,14 +215,18 @@ class CrudOpenCommandCtr(ModuleCtr):
             system_fn=mosaic.put(system_fn),
             preserve_remote=False,
             )
-        cfg_item = htypes.command.cfg_item(
-            t=pyobj_creg.actor_to_ref(self._model_t),
+        template = htypes.command.command_template(
             command=mosaic.put(command),
+            )
+        cfg_item = htypes.cfg_item.typed_cfg_item(
+            t=pyobj_creg.actor_to_ref(self._model_t),
+            value=mosaic.put(template),
             )
         name_to_res[f'{self._resource_name}.open-command.d'] = open_command_d
         name_to_res[f'{self._resource_name}.commit-command.d'] = commit_command_d
         name_to_res[f'{self._resource_name}.command-fn'] = system_fn
         name_to_res[f'{self._resource_name}.command'] = command
+        name_to_res[f'{self._resource_name}.command-template'] = template
         name_to_res[f'{self._resource_name}.command-cfg-item'] = cfg_item
 
     @property

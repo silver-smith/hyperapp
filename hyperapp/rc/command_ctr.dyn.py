@@ -230,11 +230,15 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
 
     def make_component(self, types, python_module, name_to_res=None):
         command = self._make_command_component(types, python_module, name_to_res)
-        cfg_item = htypes.command.cfg_item(
-            t=pyobj_creg.actor_to_ref(self._t),
+        template = htypes.command.command_template(
             command=mosaic.put(command),
             )
+        cfg_item = htypes.cfg_item.typed_cfg_item(
+            t=pyobj_creg.actor_to_ref(self._t),
+            value=mosaic.put(template),
+            )
         if name_to_res is not None:
+            name_to_res[f'{self._resource_name}.command-template'] = template
             name_to_res[f'{self._resource_name}.command-cfg-item'] = cfg_item
         return cfg_item
 

@@ -1,8 +1,7 @@
 from system_fn import ctx_fn
 
 
-cfg_item = record:
-  t: ref
+command_template = record:
   command: ref
 
 properties = record:

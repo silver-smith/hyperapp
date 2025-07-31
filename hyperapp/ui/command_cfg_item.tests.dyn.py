@@ -20,7 +20,7 @@ def sample_service():
 
 
 @mark.fixture.obj
-def cfg_item_piece():
+def command_template():
     d = htypes.command_cfg_item_tests.sample_command_d()
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
@@ -32,18 +32,14 @@ def cfg_item_piece():
         properties=htypes.command.properties(False, False, False),
         system_fn=mosaic.put(system_fn),
         )
-    view_t = htypes.command_cfg_item_tests.view
-    return htypes.command.cfg_item(
-        t=pyobj_creg.actor_to_ref(view_t),
+    return htypes.command.command_template(
         command=mosaic.put(command),
         )
 
 
-def test_typed(system, cfg_item_piece):
-    key, piece = command_cfg_item.resolve_typed_command_cfg_item(cfg_item_piece)
-    assert key is htypes.command_cfg_item_tests.view
-    assert piece == cfg_item_piece
-    command = command_cfg_item.resolve_typed_command_cfg_value(cfg_item_piece, key, system, '<unused-service-name>')
+def test_typed(system, command_template):
+    command = command_cfg_item.resolve_typed_command_cfg_value(
+        command_template, '<unused-key>', system, '<unused-service-name>')
     assert isinstance(command, UnboundUiCommand)
 
 
