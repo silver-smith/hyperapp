@@ -27,7 +27,7 @@ import:
 - sample.sample_list:sample_list-sample_list.model-cfg-item
 - sample.sample_list_arg:sample_list_selector-item.editor_default.cfg-item
 - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
-- sample.sample_list_selector:sample_list_selector-item.selector-template
+- sample.sample_list_selector:sample_list_selector-item.selector-cfg-item
 - sample.sample_record:open_sample_fn_record.global-model-command
 - sample.sample_record:sample_record-sample_record-apply.command-cfg-item
 - sample.sample_record:sample_record-sample_record.model-cfg-item
@@ -114,7 +114,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - sample.sample_list_selector:sample_list_selector-item.selector-template
+      - sample.sample_list_selector:sample_list_selector-item.selector-cfg-item
   system:
     type: legacy_type.system:item_list_config
     value:

@@ -5,7 +5,7 @@ import:
 - lcs.lcs_dirs_view:lcs_dirs_view-view.feed-template-cfg-item
 - lcs.lcs_dirs_view:lcs_dirs_view-view.model-cfg-item
 - lcs.lcs_dirs_view:lcs_view-view-lcs_open_dirs.command-cfg-item
-- lcs.lcs_layer:lcs_layer-layer.selector-template
+- lcs.lcs_layer:lcs_layer-layer.selector-cfg-item
 - lcs.lcs_layer:lcs_layer-model.feed-template-cfg-item
 - lcs.lcs_layer:lcs_layer-model.model-cfg-item
 - lcs.lcs_layer:lcs_view-view-lcs_open_layers.command-cfg-item
@@ -62,7 +62,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - lcs.lcs_layer:lcs_layer-layer.selector-template
+      - lcs.lcs_layer:lcs_layer-layer.selector-cfg-item
   system:
     type: legacy_type.system:item_list_config
     value:

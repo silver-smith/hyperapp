@@ -13,26 +13,11 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
-  cfg_item_creg-selector-template.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.selector:template
-      value: resolve_selector_cfg_item.actor-template
   cfg_value_creg-selector-template.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.selector:template
       value: resolve_selector_cfg_value.actor-template
-  resolve_selector_cfg_item:
-    type: legacy_type.builtin:attribute
-    value:
-      object: selector.module
-      attr_name: resolve_selector_cfg_item
-  resolve_selector_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_selector_cfg_item
-      service_params: []
   resolve_selector_cfg_value:
     type: legacy_type.builtin:attribute
     value:

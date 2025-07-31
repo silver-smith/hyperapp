@@ -28,10 +28,14 @@ definitions:
     value:
       object: config_layer_list.module
       attr_name: config_layer_list
+  config_layer_list-layer.selector-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.config_layer_list:layer
+      value: config_layer_list-layer.selector-template
   config_layer_list-layer.selector-template:
     type: legacy_type.selector:template
     value:
-      value_t: legacy_type.config_layer_list:layer
       model_t: legacy_type.config_layer_list:model
       get_fn: config_layer_list-layer.selector.get.system-fn
       pick_fn: config_layer_list-layer.selector.pick.system-fn

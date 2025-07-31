@@ -88,10 +88,14 @@ definitions:
     value:
       t: legacy_type.view_factory:factory
       value: pick_view_factory_context.system-fn
+  view_factory-factory.selector-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.view_factory:factory
+      value: view_factory-factory.selector-template
   view_factory-factory.selector-template:
     type: legacy_type.selector:template
     value:
-      value_t: legacy_type.view_factory:factory
       model_t: legacy_type.view_factory_list:model
       get_fn: view_factory-factory.selector.get.system-fn
       pick_fn: view_factory-factory.selector.pick.system-fn

@@ -41,7 +41,7 @@ import:
 - models.config.config_item_list:config_service_list-model-open_config_item_list.command-cfg-item
 - models.config.config_item_list:formatter_creg-config_item_list-layer_model.actor-cfg-item
 - models.config.config_item_list:formatter_creg-config_item_list-model.actor-cfg-item
-- models.config.config_layer_list:config_layer_list-layer.selector-template
+- models.config.config_layer_list:config_layer_list-layer.selector-cfg-item
 - models.config.config_layer_list:config_layer_list-model-open_service_list.command-cfg-item
 - models.config.config_layer_list:config_layer_list-model.feed-template-cfg-item
 - models.config.config_layer_list:config_layer_list-model.model-cfg-item
@@ -73,7 +73,7 @@ import:
 - models.file_bundles:open_file_bundle_list.global-model-command
 - models.global_commands:formatter_creg-global_commands-command_arg.actor-cfg-item
 - models.global_commands:formatter_creg-global_commands-model.actor-cfg-item
-- models.global_commands:global_commands-command_arg.selector-template
+- models.global_commands:global_commands-command_arg.selector-cfg-item
 - models.global_commands:global_commands-model-run_command.command-cfg-item
 - models.global_commands:global_commands-model.feed-template-cfg-item
 - models.global_commands:global_commands-model.model-cfg-item
@@ -89,7 +89,7 @@ import:
 - models.model_list:formatter_creg-model_list-model_arg.actor-cfg-item
 - models.model_list:model_list-model.feed-template-cfg-item
 - models.model_list:model_list-model.model-cfg-item
-- models.model_list:model_list-model_arg.selector-template
+- models.model_list:model_list-model_arg.selector-cfg-item
 - models.model_list:open_model_list.global-model-command
 - models.peer_list:formatter_creg-peer_list-model.actor-cfg-item
 - models.peer_list:open_peer_list.global-model-command
@@ -334,9 +334,9 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - models.config.config_layer_list:config_layer_list-layer.selector-template
-      - models.global_commands:global_commands-command_arg.selector-template
-      - models.model_list:model_list-model_arg.selector-template
+      - models.config.config_layer_list:config_layer_list-layer.selector-cfg-item
+      - models.global_commands:global_commands-command_arg.selector-cfg-item
+      - models.model_list:model_list-model_arg.selector-cfg-item
   system:
     type: legacy_type.system:item_list_config
     value:

@@ -33,10 +33,14 @@ definitions:
     value:
       object: lcs_layer.module
       attr_name: layer_pick
+  lcs_layer-layer.selector-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.lcs_layer:layer
+      value: lcs_layer-layer.selector-template
   lcs_layer-layer.selector-template:
     type: legacy_type.selector:template
     value:
-      value_t: legacy_type.lcs_layer:layer
       model_t: legacy_type.lcs_layer:model
       get_fn: lcs_layer-layer.selector.get.system-fn
       pick_fn: lcs_layer-layer.selector.pick.system-fn

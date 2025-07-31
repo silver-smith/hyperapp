@@ -86,10 +86,14 @@ definitions:
       - piece
       service_params:
       - model_reg
+  model_list-model_arg.selector-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.model_list:model_arg
+      value: model_list-model_arg.selector-template
   model_list-model_arg.selector-template:
     type: legacy_type.selector:template
     value:
-      value_t: legacy_type.model_list:model_arg
       model_t: legacy_type.model_list:model
       get_fn: model_list-model_arg.selector.get.system-fn
       pick_fn: model_list-model_arg.selector.pick.system-fn

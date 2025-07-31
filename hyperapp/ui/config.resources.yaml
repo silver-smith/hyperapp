@@ -153,7 +153,6 @@ import:
 - ui.remote_command:remote_command_from_model_command.service
 - ui.remote_feed_receiver:remote_feed_receiver.service
 - ui.remote_model:formatter_creg-model-remote_model.actor-cfg-item
-- ui.selector:cfg_item_creg-selector-template.actor-cfg-item
 - ui.selector:cfg_value_creg-selector-template.actor-cfg-item
 - ui.selector:selector_reg.service
 - ui.shortcut_reg:shortcut_reg.service
@@ -194,7 +193,7 @@ import:
 - ui.view.view_factory_list:formatter_creg-view_factory_list-model.actor-cfg-item
 - ui.view.view_factory_list:open_view_factory_list.global-model-command
 - ui.view.view_factory_list:view_factory-factory.editor_default.cfg-item
-- ui.view.view_factory_list:view_factory-factory.selector-template
+- ui.view.view_factory_list:view_factory-factory.selector-cfg-item
 - ui.view.view_factory_list:view_factory_list-model.feed-template-cfg-item
 - ui.view.view_factory_list:view_factory_list-model.model-cfg-item
 - ui.view.view_registry:view_reg.service
@@ -220,7 +219,6 @@ definitions:
       - ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-cfg-item
-      - ui.selector:cfg_item_creg-selector-template.actor-cfg-item
       - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-multi_template.actor-cfg-item
       - ui.view.view_factory_cfg_item:cfg_item_creg-view_factory-template.actor-cfg-item
   cfg_value_creg:
@@ -361,7 +359,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.view.view_factory_list:view_factory-factory.selector-template
+      - ui.view.view_factory_list:view_factory-factory.selector-cfg-item
   system:
     type: legacy_type.system:item_list_config
     value:
