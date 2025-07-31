@@ -8,7 +8,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
@@ -46,9 +46,13 @@ definitions:
       object: model_commands.module
       attr_name: list_model_commands
   model_commands-model-run_command.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.model_commands:model
+      value: model_commands-model-run_command.command-template
+  model_commands-model-run_command.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: run_command.model-command
   model_commands-model.feed-template:
     type: legacy_type.feed:feed_template
@@ -102,9 +106,13 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
   navigator-view-open_model_commands.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.navigator:view
+      value: navigator-view-open_model_commands.command-template
+  navigator-view-open_model_commands.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_model_commands.ui-model-command
   open_model_commands:
     type: legacy_type.builtin:attribute

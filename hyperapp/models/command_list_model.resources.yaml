@@ -9,7 +9,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.command_list_model:form
@@ -56,9 +56,13 @@ definitions:
       base: null
       fields: {}
   global_commands-model-set_shortcut.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.global_commands:model
+      value: global_commands-model-set_shortcut.command-template
+  global_commands-model-set_shortcut.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: set_shortcut.model-command
   global_commands-model.crud.get.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -90,10 +94,10 @@ definitions:
       system_fn: global_commands-model.edit.command-fn
       preserve_remote: false
   global_commands-model.edit.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.global_commands:model
-      command: global_commands-model.edit.command
+      value: global_commands-model.edit.command-template
   global_commands-model.edit.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
@@ -104,6 +108,10 @@ definitions:
       init_action_fn: global_commands-model.crud.get.system-fn
       commit_command_d: global_commands-model.edit.commit-command.d
       commit_action_fn: global_commands-model.crud.update.system-fn
+  global_commands-model.edit.command-template:
+    type: legacy_type.command:command_template
+    value:
+      command: global_commands-model.edit.command
   global_commands-model.edit.commit-command.d:
     type: save_d
     value: {}
@@ -124,9 +132,13 @@ definitions:
     value:
       item_t: legacy_type.command_list_model:item
   model_commands-model-set_shortcut.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.model_commands:model
+      value: model_commands-model-set_shortcut.command-template
+  model_commands-model-set_shortcut.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: set_shortcut.model-command
   model_commands-model.crud.get.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -158,10 +170,10 @@ definitions:
       system_fn: model_commands-model.edit.command-fn
       preserve_remote: false
   model_commands-model.edit.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.model_commands:model
-      command: model_commands-model.edit.command
+      value: model_commands-model.edit.command-template
   model_commands-model.edit.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
@@ -172,6 +184,10 @@ definitions:
       init_action_fn: model_commands-model.crud.get.system-fn
       commit_command_d: model_commands-model.edit.commit-command.d
       commit_action_fn: model_commands-model.crud.update.system-fn
+  model_commands-model.edit.command-template:
+    type: legacy_type.command:command_template
+    value:
+      command: model_commands-model.edit.command
   model_commands-model.edit.commit-command.d:
     type: save_d
     value: {}

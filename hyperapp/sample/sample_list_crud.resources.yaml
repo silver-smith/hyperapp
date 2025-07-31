@@ -5,7 +5,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
-- legacy_type.command:cfg_item
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.crud:open_command_fn
@@ -49,10 +50,10 @@ definitions:
       system_fn: sample_list-sample_list.edit.command-fn
       preserve_remote: false
   sample_list-sample_list.edit.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_list:sample_list
-      command: sample_list-sample_list.edit.command
+      value: sample_list-sample_list.edit.command-template
   sample_list-sample_list.edit.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
@@ -63,6 +64,10 @@ definitions:
       init_action_fn: sample_list-sample_list.crud.get.system-fn
       commit_command_d: sample_list-sample_list.edit.commit-command.d
       commit_action_fn: sample_list-sample_list.crud.update.system-fn
+  sample_list-sample_list.edit.command-template:
+    type: legacy_type.command:command_template
+    value:
+      command: sample_list-sample_list.edit.command
   sample_list-sample_list.edit.commit-command.d:
     type: save_d
     value: {}

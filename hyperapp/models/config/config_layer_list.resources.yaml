@@ -7,7 +7,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
@@ -55,9 +55,13 @@ definitions:
       - current_item
       service_params: []
   config_layer_list-model-open_service_list.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_layer_list:model
+      value: config_layer_list-model-open_service_list.command-template
+  config_layer_list-model-open_service_list.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_service_list.model-command
   config_layer_list-model.feed-template:
     type: legacy_type.feed:feed_template

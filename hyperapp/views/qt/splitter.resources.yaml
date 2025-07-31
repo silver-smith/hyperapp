@@ -10,7 +10,7 @@ import:
 - legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:ui_command
 - legacy_type.navigator:view
 - legacy_type.splitter:state
@@ -43,9 +43,13 @@ definitions:
     value:
       system_fn: SplitterView_from_piece.system-fn
   navigator-view-split_horizontally.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.navigator:view
+      value: navigator-view-split_horizontally.command-template
+  navigator-view-split_horizontally.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: split_horizontally.ui-command
   split_horizontally:
     type: legacy_type.builtin:attribute
@@ -83,9 +87,13 @@ definitions:
       base: null
       fields: {}
   splitter-view-unwrap.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.splitter:view
+      value: splitter-view-unwrap.command-template
+  splitter-view-unwrap.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: unwrap.ui-command
   splitter-view.view-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

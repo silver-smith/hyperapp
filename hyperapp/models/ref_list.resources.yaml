@@ -11,7 +11,7 @@ import:
 - legacy_type.builtin:ref
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
@@ -232,29 +232,49 @@ definitions:
       object: ref_list.module
       attr_name: ref_list
   ref_list-model-add_folder.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.ref_list:model
+      value: ref_list-model-add_folder.command-template
+  ref_list-model-add_folder.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_folder.model-command-enumerator
   ref_list-model-add_ref.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.ref_list:model
+      value: ref_list-model-add_ref.command-template
+  ref_list-model-add_ref.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_ref.model-command-enumerator
   ref_list-model-open.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.ref_list:model
+      value: ref_list-model-open.command-template
+  ref_list-model-open.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open.model-command
   ref_list-model-open_parent.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.ref_list:model
+      value: ref_list-model-open_parent.command-template
+  ref_list-model-open_parent.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_parent.model-command
   ref_list-model-remove.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.ref_list:model
+      value: ref_list-model-remove.command-template
+  ref_list-model-remove.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: remove.model-command
   ref_list-model.feed-template:
     type: legacy_type.feed:feed_template

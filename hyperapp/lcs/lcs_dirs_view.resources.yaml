@@ -7,7 +7,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.feed:feed_template
@@ -53,9 +53,13 @@ definitions:
       object: lcs_dirs_view.module
       attr_name: lcs_dirs_view
   lcs_dirs_view-view-lcs_dirs_items.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.lcs_dirs_view:view
+      value: lcs_dirs_view-view-lcs_dirs_items.command-template
+  lcs_dirs_view-view-lcs_dirs_items.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: lcs_dirs_items.model-command
   lcs_dirs_view-view.feed-template:
     type: legacy_type.feed:feed_template
@@ -130,7 +134,11 @@ definitions:
       system_fn: lcs_open_dirs.fn
       preserve_remote: false
   lcs_view-view-lcs_open_dirs.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.lcs_view:view
+      value: lcs_view-view-lcs_open_dirs.command-template
+  lcs_view-view-lcs_open_dirs.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: lcs_open_dirs.model-command

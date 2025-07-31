@@ -6,7 +6,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
-- legacy_type.command:cfg_item
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
@@ -157,14 +158,22 @@ definitions:
         htypes.wiki.wiki_ref: legacy_type.wiki:wiki_ref
         services.mosaic: builtins:mosaic.service
   sample_list-sample_list-details.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_list:sample_list
+      value: sample_list-sample_list-details.command-template
+  sample_list-sample_list-details.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: details.model-command
   sample_tree-model-sample_tree_info.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_tree:model
+      value: sample_tree-model-sample_tree_info.command-template
+  sample_tree-model-sample_tree_info.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: sample_tree_info.model-command
   sample_tree_info:
     type: legacy_type.builtin:attribute

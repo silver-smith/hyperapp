@@ -12,12 +12,11 @@ import:
 - ui.column_format:formatter_creg-column-column_k.actor-cfg-item
 - ui.column_resource_name:resource_name_creg-column-column_k.actor-cfg-item
 - ui.column_visible_reg:column_visible_reg.service
-- ui.command_cfg_item:cfg_item_creg-command-cfg_item.actor-cfg-item
 - ui.command_cfg_item:cfg_item_creg-command-global_model_command.actor-cfg-item
 - ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-cfg-item
 - ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
 - ui.command_cfg_item:cfg_item_creg-command-ui_command.actor-cfg-item
-- ui.command_cfg_item:cfg_value_creg-command-cfg_item.actor-cfg-item
+- ui.command_cfg_item:cfg_value_creg-command-command_template.actor-cfg-item
 - ui.command_cfg_item:cfg_value_creg-command-global_model_command.actor-cfg-item
 - ui.command_cfg_item:cfg_value_creg-command-model_args_picker_command_enumerator.actor-cfg-item
 - ui.command_cfg_item:cfg_value_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
@@ -212,7 +211,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.command_cfg_item:cfg_item_creg-command-cfg_item.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-global_model_command.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-model_args_picker_command_enumerator.actor-cfg-item
       - ui.command_cfg_item:cfg_item_creg-command-ui_args_picker_command_enumerator.actor-cfg-item
@@ -221,7 +219,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.command_cfg_item:cfg_value_creg-command-cfg_item.actor-cfg-item
+      - ui.command_cfg_item:cfg_value_creg-command-command_template.actor-cfg-item
       - ui.command_cfg_item:cfg_value_creg-command-global_model_command.actor-cfg-item
       - ui.command_cfg_item:cfg_value_creg-command-model_args_picker_command_enumerator.actor-cfg-item
       - ui.command_cfg_item:cfg_value_creg-command-ui_args_picker_command_enumerator.actor-cfg-item

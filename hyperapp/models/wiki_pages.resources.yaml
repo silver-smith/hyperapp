@@ -12,7 +12,7 @@ import:
 - legacy_type.builtin:ref
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
@@ -427,29 +427,49 @@ definitions:
       object: wiki_pages.module
       attr_name: wiki_pages
   wiki_pages-list_model-add_folder.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki_pages:list_model
+      value: wiki_pages-list_model-add_folder.command-template
+  wiki_pages-list_model-add_folder.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_folder.model-command-enumerator
   wiki_pages-list_model-new_page.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki_pages:list_model
+      value: wiki_pages-list_model-new_page.command-template
+  wiki_pages-list_model-new_page.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: new_page.model-command
   wiki_pages-list_model-open.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki_pages:list_model
+      value: wiki_pages-list_model-open.command-template
+  wiki_pages-list_model-open.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open.model-command
   wiki_pages-list_model-open_parent.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki_pages:list_model
+      value: wiki_pages-list_model-open_parent.command-template
+  wiki_pages-list_model-open_parent.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_parent.model-command
   wiki_pages-list_model-remove.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki_pages:list_model
+      value: wiki_pages-list_model-remove.command-template
+  wiki_pages-list_model-remove.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: remove.model-command
   wiki_pages-list_model.feed-template:
     type: legacy_type.feed:feed_template
@@ -490,19 +510,31 @@ definitions:
       - format
       - wiki_pages
   wiki_pages-page_model-add_ref.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki_pages:page_model
+      value: wiki_pages-page_model-add_ref.command-template
+  wiki_pages-page_model-add_ref.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_ref.model-command-enumerator
   wiki_pages-page_model-open_ref_list.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki_pages:page_model
+      value: wiki_pages-page_model-open_ref_list.command-template
+  wiki_pages-page_model-open_ref_list.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_ref_list.model-command
   wiki_pages-page_model-save_page.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.wiki_pages:page_model
+      value: wiki_pages-page_model-save_page.command-template
+  wiki_pages-page_model-save_page.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: save_page.model-command
   wiki_pages-page_model.feed-template:
     type: legacy_type.feed:feed_template

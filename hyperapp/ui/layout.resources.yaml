@@ -8,7 +8,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_enum_fn
@@ -96,19 +96,31 @@ definitions:
       t: legacy_type.layout:model
       value: format_layout_model.actor-template
   layout-command_list-add_view_command.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.layout:command_list
+      value: layout-command_list-add_view_command.command-template
+  layout-command_list-add_view_command.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_view_command.model-command
   layout-command_list-set_escape_shortcut.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.layout:command_list
+      value: layout-command_list-set_escape_shortcut.command-template
+  layout-command_list-set_escape_shortcut.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: set_escape_shortcut.model-command
   layout-command_list-set_shortcut.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.layout:command_list
+      value: layout-command_list-set_shortcut.command-template
+  layout-command_list-set_shortcut.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: set_shortcut.model-command
   layout-command_list.feed-template:
     type: legacy_type.feed:feed_template
@@ -148,14 +160,22 @@ definitions:
       service_params:
       - shortcut_reg
   layout-model-enum_layout_tree_commands.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.layout:model
+      value: layout-model-enum_layout_tree_commands.command-template
+  layout-model-enum_layout_tree_commands.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: enum_layout_tree_commands.model-command-enumerator
   layout-model-open_view_item_commands.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.layout:model
+      value: layout-model-open_view_item_commands.command-template
+  layout-model-open_view_item_commands.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_view_item_commands.model-command
   layout-model.feed-template:
     type: legacy_type.feed:feed_template

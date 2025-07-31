@@ -13,7 +13,7 @@ import:
 - legacy_type.column_list:open_column_list_d
 - legacy_type.column_list:toggle_visibility_d
 - legacy_type.column_list:view
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
@@ -30,9 +30,13 @@ definitions:
       object: column_list.module
       attr_name: column_list
   column_list-view-toggle_visibility.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.column_list:view
+      value: column_list-view-toggle_visibility.command-template
+  column_list-view-toggle_visibility.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: toggle_visibility.model-command
   column_list-view.feed-template:
     type: legacy_type.feed:feed_template
@@ -84,9 +88,13 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
   list-view-open_column_list.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.list:view
+      value: list-view-open_column_list.command-template
+  list-view-open_column_list.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_column_list.ui-model-command
   open_column_list:
     type: legacy_type.builtin:attribute

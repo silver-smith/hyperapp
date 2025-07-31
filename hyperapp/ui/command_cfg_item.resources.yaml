@@ -6,18 +6,13 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.command:ui_command
 - legacy_type.system:actor_template
 definitions:
-  cfg_item_creg-command-cfg_item.actor-cfg-item:
-    type: legacy_type.cfg_item:typed_cfg_item
-    value:
-      t: legacy_type.command:cfg_item
-      value: resolve_typed_command_cfg_item.actor-template
   cfg_item_creg-command-global_model_command.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
@@ -38,10 +33,10 @@ definitions:
     value:
       t: legacy_type.command:ui_command
       value: resolve_untyped_command_cfg_item.actor-template
-  cfg_value_creg-command-cfg_item.actor-cfg-item:
+  cfg_value_creg-command-command_template.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
     value:
-      t: legacy_type.command:cfg_item
+      t: legacy_type.command:command_template
       value: resolve_typed_command_cfg_value.actor-template
   cfg_value_creg-command-global_model_command.actor-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -71,16 +66,6 @@ definitions:
       import_list:
         code.mark: base.mark:mark.module
         services.pyobj_creg: builtins:pyobj_creg.service
-  resolve_typed_command_cfg_item:
-    type: legacy_type.builtin:attribute
-    value:
-      object: command_cfg_item.module
-      attr_name: resolve_typed_command_cfg_item
-  resolve_typed_command_cfg_item.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      function: resolve_typed_command_cfg_item
-      service_params: []
   resolve_typed_command_cfg_value:
     type: legacy_type.builtin:attribute
     value:

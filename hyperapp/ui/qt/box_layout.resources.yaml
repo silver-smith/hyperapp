@@ -13,7 +13,7 @@ import:
 - legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:open_args_picker_command_d
 - legacy_type.command:ui_args_picker_command_enumerator
 - legacy_type.command:ui_command
@@ -120,29 +120,49 @@ definitions:
       base: null
       fields: {}
   box_layout-view-add_element.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.box_layout:view
+      value: box_layout-view-add_element.command-template
+  box_layout-view-add_element.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_element.ui-command-enumerator
   box_layout-view-add_stretch.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.box_layout:view
+      value: box_layout-view-add_stretch.command-template
+  box_layout-view-add_stretch.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_stretch.ui-command
   box_layout-view-insert_element.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.box_layout:view
+      value: box_layout-view-insert_element.command-template
+  box_layout-view-insert_element.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: insert_element.ui-command-enumerator
   box_layout-view-remove_element.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.box_layout:view
+      value: box_layout-view-remove_element.command-template
+  box_layout-view-remove_element.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: remove_element.ui-command
   box_layout-view-unwrap.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.box_layout:view
+      value: box_layout-view-unwrap.command-template
+  box_layout-view-unwrap.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: unwrap.ui-command
   box_layout-view.view-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

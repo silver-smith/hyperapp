@@ -11,7 +11,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:ref
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.command:model_command_remove_fn
@@ -46,19 +46,31 @@ definitions:
       object: config_item_list.module
       attr_name: config_item_list
   config_item_list-layer_model-layer_remove.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:layer_model
+      value: config_item_list-layer_model-layer_remove.command-template
+  config_item_list-layer_model-layer_remove.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: layer_remove.model-command
   config_item_list-layer_model-open_config_key.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:layer_model
+      value: config_item_list-layer_model-open_config_key.command-template
+  config_item_list-layer_model-open_config_key.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_config_key.model-command
   config_item_list-layer_model-open_config_value.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:layer_model
+      value: config_item_list-layer_model-open_config_value.command-template
+  config_item_list-layer_model-open_config_value.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_config_value.model-command
   config_item_list-layer_model.crud.get_layer.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -117,10 +129,10 @@ definitions:
       system_fn: config_item_list-layer_model.open_move.command-fn
       preserve_remote: false
   config_item_list-layer_model.open_move.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:layer_model
-      command: config_item_list-layer_model.open_move.command
+      value: config_item_list-layer_model.open_move.command-template
   config_item_list-layer_model.open_move.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
@@ -131,6 +143,10 @@ definitions:
       init_action_fn: config_item_list-layer_model.crud.get_layer.system-fn
       commit_command_d: config_item_list-layer_model.open_move.commit-command.d
       commit_action_fn: config_item_list-layer_model.crud.move.system-fn
+  config_item_list-layer_model.open_move.command-template:
+    type: legacy_type.command:command_template
+    value:
+      command: config_item_list-layer_model.open_move.command
   config_item_list-layer_model.open_move.commit-command.d:
     type: move_d
     value: {}
@@ -147,19 +163,31 @@ definitions:
       - system
       - format
   config_item_list-model-open_config_key.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:model
+      value: config_item_list-model-open_config_key.command-template
+  config_item_list-model-open_config_key.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_config_key.model-command
   config_item_list-model-open_config_value.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:model
+      value: config_item_list-model-open_config_value.command-template
+  config_item_list-model-open_config_value.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_config_value.model-command
   config_item_list-model-remove.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:model
+      value: config_item_list-model-remove.command-template
+  config_item_list-model-remove.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: remove.model-command
   config_item_list-model.crud.get_layer.system-fn:
     type: legacy_type.system_fn:ctx_fn
@@ -220,10 +248,10 @@ definitions:
       system_fn: config_item_list-model.open_move.command-fn
       preserve_remote: false
   config_item_list-model.open_move.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_item_list:model
-      command: config_item_list-model.open_move.command
+      value: config_item_list-model.open_move.command-template
   config_item_list-model.open_move.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
@@ -235,6 +263,10 @@ definitions:
       init_action_fn: config_item_list-model.crud.get_layer.system-fn
       commit_command_d: config_item_list-model.open_move.commit-command.d
       commit_action_fn: config_item_list-model.crud.move.system-fn
+  config_item_list-model.open_move.command-template:
+    type: legacy_type.command:command_template
+    value:
+      command: config_item_list-model.open_move.command
   config_item_list-model.open_move.commit-command.d:
     type: move_d
     value: {}
@@ -283,9 +315,13 @@ definitions:
       object: config_item_list.module
       attr_name: config_layer_item_move_to_another_layer
   config_service_list-model-open_config_item_list.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_service_list:model
+      value: config_service_list-model-open_config_item_list.command-template
+  config_service_list-model-open_config_item_list.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_config_item_list.model-command
   format_layer_model:
     type: legacy_type.builtin:attribute

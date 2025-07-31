@@ -8,7 +8,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
@@ -197,19 +197,31 @@ definitions:
       object: sample_tree.module
       attr_name: sample_tree
   sample_tree-model-append_tree_item.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_tree:model
+      value: sample_tree-model-append_tree_item.command-template
+  sample_tree-model-append_tree_item.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: append_tree_item.model-command
   sample_tree-model-insert_tree_item.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_tree:model
+      value: sample_tree-model-insert_tree_item.command-template
+  sample_tree-model-insert_tree_item.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: insert_tree_item.model-command
   sample_tree-model-remove_tree_item.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.sample_tree:model
+      value: sample_tree-model-remove_tree_item.command-template
+  sample_tree-model-remove_tree_item.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: remove_tree_item.model-command
   sample_tree-model.feed-template:
     type: legacy_type.feed:feed_template

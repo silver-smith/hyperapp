@@ -12,7 +12,7 @@ import:
 - legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:ui_command
 - legacy_type.list:view
 - legacy_type.list_adapter:index_fn_list_adapter
@@ -250,14 +250,22 @@ definitions:
       base: null
       fields: {}
   tree_as_list-index_view-open.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree_as_list:index_view
+      value: tree_as_list-index_view-open.command-template
+  tree_as_list-index_view-open.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open.ui-command
   tree_as_list-index_view-parent.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree_as_list:index_view
+      value: tree_as_list-index_view-parent.command-template
+  tree_as_list-index_view-parent.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: parent.ui-command
   tree_as_list-index_view.view-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -265,14 +273,22 @@ definitions:
       t: legacy_type.tree_as_list:index_view
       value: IndexTreeAsListWrapperView_from_piece.view-template
   tree_as_list-key_view-open.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree_as_list:key_view
+      value: tree_as_list-key_view-open.command-template
+  tree_as_list-key_view-open.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open.ui-command
   tree_as_list-key_view-parent.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree_as_list:key_view
+      value: tree_as_list-key_view-parent.command-template
+  tree_as_list-key_view-parent.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: parent.ui-command
   tree_as_list-key_view.view-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

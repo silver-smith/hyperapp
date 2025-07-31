@@ -6,7 +6,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
-- legacy_type.command:cfg_item
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.crud:open_command_fn
@@ -57,10 +58,10 @@ definitions:
       system_fn: model_commands-model.open_rename.command-fn
       preserve_remote: false
   model_commands-model.open_rename.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.model_commands:model
-      command: model_commands-model.open_rename.command
+      value: model_commands-model.open_rename.command-template
   model_commands-model.open_rename.command-fn:
     type: legacy_type.crud:open_command_fn
     value:
@@ -71,6 +72,10 @@ definitions:
       init_action_fn: model_commands-model.crud.rename_to.system-fn
       commit_command_d: model_commands-model.open_rename.commit-command.d
       commit_action_fn: model_commands-model.crud.rename.system-fn
+  model_commands-model.open_rename.command-template:
+    type: legacy_type.command:command_template
+    value:
+      command: model_commands-model.open_rename.command
   model_commands-model.open_rename.commit-command.d:
     type: rename_d
     value: {}

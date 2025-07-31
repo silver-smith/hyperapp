@@ -10,7 +10,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:ui_command
 - legacy_type.navigator:go_back_d
 - legacy_type.navigator:go_forward_d
@@ -101,14 +101,22 @@ definitions:
         remotable: false
       system_fn: go_forward.fn
   navigator-view-go_back.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.navigator:view
+      value: navigator-view-go_back.command-template
+  navigator-view-go_back.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: go_back.ui-command
   navigator-view-go_forward.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.navigator:view
+      value: navigator-view-go_forward.command-template
+  navigator-view-go_forward.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: go_forward.ui-command
   navigator-view.view-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item

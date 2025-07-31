@@ -13,7 +13,7 @@ import:
 - legacy_type.builtin:ref
 - legacy_type.cfg_item:data_cfg_item
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.command:ui_command
@@ -39,9 +39,13 @@ import:
 - views.list_as_tree_adapter:list_as_tree_adapter.module
 definitions:
   list-view-switch_list_to_tree.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.list:view
+      value: list-view-switch_list_to_tree.command-template
+  list-view-switch_list_to_tree.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: switch_list_to_tree.ui-command
   list_as_tree-layer_list.feed-template:
     type: legacy_type.feed:feed_template
@@ -79,9 +83,13 @@ definitions:
       service_params:
       - command_creg
   list_as_tree-opener_commands-toggle_open_command.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.list_as_tree:opener_commands
+      value: list_as_tree-opener_commands-toggle_open_command.command-template
+  list_as_tree-opener_commands-toggle_open_command.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: toggle_open_command.model-command
   list_as_tree-opener_commands.feed-template:
     type: legacy_type.feed:feed_template
@@ -338,12 +346,20 @@ definitions:
       base: null
       fields: {}
   tree-view-open_layers.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree:view
+      value: tree-view-open_layers.command-template
+  tree-view-open_layers.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_layers.ui-command
   tree-view-open_opener_commands.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.tree:view
+      value: tree-view-open_opener_commands.command-template
+  tree-view-open_opener_commands.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_opener_commands.ui-model-command

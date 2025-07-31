@@ -13,7 +13,7 @@ import:
 - legacy_type.bundle_info:capsule_list_model
 - legacy_type.bundle_info:model
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.data_browser:record_view
@@ -36,9 +36,13 @@ definitions:
       object: bundle_info.module
       attr_name: bundle_info
   bundle_info-ass_list_model-open_association.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.bundle_info:ass_list_model
+      value: bundle_info-ass_list_model-open_association.command-template
+  bundle_info-ass_list_model-open_association.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_association.model-command
   bundle_info-ass_list_model.feed-template:
     type: legacy_type.feed:feed_template
@@ -76,9 +80,13 @@ definitions:
       service_params:
       - format
   bundle_info-capsule_list_model-open_capsule.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.bundle_info:capsule_list_model
+      value: bundle_info-capsule_list_model-open_capsule.command-template
+  bundle_info-capsule_list_model-open_capsule.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_capsule.model-command
   bundle_info-capsule_list_model.feed-template:
     type: legacy_type.feed:feed_template
@@ -116,19 +124,31 @@ definitions:
       service_params:
       - format
   bundle_info-model-open_associations.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.bundle_info:model
+      value: bundle_info-model-open_associations.command-template
+  bundle_info-model-open_associations.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_associations.model-command
   bundle_info-model-open_capsules.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.bundle_info:model
+      value: bundle_info-model-open_capsules.command-template
+  bundle_info-model-open_capsules.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_capsules.model-command
   bundle_info-model-open_root.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.bundle_info:model
+      value: bundle_info-model-open_root.command-template
+  bundle_info-model-open_root.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_root.model-command
   bundle_info-model.model:
     type: legacy_type.model:model

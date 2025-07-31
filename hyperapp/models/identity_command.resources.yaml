@@ -8,7 +8,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
 - legacy_type.command:properties
@@ -91,9 +91,13 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
   model_commands-model-add_identity_command.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.model_commands:model
+      value: model_commands-model-add_identity_command.command-template
+  model_commands-model-add_identity_command.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_identity_command.model-command
   model_commands-model.feed-template:
     type: legacy_type.feed:feed_template

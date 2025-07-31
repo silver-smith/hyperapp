@@ -9,7 +9,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:ref
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
@@ -79,9 +79,13 @@ definitions:
       object: data_browser.module
       attr_name: browse_ref_list
   data_browser-list_view-list_open.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.data_browser:list_view
+      value: data_browser-list_view-list_open.command-template
+  data_browser-list_view-list_open.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: list_open.model-command
   data_browser-list_view.feed-template:
     type: legacy_type.feed:feed_template
@@ -139,9 +143,13 @@ definitions:
       - piece
       service_params: []
   data_browser-record_view-record_open.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.data_browser:record_view
+      value: data_browser-record_view-record_open.command-template
+  data_browser-record_view-record_open.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: record_open.model-command
   data_browser-record_view.feed-template:
     type: legacy_type.feed:feed_template
@@ -178,9 +186,13 @@ definitions:
       - piece
       service_params: []
   data_browser-ref_list_view-ref_list_open.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.data_browser:ref_list_view
+      value: data_browser-ref_list_view-ref_list_open.command-template
+  data_browser-ref_list_view-ref_list_open.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: ref_list_open.model-command
   data_browser-ref_list_view.feed-template:
     type: legacy_type.feed:feed_template

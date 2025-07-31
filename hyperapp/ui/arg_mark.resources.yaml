@@ -11,7 +11,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.cfg_item:fn_value_template
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:ui_command
 - legacy_type.context_view:state
 - legacy_type.navigator:view
@@ -79,9 +79,13 @@ definitions:
       base: null
       fields: {}
   arg_mark-view-remove_mark.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.arg_mark:view
+      value: arg_mark-view-remove_mark.command-template
+  arg_mark-view-remove_mark.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: remove_mark.ui-command
   arg_mark-view.view-cfg-item:
     type: legacy_type.cfg_item:typed_cfg_item
@@ -102,9 +106,13 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
   navigator-view-add_mark.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.navigator:view
+      value: navigator-view-add_mark.command-template
+  navigator-view-add_mark.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add_mark.ui-command
   remove_mark:
     type: legacy_type.builtin:attribute

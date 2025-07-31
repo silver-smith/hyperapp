@@ -9,7 +9,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_command
 - legacy_type.command:model_command_fn
@@ -28,9 +28,13 @@ definitions:
       object: config_service_list.module
       attr_name: config_service_list
   config_service_list-model-toggle_assoc.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.config_service_list:model
+      value: config_service_list-model-toggle_assoc.command-template
+  config_service_list-model-toggle_assoc.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: toggle_assoc.model-command
   config_service_list-model.feed-template:
     type: legacy_type.feed:feed_template

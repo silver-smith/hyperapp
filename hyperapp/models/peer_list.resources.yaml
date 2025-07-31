@@ -14,7 +14,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.builtin:string
 - legacy_type.cfg_item:typed_cfg_item
-- legacy_type.command:cfg_item
+- legacy_type.command:command_template
 - legacy_type.command:global_model_command
 - legacy_type.command:model_args_picker_command_enumerator
 - legacy_type.command:model_command
@@ -168,24 +168,40 @@ definitions:
       base: null
       fields: {}
   peer_list-model-add.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.peer_list:model
+      value: peer_list-model-add.command-template
+  peer_list-model-add.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: add.model-command-enumerator
   peer_list-model-open_model.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.peer_list:model
+      value: peer_list-model-open_model.command-template
+  peer_list-model-open_model.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: open_model.model-command-enumerator
   peer_list-model-remove.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.peer_list:model
+      value: peer_list-model-remove.command-template
+  peer_list-model-remove.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: remove.model-command
   peer_list-model-run_command.command-cfg-item:
-    type: legacy_type.command:cfg_item
+    type: legacy_type.cfg_item:typed_cfg_item
     value:
       t: legacy_type.peer_list:model
+      value: peer_list-model-run_command.command-template
+  peer_list-model-run_command.command-template:
+    type: legacy_type.command:command_template
+    value:
       command: run_command.model-command-enumerator
   peer_list-model.feed-template:
     type: legacy_type.feed:feed_template
