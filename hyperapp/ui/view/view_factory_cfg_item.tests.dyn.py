@@ -24,7 +24,6 @@ def sample_fn():
 @mark.fixture.obj
 def template_piece(sample_fn):
     return htypes.view_factory.template(
-        k=mosaic.put(htypes.view_factory_cfg_item_tests.sample_k()),
         model_t_list=None,
         ui_t_t=None,
         view_t=pyobj_creg.actor_to_ref(htypes.view_factory_cfg_item_tests.sample_view),
@@ -37,7 +36,6 @@ def template_piece(sample_fn):
 @mark.fixture.obj
 def multi_template_piece(sample_fn):
     return htypes.view_factory.multi_template(
-        k=mosaic.put(htypes.view_factory_cfg_item_tests.sample_k()),
         model_t_list=None,
         ui_t_t=None,
         list_fn=mosaic.put(sample_fn),
@@ -46,14 +44,14 @@ def multi_template_piece(sample_fn):
 
 
 def test_template(system, template_piece):
-    key, piece = view_factory_cfg_item.resolve_view_factory_cfg_item(template_piece)
+    key = htypes.view_factory_cfg_item_tests.sample_k()
     assert key == htypes.view_factory_cfg_item_tests.sample_k()
     factory = view_factory_cfg_item.resolve_view_factory_cfg_value(template_piece, key, system, '<unused-service-name>')
     assert isinstance(factory, ViewFactory)
 
 
 def test_multi_template(system, multi_template_piece):
-    key, piece = view_factory_cfg_item.resolve_view_factory_cfg_item(multi_template_piece)
+    key = htypes.view_factory_cfg_item_tests.sample_k()
     assert key == htypes.view_factory_cfg_item_tests.sample_k()
     factory = view_factory_cfg_item.resolve_view_multi_factory_cfg_value(multi_template_piece, key, system, '<unused-service-name>')
     assert isinstance(factory, ViewMultiFactory)

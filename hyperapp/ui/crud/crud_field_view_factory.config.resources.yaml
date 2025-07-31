@@ -1,6 +1,7 @@
 import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:record_mt
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.crud:form_model
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
@@ -20,7 +21,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - record_field_list.view-factory-template
+      - record_field_list.view-factory-cfg-item
 
   record_field_list:
     type: legacy_type.builtin:attribute
@@ -69,9 +70,14 @@ definitions:
   record_field_list.view-factory-template:
     type: legacy_type.view_factory:multi_template
     value:
-      k: record_field.k
       model_t_list:
       - legacy_type.crud:form_model
       ui_t_t: null
       list_fn: record_field_list.system-fn
       get_fn: record_field_get.system-fn
+
+  record_field_list.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: record_field.k
+      value: record_field_list.view-factory-template

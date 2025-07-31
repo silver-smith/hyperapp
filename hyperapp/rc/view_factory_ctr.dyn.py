@@ -134,7 +134,7 @@ class ViewFactoryTemplateMultiModelCtr(ModuleCtr):
             self._model_t_set = {model_t}
 
     def get_component(self, name_to_res):
-        return name_to_res[f'{self._fn_name}.view-factory-template']
+        return name_to_res[f'{self._fn_name}.view-factory-cfg-item']
 
     def make_component(self, types, python_module, name_to_res=None):
         object = python_module
@@ -155,7 +155,6 @@ class ViewFactoryTemplateMultiModelCtr(ModuleCtr):
         k_t = k_type(types, self._module_name.split('.')[-1], name=self._attr_qual_name[-1])
         k = k_t()
         template = htypes.view_factory.template(
-            k=mosaic.put(k),
             model_t_list=self._model_t_list_field,
             ui_t_t=pyobj_creg.actor_to_ref_opt(self._ui_t_t),
             view_t=pyobj_creg.actor_to_ref(self._view_t),
@@ -163,12 +162,17 @@ class ViewFactoryTemplateMultiModelCtr(ModuleCtr):
             view_ctx_params=self._view_resolved_tgt.constructor.ctx_params,
             system_fn=mosaic.put(system_fn),
             )
+        cfg_item = htypes.cfg_item.data_cfg_item(
+            key=mosaic.put(k),
+            value=mosaic.put(template),
+            )
         if name_to_res is not None:
             for model_t in self._model_t_set or []:
                 self._add_complex_type(model_t, name_to_res)
             name_to_res[f'{self._fn_name}.system-fn'] = system_fn
             name_to_res[f'{self._fn_name}.k'] = k
             name_to_res[f'{self._fn_name}.view-factory-template'] = template
+            name_to_res[f'{self._fn_name}.view-factory-cfg-item'] = cfg_item
         return template
 
     def _add_complex_type(self, t, name_to_res):

@@ -1,5 +1,4 @@
 template = record:
-  k: ref
   model_t_list: ref list opt
   ui_t_t: ref opt
   view_t: ref
@@ -8,7 +7,6 @@ template = record:
   system_fn: ref
 
 multi_template = record:
-  k: ref
   model_t_list: ref list opt
   ui_t_t: ref opt
   list_fn: ref

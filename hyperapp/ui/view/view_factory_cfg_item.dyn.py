@@ -6,12 +6,6 @@ from .code.mark import mark
 from .code.view_factory import ViewFactory, ViewMultiFactory
 
 
-@mark.actor.cfg_item_creg
-def resolve_view_factory_cfg_item(piece):
-    k = web.summon(piece.k)
-    return (k, piece)
-
-
 @mark.actor.cfg_value_creg
 def resolve_view_factory_cfg_value(piece, key, system, service_name):
     system_fn_creg = system['system_fn_creg']
@@ -33,12 +27,6 @@ def resolve_view_factory_cfg_value(piece, key, system, service_name):
         view_ctx_params=piece.view_ctx_params,
         system_fn=system_fn_creg.invite(piece.system_fn),
         )
-
-
-@mark.actor.cfg_item_creg
-def resolve_view_multi_factory_cfg_item(piece):
-    k = web.summon(piece.k)
-    return (k, piece)
 
 
 @mark.actor.cfg_value_creg

@@ -1,6 +1,7 @@
 import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:record_mt
+- legacy_type.cfg_item:data_cfg_item
 - legacy_type.model:index_list_ui_t
 - legacy_type.model:key_list_ui_t
 - legacy_type.system:item_list_config
@@ -21,8 +22,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - details.index_list.view-factory-template
-      - details.key_list.view-factory-template
+      - details.index_list.view-factory-cfg-item
+      - details.key_list.view-factory-cfg-item
 
   details_command_list:
     type: legacy_type.builtin:attribute
@@ -76,17 +77,27 @@ definitions:
   details.index_list.view-factory-template:
     type: legacy_type.view_factory:multi_template
     value:
-      k: details.k
       model_t_list: null
       ui_t_t: legacy_type.model:index_list_ui_t
       list_fn: details_command_list.system-fn
       get_fn: details_get.system-fn
 
+  details.index_list.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: details.k
+      value: details.index_list.view-factory-template
+
   details.key_list.view-factory-template:
     type: legacy_type.view_factory:multi_template
     value:
-      k: details.k
       model_t_list: null
       ui_t_t: legacy_type.model:key_list_ui_t
       list_fn: details_command_list.system-fn
       get_fn: details_get.system-fn
+
+  details.key_list.view-factory-cfg-item:
+    type: legacy_type.cfg_item:data_cfg_item
+    value:
+      key: details.k
+      value: details.key_list.view-factory-template
