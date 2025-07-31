@@ -12,12 +12,6 @@ class Selector:
         self.pick_fn = pick_fn
 
 
-@mark.actor.cfg_item_creg
-def resolve_selector_cfg_item(piece):
-    value_t = pyobj_creg.invite(piece.value_t)
-    return (value_t, piece)
-
-
 @mark.actor.cfg_value_creg
 def resolve_selector_cfg_value(piece, key, system, service_name):
     system_fn_creg = system.resolve_service('system_fn_creg')

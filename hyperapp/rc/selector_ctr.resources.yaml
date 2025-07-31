@@ -22,6 +22,7 @@ definitions:
       file_name: selector_ctr.dyn.py
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.cfg_item.typed_cfg_item: legacy_type.cfg_item:typed_cfg_item
         htypes.command.model_command_fn: legacy_type.command:model_command_fn
         htypes.selector.template: legacy_type.selector:template
         htypes.selector_ctr.get_ctr: legacy_type.selector_ctr:get_ctr

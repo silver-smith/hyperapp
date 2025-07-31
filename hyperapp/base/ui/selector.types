@@ -1,5 +1,4 @@
 template = record:
-  value_t: ref
   model_t: ref
   get_fn: ref
   pick_fn: ref
