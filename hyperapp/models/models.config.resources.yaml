@@ -58,6 +58,7 @@ import:
 - models.data_browser:ref_list_open.d
 - models.file_bundles:open.d
 - models.file_bundles:open_file_bundle_list.d
+- models.fs:open_fs.d
 - models.model_list:open_model_list.d
 - models.peer_list:add.commit-d
 - models.peer_list:add.open-d
@@ -171,7 +172,7 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: bundle_info.model-model_layout_k
-      value: form_view_1
+      value: form_view_2
   config_item-column_k-config_item_list.layer_model-key:
     type: legacy_type.data_service:config_item
     value:
@@ -352,6 +353,11 @@ definitions:
     value:
       key: models.file_bundles:open_file_bundle_list.d
       value: shortcut_Alt_B
+  config_item-models.fs-open_fs.d:
+    type: legacy_type.data_service:config_item
+    value:
+      key: models.fs:open_fs.d
+      value: shortcut_Alt_F
   config_item-models.model_list-open_model_list.d:
     type: legacy_type.data_service:config_item
     value:
@@ -506,7 +512,7 @@ definitions:
     type: legacy_type.data_service:config_item
     value:
       key: wiki_pages.page_model-model_layout_k
-      value: form_view_2
+      value: form_view_1
   crud-layout_k-models.peer_list-add:
     type: legacy_type.crud:layout_k
     value:
@@ -522,86 +528,29 @@ definitions:
   edit_view_1:
     type: legacy_type.text:edit_view
     value:
-      adapter: value_adapter_10
+      adapter: value_adapter_3
   fn_record_adapter_1:
-    type: legacy_type.record_adapter:fn_record_adapter
-    value:
-      record_t: legacy_type.bundle_info:bundle_info
-      system_fn: models.bundle_info:bundle_info-model.system-fn
-  fn_record_adapter_2:
     type: legacy_type.record_adapter:fn_record_adapter
     value:
       record_t: legacy_type.wiki_pages:page
       system_fn: models.wiki_pages:wiki_pages-page_model.system-fn
+  fn_record_adapter_2:
+    type: legacy_type.record_adapter:fn_record_adapter
+    value:
+      record_t: legacy_type.bundle_info:bundle_info
+      system_fn: models.bundle_info:bundle_info-model.system-fn
   form_view_1:
     type: legacy_type.form:view
     value:
       direction: TopToBottom
       elements:
-      - view: label_view_4
-        focusable: false
-        stretch: 0
-      - view: line_view-value_adapter_5
-        focusable: true
-        stretch: 0
-      - view: label_view_1
-        focusable: false
-        stretch: 0
-      - view: line_view-value_adapter_4
-        focusable: true
-        stretch: 0
-      - view: label_view_5
-        focusable: false
-        stretch: 0
-      - view: line_view-value_adapter_6
-        focusable: true
-        stretch: 0
-      - view: label_view_6
-        focusable: false
-        stretch: 0
-      - view: line_view-value_adapter_2
-        focusable: true
-        stretch: 0
-      - view: label_view_3
-        focusable: false
-        stretch: 0
-      - view: line_view-value_adapter_7
-        focusable: true
-        stretch: 0
-      - view: label_view_7
-        focusable: false
-        stretch: 0
-      - view: line_view-value_adapter_8
-        focusable: true
-        stretch: 0
       - view: label_view_2
         focusable: false
         stretch: 0
-      - view: line_view-value_adapter_3
+      - view: line_edit-value_adapter_2
         focusable: true
         stretch: 0
-      - view: label_view_8
-        focusable: false
-        stretch: 0
-      - view: line_view-value_adapter_9
-        focusable: true
-        stretch: 0
-      - view: null
-        focusable: false
-        stretch: 1
-      adapter: fn_record_adapter_1
-  form_view_2:
-    type: legacy_type.form:view
-    value:
-      direction: TopToBottom
-      elements:
-      - view: label_view_10
-        focusable: false
-        stretch: 0
-      - view: line_edit-value_adapter_11
-        focusable: true
-        stretch: 0
-      - view: label_view_9
+      - view: label_view_1
         focusable: false
         stretch: 0
       - view: edit_view_1
@@ -613,6 +562,63 @@ definitions:
       - view: null
         focusable: false
         stretch: 1
+      adapter: fn_record_adapter_1
+  form_view_2:
+    type: legacy_type.form:view
+    value:
+      direction: TopToBottom
+      elements:
+      - view: label_view_3
+        focusable: false
+        stretch: 0
+      - view: line_view-value_adapter_9
+        focusable: true
+        stretch: 0
+      - view: label_view_9
+        focusable: false
+        stretch: 0
+      - view: line_view-value_adapter_10
+        focusable: true
+        stretch: 0
+      - view: label_view_6
+        focusable: false
+        stretch: 0
+      - view: line_view-value_adapter_11
+        focusable: true
+        stretch: 0
+      - view: label_view_7
+        focusable: false
+        stretch: 0
+      - view: line_view-value_adapter_4
+        focusable: true
+        stretch: 0
+      - view: label_view_8
+        focusable: false
+        stretch: 0
+      - view: line_view-value_adapter_8
+        focusable: true
+        stretch: 0
+      - view: label_view_10
+        focusable: false
+        stretch: 0
+      - view: line_view-value_adapter_5
+        focusable: true
+        stretch: 0
+      - view: label_view_4
+        focusable: false
+        stretch: 0
+      - view: line_view-value_adapter_7
+        focusable: true
+        stretch: 0
+      - view: label_view_5
+        focusable: false
+        stretch: 0
+      - view: line_view-value_adapter_6
+        focusable: true
+        stretch: 0
+      - view: null
+        focusable: false
+        stretch: 1
       adapter: fn_record_adapter_2
   int_to_string_convertor_1:
     type: legacy_type.type_convertor:int_to_string_convertor
@@ -620,59 +626,59 @@ definitions:
   label_view_1:
     type: legacy_type.label:view
     value:
-      text: association_count
+      text: wiki
   label_view_10:
     type: legacy_type.label:view
     value:
-      text: title
+      text: capsule_data_size_average
   label_view_2:
     type: legacy_type.label:view
     value:
-      text: capsule_data_size_min
+      text: title
   label_view_3:
     type: legacy_type.label:view
     value:
-      text: capsule_data_size_sum
+      text: root_title
   label_view_4:
     type: legacy_type.label:view
     value:
-      text: root_title
+      text: capsule_data_size_min
   label_view_5:
     type: legacy_type.label:view
     value:
-      text: cdr_encoded_size
+      text: capsule_data_size_max
   label_view_6:
     type: legacy_type.label:view
     value:
-      text: capsule_count
+      text: cdr_encoded_size
   label_view_7:
     type: legacy_type.label:view
     value:
-      text: capsule_data_size_average
+      text: capsule_count
   label_view_8:
     type: legacy_type.label:view
     value:
-      text: capsule_data_size_max
+      text: capsule_data_size_sum
   label_view_9:
     type: legacy_type.label:view
     value:
-      text: wiki
+      text: association_count
   line_edit-value_adapter_1:
     type: legacy_type.line_edit:edit_view
     value:
       adapter: value_adapter_1
-  line_edit-value_adapter_11:
+  line_edit-value_adapter_2:
     type: legacy_type.line_edit:edit_view
     value:
-      adapter: value_adapter_11
-  line_view-value_adapter_2:
-    type: legacy_type.line_edit:readonly_view
-    value:
       adapter: value_adapter_2
-  line_view-value_adapter_3:
+  line_view-value_adapter_10:
     type: legacy_type.line_edit:readonly_view
     value:
-      adapter: value_adapter_3
+      adapter: value_adapter_10
+  line_view-value_adapter_11:
+    type: legacy_type.line_edit:readonly_view
+    value:
+      adapter: value_adapter_11
   line_view-value_adapter_4:
     type: legacy_type.line_edit:readonly_view
     value:
@@ -720,62 +726,65 @@ definitions:
     type: legacy_type.accessor:record_field_accessor
     value:
       record_adapter: fn_record_adapter_1
-      field_name: capsule_count
+      field_name: title
   record_field_accessor_10:
     type: legacy_type.accessor:record_field_accessor
     value:
       record_adapter: fn_record_adapter_2
-      field_name: title
+      field_name: cdr_encoded_size
   record_field_accessor_2:
     type: legacy_type.accessor:record_field_accessor
     value:
       record_adapter: fn_record_adapter_1
-      field_name: capsule_data_size_min
+      field_name: wiki
   record_field_accessor_3:
     type: legacy_type.accessor:record_field_accessor
     value:
-      record_adapter: fn_record_adapter_1
-      field_name: association_count
+      record_adapter: fn_record_adapter_2
+      field_name: capsule_count
   record_field_accessor_4:
     type: legacy_type.accessor:record_field_accessor
     value:
-      record_adapter: fn_record_adapter_1
-      field_name: root_title
+      record_adapter: fn_record_adapter_2
+      field_name: capsule_data_size_average
   record_field_accessor_5:
     type: legacy_type.accessor:record_field_accessor
     value:
-      record_adapter: fn_record_adapter_1
-      field_name: cdr_encoded_size
+      record_adapter: fn_record_adapter_2
+      field_name: capsule_data_size_max
   record_field_accessor_6:
     type: legacy_type.accessor:record_field_accessor
     value:
-      record_adapter: fn_record_adapter_1
-      field_name: capsule_data_size_sum
+      record_adapter: fn_record_adapter_2
+      field_name: capsule_data_size_min
   record_field_accessor_7:
     type: legacy_type.accessor:record_field_accessor
     value:
-      record_adapter: fn_record_adapter_1
-      field_name: capsule_data_size_average
+      record_adapter: fn_record_adapter_2
+      field_name: capsule_data_size_sum
   record_field_accessor_8:
     type: legacy_type.accessor:record_field_accessor
     value:
-      record_adapter: fn_record_adapter_1
-      field_name: capsule_data_size_max
+      record_adapter: fn_record_adapter_2
+      field_name: root_title
   record_field_accessor_9:
     type: legacy_type.accessor:record_field_accessor
     value:
       record_adapter: fn_record_adapter_2
-      field_name: wiki
+      field_name: association_count
   ref_list_adapter_1:
     type: legacy_type.wiki:ref_list_adapter
     value:
-      accessor: record_field_accessor_9
+      accessor: record_field_accessor_2
   shortcut_A:
     type: legacy_type.builtin:string
     value: A
   shortcut_Alt_B:
     type: legacy_type.builtin:string
     value: Alt+B
+  shortcut_Alt_F:
+    type: legacy_type.builtin:string
+    value: Alt+F
   shortcut_Alt_L:
     type: legacy_type.builtin:string
     value: Alt+L
@@ -904,6 +913,7 @@ definitions:
       - config_item-models.transport_log_model-message.d
       - config_item-models.transport_log_model-open_transport_log.d
       - config_item-models.transport_log_model-transport_bundle.d
+      - config_item-models.fs-open_fs.d
   value_adapter_1:
     type: legacy_type.value_adapter:value_adapter
     value:
@@ -913,22 +923,22 @@ definitions:
     type: legacy_type.value_adapter:value_adapter
     value:
       accessor: record_field_accessor_9
-      convertor: wiki_to_string_convertor
+      convertor: int_to_string_convertor_1
   value_adapter_11:
     type: legacy_type.value_adapter:value_adapter
     value:
       accessor: record_field_accessor_10
-      convertor: noop_convertor_1
+      convertor: int_to_string_convertor_1
   value_adapter_2:
     type: legacy_type.value_adapter:value_adapter
     value:
       accessor: record_field_accessor_1
-      convertor: int_to_string_convertor_1
+      convertor: noop_convertor_1
   value_adapter_3:
     type: legacy_type.value_adapter:value_adapter
     value:
       accessor: record_field_accessor_2
-      convertor: int_to_string_convertor_1
+      convertor: wiki_to_string_convertor
   value_adapter_4:
     type: legacy_type.value_adapter:value_adapter
     value:
@@ -938,7 +948,7 @@ definitions:
     type: legacy_type.value_adapter:value_adapter
     value:
       accessor: record_field_accessor_4
-      convertor: noop_convertor_1
+      convertor: int_to_string_convertor_1
   value_adapter_6:
     type: legacy_type.value_adapter:value_adapter
     value:
@@ -958,7 +968,7 @@ definitions:
     type: legacy_type.value_adapter:value_adapter
     value:
       accessor: record_field_accessor_8
-      convertor: int_to_string_convertor_1
+      convertor: noop_convertor_1
   wiki_pages.page_model-model_layout_k:
     type: legacy_type.ui:model_layout_k
     value:

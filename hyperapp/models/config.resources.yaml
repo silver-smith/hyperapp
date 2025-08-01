@@ -71,6 +71,10 @@ import:
 - models.file_bundles:file_bundles-view.feed-template-cfg-item
 - models.file_bundles:file_bundles-view.model-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
+- models.fs:formatter_creg-fs-model.actor-cfg-item
+- models.fs:fs-model.feed-template-cfg-item
+- models.fs:fs-model.model-cfg-item
+- models.fs:open_fs.global-model-command
 - models.global_commands:formatter_creg-global_commands-command_arg.actor-cfg-item
 - models.global_commands:formatter_creg-global_commands-model.actor-cfg-item
 - models.global_commands:global_commands-command_arg.selector-cfg-item
@@ -185,6 +189,7 @@ definitions:
       - models.data_browser:data_browser-record_view.feed-template-cfg-item
       - models.data_browser:data_browser-ref_list_view.feed-template-cfg-item
       - models.file_bundles:file_bundles-view.feed-template-cfg-item
+      - models.fs:fs-model.feed-template-cfg-item
       - models.global_commands:global_commands-model.feed-template-cfg-item
       - models.identity_command:model_commands-model.feed-template-cfg-item
       - models.model_list:model_list-model.feed-template-cfg-item
@@ -209,6 +214,7 @@ definitions:
       - models.config.config_layer_list:formatter_creg-config_layer_list-model.actor-cfg-item
       - models.config.config_service_list:formatter_creg-config_service_list-model.actor-cfg-item
       - models.data_browser:formatter_creg-data_browser-record_view.actor-cfg-item
+      - models.fs:formatter_creg-fs-model.actor-cfg-item
       - models.global_commands:formatter_creg-global_commands-command_arg.actor-cfg-item
       - models.global_commands:formatter_creg-global_commands-model.actor-cfg-item
       - models.model_commands:formatter_creg-model_commands-model.actor-cfg-item
@@ -234,6 +240,7 @@ definitions:
       - models.config.config_service_list:open_config_service_list.global-model-command
       - models.data_browser:browse_current_model.global-model-command
       - models.file_bundles:open_file_bundle_list.global-model-command
+      - models.fs:open_fs.global-model-command
       - models.global_commands:open_global_commands.global-model-command
       - models.model_list:open_model_list.global-model-command
       - models.peer_list:open_peer_list.global-model-command
@@ -320,6 +327,7 @@ definitions:
       - models.data_browser:data_browser-record_view.model-cfg-item
       - models.data_browser:data_browser-ref_list_view.model-cfg-item
       - models.file_bundles:file_bundles-view.model-cfg-item
+      - models.fs:fs-model.model-cfg-item
       - models.global_commands:global_commands-model.model-cfg-item
       - models.model_commands:model_commands-model.model-cfg-item
       - models.model_list:model_list-model.model-cfg-item
