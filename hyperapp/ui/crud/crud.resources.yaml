@@ -173,7 +173,7 @@ definitions:
       service_params:
       - system_fn_creg
       - diff_creg
-      - client_feed_factory
+      - feed_factory
       - error_view
       - view_reg
       - visualizer

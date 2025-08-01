@@ -445,10 +445,10 @@ class BoundCrudCommitCommand(BoundCommandBase):
 
 
 @mark.ui_command_enum
-def crud_commit_command_enum(view, system_fn_creg, diff_creg, client_feed_factory, error_view, view_reg, visualizer):
+def crud_commit_command_enum(view, system_fn_creg, diff_creg, feed_factory, error_view, view_reg, visualizer):
     model_command = view.unbound_commit_command
     ui_command = wrap_model_command_to_ui_command(
-        diff_creg, client_feed_factory, error_view, view_reg, visualizer, model_command)
+        diff_creg, feed_factory, error_view, view_reg, visualizer, model_command)
     return [ui_command]
 
 
