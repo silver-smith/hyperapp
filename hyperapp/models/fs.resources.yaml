@@ -13,8 +13,10 @@ import:
 - legacy_type.feed:index_tree_feed_type
 - legacy_type.fs:item
 - legacy_type.fs:model
+- legacy_type.fs:path
 - legacy_type.model:key_tree_ui_t
 - legacy_type.model:model
+- legacy_type.selector:template
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 definitions:
@@ -70,6 +72,32 @@ definitions:
       - piece
       - current_path
       service_params: []
+  fs-path.selector-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.fs:path
+      value: fs-path.selector-template
+  fs-path.selector-template:
+    type: legacy_type.selector:template
+    value:
+      model_t: legacy_type.fs:model
+      get_fn: fs-path.selector.get.system-fn
+      pick_fn: fs-path.selector.pick.system-fn
+  fs-path.selector.get.system-fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: fs_get
+      ctx_params:
+      - value
+      service_params: []
+  fs-path.selector.pick.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: fs_pick
+      ctx_params:
+      - piece
+      - current_path
+      service_params: []
   fs.module:
     type: legacy_type.builtin:python_module
     value:
@@ -79,11 +107,22 @@ definitions:
         code.mark: base.mark:mark.module
         htypes.fs.item: legacy_type.fs:item
         htypes.fs.model: legacy_type.fs:model
+        htypes.fs.path: legacy_type.fs:path
+  fs_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fs.module
+      attr_name: fs_get
   fs_model:
     type: legacy_type.builtin:attribute
     value:
       object: fs.module
       attr_name: fs_model
+  fs_pick:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fs.module
+      attr_name: fs_pick
   open_fs:
     type: legacy_type.builtin:attribute
     value:

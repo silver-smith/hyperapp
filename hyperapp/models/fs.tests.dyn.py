@@ -28,3 +28,20 @@ def test_model(piece):
 def test_formatter(piece):
     title = fs.format_model(piece)
     assert type(title) is str
+
+
+def test_get(piece):
+    value = htypes.fs.path(
+        parts=('tmp', 'sample'),
+        )
+    model, current_path = fs.fs_get(value)
+    assert model == piece
+    assert current_path == ('tmp', 'sample')
+
+
+def test_pick(piece):
+    current_path = ('tmp', 'sample')
+    value = fs.fs_pick(piece, current_path)
+    assert value == htypes.fs.path(
+        parts=('tmp', 'sample'),
+        )

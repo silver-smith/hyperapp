@@ -40,3 +40,18 @@ def open_fs():
 @mark.actor.formatter_creg
 def format_model(piece):
     return "FS"
+
+
+@mark.selector.get
+def fs_get(value):
+    if value is not None:
+        return (htypes.fs.model(), value.parts)
+    else:
+        return (htypes.fs.model(), None)
+
+
+@mark.selector.pick
+def fs_pick(piece, current_path):
+    return htypes.fs.path(
+        parts=current_path,
+        )
