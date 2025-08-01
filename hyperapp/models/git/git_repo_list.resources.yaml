@@ -1,0 +1,244 @@
+# Automatically generated file. Do not edit.
+
+import:
+- base.mark:mark.module
+- base.system.config_layer:one_way.key_ctl
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+- legacy_type.builtin:string
+- legacy_type.cfg_item:typed_cfg_item
+- legacy_type.command:command_template
+- legacy_type.command:global_model_command
+- legacy_type.command:model_args_picker_command_enumerator
+- legacy_type.command:model_command
+- legacy_type.command:model_command_add_fn
+- legacy_type.command:model_command_fn
+- legacy_type.command:model_command_remove_fn
+- legacy_type.command:open_args_picker_command_d
+- legacy_type.feed:feed_template
+- legacy_type.feed:list_feed_type
+- legacy_type.fs:path
+- legacy_type.git:repo_item
+- legacy_type.git:repo_list_model
+- legacy_type.git:repo_list_storage
+- legacy_type.model:key_list_ui_t
+- legacy_type.model:model
+- legacy_type.system:actor_template
+- legacy_type.system:actor_value_ctl
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
+- legacy_type.system_fn:ctx_fn
+definitions:
+  add:
+    type: legacy_type.builtin:attribute
+    value:
+      object: git_repo_list.module
+      attr_name: add
+  add.commit-d:
+    type: add_d
+    value: {}
+  add.commit-fn:
+    type: legacy_type.command:model_command_add_fn
+    value:
+      function: add
+      ctx_params:
+      - piece
+      - path
+      service_params:
+      - repo_list
+  add.model-command-enumerator:
+    type: legacy_type.command:model_args_picker_command_enumerator
+    value:
+      name: add
+      is_global: false
+      required_args:
+        path: legacy_type.fs:path
+      args_picker_command_d: add.open-d
+      commit_command_d: add.commit-d
+      commit_fn: add.commit-fn
+  add.open-d:
+    type: legacy_type.command:open_args_picker_command_d
+    value:
+      commit_command_d: add.commit-d
+  add_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: git_repo_list
+      name: add_d
+      base: null
+      fields: {}
+  format_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: git_repo_list.module
+      attr_name: format_model
+  format_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      function: format_model
+      service_params: []
+  formatter_creg-git-repo_list_model.actor-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.git:repo_list_model
+      value: format_model.actor-template
+  git-repo_list_model-add.command-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.git:repo_list_model
+      value: git-repo_list_model-add.command-template
+  git-repo_list_model-add.command-template:
+    type: legacy_type.command:command_template
+    value:
+      command: add.model-command-enumerator
+  git-repo_list_model-remove.command-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.git:repo_list_model
+      value: git-repo_list_model-remove.command-template
+  git-repo_list_model-remove.command-template:
+    type: legacy_type.command:command_template
+    value:
+      command: remove.model-command
+  git-repo_list_model.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      feed_type: git-repo_list_model.feed-type
+  git-repo_list_model.feed-template-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.git:repo_list_model
+      value: git-repo_list_model.feed-template
+  git-repo_list_model.feed-type:
+    type: legacy_type.feed:list_feed_type
+    value:
+      item_t: legacy_type.git:repo_item
+  git-repo_list_model.key-list-ui-t:
+    type: legacy_type.model:key_list_ui_t
+    value:
+      item_t: legacy_type.git:repo_item
+      key_field: name
+      key_field_t: legacy_type.builtin:string
+  git-repo_list_model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: git-repo_list_model.key-list-ui-t
+      system_fn: git-repo_list_model.system-fn
+  git-repo_list_model.model-cfg-item:
+    type: legacy_type.cfg_item:typed_cfg_item
+    value:
+      t: legacy_type.git:repo_list_model
+      value: git-repo_list_model.model
+  git-repo_list_model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: repo_list_model
+      ctx_params:
+      - piece
+      service_params:
+      - repo_list
+  git_repo_list.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: git_repo_list
+      file_name: git_repo_list.dyn.py
+      import_list:
+        code.mark: base.mark:mark.module
+        htypes.git.repo_item: legacy_type.git:repo_item
+        htypes.git.repo_list_model: legacy_type.git:repo_list_model
+        htypes.git.repo_list_storage: legacy_type.git:repo_list_storage
+  open_repo_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: git_repo_list.module
+      attr_name: open_repo_list
+  open_repo_list.d:
+    type: open_repo_list_d
+    value: {}
+  open_repo_list.fn:
+    type: legacy_type.command:model_command_fn
+    value:
+      function: open_repo_list
+      ctx_params: []
+      service_params: []
+  open_repo_list.global-model-command:
+    type: legacy_type.command:global_model_command
+    value:
+      d: open_repo_list.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_repo_list.fn
+      preserve_remote: false
+  open_repo_list_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: git_repo_list
+      name: open_repo_list_d
+      base: null
+      fields: {}
+  remove:
+    type: legacy_type.builtin:attribute
+    value:
+      object: git_repo_list.module
+      attr_name: remove
+  remove.d:
+    type: remove_d
+    value: {}
+  remove.fn:
+    type: legacy_type.command:model_command_remove_fn
+    value:
+      function: remove
+      ctx_params:
+      - piece
+      - current_key
+      service_params:
+      - repo_list
+  remove.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: remove.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: remove.fn
+      preserve_remote: false
+  remove_d:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: git_repo_list
+      name: remove_d
+      base: null
+      fields: {}
+  repo_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: git_repo_list.module
+      attr_name: repo_list
+  repo_list.service:
+    type: legacy_type.system:service_template
+    value:
+      name: repo_list
+      ctl: system-dict_config.one_way.actor.ctl
+      function: repo_list
+      service_params:
+      - file_bundle_factory
+      - data_dir
+      want_config: false
+      free_params: []
+  repo_list_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: git_repo_list.module
+      attr_name: repo_list_model
+  system-actor.value-ctl:
+    type: legacy_type.system:actor_value_ctl
+    value: {}
+  system-dict_config.one_way.actor.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value:
+      key_ctl: base.system.config_layer:one_way.key_ctl
+      value_ctl: system-actor.value-ctl

@@ -76,6 +76,13 @@ import:
 - models.fs:fs-model.model-cfg-item
 - models.fs:fs-path.selector-cfg-item
 - models.fs:open_fs.global-model-command
+- models.git.git_repo_list:formatter_creg-git-repo_list_model.actor-cfg-item
+- models.git.git_repo_list:git-repo_list_model-add.command-cfg-item
+- models.git.git_repo_list:git-repo_list_model-remove.command-cfg-item
+- models.git.git_repo_list:git-repo_list_model.feed-template-cfg-item
+- models.git.git_repo_list:git-repo_list_model.model-cfg-item
+- models.git.git_repo_list:open_repo_list.global-model-command
+- models.git.git_repo_list:repo_list.service
 - models.global_commands:formatter_creg-global_commands-command_arg.actor-cfg-item
 - models.global_commands:formatter_creg-global_commands-model.actor-cfg-item
 - models.global_commands:global_commands-command_arg.selector-cfg-item
@@ -191,6 +198,7 @@ definitions:
       - models.data_browser:data_browser-ref_list_view.feed-template-cfg-item
       - models.file_bundles:file_bundles-view.feed-template-cfg-item
       - models.fs:fs-model.feed-template-cfg-item
+      - models.git.git_repo_list:git-repo_list_model.feed-template-cfg-item
       - models.global_commands:global_commands-model.feed-template-cfg-item
       - models.identity_command:model_commands-model.feed-template-cfg-item
       - models.model_list:model_list-model.feed-template-cfg-item
@@ -216,6 +224,7 @@ definitions:
       - models.config.config_service_list:formatter_creg-config_service_list-model.actor-cfg-item
       - models.data_browser:formatter_creg-data_browser-record_view.actor-cfg-item
       - models.fs:formatter_creg-fs-model.actor-cfg-item
+      - models.git.git_repo_list:formatter_creg-git-repo_list_model.actor-cfg-item
       - models.global_commands:formatter_creg-global_commands-command_arg.actor-cfg-item
       - models.global_commands:formatter_creg-global_commands-model.actor-cfg-item
       - models.model_commands:formatter_creg-model_commands-model.actor-cfg-item
@@ -242,6 +251,7 @@ definitions:
       - models.data_browser:browse_current_model.global-model-command
       - models.file_bundles:open_file_bundle_list.global-model-command
       - models.fs:open_fs.global-model-command
+      - models.git.git_repo_list:open_repo_list.global-model-command
       - models.global_commands:open_global_commands.global-model-command
       - models.model_list:open_model_list.global-model-command
       - models.peer_list:open_peer_list.global-model-command
@@ -258,6 +268,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - models.git.git_repo_list:git-repo_list_model-add.command-cfg-item
       - models.peer_list:peer_list-model-add.command-cfg-item
       - models.peer_list:peer_list-model-open_model.command-cfg-item
       - models.peer_list:peer_list-model-run_command.command-cfg-item
@@ -294,6 +305,7 @@ definitions:
       - models.data_browser:data_browser-record_view-record_open.command-cfg-item
       - models.data_browser:data_browser-ref_list_view-ref_list_open.command-cfg-item
       - models.file_bundles:file_bundles-view-open.command-cfg-item
+      - models.git.git_repo_list:git-repo_list_model-remove.command-cfg-item
       - models.global_commands:global_commands-model-run_command.command-cfg-item
       - models.identity_command:model_commands-model-add_identity_command.command-cfg-item
       - models.model_commands:model_commands-model-run_command.command-cfg-item
@@ -329,6 +341,7 @@ definitions:
       - models.data_browser:data_browser-ref_list_view.model-cfg-item
       - models.file_bundles:file_bundles-view.model-cfg-item
       - models.fs:fs-model.model-cfg-item
+      - models.git.git_repo_list:git-repo_list_model.model-cfg-item
       - models.global_commands:global_commands-model.model-cfg-item
       - models.model_commands:model_commands-model.model-cfg-item
       - models.model_list:model_list-model.model-cfg-item
@@ -352,6 +365,7 @@ definitions:
     value:
       items:
       - models.data_dir:data_dir.service
+      - models.git.git_repo_list:repo_list.service
       - models.peer_list:peer_list_reg.service
       - models.ref_list:ref_list.service
       - models.wiki_pages:wiki_pages.service

@@ -1,0 +1,20 @@
+repo_list_storage = record:
+  path_list: string list
+
+
+repo_list_model = record
+
+repo_item = record:
+  name: string
+  path: string
+  current_branch: string
+
+
+branch_list_model = record:
+  repo_dir: string
+
+branch_item = record:
+  name: string
+  commit_id_short: string
+  commit_author: string
+  commit_dt: datetime
